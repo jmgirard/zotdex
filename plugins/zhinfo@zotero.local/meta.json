@@ -1,0 +1,7 @@
+{
+  "id": "zhinfo@zotero.local",
+  "name": "Zotero 中文标题与摘要",
+  "description": "在条目信息界面加入「中文标题」与「中文摘要」两个字段，并自动翻译填入（支持 MyMemory / 大模型 / DeepL / Google）。",
+  "repoUrl": "https://github.com/fenzirong/zotero-zh-info",
+  "updateUrl": "https://raw.githubusercontent.com/fenzirong/zotero-zh-info/main/updates.json"
+}
