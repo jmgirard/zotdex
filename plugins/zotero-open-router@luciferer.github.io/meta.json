@@ -1,0 +1,8 @@
+{
+  "id": "zotero-open-router@luciferer.github.io",
+  "name": "Zotero Open Router",
+  "description": "Customize default double-click vs. Option+Double-Click attachment routing, prioritize main article PDFs over supplementary PDFs, preview .md/.csv/.tsv/.json/.txt/.zip in internal Zotero tabs, and open attachments in dedicated external apps.",
+  "homepage": "https://github.com/luciferer/zotero-open-router",
+  "repoUrl": "https://github.com/luciferer/zotero-open-router",
+  "updateUrl": "https://github.com/luciferer/zotero-open-router/releases/latest/download/update.json"
+}
