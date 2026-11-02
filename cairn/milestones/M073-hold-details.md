@@ -79,6 +79,7 @@ A held bot pull request's body names the facts behind its hold reasons, when the
 - 2026-11-02: T6 done: the dry run on this repo exited 0 and printed all 58 numbers that `gh pr list --state open --label hold` lists with a reason (none missing or extra); it skipped #796, #797, and #103, which have no label. Compared facts: #787 `name-match` names "reMarkable Sync for Zotero" and alfakini/zotero-remarkable-plugin, as `plugins/` holds in other letter case; #780 `update-host` names zotero-download.s3.amazonaws.com, as its `meta.json`, and 2021-02-15, as `GET /users/xcjames`; #216 `new-account` names 2026-10-03, as `GET /users/littview`.
 - 2026-11-02: claim audit: not owed — internal tier
 - 2026-11-02: implement done; status review.
+- 2026-11-02: step-7 approval: m073-hold-details approved for merge
 
 ## Decisions
 
