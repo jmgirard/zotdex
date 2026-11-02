@@ -59,6 +59,7 @@ The bot no longer holds a pull request whose `update.json` is on the repo owner'
 - 2026-11-02: T1 done: `holdReasons` passes the owner's `<owner>.github.io` host in lowercase on both sides, `pluginRepo` keys `/users/<owner>` in lowercase, and `test/holds.test.ts` has the AC1 and AC2 cases; the 4 owner-site cases failed with `update-host` before the rule. Choice: the host compare stays inline in `holdReasons`, with no new exported helper.
 - 2026-11-02: T2 done: `HOLD_TEXT["update-host"]`, README, DESIGN, and one CHANGELOG entry name the owner's site. Choice: `HOLD_TEXT` puts `<owner>.github.io` in a code span, since a pull request body would read a bare `<owner>` as an HTML tag and drop it.
 - 2026-11-02: the simple-english lint hook flagged 3 README lines and 8 CHANGELOG lines; none is a line this branch adds, so they stay as they are, outside this milestone's scope; the one hit on a new CHANGELOG line is fixed.
+- 2026-11-02: claim audit in progress: the fresh reader found 1 of 13 claims wrong, the `holds.ts` comment that only the owner can publish to its Pages site; the comment is corrected and D-044 annotates D-043; the reader's re-read of that comment is still pending.
 
 ## Decisions
 
