@@ -1,13 +1,13 @@
 # M078: Add a dark mode toggle to the site
 
-- **Status:** planned
+- **Status:** in-progress
 - **Priority:** normal
 - **Depends on:** —
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — every page of the public site gets a new control
-- **Branch/PR:** —
+- **Branch/PR:** m078-dark-mode-toggle
 
 ## Goal
 
@@ -45,7 +45,7 @@ Each page of the site has a top-bar button that flips between the light and dark
 
 ## Tasks
 
-- [ ] T1: Tests first: add `src/site/theme.ts` with the head function and the button function, each calling and reading nothing outside its body except built-ins and browser globals, and run them in `node:vm` for AC2, AC3, and AC4 in `test/site.test.ts` or a new test file.
+- [x] T1: Tests first: add `src/site/theme.ts` with the head function and the button function, each calling and reading nothing outside its body except built-ins and browser globals, and run them in `node:vm` for AC2, AC3, and AC4 in `test/site.test.ts` or a new test file.
 - [ ] T2: In `site/src/layouts/Base.astro`, add the head script and the button with its script through `<script is:inline set:html={…}>`, the second dark block, the two `color-scheme` rules, the `[data-theme-toggle][hidden]` rule, and the button's styles from tokens, with an outline in `--link` at `:focus-visible`. Add `sun` and `moon` to `site/src/components/Icon.astro`.
 - [ ] T3: Update the site tests that the new scripts and blocks change in `test/site.test.ts`: the dark-block regex at line 1869, whose null would stop the contrast block at collection; the classic script match at 1547 and the position check at 1581, which must read the home page's pre-paint script and not the head script; the hiding-rule list at 1138; and the checks near 1130, 1603, and 1636-1637. Add the AC1 test over `htmlFiles(out)` and the AC5 test that compares the two blocks.
 - [ ] T4: Build the real site for a hand check (lessons M035 and M015), and run the AC4, AC5, and AC6 checks in the browser pane, with iframes for the width check (lesson M048). Look at the 375 px view, and record each result.
@@ -65,6 +65,7 @@ Each page of the site has a top-bar button that flips between the light and dark
 - 2026-11-02: plan chose a second dark block over `light-dark()` because a browser before 2024 without that function loses every color; falsified by browser support data that makes such browsers absent, or by the blocks drifting apart despite the test.
 - 2026-11-02: plan chose a script right after the button over `DOMContentLoaded` because the 800 KB home page can paint the top bar before the parse ends, and the nav links would then move; falsified by a look at the home page showing no such move.
 - 2026-11-02: plan gate chose the two-state flip that returns to the system over a three-state button at the user's choice; falsified by users asking to pin the scheme that matches their system.
+- 2026-11-02: T1: added `src/site/theme.ts`, `test/support/theme-page.ts`, and `test/theme.test.ts`; 27 tests pass, and three planted defects (the key, the return to the system, the `pageshow` read) failed them; the button's icon follows a `data-gives` attribute; the site test on the built scripts comes at T3.
 
 ## Decisions
 
