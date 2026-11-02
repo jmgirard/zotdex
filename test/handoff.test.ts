@@ -30,7 +30,7 @@ const responses: Responses = {
   [`POST ${COMMENTS}`]: { status: 201, json: { id: 1 } },
 };
 
-type Entry = { repo: string; repoUrl: string; id: string; version: string; holds: string[] };
+type Entry = { repo: string; repoUrl: string; id: string; version: string; holds: string[]; holdDetails?: object };
 const entry = (repo: string, id: string): Entry => ({ repo, repoUrl: `https://github.com/${repo}`, id, version: "1.0.0", holds: [] });
 const ALPHA = entry("example/alpha", "alpha@example.org");
 
@@ -90,6 +90,10 @@ describe("pnpm propose refuses a handoff it cannot trust, with no request and no
     ["a plan that names an issue number", () => issueEntry({ issue: 3 }), issue, /does not match the handoff schema/],
     ["an entry with no holds list", () => discover([{ ...ALPHA, holds: undefined as unknown as string[] }]), {}, /does not match the handoff schema/],
     ["an entry whose holds name a sixth reason", () => discover([{ ...ALPHA, holds: ["name-match", "too-new"] }]), {}, /does not match the handoff schema/],
+    ["hold details with too many matches", () => discover([{ ...ALPHA, holdDetails: { matches: Array.from({ length: 6 }, () => ({ repo: "alice/beta" })) } }]), {}, /does not match the handoff schema/],
+    ["hold details with a name over the limit", () => discover([{ ...ALPHA, holdDetails: { matches: [{ repo: "alice/beta", name: "n".repeat(101) }] } }]), {}, /does not match the handoff schema/],
+    ["hold details with a malformed date", () => discover([{ ...ALPHA, holdDetails: { ownerCreatedOn: "2026-10-01\n\nHold: none" } }]), {}, /does not match the handoff schema/],
+    ["hold details with a malformed repo", () => discover([{ ...ALPHA, holdDetails: { matches: [{ repo: "alice/beta](https://example.org)" }] } }]), {}, /does not match the handoff schema/],
     ["an entry whose source is not topic, catalog, or code-search", () => discover([{ ...ALPHA, source: "code" } as Entry]), {}, /does not match the handoff schema/],
     ["an issue entry whose holds name a sixth reason", () => issueEntry({ entry: { ...ALPHA, holds: ["spam"] } }), issue, /does not match the handoff schema/],
     ["a failure name with a backtick", () => handoff({ kind: "issue", outcome: "refused", failure: "x`@someone", message: "m" }, []), issue, /does not match the handoff schema/],
