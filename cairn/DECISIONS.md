@@ -688,3 +688,20 @@ covers a case with a low cost that a maintainer can handle by hand:
   plugin, and the next daily build reads it again.
 
 Each drop can be reopened by an entry that supersedes this one.
+
+### D-047: The update-host hold follows an owner site's redirects and holds plain http, annotating D-033, D-043, and D-044
+
+2026-11-02, M077 plan. D-044 kept the owner-site pass of D-043 for now, though
+a Pages site with a custom domain redirects to a host that another party can
+control. From M077 on, an update file named on `<owner>.github.io` passes only
+if every URL of the bot's read stays on that host. Any other host, at any step,
+holds, since a host on the way can change where the read goes. Also, any URL of
+the read that uses `http:` holds, on every host, since anyone on the network
+path can change that file. The user chose to hold http as well. The bot does not
+test the redirects of `github.com` and `raw.githubusercontent.com` addresses,
+since GitHub's release addresses redirect to its own file hosts and those two
+hosts already pass for any owner's repo. A named host outside these stays held
+whatever a redirect does. The read happens once, at the draft. The rest of D-043
+and D-044 stands. This choice is wrong if a maintainer always releases these
+holds, or if an update file reached through `github.com` or
+`raw.githubusercontent.com` turns out to be served off GitHub.
