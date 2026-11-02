@@ -1,13 +1,13 @@
 # M074: Allow owner GitHub Pages update hosts
 
-- **Status:** planned
+- **Status:** in-progress
 - **Priority:** normal
 - **Depends on:** —
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — it changes which plugins reach the public index without a person's look
-- **Branch/PR:** —
+- **Branch/PR:** m074-owner-pages-hosts
 
 ## Goal
 
@@ -40,7 +40,7 @@ The bot no longer holds a pull request whose `update.json` is on the repo owner'
 
 ## Tasks
 
-- [ ] T1: In `src/discover/holds.ts:68`, compare `facts.updateHost` with the owner's site, in lowercase on both sides. In `test/support/plugin-repo.ts`, key the `/users/<owner>` answer in lowercase, since `repoName` lowercases the owner. Add the `test/holds.test.ts` cases of AC1 and AC2.
+- [x] T1: In `src/discover/holds.ts:68`, compare `facts.updateHost` with the owner's site, in lowercase on both sides. In `test/support/plugin-repo.ts`, key the `/users/<owner>` answer in lowercase, since `repoName` lowercases the owner. Add the `test/holds.test.ts` cases of AC1 and AC2.
 - [ ] T2: Write the `HOLD_TEXT`, README, DESIGN, and CHANGELOG text, and wrap it near 76 columns. Run the verify slot.
 
 ## Work log
@@ -56,6 +56,7 @@ The bot no longer holds a pull request whose `update.json` is on the repo owner'
 - 2026-11-02: lessons used: 2026-10-25 (M001), 2026-10-26 (M018), 2026-10-28 (M036).
 - 2026-11-02: criteria audit (full, fresh Opus reader): 5 findings, all fixed: AC1's spelled-host case 404s in `pluginRepo`, so letter case moved to a direct `holdReasons` call; `pluginRepo` keys `/users/<owner>` in the raw case, so T1 keys it in lowercase and AC1 expects no holds; draft-only cases cannot catch lost lowercasing, fixed by the same direct call; AC2 gained `bobx`, `bob-x`, and `bob.evil` hosts against a prefix-and-suffix defect; AC3 now says "gains one entry", since `## Unreleased` already holds entries. The reader also read the five pull requests: each has exactly `Hold: update-host` and its owner's site as host.
 - 2026-11-02: audit note answered: the release after the merge has no criterion, since review ticks criteria before the merge; it stays in Scope, as M071's after-merge steps did, and the close block names each result.
+- 2026-11-02: T1 done: `holdReasons` passes the owner's `<owner>.github.io` host in lowercase on both sides, `pluginRepo` keys `/users/<owner>` in lowercase, and `test/holds.test.ts` has the AC1 and AC2 cases; the 4 owner-site cases failed with `update-host` before the rule. Choice: the host compare stays inline in `holdReasons`, with no new exported helper.
 
 ## Decisions
 

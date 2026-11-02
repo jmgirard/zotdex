@@ -7,7 +7,7 @@ _Last hygiene check: 2026-11-02 (M073 review: M073 archived; candidate "Show hol
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M074 | Allow owner GitHub Pages update hosts | planned | — | normal | milestones/M074-owner-pages-hosts.md |
+| M074 | Allow owner GitHub Pages update hosts | in-progress | — | normal | milestones/M074-owner-pages-hosts.md |
 | M073 | Show hold details in bot pull requests | done | — | normal | milestones/archive/M073-hold-details.md |
 | M072 | Wait for GitHub's code search reset | done | — | high | milestones/archive/M072-code-search-reset.md |
 | M071 | Find plugins by GitHub code search | done | M070 | normal | milestones/archive/M071-code-search-discovery.md |

@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { afterAll, describe, expect, test } from "vitest";
 import { draftEntry, indexed } from "../src/discover/discover.ts";
-import { holdDetails, type IndexedName } from "../src/discover/holds.ts";
+import { holdDetails, holdReasons, type IndexedName } from "../src/discover/holds.ts";
 import { fixtureFetch, type Responses } from "./support/fixture-fetch.ts";
 import { pluginRepo } from "./support/plugin-repo.ts";
 
@@ -59,6 +59,26 @@ describe("the hold reasons", () => {
   ])("%s", async (_name, repo, options, issueRun, expected) => {
     expect(await holds(repo, pluginRepo(repo, "x@example.org", options), issueRun)).toEqual(expected);
   });
+
+  test.each([
+    ["bob/zotero-tagger", "bob.github.io"],
+    ["Juris-M/zotero-odf-scan-plugin", "juris-m.github.io"],
+    ["forrtproject/flora-zotero", "forrtproject.github.io"],
+  ])("an update.json on the owner's own site does not hold: %s on %s", async (repo, updateHost) => {
+    expect(await holds(repo, pluginRepo(repo, "x@example.org", { name: "Tagger", updateHost }))).toEqual([]);
+  });
+
+  test("the owner's own site is compared in lowercase on both sides", () => {
+    const facts = { repo: "Bob/zotero-tagger", updateHost: "BOB.github.io", topics: ["zotero-plugin"], issueRun: false, ownerCreatedAt: new Date(ago(1000)), now: NOW, indexed: [] };
+    expect(holdReasons(facts)).toEqual([]);
+  });
+
+  test.each(["alice.github.io", "bob.github.io:8443", "sub.bob.github.io", "bob.evil.github.io", "bobx.github.io", "bob-x.github.io", "bob.github.io.example.org", "bob.gitlab.io", "github.io"])(
+    "update-host for %s, which is not bob's own site",
+    async (updateHost) => {
+      expect(await holds("bob/zotero-tagger", pluginRepo("bob/zotero-tagger", "x@example.org", { name: "Tagger", updateHost }))).toEqual(["update-host"]);
+    },
+  );
 
   test("an account exactly 30 days old does not hold", async () => {
     expect(await holds("bob/zotero-tagger", pluginRepo("bob/zotero-tagger", "x@example.org", { name: "Tagger", ownerCreatedAt: ago(30) }))).toEqual([]);

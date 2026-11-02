@@ -72,11 +72,13 @@ function matchedEntries({ repo, name, indexed }: Pick<HoldFacts, "repo" | "name"
 }
 
 export function holdReasons(facts: HoldFacts): HoldReason[] {
+  // Only the repo's owner can publish to its own GitHub Pages site.
+  const ownerSite = `${facts.repo.split("/")[0].toLowerCase()}.github.io`;
   const held: Record<HoldReason, boolean> = {
     "name-match": matchedEntries(facts).length > 0,
     "owner-unread": facts.ownerCreatedAt === undefined,
     "new-account": facts.ownerCreatedAt !== undefined && facts.now.getTime() - facts.ownerCreatedAt.getTime() < NEW_ACCOUNT_MS,
-    "update-host": !GITHUB_HOSTS.includes(facts.updateHost),
+    "update-host": !GITHUB_HOSTS.includes(facts.updateHost) && facts.updateHost.toLowerCase() !== ownerSite,
     "issue-no-topic": facts.issueRun && !facts.topics.some((topic) => TOPICS.includes(topic)),
   };
   return HOLD_REASONS.filter((reason) => held[reason]);
