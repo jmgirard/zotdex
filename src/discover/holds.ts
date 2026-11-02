@@ -104,6 +104,10 @@ export function matchedEntries({ repo, name, indexed }: Pick<HoldFacts, "repo" |
 
 const entryRepo = ({ owner, repoPart }: IndexedName) => `${owner}/${repoPart}`.toLowerCase();
 
+// What the bot read for an entry. An entry on another host has none, even when a repo of the
+// same owner and name on github.com was read for another entry.
+const entryFacts = (evidence: MatchEvidence | undefined, entry: IndexedName) => (entry.github === true ? evidence?.entries.get(entryRepo(entry)) : undefined);
+
 // The percent of one repo's counted files that are identical in the other, rounded down, for
 // whichever repo gives the larger percent. A repo with no counted files gives 0.
 export function identicalPercent(a: string[], b: string[]): number {
@@ -125,7 +129,7 @@ export function holdReasons(facts: HoldFacts): HoldReason[] {
   // Only the owner, and those it gives write access to its repos, can publish to its GitHub Pages site.
   const ownerSite = `${facts.repo.split("/")[0].toLowerCase()}.github.io`;
   const held: Record<HoldReason, boolean> = {
-    "name-match": matchedEntries(facts).some((entry) => entryHolds(facts.evidence?.own, facts.evidence?.entries.get(entryRepo(entry)))),
+    "name-match": matchedEntries(facts).some((entry) => entryHolds(facts.evidence?.own, entryFacts(facts.evidence, entry))),
     "owner-unread": facts.ownerCreatedAt === undefined,
     "new-account": facts.ownerCreatedAt !== undefined && facts.now.getTime() - facts.ownerCreatedAt.getTime() < NEW_ACCOUNT_MS,
     "update-host": !GITHUB_HOSTS.includes(facts.updateHost) && facts.updateHost.toLowerCase() !== ownerSite,
@@ -189,7 +193,7 @@ export function holdDetails(facts: Pick<HoldFacts, "repo" | "name" | "updateHost
     details.matches = namedEntries(matched).map((entry) => ({
       repo: entryRepo(entry),
       ...(entry.name?.trim() && { name: cut(entry.name.trim(), NAME_MAX) }),
-      ...entryDetails(own, facts.evidence?.entries.get(entryRepo(entry))),
+      ...entryDetails(own, entryFacts(facts.evidence, entry)),
     }));
     if (matched.length > details.matches.length) details.moreMatches = matched.length - details.matches.length;
     const repoCreatedOn = dayOf(own?.createdAt);
@@ -252,15 +256,15 @@ function countedBlobs(tree: unknown): string[] | undefined {
 
 // A repo's first commit and counted files. The commits come one to a page, so the last page
 // holds the commit that GitHub lists last, taken as the first commit. A repo with one commit
-// has no next-page or last-page link; a next-page link alone does not say where the first
-// commit is. With no newest commit, there is no tree to read.
+// has no link at all; any other link with no last page does not say where the first commit
+// is. With no newest commit, there is no tree to read.
 async function gitFacts(read: EvidenceRead, base: string): Promise<Pick<RepoFacts, "firstCommit" | "blobs">> {
   const newest = await read(`${base}/commits?per_page=1`);
   const head = lastSha(newest?.body);
   if (head === undefined) return {};
   const link = newest?.link ?? "";
   const last = /<([^>]+)>;\s*rel="last"/.exec(link)?.[1];
-  const firstCommit = last !== undefined ? lastSha((await read(last))?.body) : /rel="next"/.test(link) ? undefined : head;
+  const firstCommit = last !== undefined ? lastSha((await read(last))?.body) : link === "" ? head : undefined;
   const blobs = countedBlobs((await read(`${base}/git/trees/${head}?recursive=1`))?.body);
   return { ...(firstCommit && { firstCommit }), ...(blobs && { blobs }) };
 }
@@ -274,11 +278,11 @@ async function metaFacts(read: EvidenceRead, base: string): Promise<Pick<RepoFac
   return { ...(createdAt && { createdAt }), ...(stars !== undefined && { stars }) };
 }
 
-// The evidence for the entries that `facts` matches and names on github.com. With no such
+// The evidence for the entries that `facts` matches and names on github.com. With no named
 // match it sends no request. `ownMeta` gives the new repo's date and stars when the caller
-// read them already. The new repo's reads go beside the entries', so a stalled read of one
-// leaves the other's facts. A read that fails or that `ms` cuts leaves its fact out, and it
-// never throws.
+// read them already; without it, a named match on any host reads them. The new repo's reads
+// go beside the entries', so a stalled read of one leaves the other's facts. A read that
+// fails or that `ms` cuts leaves its fact out, and it never throws.
 export async function matchEvidence(
   fetch: Fetch,
   facts: Pick<HoldFacts, "repo" | "name" | "indexed">,

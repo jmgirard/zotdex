@@ -187,6 +187,7 @@ describe("the name-match tests", () => {
   });
 
   test("namesake: a new repo with 0 stars needs only the 20", () => {
+    expect(held({ createdAt: EARLIER, stars: 20 }, { ...own, stars: 0 })).toBe(true);
     expect(held({ createdAt: EARLIER, stars: 19 }, { ...own, stars: 0 })).toBe(false);
   });
 
@@ -288,6 +289,17 @@ describe("the name-match reads through draftEntry", () => {
     const { drafted, urls } = await draft({ ...clean(), [refused]: { status, json: {} } }, { names: [NAMES[1], NAMES[0]] });
     expect(drafted.holds).toEqual(["name-match"]);
     expect(urls.at(-1)).toBe(refused);
+  });
+
+  test("an HTTP 403 on the new repo stops the entries' later reads", async () => {
+    const { urls } = await draft({ ...clean(), [`${api(OWN)}/commits?per_page=1`]: { status: 403, json: {} } });
+    expect(urls.filter((url) => url.startsWith(`${api(FIRST)}/git/trees`))).toEqual([]);
+  });
+
+  test("an entry on another host has no facts from a repo of its name on github.com", async () => {
+    const onGitlab = { owner: "alice", repoPart: "zotero-paper-sidebar", name: "Paper Sidebar", github: false };
+    const { drafted } = await draft(clean(), { names: [NAMES[0], onGitlab] });
+    expect(drafted.holds).toEqual(["name-match"]);
   });
 
   test("an HTTP 404 sends the later reads", async () => {

@@ -6,8 +6,8 @@
   longer gets the `name-match` hold by itself, so plugins that share a name
   are listed side by side. Two repositories with the same first commit keep
   the hold. Two with identical files at 30% or more of either one's files
-  other than empty files and boilerplate also keep it. An entry's repository that is older,
-  with at least 20 stars and at least 10 times the new repository's stars, keeps
+  other than empty files and boilerplate also keep it. An entry's repository
+  that is older, with at least 20 stars and at least 10 times the new repository's stars, keeps
   the hold. So does a match whose facts the bot did not get. The hold's
   details give these facts, and `pnpm refresh-holds` writes them to open pull
   requests.

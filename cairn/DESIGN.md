@@ -230,8 +230,8 @@ shows each one separately. A combined verdict is out of scope.
    has a Hold line (M056, D-033). The bot holds a pull request for the
    maintainer when its name or repo name matches another owner's entry and
    the two repos have the same first commit, or identical files are at least
-   30% of either repo's files other than empty files and boilerplate, or that entry's repo is
-   older with at least 20 stars and at least 10 times the new repo's stars, or
+   30% of either repo's files other than empty files and boilerplate, or that
+   entry's repo is older with at least 20 stars and at least 10 times the new repo's stars, or
    any of these facts cannot be read (M075, D-045). It also holds when its
    owner's account is under 30 days old or cannot be read, the host of its
    `update_url` is not github.com, raw.githubusercontent.com, or the repo
@@ -367,8 +367,8 @@ exception is a report that is abuse.
   counting the rest in `unread` with a warning. The evidence reads of a name
   match come after the repo read, with their own 60 seconds (M075), and a
   repo read started before the 18 minutes can start them after it. The
-  `git check-ref-format` check stops at 30 seconds and throws; in `pnpm propose` each other git
-  process stops at 2 minutes and `pnpm check` at 5 minutes, failing only
+  `git check-ref-format` check stops at 30 seconds and throws; in `pnpm propose`
+  each other git process stops at 2 minutes and `pnpm check` at 5 minutes, failing only
   its entry (M030).
   `pnpm close-issue` reads the pull request that `PR_NUMBER` names. When it
   is a bot pull request closed without a merge, the command comments on the
