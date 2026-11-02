@@ -8,11 +8,21 @@ import type { Responses } from "./fixture-fetch.ts";
 export function pluginRepo(
   fullName: string,
   id: string,
-  { noRelease = false, name = fullName, topics = ["zotero-plugin"], ownerCreatedAt = "2015-01-01T00:00:00Z", updateHost = "raw.githubusercontent.com", stars = undefined as number | undefined } = {},
+  {
+    noRelease = false,
+    name = fullName,
+    topics = ["zotero-plugin"],
+    ownerCreatedAt = "2015-01-01T00:00:00Z",
+    updateHost = "raw.githubusercontent.com",
+    stars = undefined as number | undefined,
+    updateRoute = undefined as string[] | undefined,
+  } = {},
 ): Responses {
   const repoUrl = `https://github.com/${fullName}`;
   const xpiUrl = `${repoUrl}/releases/download/v1.0.0/plugin.xpi`;
-  const updateUrl = `https://${updateHost}/${fullName}/main/update.json`;
+  // With `updateRoute`, its first URL is the update_url, each URL redirects to the next, and the last answers.
+  const updateUrl = updateRoute?.at(-1) ?? `https://${updateHost}/${fullName}/main/update.json`;
+  const namedUrl = updateRoute?.[0] ?? updateUrl;
   const responses: Responses = {
     [`https://api.github.com/repos/${fullName}`]: {
       json: { full_name: fullName, html_url: repoUrl, fork: false, created_at: "2025-01-10T09:00:00Z", open_issues_count: 0, topics, ...(stars !== undefined && { stargazers_count: stars }) },
@@ -39,10 +49,11 @@ export function pluginRepo(
         manifest_version: 2,
         name,
         version: "1.0.0",
-        applications: { zotero: { id, update_url: updateUrl, strict_min_version: "7.0", strict_max_version: "8.*" } },
+        applications: { zotero: { id, update_url: namedUrl, strict_min_version: "7.0", strict_max_version: "8.*" } },
       },
     },
   };
+  updateRoute?.slice(0, -1).forEach((url, i) => (responses[url] = { status: 301, headers: { location: updateRoute[i + 1] } }));
   responses[updateUrl] = { json: { addons: { [id]: { updates: [{ version: "1.0.0" }] } } } };
   return responses;
 }

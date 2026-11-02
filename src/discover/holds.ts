@@ -79,6 +79,8 @@ export interface HoldFacts {
   // The manifest name, when the manifest has one.
   name?: string;
   updateHost: string;
+  // Each URL that the update.json read requested, in order.
+  updateRoute: string[];
   topics: string[];
   // Whether the entry comes from an issue run.
   issueRun: boolean;
@@ -126,13 +128,18 @@ function entryHolds(own: RepoFacts | undefined, entry: RepoFacts | undefined): b
 }
 
 export function holdReasons(facts: HoldFacts): HoldReason[] {
-  // Only the owner, and those it gives write access to its repos, can publish to its GitHub Pages site.
+  // Only the owner, and those it gives write access to its repos, can publish to its GitHub
+  // Pages site. A host that the read passes on the way can send it anywhere, so every URL must
+  // stay there. GitHub's release addresses redirect to its own file hosts, so the fixed hosts
+  // are not tested for redirects.
   const ownerSite = `${facts.repo.split("/")[0].toLowerCase()}.github.io`;
+  const route = facts.updateRoute.map((url) => new URL(url));
+  const onOwnerSite = facts.updateHost.toLowerCase() === ownerSite && route.every(({ host }) => host === ownerSite);
   const held: Record<HoldReason, boolean> = {
     "name-match": matchedEntries(facts).some((entry) => entryHolds(facts.evidence?.own, entryFacts(facts.evidence, entry))),
     "owner-unread": facts.ownerCreatedAt === undefined,
     "new-account": facts.ownerCreatedAt !== undefined && facts.now.getTime() - facts.ownerCreatedAt.getTime() < NEW_ACCOUNT_MS,
-    "update-host": !GITHUB_HOSTS.includes(facts.updateHost) && facts.updateHost.toLowerCase() !== ownerSite,
+    "update-host": route.some(({ protocol }) => protocol === "http:") || (!GITHUB_HOSTS.includes(facts.updateHost) && !onOwnerSite),
     "issue-no-topic": facts.issueRun && !facts.topics.some((topic) => TOPICS.includes(topic)),
   };
   return HOLD_REASONS.filter((reason) => held[reason]);

@@ -359,6 +359,7 @@ export async function draftEntry(repoUrl: string, options: DraftOptions): Promis
     repo,
     name: read.facts.name,
     updateHost: read.facts.updateHost,
+    updateRoute: read.updateRoute,
     topics: read.topics,
     issueRun: options.issueRun ?? false,
     ownerCreatedAt: await ownerCreatedAt(fetch, repo.split("/")[0]),
