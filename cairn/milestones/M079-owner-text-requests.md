@@ -46,7 +46,7 @@ A plugin's repository owner can ask, through a form linked from the plugin page,
 ## Tasks
 
 - [x] T1: Tests first: add `src/text-request/rules.ts` with the constants and `textProblems`, reusing `cjkShare` and the site's name-repeat check from `src/site/description.ts`.
-- [ ] T2: Add the form and `parseTextRequest`, with the labels in one exported constant as `src/reports/report.ts` keeps them, reading every line under a heading and reading `_No response_` as blank. Test the form file and the parser.
+- [x] T2: Add the form and `parseTextRequest`, with the labels in one exported constant as `src/reports/report.ts` keeps them, reading every line under a heading and reading `_No response_` as blank. Test the form file and the parser.
 - [ ] T3: Add `src/text-request/` and the `pnpm text-request` script for the read and the printed report, through `githubClient`, with recorded responses in tests. Reuse `nameKey`, `categories`, `displayName`, and `gapOf`, reading the checkout's overrides as `src/site/description-gaps.ts` does.
 - [ ] T4: Add `--apply` and `--owner-checked`, with each write run through `pnpm check` in a test.
 - [ ] T5: Add `textChangeHref` beside `reportHref` in `site/src/data.ts`, the Details card link, and the About text from the constants, with site tests. Look at a plugin page at 375 px in the browser pane on the real site (lessons M035, M015, and M021).
