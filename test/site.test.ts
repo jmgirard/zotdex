@@ -720,7 +720,9 @@ describe("the About page", () => {
     ["that it reads no code", "The index reads no code to decide this"],
     ["what yes does not mean", '"Yes" does not mean an open-source license, and it does not mean that the XPI was built from that code'],
     ["that no can be wrong", '"No" can be wrong, because the index does not look inside folders'],
-    ["that the plugin stays listed", "A plugin with no source code stays listed"],
+    ["what does not count", "README, LICENSE, LICENCE, COPYING, NOTICE, CHANGELOG, or CHANGES"],
+    ["that yes can be wrong", '"Yes" can be wrong'],
+    ["that the plugin stays listed", "the lock stays listed"],
   ])("says %s", (_, claim) => {
     const section = /<section class="card" id="source"[\s\S]*?<\/section>/.exec(about())![0];
     expect(unescaped(section).replace(/\s+/g, " ")).toContain(claim);

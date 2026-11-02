@@ -24,7 +24,8 @@ function isSource(given: string): boolean {
 }
 
 // Whether any of a repo's top-level file and folder names can be source code. It reads no
-// code and no folder, so a repo that keeps its code in `build` gives false.
+// code and no folder, so a repo that keeps its code in `build`, with no other name that
+// counts, gives false.
 export function holdsSource(names: string[]): boolean {
   return names.some(isSource);
 }

@@ -64,6 +64,7 @@ Show on the site when a plugin's GitHub repo has no source code at its top level
 - 2026-11-02: T3 done: `NoSourceMark.astro` holds the mark for both pages, the plugin page's Source button reads "Repository" for false, and the site fixture gained one true and one false record.
 - 2026-11-02: T4 done: a new About section with five tested claims, `README.md`, `CHANGELOG.md` with the schema notice, and `cairn/DESIGN.md`.
 - 2026-11-02: T5 done: `pnpm test` and `pnpm check` pass, and the AC6 diff is empty. A live run read all 695 repos in 69 seconds and found 8 with no source, so the limit went from 2 to 3 minutes; a browser look at a fixture build showed the mark, link label, and Details fact with no console error.
+- 2026-11-02: claim audit: about 65 claims read, 12 corrected — README.md, CHANGELOG.md, site/src/pages/about.astro, src/build/source.ts, cairn/DESIGN.md; the workflow time-limit comment also gained the new read; the reader's re-read of the corrections is pending at this checkpoint.
 
 ## Decisions
 

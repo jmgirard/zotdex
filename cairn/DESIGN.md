@@ -430,12 +430,13 @@ exception is a report that is abuse.
   order, and when they are odd, in reverse; the records, the build-level
   list, and the start plan keep id order (D-028). The label and report
   issue read stops at 3 minutes in all, a failed report read under D-013
-  (D-027). After the plugin reads, `readZoteroRelease` in
+  (D-027).
   `src/build/source.ts` (M081) holds `holdsSource`, which decides the fact from
   a repo's top-level names, and `readSourceFacts`, which reads those names in
   GraphQL batches of 40 after the plugin reads, within 3 minutes. A failure
   leaves `sourceInRepo` out and sets `sourceProblem`, which the CLI prints as a
   warning, and it never withholds a deploy (D-052).
+  After the plugin reads, `readZoteroRelease` in
   `src/build/zotero-release.ts` reads the current Zotero release from
   zotero.org with no token and a 30 s limit, and the build writes it as the
   top-level `zoteroRelease`; a failed read leaves the field out, prints one

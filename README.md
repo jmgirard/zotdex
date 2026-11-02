@@ -255,17 +255,22 @@ page shows the fact "Archived on GitHub" with the value "Yes". GitHub makes
 an archived repository read-only until someone with admin access to it
 unarchives it.
 
-The index also lists a plugin whose repository shows no source code. Each day
-the build reads the top-level file and folder names of the repository's default
-branch, in `src/build/source.ts`. It reads no code. A README, license,
-changelog, or notice file, an XPI, an update file, an image, a Markdown or text
-file, a dotfile, and a folder such as `docs` or `dist` do not count as source
-code. Any other name does. If no name counts, the row on the home page and the
-name on the plugin page show a lock, and the link to the repository reads
-"Repository" in place of "Source code" or "Source". The Details card of each
+The index also lists a plugin whose repository shows no source code at its top
+level. Each day the build reads the top-level file and folder names of the
+repository's default branch, for each plugin that it could read, in
+`src/build/source.ts`. It reads no code. These names do not count as source
+code, in any letter case: a name that starts with a dot; README, LICENSE,
+LICENCE, COPYING, NOTICE, CHANGELOG, or CHANGES, with or without one extension;
+a name that ends in `.xpi`, `.md`, `.txt`, `.rdf`, `.png`, `.jpg`, `.jpeg`,
+`.gif`, `.svg`, or `.webp`; `update*.json`; and docs, doc, images, image, img,
+assets, screenshots, dist, build, releases, update, and updates. Any other name
+does. If no name counts, the row on the home page and the name on the plugin page
+show a lock, and the link to the repository reads "Repository" in place of
+"Source code" or "Source". When the read succeeds, the Details card of the plugin
 page shows "Source code at the repository's top level" with "Yes" or "No". "Yes"
-does not mean an open-source license or an XPI built from that code. "No" can be
-wrong, because the index does not look inside folders.
+does not mean an open-source license or an XPI built from that code. "Yes" can be
+wrong, because a name such as `LICENSE-MIT` counts. "No" can be wrong, because the
+index does not look inside folders.
 
 ## Using the data
 
