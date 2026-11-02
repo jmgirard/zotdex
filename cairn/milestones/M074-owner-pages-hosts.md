@@ -64,6 +64,8 @@ The bot no longer holds a pull request whose `update.json` is on the repo owner'
 - 2026-11-02: the reader's re-read found the corrected comment true; GitHub's Pages docs, read this session, say a project site is at `<owner>.github.io/<repositoryname>` and that a push to the source branch publishes it, so a person who can push can publish. The reader also changed `GITHUB_HOSTS`' comment to "fixed hosts".
 - 2026-11-02: open concern for review: the hold reads the host of the declared `update_url`, while `checkUpdateJson` follows redirects, so a `<owner>.github.io` URL that redirects to another domain gets no hold; github.com URLs have the same gap, and the plan does not cover it.
 - 2026-11-02: correction of the re-read line above: the implementing session made the `GITHUB_HOSTS` comment change that the reader proposed; the reader edited nothing.
+- 2026-11-02: step-7 approval: m074-owner-pages-hosts approved for merge
+- 2026-11-02: user override at the merge question: after the merge, release #473, #468, #510, and #753 by Scope's steps; #142 stays held for the maintainer, since its update file redirects to `forrt.org`.
 
 ## Decisions
 
