@@ -2,6 +2,7 @@
 import { PAGE_SIZE, prePaintStyle } from "../../../src/site/home-filter.ts";
 import { majorSupport, ZOTERO_MAJORS } from "../../../src/site/version.ts";
 import Icon from "../components/Icon.astro";
+import NoSourceMark from "../components/NoSourceMark.astro";
 import Base from "../layouts/Base.astro";
 import {
   categoryOptions,
@@ -145,6 +146,7 @@ const prePaint = `if ("noModule" in HTMLScriptElement.prototype) {
                 <th scope="row" class="name">
                   <a href={pluginHref(record.id)} data-name>{name}</a>
                   {upstream?.archived === true && <span class="badge" data-archived>Archived</span>}
+                  {upstream?.sourceInRepo === false && <NoSourceMark />}
                   {owner && <div class="owner" data-owner>By {owner}</div>}
                   {description && <div class="desc" data-description>{description}</div>}
                 </th>
@@ -189,7 +191,12 @@ const prePaint = `if ("noModule" in HTMLScriptElement.prototype) {
                 <td class="date">{upstream && <time datetime={monthYear(upstream.latestReleaseDate)}>{monthYear(upstream.latestReleaseDate)}</time>}</td>
                 <td class="links">
                   {sourceHref && (
-                    <a href={sourceHref} data-link="source" title="Source code" aria-label={`Source code of ${name}`}>
+                    <a
+                      href={sourceHref}
+                      data-link="source"
+                      title={upstream?.sourceInRepo === false ? "Repository" : "Source code"}
+                      aria-label={upstream?.sourceInRepo === false ? `Repository of ${name}` : `Source code of ${name}`}
+                    >
                       <Icon name="source" />
                     </a>
                   )}
