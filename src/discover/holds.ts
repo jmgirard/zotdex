@@ -12,6 +12,16 @@ export type Source = (typeof SOURCES)[number];
 export const HOLD_REASONS = ["name-match", "owner-unread", "new-account", "update-host", "issue-no-topic"] as const;
 export type HoldReason = (typeof HOLD_REASONS)[number];
 
+// A lowercase owner/repo, as the bot keys repos.
+export const REPO = /^[a-z0-9_.-]+\/[a-z0-9_.-]+$/;
+// A day as YYYY-MM-DD.
+export const DAY = /^\d{4}-\d{2}-\d{2}$/;
+// The most matched entries that a hold's details name, and the most characters of a name
+// and of an update host there.
+export const MATCHES_MAX = 5;
+export const NAME_MAX = 100;
+export const HOST_MAX = 300;
+
 const API = "https://api.github.com";
 // An owner account younger than this holds the pull request.
 const NEW_ACCOUNT_MS = 30 * 24 * 60 * 60 * 1000;
@@ -48,23 +58,60 @@ export interface HoldFacts {
   indexed: IndexedName[];
 }
 
-export function holdReasons(facts: HoldFacts): HoldReason[] {
-  const [owner, repoPart] = facts.repo.split("/");
-  const nameKeyOf = facts.name === undefined ? "" : nameKey(facts.name);
+// The index entries of other owners whose name or repo part matches the new repo's.
+function matchedEntries({ repo, name, indexed }: Pick<HoldFacts, "repo" | "name" | "indexed">): IndexedName[] {
+  const [owner, repoPart] = repo.split("/");
+  const nameKeyOf = name === undefined ? "" : nameKey(name);
   const repoKey = nameKey(repoPart);
-  const matches = facts.indexed.some(
+  return indexed.filter(
     (entry) =>
       entry.owner.toLowerCase() !== owner.toLowerCase() &&
       ((nameKeyOf !== "" && entry.name !== undefined && nameKey(entry.name) === nameKeyOf) || (repoKey !== "" && nameKey(entry.repoPart) === repoKey)),
   );
+}
+
+export function holdReasons(facts: HoldFacts): HoldReason[] {
   const held: Record<HoldReason, boolean> = {
-    "name-match": matches,
+    "name-match": matchedEntries(facts).length > 0,
     "owner-unread": facts.ownerCreatedAt === undefined,
     "new-account": facts.ownerCreatedAt !== undefined && facts.now.getTime() - facts.ownerCreatedAt.getTime() < NEW_ACCOUNT_MS,
     "update-host": !GITHUB_HOSTS.includes(facts.updateHost),
     "issue-no-topic": facts.issueRun && !facts.topics.some((topic) => TOPICS.includes(topic)),
   };
   return HOLD_REASONS.filter((reason) => held[reason]);
+}
+
+// The facts behind a pull request's hold reasons, for the maintainer. `matches` is there
+// for `name-match` and `updateHost` for `update-host`. `ownerCreatedOn` is the owner's
+// account creation day, there for any reason, since it also helps to judge a name match.
+export interface HoldDetails {
+  matches?: { repo: string; name?: string }[];
+  // How many more entries matched than `matches` names.
+  moreMatches?: number;
+  updateHost?: string;
+  ownerCreatedOn?: string;
+}
+
+const cut = (text: string, max: number) => [...text].slice(0, max).join("");
+
+// The details of `reasons`, within the limits of the handoff schema, or undefined for no
+// reason. A matched entry whose repo the schema refuses counts in `moreMatches`, so one odd
+// entry in the index cannot refuse a whole handoff.
+export function holdDetails(facts: Pick<HoldFacts, "repo" | "name" | "updateHost" | "ownerCreatedAt" | "indexed">, reasons: readonly HoldReason[]): HoldDetails | undefined {
+  if (reasons.length === 0) return undefined;
+  const details: HoldDetails = {};
+  if (reasons.includes("name-match")) {
+    const matched = matchedEntries(facts);
+    details.matches = matched
+      .map(({ owner, repoPart, name }) => ({ repo: `${owner}/${repoPart}`.toLowerCase(), ...(name?.trim() && { name: cut(name, NAME_MAX) }) }))
+      .filter(({ repo }) => REPO.test(repo))
+      .slice(0, MATCHES_MAX);
+    if (matched.length > details.matches.length) details.moreMatches = matched.length - details.matches.length;
+  }
+  if (reasons.includes("update-host")) details.updateHost = cut(facts.updateHost, HOST_MAX);
+  const createdOn = facts.ownerCreatedAt?.toISOString().slice(0, 10);
+  if (createdOn !== undefined && DAY.test(createdOn)) details.ownerCreatedOn = createdOn;
+  return details;
 }
 
 // The owner's account creation time from `GET /users/<owner>`, or undefined when the read

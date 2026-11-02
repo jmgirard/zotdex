@@ -1,13 +1,13 @@
 # M073: Show hold details in bot pull requests
 
-- **Status:** planned
+- **Status:** in-progress
 - **Priority:** normal
 - **Depends on:** —
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** internal — text that the maintainer reads in bot pull requests and a command the maintainer runs; the data and the site do not change
-- **Branch/PR:** —
+- **Branch/PR:** m073-hold-details
 
 ## Goal
 
@@ -50,7 +50,7 @@ A held bot pull request's body names the facts behind its hold reasons, when the
 
 ## Tasks
 
-- [ ] T1: In `src/discover/holds.ts:53`, let one function decide the matches for both `holdReasons` and the details, so the two cannot disagree. Cut a matched name to 100 characters, list at most 5 entries, and keep the count of the others. Add the `test/holds.test.ts` cases.
+- [x] T1: In `src/discover/holds.ts:53`, let one function decide the matches for both `holdReasons` and the details, so the two cannot disagree. Cut a matched name to 100 characters, list at most 5 entries, and keep the count of the others. Add the `test/holds.test.ts` cases.
 - [ ] T2: Add the optional details to `PlannedEntry` and `entrySchema` (`src/discover/handoff.ts:27`, `:60`) and to `planned()`, `Drafted`, and the written `ReadItem` (`src/discover/discover.ts:100`, `:291`). Add the `test/handoff.test.ts` refusals.
 - [ ] T3: In `body()` (`src/discover/propose.ts:540`), write the detail lines through `code()`, with each repo as a link to `https://github.com/<owner>/<repo>`. Add the `test/propose.test.ts` cases and the `test/merge.test.ts` skip. Extend the body-length test to the longest details the schema allows.
 - [ ] T4: Add `src/discover/refresh-holds.ts`, `src/discover/refresh-holds-cli.ts`, and the `package.json` script, in the shape of `merge.ts` and `merge-cli.ts`. Read each entry's `meta.json` at the head SHA, the index with `indexed()`, and the account date with `ownerCreatedAt`. Share the detail lines with `body()`. If a `name-match` matches nothing now, say so in its line. Add `test/refresh-holds.test.ts`.
@@ -71,6 +71,7 @@ A held bot pull request's body names the facts behind its hold reasons, when the
 - 2026-11-02: lessons used: 2026-10-25 (M001), 2026-10-26 (M010), 2026-10-26 (M018), 2026-10-28 (M036).
 - 2026-11-02: criteria audit (reduced, fresh Opus reader): 5 findings, all fixed: AC1 now allows an entry with no name; AC2's date sentence is scoped to `body()`, and AC4 now says what a failed read does in a refresh, so a refresh cannot overwrite a good date; AC4 names a second-page case and a head-branch skip; AC7 now says "gains one entry", since `## Unreleased` already holds entries. No proportionality or instrument finding.
 - 2026-11-02: audit note answered: the `--apply` run after the merge has no criterion, since review ticks criteria before the merge; it stays in Scope, as M071's after-merge steps did, and the close block gives the count.
+- 2026-11-02: T1 done: `matchedEntries` now decides both the `name-match` reason and `holdDetails`; a matched entry whose repo the handoff would refuse counts in `moreMatches`, so one odd entry cannot refuse a whole handoff; verify clean.
 
 ## Decisions
 
