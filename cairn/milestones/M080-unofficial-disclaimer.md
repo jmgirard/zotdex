@@ -1,6 +1,6 @@
 # M080: Say the index is unofficial and cannot vet plugins
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** normal
 - **Depends on:** —
 - **Driving RR:** —
@@ -58,6 +58,7 @@ Each page of the site and the README say that the index is unofficial, not affil
 - 2026-11-02: question set: start one Build data run by hand after the merge — yes, allowed once, as `gh workflow run build.yml --ref main`.
 - 2026-11-02: plan chose one sentence in one constant over separate lines for the two facts, because the user asked for one disclaimer; falsified by the sentence reading too long at 375 px.
 - 2026-11-02: T1, T2, T3: added `DISCLAIMER`, the footer line, the home intro, the About text, tests, and docs; `pnpm test` 2088 passed, 6 skipped; `pnpm check` 0 problems; the pane on the real site at 375 and 1280 px showed the line on three pages with `scrollWidth` equal to `clientWidth` in 6 cases, a planted block read 900, words broke only at spaces, and no console errors. Left the simple-english hook's sentence-length hits on the quoted disclaimer in README and CHANGELOG, since a quote stays as it is.
+- 2026-11-02: claim audit: 25 claims read, 0 corrected — site/src/data.ts, site/src/pages/index.astro, site/src/pages/about.astro, README.md, CHANGELOG.md, test/site.test.ts. Whether Zotero endorses the index is the maintainer's own fact, which the reader could not check. It noted the older About title "How the index checks plugins" as worth a look.
 
 ## Decisions
 

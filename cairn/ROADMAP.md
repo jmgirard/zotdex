@@ -7,7 +7,7 @@ _Last hygiene check: 2026-11-02 (M079 archived; new parked row "Tighten the text
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M080 | Say the index is unofficial and cannot vet plugins | in-progress | — | normal | milestones/M080-unofficial-disclaimer.md |
+| M080 | Say the index is unofficial and cannot vet plugins | review | — | normal | milestones/M080-unofficial-disclaimer.md |
 | M079 | Let owners request name and description changes | done | — | normal | milestones/archive/M079-owner-text-requests.md |
 | M078 | Add a dark mode toggle to the site | done | — | normal | milestones/archive/M078-dark-mode-toggle.md |
 | M077 | Hold update files that leave owner sites | done | — | normal | milestones/archive/M077-update-files-leaving-sites.md |
