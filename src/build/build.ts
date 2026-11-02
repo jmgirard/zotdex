@@ -118,8 +118,8 @@ export const REPORTS_LIMIT_MS = 3 * 60 * 1000;
 
 // `startedAt` is a performance.now() time. Its default, 0, is when the process started.
 // `reportsMs` bounds the label read and every page of the report issues together, `releaseMs`
-// the read of the current Zotero release and each changelog read, and `sourceMs` every request
-// of the source read.
+// the read of the current Zotero release and each changelog read, and `sourceMs` all the requests
+// of the source read together.
 export interface TimeLimits {
   readMs?: number;
   reportsMs?: number;

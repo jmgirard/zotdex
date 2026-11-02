@@ -19,7 +19,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     # The time limits in src/build/build.ts end the report issue read at 3
-    # minutes and start no plugin read after 18 minutes, the top-level name read
+    # minutes and start no plugin read after 18 minutes, a read that started
+    # by then takes at most 3 minutes more, the top-level name read
     # after the plugin reads takes at most 3 minutes, the Zotero release
     # and changelog reads after it run at the same time and take
     # at most 30 seconds, and `pnpm

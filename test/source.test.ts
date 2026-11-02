@@ -28,6 +28,7 @@ describe("holdsSource", () => {
     ["a source folder", ["README.md", "src"]],
     ["a JSON file that is not an update file", ["README.md", "package.json"]],
     ["a name that only starts with a folder's name", ["docs-site"]],
+    ["a name that only starts with a license stem", ["LICENSE-MIT"]],
     ["a repo with source", [".eslintrc.json", ".github", ".gitignore", "README.md", "bootstrap.ts", "client", "esbuild.js", "gen", "images", "lib.ts", "package-lock.json", "package.json", "schema", "tsconfig.json"]],
   ])("source: %s", (_, names) => {
     expect(holdsSource(names)).toBe(true);
@@ -52,6 +53,19 @@ describe("readSourceFacts", () => {
     const { facts, problem } = await readSourceFacts(fetch, urls);
     expect(facts.size).toBe(40);
     expect(problem).toBe("1 of 41 repos stay unread: POST https://api.github.com/graphql returned HTTP 502");
+  });
+
+  test("asks once for a repo that two entries name", async () => {
+    const { fetch, requests } = fixtureFetch({ [GRAPHQL]: page(1) });
+    const { facts, problem } = await readSourceFacts(fetch, [urls[0]!, urls[0]!]);
+    expect(requests).toHaveLength(1);
+    expect(facts.size).toBe(1);
+    expect(problem).toBeUndefined();
+  });
+
+  test("names GitHub's message when an answer leaves a repo out", async () => {
+    const { fetch } = fixtureFetch({ [GRAPHQL]: { json: { data: { r0: { object: { entries: [{ name: "src" }] } }, r1: null }, errors: [{ message: "Could not resolve to a Repository" }] } } });
+    expect((await readSourceFacts(fetch, urls.slice(0, 2))).problem).toBe("GitHub gave no top-level names for 1 of 2 repos: Could not resolve to a Repository");
   });
 
   test("sends no request for no repos", async () => {

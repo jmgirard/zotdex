@@ -132,11 +132,11 @@ function fact(html: string, name: string): string | undefined {
 const page = (id: string) => readFileSync(join(out, "plugins", id, "index.html"), "utf8");
 const home = () => readFileSync(join(out, "index.html"), "utf8");
 const records = (fixture as unknown as PluginsFile).plugins;
-// GitHub's longest owner length, with no hyphen to break at.
 const NO_SOURCE_TEXT = "No source code at the top level of the repository";
 const LOCK_SVG =
   '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 11h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2z"></path><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
-const noSourceMark = (icon: string) => `<span class="no-source" data-no-source title="${NO_SOURCE_TEXT}">${icon}<span class="visually-hidden">${NO_SOURCE_TEXT}</span></span>`;
+const noSourceMark = (icon: string) => `<span class="no-source" data-no-source><span aria-hidden="true" title="${NO_SOURCE_TEXT}">${icon}</span><span class="visually-hidden">${NO_SOURCE_TEXT}</span></span>`;
+// GitHub's longest owner length, with no hyphen to break at.
 const LONG_OWNER = "abcdefghijklmnopqrstuvwxyzabcdefghijklm";
 // The failure records whose repo URL each break one part of the repo line's URL form, in
 // home table order.
@@ -925,7 +925,7 @@ describe("the home page", () => {
     expect(row(id).cells[0]!.html).toBe(
       `<a href="${escaped(pluginHref(id))}" data-name>${escaped(displayName(record))}</a>` +
         (record.upstream?.archived === true ? '<span class="badge" data-archived>Archived</span>' : "") +
-        (record.upstream?.sourceInRepo === false ? noSourceMark(LOCK_SVG) : "") +
+        (record.upstream?.sourceInRepo === false ? ` ${noSourceMark(LOCK_SVG)}` : "") +
         (owner ? `<div class="owner" data-owner>By ${escaped(owner)}</div>` : "") +
         (description ? `<div class="desc" data-description>${escaped(description)}</div>` : ""),
     );
@@ -1100,6 +1100,7 @@ describe("the home page", () => {
       '<span class="mark" data-support="some" aria-hidden="true">◐</span> Declares part of it',
       '<span class="mark" data-support="none" aria-hidden="true">–</span> Declares none of it',
       "No mark: the plugin declares no range",
+      `${LOCK_SVG} ${NO_SOURCE_TEXT}`,
       '<span class="start" data-start="started" aria-hidden="true">●</span> Started in the start test',
       '<span class="start" data-start="start-error" aria-hidden="true">✕</span> Failed to install, start, or answer in the start test',
       "A declared range comes from the plugin's manifest and the index's overrides, not from a test. A start test does not show that a plugin works.",

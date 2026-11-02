@@ -100,8 +100,8 @@ the system's scheme clears the saved choice, so the page follows the system
 again. Without JavaScript the button stays hidden and the system setting
 alone sets the scheme (M078).
 A plugin page has one column (M054). It opens with an "All plugins" link
-home, the name with an "Archived" badge for an archived repository, a
-repo line, the description, and links with icons. For a repo URL of the
+home, the name with an "Archived" badge for an archived repository and a
+lock for a repo with no source at its top level (M081), a repo line, the description, and links with icons. For a repo URL of the
 form `https://github.com/<owner>/<repo>` (`githubRepo`), the repo line
 reads "By <owner> · <repo>": the owner links to the owner's GitHub page
 and the repo name to the repository (M061, M065). It adds the
@@ -114,7 +114,8 @@ whose record has a category shows "Index categories", a link to the About
 page's Categories section, and each category's name as a link to the home
 page filtered by it, in `CATEGORIES` order (M066). The links are: the
 `.xpi` file (`upstream.xpiUrl`, only when it passes `safeHref`, in the
-same plain button style as the others, D-029), the source, and the
+same plain button style as the others, D-029), the source ("Repository" for a
+record with `sourceInRepo: false`, M081), and the
 releases; a repo URL that fails `safeHref` shows as plain text. A
 "Zotero compatibility" card follows. For a read record it names the
 version read and holds one table row per major,
@@ -130,8 +131,8 @@ fact (M024, M033), with each override beside the upstream value it
 corrects under an h3 (M007, M015, M054). The About page
 (`site/src/pages/about.astro`) holds the method notes: the declared range
 and its marks, the start test, which reports count, and how overrides and
-the Used column work (M054), and the categories, each with its `about`
-text (M066). The home table marks an archived plugin with
+the Used column work (M054), the categories, each with its `about`
+text (M066), and what the source fact means (M081). The home table marks an archived plugin with
 "Archived" after its name (M053), and the data carries the same `archived`
 fact (M013). A home row and a plugin page show a lock for a record with
 `sourceInRepo: false`, the fact that the top level of the repo's default branch
@@ -416,7 +417,8 @@ exception is a report that is abuse.
   as README "Building the data" defines it, and also when every record carries a
   failure, whatever its name, and, after writing the data, when it cannot
   write the `--plan` file (M047). It prints a summary of failure
-  names and a `::warning::` line for build-level failures. Before any plugin
+  names and a `::warning::` line for build-level failures, and a `::warning::`
+  line for a failed read of top-level names (M081). Before any plugin
   read it reads the `report` label and the closed report issues of
   `GITHUB_REPOSITORY`, or of `INDEX_REPO`, and writes `reports` on each
   record that has `upstream`; a failed label or issue read, or a listed
@@ -482,8 +484,8 @@ exception is a report that is abuse.
   `site/src/data.ts` holds the template helpers, among them `homeOrder`,
   `majorStart`, `shortLanguages`, and `monthYear` for the home table, and
   `compatMajors`, `majorReport`, and `startWords` for the plugin page's
-  table (M054). `site/src/components/Icon.astro` draws the line icons and
-  the star, which `Base.astro` fills only inside `[data-repo-stars]` (M064).
+  table (M054). `site/src/components/Icon.astro` draws the line icons, the lock
+  (M081), and the star, which `Base.astro` fills only inside `[data-repo-stars]` (M064).
   `site/src/layouts/Base.astro` holds the color and size tokens for both
   color schemes, the shared rules, the top bar, and the footer. Added M007;
   pills and descriptions M015; languages M024; version buttons M037; status

@@ -30,7 +30,7 @@ export function holdsSource(names: string[]): boolean {
   return names.some(isSource);
 }
 
-type SourceAnswer = { data?: Record<string, { object?: { entries?: { name?: unknown }[] } | null } | null> | null } | null;
+type SourceAnswer = { data?: Record<string, { object?: { entries?: { name?: unknown }[] } | null } | null> | null; errors?: { message?: unknown }[] } | null;
 
 // Whether each repo's default branch holds source at its top level, by repo URL, read in
 // batches so that all of them cost a few requests. A repo with no answer is left out, and
@@ -40,6 +40,7 @@ export async function readSourceFacts(fetch: Fetch, repoUrls: string[], ms = SOU
   const unique = [...new Set(repoUrls)];
   const facts = new Map<string, boolean>();
   const unread = () => unique.length - facts.size;
+  let said: string | undefined;
   try {
     await withinLimit(ms, async (signal) => {
       const github = githubClient(boundFetch(fetch, signal));
@@ -54,8 +55,12 @@ export async function readSourceFacts(fetch: Fetch, repoUrls: string[], ms = SOU
         });
         const declared = batch.map((_, i) => `$o${i}: String!, $n${i}: String!`).join(", ");
         const answer = (await github.post(GRAPHQL, { query: `query(${declared}) { ${fields.join(" ")} }`, variables })) as SourceAnswer;
+        // GraphQL answers a rate limit with status 200, an `errors` list, and no data.
+        const messages = (Array.isArray(answer?.errors) ? answer.errors : []).map((error) => error?.message).filter((message) => typeof message === "string");
+        said ??= messages[0];
+        if (!answer?.data) throw new Error(`the answer has no data${said ? `: ${said}` : ""}`);
         for (const [i, url] of batch.entries()) {
-          const entries = answer?.data?.[`r${i}`]?.object?.entries;
+          const entries = answer.data[`r${i}`]?.object?.entries;
           if (!Array.isArray(entries)) continue;
           const names = entries.map((entry) => entry?.name);
           if (names.every((name): name is string => typeof name === "string")) facts.set(url, holdsSource(names));
@@ -65,5 +70,5 @@ export async function readSourceFacts(fetch: Fetch, repoUrls: string[], ms = SOU
   } catch (error) {
     return { facts, problem: `${unread()} of ${unique.length} repos stay unread: ${(error as Error).message}` };
   }
-  return unread() > 0 ? { facts, problem: `GitHub gave no top-level names for ${unread()} of ${unique.length} repos` } : { facts };
+  return unread() > 0 ? { facts, problem: `GitHub gave no top-level names for ${unread()} of ${unique.length} repos${said ? `: ${said}` : ""}` } : { facts };
 }

@@ -146,7 +146,14 @@ const prePaint = `if ("noModule" in HTMLScriptElement.prototype) {
                 <th scope="row" class="name">
                   <a href={pluginHref(record.id)} data-name>{name}</a>
                   {upstream?.archived === true && <span class="badge" data-archived>Archived</span>}
-                  {upstream?.sourceInRepo === false && <NoSourceMark />}
+                  {
+                    upstream?.sourceInRepo === false && (
+                      <>
+                        {" "}
+                        <NoSourceMark />
+                      </>
+                    )
+                  }
                   {owner && <div class="owner" data-owner>By {owner}</div>}
                   {description && <div class="desc" data-description>{description}</div>}
                 </th>
@@ -228,6 +235,7 @@ const prePaint = `if ("noModule" in HTMLScriptElement.prototype) {
     <li><span class="mark" data-support="some" aria-hidden="true">{MARKS.some}</span> Declares part of it</li>
     <li><span class="mark" data-support="none" aria-hidden="true">{MARKS.none}</span> Declares none of it</li>
     <li>No mark: the plugin declares no range</li>
+    <li><Icon name="lock" /> No source code at the top level of the repository</li>
     <li><span class="start" data-start="started" aria-hidden="true">●</span> Started in the start test</li>
     <li><span class="start" data-start="start-error" aria-hidden="true">✕</span> Failed to install, start, or answer in the start test</li>
     <li data-legend-note>

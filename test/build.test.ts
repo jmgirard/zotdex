@@ -57,10 +57,10 @@ const NEWER_9_PAGE = [intro("9"), heading("9.0.7", "November 2, 2026"), heading(
 const NEW_MAJOR_WARNING =
   "Zotero 11.0.0 is the current release, but the last Zotero version in ZOTERO_MAJORS in src/site/version.ts is 10; add 11 to ZOTERO_MAJORS and the last release of 10 to LAST_RELEASES";
 
-// The recorded responses for every repo in TREE.
 const SOURCE_READ = "POST https://api.github.com/graphql";
 const topLevel = (...names: string[]) => ({ object: { entries: names.map((name) => ({ name })) } });
 
+// The recorded responses for every repo in TREE.
 function responses(): Responses {
   return {
     ...loadFixture(resolve(ROOT, "test/fixtures/build/responses.json")).responses,
@@ -1099,7 +1099,8 @@ describe("buildData", () => {
       ["a 403", { status: 403, json: { message: "rate limit" } }, "returned HTTP 403: rate limit"],
       ["a 500", { status: 500, text: "Internal Server Error" }, "returned HTTP 500"],
       ["a body that is not JSON", { text: "<html>" }, "returned a body that is not JSON"],
-      ["null data", { json: { data: null } }, "GitHub gave no top-level names for 2 of 2 repos"],
+      ["null data", { json: { data: null } }, "the answer has no data"],
+      ["a rate limit that GraphQL reports with status 200", { json: { data: null, errors: [{ message: "API rate limit exceeded" }] } }, "the answer has no data: API rate limit exceeded"],
       ["a null tree", { json: { data: { r0: { object: null }, r1: { object: null } } } }, "GitHub gave no top-level names for 2 of 2 repos"],
       ["an answer that passes the limit", { stall: "headers" }, "the read passed its time limit of 1000 ms"],
       ["a body that passes the limit", { stall: "body" }, "the read passed its time limit of 1000 ms"],
@@ -1231,6 +1232,11 @@ describe("checkOutput", () => {
   test("reports a record whose prerelease value is not a boolean", () => {
     const problems = checkOutput(file({ ...base, upstream: { ...facts, prerelease: "true" } }));
     expect(problems.some((problem) => problem.startsWith("/plugins/0/upstream/prerelease "))).toBe(true);
+  });
+
+  test("reports a record whose sourceInRepo value is not a boolean", () => {
+    const problems = checkOutput(file({ ...base, upstream: { ...facts, sourceInRepo: "false" } }));
+    expect(problems.some((problem) => problem.startsWith("/plugins/0/upstream/sourceInRepo "))).toBe(true);
   });
 });
 
