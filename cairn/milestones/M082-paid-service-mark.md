@@ -124,3 +124,5 @@ spawned: diff-bug, blame-history, prior-review, ripple
 - fresh reader of T4 #3: Equalang's selection translation may be free — reject, false: document translation is the main use, and its pricing page lists no free plan.
 - fresh reader of T4 #4 and #5: two no-mark reasons are loosely worded — reject, style: the verdicts hold.
 - claim audit: its intro finding and its four notes are recorded in the work log.
+- Every fix-now line above: fixed `cc7b6cb`. Recheck at that commit: `pnpm test` exits 0 with 2173 passed and 6 skipped, `pnpm check` reports 695 entries and 0 problems, and `cairn_validate.py` exits 0. AC3 and AC4 stay pinned by the exact tests, and the fact's test now pins the new link text. The fixes changed no `plugins/` file, so AC6's and AC7's script results stand.
+- Findings: 34, with 15 fixed, 19 rejected, 0 sent to a follow-up. Substantive amendments: 0. Changed snapshot files: 0. No PR is open, so no PR conversation was read.
