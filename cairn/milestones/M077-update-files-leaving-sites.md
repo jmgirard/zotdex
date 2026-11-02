@@ -93,32 +93,32 @@ The bot holds a pull request whose update file leaves the repo owner's `<owner>.
 - Consistency gate: `cairn_validate` passes, with 1 advisory (8 criteria, recorded in the work log); no principle changed, so no impact report; the profile's slot names no toolchain checks.
 - spawned: diff-bug, blame-history, prior-review, ripple
 - diff-bug #1: `pnpm refresh-holds` can remove the only fact that explains a hold when a redirect goes away — follow-up, row "Tighten the refresh-holds update read", parked, promote when a user reports it, since only the maintainer runs this command by hand.
-- diff-bug #2: `readUpdateRoute` has no limit on the whole read, so a stalled host costs up to 12 minutes per pull request — fix now, 60-second limit per pull request.
+- diff-bug #2: `readUpdateRoute` has no limit on the whole read, so a stalled host costs up to 12 minutes per pull request — fixed f8f2869: fix now, 60-second limit per pull request.
 - diff-bug #3: an outside host's failure blocks the other lines of a combined hold — reject, planned change: the plan gate chose this read and named what would prove it wrong, and README states it.
 - diff-bug #4: a push during the new wait goes unnoticed, since the read before the PATCH does not compare the head — follow-up, row "Tighten the refresh-holds update read", parked; the gap predates this branch.
 - diff-bug #5: open pull requests marked `Hold: none` get neither rule — follow-up, row "Close gaps in bot holds and merges", item (8), low; a read of all 61 open bot pull requests on 2026-11-02 found only #142 leaving an owner site and no `http:` address, and #142 is held. README now says that a pull request drafted earlier keeps its Hold line.
-- diff-bug #6: DESIGN's architecture text omits the new read — fix now.
+- diff-bug #6: DESIGN's architecture text omits the new read — fixed f8f2869: fix now.
 - diff-bug #7: an empty route passes the owner-site test — reject, false: no caller gives `holdReasons` an empty route, since a successful read always holds its first URL, and `refreshHolds` passes `[]` only to `holdDetails`.
 - diff-bug #8: repeats are removed before hosts are cut, so two long hosts could print alike — reject, false: `refusal` looks a host up before it enters the route, and a name over 253 characters fails that lookup.
-- diff-bug #9: the CHANGELOG entry is out of order — fix now.
+- diff-bug #9: the CHANGELOG entry is out of order — fixed f8f2869: fix now.
 - diff-bug #10: test rows that run one code path, in AC1, AC2, AC3, and AC5 — reject, planned change: the criteria name each row, after the criteria audit asked for them.
-- diff-bug #11: `test/upstream.test.ts` repeats a route check, a backtick host adds nothing in `test/propose.test.ts`, and two comments restate code — fix now for the first two; reject the comments, style, as they match each file's helper comments.
+- diff-bug #11: `test/upstream.test.ts` repeats a route check, a backtick host adds nothing in `test/propose.test.ts`, and two comments restate code — fixed f8f2869: fix now for the first two; reject the comments, style, as they match each file's helper comments.
 - blame-history #1: same as diff-bug #5 — follow-up, as there.
-- blame-history #2: `pnpm refresh-holds` reads again, against D-047's "The read happens once, at the draft" — fix now, D-048 and README wording.
+- blame-history #2: `pnpm refresh-holds` reads again, against D-047's "The read happens once, at the draft" — fixed f8f2869: fix now, D-048 and README wording.
 - blame-history #3: README's "A failed read of these" contradicts the account read's failure — reject, false: "these" names the `name-match` reads of the sentence before it.
 - blame-history #4: `pnpm refresh-holds` now requests third-party hosts from the maintainer's machine — reject, planned change: the plan called for it, and README and DESIGN state it. It sends no GitHub token there.
 - blame-history #5: `HOLD_TEXT` is hard to parse — reject, style: it lists three alternatives with "or", and each is true of the code.
 - blame-history #6: `handoff.ts` imports `MAX_REDIRECTS` from the reader — reject, style: `holds.ts`, which `handoff.ts` imports, already imports the reader.
-- prior-review #1: the new read adds network time to a run with no whole-run limit — fix now through diff-bug #2's limit per pull request; the whole-run limit stays dropped by D-046.
+- prior-review #1: the new read adds network time to a run with no whole-run limit — fixed f8f2869: fix now through diff-bug #2's limit per pull request; the whole-run limit stays dropped by D-046.
 - prior-review #2: after a 429 from an update host, the loop still requests other update hosts — reject, false: M075's stop guards one shared GitHub budget, and each update host here is another party.
-- ripple #1: CHANGELOG's M074 entry says that an owner-site host gets no hold — fix now.
+- ripple #1: CHANGELOG's M074 entry says that an owner-site host gets no hold — fixed f8f2869: fix now.
 - ripple #2: README's list of what `pnpm refresh-holds` reads reads as complete — reject, false: the next sentences add to it with "also".
 - ripple #3: the candidate row describes the old gap — reject, planned change: post-merge hygiene removes the row.
 - ripple #4: CHANGELOG's M073 entry names only "the host of an `update-host`" — reject, false: it stays true, and the new entry adds the other facts.
-- ripple #5: DESIGN says `readUpstream` returns the facts and topics alone — fix now.
+- ripple #5: DESIGN says `readUpstream` returns the facts and topics alone — fixed f8f2869: fix now.
 - ripple #6: README's "First update your checkout" now follows the route text — reject, style: it still names the match lines.
-- ripple #7: README's "does not check the redirects" can be read against the reader's host check — fix now, "This hold does not test".
-- ripple #8: README's "it reads the file once" — fix now, with blame-history #2.
-- ripple #9: no doc says that open pull requests are not judged again — fix now in README.
+- ripple #7: README's "does not check the redirects" can be read against the reader's host check — fixed f8f2869: fix now, "This hold does not test".
+- ripple #8: README's "it reads the file once" — fixed f8f2869: fix now, with blame-history #2.
+- ripple #9: no doc says that open pull requests are not judged again — fixed f8f2869: fix now in README.
 - AC8 evidence after the fixes: `pnpm test` 1968 passed, 6 skipped; `pnpm check` 671 entries, 0 problems; `cairn_validate` passes.
 - snapshot files changed: none. Open-PR cap: 0 of your open PRs against a feature cap of 1. No open PR, so no conversation read.
