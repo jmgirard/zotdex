@@ -1,5 +1,7 @@
 ---
+import { applySavedTheme, wireThemeButton } from "../../../src/site/theme.ts";
 import { BASE } from "../base.ts";
+import Icon from "../components/Icon.astro";
 import { ADD_PLUGIN_HREF, day, loadData } from "../data.ts";
 
 interface Props {
@@ -7,6 +9,9 @@ interface Props {
 }
 const { title } = Astro.props;
 const { generatedAt } = loadData();
+
+const themeHead = `(${applySavedTheme})();`;
+const themeButton = `(${wireThemeButton})();`;
 ---
 
 <!doctype html>
@@ -15,6 +20,7 @@ const { generatedAt } = loadData();
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
+    <script is:inline set:html={themeHead} />
     <style is:global>
       :root {
         color-scheme: light dark;
@@ -65,8 +71,10 @@ const { generatedAt } = loadData();
         --card-border: var(--line);
         --card-padding: var(--space-6) var(--space-8);
       }
+      /* The next two blocks hold the same dark colors: a page with no saved scheme follows the
+         system, and the top bar's button sets data-theme for a saved one. */
       @media (prefers-color-scheme: dark) {
-        :root {
+        :root:not([data-theme="light"]) {
           --bg: #161615;
           --surface: #1e1e1c;
           --hover: #262624;
@@ -86,6 +94,30 @@ const { generatedAt } = loadData();
           --none: #74746d;
           --star: #e3b341;
         }
+      }
+      :root[data-theme="dark"] {
+        color-scheme: dark;
+        --bg: #161615;
+        --surface: #1e1e1c;
+        --hover: #262624;
+        --text: #ecece8;
+        --muted: #a3a39c;
+        --faint: #6e6e68;
+        --line: #2e2e2b;
+        --line-strong: #3d3d39;
+        --accent: #f07178;
+        --link: #7fb0ff;
+        --ok: #6fd08c;
+        --ok-bg: #173322;
+        --part: #f0c060;
+        --part-bg: #3a2e12;
+        --bad: #ff8a80;
+        --bad-bg: #3d1a17;
+        --none: #74746d;
+        --star: #e3b341;
+      }
+      :root[data-theme="light"] {
+        color-scheme: light;
       }
       * {
         box-sizing: border-box;
@@ -162,6 +194,7 @@ const { generatedAt } = loadData();
       }
       .topbar nav {
         display: flex;
+        align-items: center;
         gap: var(--space-10);
         margin-left: auto;
         font-size: var(--text-m);
@@ -175,6 +208,34 @@ const { generatedAt } = loadData();
       .topbar nav a:hover {
         color: var(--text);
         text-decoration: underline;
+      }
+      [data-theme-toggle] {
+        display: inline-grid;
+        place-items: center;
+        width: 1.75rem;
+        height: 1.75rem;
+        padding: 0;
+        border: 0;
+        border-radius: var(--radius-m);
+        background: var(--surface);
+        color: var(--muted);
+        cursor: pointer;
+      }
+      [data-theme-toggle]:hover {
+        background: var(--line);
+        color: var(--text);
+      }
+      [data-theme-toggle]:focus-visible {
+        outline: 2px solid var(--link);
+        outline-offset: 2px;
+      }
+      /* The script writes data-gives, the scheme that a press gives, so one icon shows. */
+      [data-theme-icon] {
+        display: contents;
+      }
+      [data-gives="dark"] [data-theme-icon="sun"],
+      [data-gives="light"] [data-theme-icon="moon"] {
+        display: none;
       }
       .foot {
         margin: var(--space-24) 0 var(--space-16);
@@ -278,6 +339,7 @@ const { generatedAt } = loadData();
         color: var(--muted);
       }
       /* The script removes hidden from each control, so a page without JavaScript shows none. */
+      [data-theme-toggle][hidden],
       .search[hidden],
       .language-filter[hidden],
       .category-filter[hidden],
@@ -884,6 +946,11 @@ const { generatedAt } = loadData();
           <a href={`${BASE}about/`}>About</a>
           <a href={ADD_PLUGIN_HREF} data-add-plugin>Add a plugin</a>
           <a href={`${BASE}v1/plugins.json`}>Data</a>
+          <button type="button" data-theme-toggle hidden>
+            <span data-theme-icon="moon"><Icon name="moon" /></span>
+            <span data-theme-icon="sun"><Icon name="sun" /></span>
+          </button>
+          <script is:inline set:html={themeButton} />
         </nav>
       </div>
     </header>
