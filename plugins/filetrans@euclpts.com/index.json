@@ -1,3 +1,8 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "paidService": {
+    "note": "Translation needs an activation code, and the service deducts credits from its balance.",
+    "source": "https://github.com/garlicwu/filetrans_ai/blob/HEAD/README.md",
+    "read": "2026-11-02"
+  }
 }

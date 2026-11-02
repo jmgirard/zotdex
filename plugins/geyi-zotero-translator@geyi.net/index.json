@@ -1,3 +1,8 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "paidService": {
+    "note": "Translation needs a Geyi membership at research level or above; new accounts get a one-day trial.",
+    "source": "https://github.com/Nayuta-9/zotero-geyi-translator/blob/HEAD/README.md",
+    "read": "2026-11-02"
+  }
 }

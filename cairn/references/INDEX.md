@@ -13,5 +13,6 @@ bullet lines.
 - description-ledger.md: the description gaps in the deployed data of 2026-10-31 and their overrides (M067)
 - mdn-nth-child.md: which browsers read the `of <selector>` form of `:nth-child()` (MDN and its compat data)
 - microsoft-naming-a-file.md: which file and directory names Windows refuses (Microsoft's naming rules)
+- paid-service-sweep.md: a hand read of which plugins' main use needs a paid service from their maker, on 2026-11-02 (M082)
 - mozilla-toolkit-version.md: how Zotero and Firefox order version strings (MDN's legacy version format)
 - zotero-changelogs.md: the newest release of each Zotero major and the release address's answer (zotero.org)

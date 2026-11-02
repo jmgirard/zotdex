@@ -1,3 +1,8 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "paidService": {
+    "note": "Document translation spends credits bought from Equalang; new accounts get some free credits.",
+    "source": "https://github.com/equalang/equalang-zotero-plugin/blob/HEAD/README.md",
+    "read": "2026-11-02"
+  }
 }
