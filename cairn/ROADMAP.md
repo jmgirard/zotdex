@@ -7,7 +7,7 @@ _Last hygiene check: 2026-11-02 (lessons pass: dropped 2026-10-26 M010 and 2026-
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M079 | Let owners request name and description changes | in-progress | — | normal | milestones/M079-owner-text-requests.md |
+| M079 | Let owners request name and description changes | review | — | normal | milestones/M079-owner-text-requests.md |
 | M078 | Add a dark mode toggle to the site | done | — | normal | milestones/archive/M078-dark-mode-toggle.md |
 | M077 | Hold update files that leave owner sites | done | — | normal | milestones/archive/M077-update-files-leaving-sites.md |
 | M076 | Show the owner on home page rows | done | — | normal | milestones/archive/M076-owner-on-rows.md |

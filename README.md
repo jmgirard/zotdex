@@ -1125,7 +1125,7 @@ bot comment stays for a maintainer, as does a report issue opened more than
 ## Changing a plugin's name or description
 
 A plugin's manifest and GitHub About text are the first place to change its
-text. A manifest edit shows after a new release with an `.xpi`. If the
+text. A manifest edit shows once the index reads a new release with it. If the
 manifest's description is missing, only repeats the name, or is half or more
 Chinese, Japanese, or Korean, an About edit changes the description. A
 repository's owner can also ask the index for another name or description,
@@ -1158,8 +1158,8 @@ GitHub API. It prints the plugin, the field, the text, the issue's author, the
 owner, and whether the two match, ignoring letter case. It also prints:
 
 - each rule that the text breaks,
-- each other plugin whose shown name has the same Latin letters and digits,
-  which the command does not refuse,
+- each other plugin whose shown name has the same non-empty key, as `nameKey`
+  in `src/discover/holds.ts` gives it, which the command does not refuse,
 - the categories that the text adds,
 - an override with a `version` that still wins over the text,
 - for a blank text, the description gap that removing the override leaves:
@@ -1172,7 +1172,8 @@ The command has three exit statuses:
 - 0: nothing blocks `--apply`. A blank text with no override writes nothing.
 - 1: the text breaks a rule, or the author and owner differ or the owner is an
   organization, unless `--owner-checked` clears the author.
-- 2: a named failure, such as a plugin that the data file does not have.
+- 2: a named failure, such as a plugin that the data file does not have, or a
+  wrong command line.
 
 With `--apply`, the command writes the entry's `index.json`. A text adds an
 override with no `version`, or replaces the override that has none. So the
