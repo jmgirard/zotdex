@@ -38,10 +38,14 @@ function pull(n: number, change: Record<string, unknown> = {}) {
   };
 }
 
-// The files, meta.json, and owner account of pull request n, and the answer to its edit.
+const UPDATE = "https://updates.example.org:8443/update.json";
+const publicLookup = async () => ["140.82.112.3"];
+
+// The files, meta.json, update file, and owner account of pull request n, and the answer to its edit.
 function entry(n: number, meta: Record<string, unknown> = {}): Responses {
-  const text = JSON.stringify({ id: id(n), name: `Plugin ${n}`, repoUrl: `https://github.com/bob/p${n}`, updateUrl: "https://updates.example.org:8443/update.json", ...meta });
+  const text = JSON.stringify({ id: id(n), name: `Plugin ${n}`, repoUrl: `https://github.com/bob/p${n}`, updateUrl: UPDATE, ...meta });
   return {
+    [UPDATE]: { json: {} },
     [`${INDEX}/pulls/${n}/files?per_page=100`]: {
       json: [
         { filename: `plugins/${id(n)}/index.json`, status: "added" },
@@ -58,7 +62,7 @@ function entry(n: number, meta: Record<string, unknown> = {}): Responses {
 
 async function run(responses: Responses, apply = true) {
   const { fetch, requests } = fixtureFetch(responses);
-  const result = await refreshHolds({ fetch, indexRepo: "example/index", root: PLUGINS, apply });
+  const result = await refreshHolds({ fetch, lookup: publicLookup, indexRepo: "example/index", root: PLUGINS, apply });
   const patches = requests.filter(({ method }) => method === "PATCH").map(({ url, body: sent }) => ({ url, sent: JSON.parse(sent!) }));
   return { result, patches, requests };
 }
@@ -214,6 +218,47 @@ describe("pnpm refresh-holds", () => {
     });
     expect(result.failed).toEqual([{ number: 1, message: expect.stringContaining("returned HTTP 500") }]);
     expect(patches.map(({ url }) => url)).toEqual([`${INDEX}/pulls/2`]);
+  });
+
+  test("it works out the update-host lines from a new read of the update file", async () => {
+    const hops = ["https://bob.github.io/update.json", "http://forrt.example.org/a.json", "https://bob.github.io/b.json"];
+    const { result } = await run(
+      {
+        [LIST]: { json: [pull(1)] },
+        ...entry(1, { updateUrl: hops[0] }),
+        [hops[0]]: { status: 301, headers: { location: hops[1] } },
+        [hops[1]]: { status: 301, headers: { location: hops[2] } },
+        [hops[2]]: { json: {} },
+      },
+      false,
+    );
+    expect(result.changed).toEqual([
+      {
+        number: 1,
+        lines: ["- Update host: ` bob.github.io `", "- Update file redirects to: ` forrt.example.org `", "- Update file read used http: yes", "- Owner's GitHub account created: 2026-10-20"],
+      },
+    ]);
+  });
+
+  test("a pull request not held for its update host does not read the update file", async () => {
+    const { requests } = await run({ [LIST]: { json: [pull(1, { body: source(1, ["new-account"]) })] }, ...entry(1) }, false);
+    expect(requests.map(({ url }) => url)).not.toContain(UPDATE);
+  });
+
+  const refusedHop: Responses = { [UPDATE]: { status: 302, headers: { location: "https://127.0.0.1/update.json" } } };
+  const tooManyHops: Responses = Object.fromEntries(
+    Array.from({ length: 6 }, (_, n) => [n === 0 ? UPDATE : `https://hop.example.org/${n}`, { status: 302, headers: { location: `https://hop.example.org/${n + 1}` } }]),
+  );
+  test.each<[string, Responses, string]>([
+    ["a final HTTP error", { [UPDATE]: { status: 404 } }, "returned HTTP 404"],
+    ["a rejected request", { [UPDATE]: { error: "connection reset" } }, "connection reset"],
+    ["a refused host", refusedHop, "127.0.0.1"],
+    ["more than 5 redirects", tooManyHops, "more than 5 redirects"],
+  ])("%s leaves the body as it is and lists the pull request as failed", async (_name, answers, message) => {
+    const { result, patches } = await run({ [LIST]: { json: [pull(1)] }, ...entry(1), ...answers });
+    expect(result.failed).toEqual([{ number: 1, message: expect.stringContaining(message) }]);
+    expect(result.changed).toEqual([]);
+    expect(patches).toEqual([]);
   });
 
   test("an account read with no date leaves a body that does not say owner-unread", async () => {

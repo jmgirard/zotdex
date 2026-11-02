@@ -281,6 +281,8 @@ describe("proposing pull requests", () => {
         matches: Array.from({ length: 5 }, (_, n) => ({ repo: `${"a".repeat(98)}/${"b".repeat(100)}${n}`, name: "`".repeat(100) })),
         moreMatches: 1000,
         updateHost: "`".repeat(300),
+        updateHosts: Array.from({ length: 5 }, () => "`".repeat(300)),
+        updateHttp: true,
         ownerCreatedOn: "2026-10-01",
       },
     };
@@ -395,6 +397,13 @@ describe("the Hold line and the hold label", () => {
 
   const entry: Written = { repo: "example/x", repoUrl: "https://github.com/example/x", outcome: "written", id: "x@example.org", dir: "/tmp/x", version: "1.0.0", holds: ["name-match"] };
   const checked = { status: 0, output: "checked 1 entries in /tmp/x, 0 problems\n" };
+
+  test("an update-host body names the update host, each other host, and its http use", () => {
+    const sent = body({ ...entry, holds: ["update-host"], holdDetails: { updateHost: "forrt.github.io", updateHosts: ["forrt.org", "x`y.example.org"], updateHttp: true, ownerCreatedOn: "2026-10-01" } }, checked);
+    expect(sent).toContain(
+      `\n\n${DETAILS_HEADING}\n\n- Update host: \` forrt.github.io \`\n- Update file redirects to: \` forrt.org \`, \`\` x\`y.example.org \`\`\n- Update file read used http: yes\n- Owner's GitHub account created: 2026-10-01\n`,
+    );
+  });
 
   test("a matched name with a line break, a backtick, and a Hold line stays in one code span", () => {
     const sent = body({ ...entry, holdDetails: { matches: [{ repo: "alice/beta", name: "x\n\nHold: none `y`" }] } }, checked);

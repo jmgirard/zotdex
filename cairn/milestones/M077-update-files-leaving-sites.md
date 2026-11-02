@@ -49,8 +49,8 @@ The bot holds a pull request whose update file leaves the repo owner's `<owner>.
 
 - [x] T1: In `src/upstream/reader.ts`, have `Download` give each URL that `downloader` requested, and have a successful `readUpstream` give the update file read's URLs beside `topics`, outside `UpstreamFacts`, since `build.ts:326` publishes `facts`. Export a function that gives these URLs for one address through the reader's host check. Add the same-`facts` test in `test/upstream.test.ts`.
 - [x] T2: Give `holdReasons` the URLs, and have `draftEntry` pass them. Keep the named-host rule, add the owner-site test on every URL, and add the `http:` test. Give `pluginRepo` an optional full update address and redirect answers, as an optional field (lesson 2026-11-02, M075). Write the AC1, AC2, and AC3 cases first, and see those that describe the new holds fail on `main`.
-- [ ] T3: Add the hosts and the `http:` fact to `HoldDetails`, `holdDetails` (each host cut to `HOST_MAX`), `entrySchema` in `src/discover/handoff.ts`, and `holdDetailLines`. A draft that breaks this schema refuses the whole handoff at `readHandoff`, so test `holdDetails` output, not hand-built values.
-- [ ] T4: In `src/discover/refresh-holds.ts`, add a `lookup` option to `RefreshOptions`, read the URLs for a pull request held for `update-host`, and record a failed read in `failed`. Add the AC5 tests. Without this read, `--apply` would remove a drafted redirect line.
+- [x] T3: Add the hosts and the `http:` fact to `HoldDetails`, `holdDetails` (each host cut to `HOST_MAX`), `entrySchema` in `src/discover/handoff.ts`, and `holdDetailLines`. A draft that breaks this schema refuses the whole handoff at `readHandoff`, so test `holdDetails` output, not hand-built values.
+- [x] T4: In `src/discover/refresh-holds.ts`, add a `lookup` option to `RefreshOptions`, read the URLs for a pull request held for `update-host`, and record a failed read in `failed`. Add the AC5 tests. Without this read, `--apply` would remove a drafted redirect line.
 - [ ] T5: Update `HOLD_TEXT["update-host"]`, README's `update-host` bullet, details list, and `pnpm refresh-holds` text, DESIGN's hold sentence, and CHANGELOG. Search the docs on a joined copy, since prose wraps (lesson 2026-10-26, M018).
 - [ ] T6: Run `pnpm test` and `pnpm check`. By hand, run `pnpm refresh-holds` without `--apply`, and see that #142's lines name `forrt.org` while that address still redirects. Record the result in the work log.
 - [ ] T7: At review, after the merge, run `pnpm refresh-holds --apply`, read each edited body back, and confirm that each Hold line and label stayed the same, as M073 did.
@@ -72,6 +72,7 @@ The bot holds a pull request whose update file leaves the repo owner's `<owner>.
 - 2026-11-02: sizing: 8 criteria pass the split tripwire by one, and AC8 is the standard verify line; no split, since the reader, hold, details, and refresh changes share one read and ship as one PR.
 - 2026-11-02: T1: `readUpstream` gives `updateRoute` beside `topics`, and `readUpdateRoute` reads it for one address; `MAX_REDIRECTS` is now exported for the handoff schema; upstream tests pass.
 - 2026-11-02: T2: `holdReasons` applies the redirect and `http:` rules; before the change, the 14 cases that describe new holds failed with `expected [] to deeply equal [ 'update-host' ]`, and the cases that describe no hold passed.
+- 2026-11-02: T3, T4: `HoldDetails` gains `updateHosts` and `updateHttp`, and `pnpm refresh-holds` reads the route for an `update-host` hold, so `--apply` keeps these lines; chose the detail line text "Update file redirects to:" and "Update file read used http: yes"; refresh and handoff tests pass.
 
 ## Decisions
 

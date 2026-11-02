@@ -573,6 +573,8 @@ export function holdDetailLines(details: HoldDetails): string[] {
     ),
     ...(details.moreMatches ? [`- Other matching entries: ${details.moreMatches}`] : []),
     ...(details.updateHost === undefined ? [] : [`- Update host: ${code(details.updateHost)}`]),
+    ...(details.updateHosts ? [`- Update file redirects to: ${details.updateHosts.map(code).join(", ")}`] : []),
+    ...(details.updateHttp ? ["- Update file read used http: yes"] : []),
     `- Owner's GitHub account created: ${details.ownerCreatedOn ?? "the bot could not read the date"}`,
   ];
 }

@@ -486,7 +486,24 @@ describe("the name-match reads through draftEntry", () => {
 });
 
 describe("the hold details", () => {
-  const facts = { repo: "bob/zotero-tagger", name: "Paper Sidebar", updateHost: "updates.example.org:8443", ownerCreatedAt: new Date(ago(10)), indexed: INDEXED };
+  const facts = {
+    repo: "bob/zotero-tagger",
+    name: "Paper Sidebar",
+    updateHost: "updates.example.org:8443",
+    updateRoute: ["https://updates.example.org:8443/update.json"],
+    ownerCreatedAt: new Date(ago(10)),
+    indexed: INDEXED,
+  };
+
+  test("update-host gives each other host of the read once, in request order, and its http use", () => {
+    const updateRoute = ["https://bob.github.io/a", "https://b.example.org/b", "http://a.example.org/c", "https://b.example.org/d", "https://bob.github.io/e"];
+    expect(holdDetails({ ...facts, updateHost: "bob.github.io", updateRoute }, ["update-host"])).toEqual({
+      updateHost: "bob.github.io",
+      updateHosts: ["b.example.org", "a.example.org"],
+      updateHttp: true,
+      ownerCreatedOn: expect.any(String),
+    });
+  });
 
   test("name-match names 5 of 6 matches and counts the other", () => {
     const indexed = Array.from({ length: 6 }, (_, n) => ({ owner: `owner${n}`, repoPart: `part${n}`, name: "Paper Sidebar" }));

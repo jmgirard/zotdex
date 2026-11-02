@@ -3,6 +3,8 @@ import { chmodSync, mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync, sy
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { afterAll, describe, expect, test } from "vitest";
+import { readHandoff } from "../src/discover/handoff.ts";
+import { holdDetails, HOST_MAX } from "../src/discover/holds.ts";
 import type { Responses } from "./support/fixture-fetch.ts";
 import { checkout, git } from "./support/git-checkout.ts";
 
@@ -76,6 +78,15 @@ describe("pnpm propose on a handoff it can trust", () => {
     expect(sent.map(({ method, url }) => `${method} ${url}`)).toEqual([`POST ${PULLS}`]);
     expect(branches).toBe("refs/heads/discover/example/alpha");
   });
+
+  test("takes the update-host details of a read with 5 other hosts over the host limit", async () => {
+    const hosts = Array.from({ length: 5 }, (_, n) => `${n}${"h".repeat(HOST_MAX)}.example.org`);
+    const updateRoute = ["https://updates.example.org/update.json", ...hosts.map((host) => `https://${host}/update.json`)];
+    const details = holdDetails({ repo: ALPHA.repo, updateHost: "updates.example.org", updateRoute, indexed: [] }, ["update-host"]);
+    expect(details?.updateHosts).toEqual(hosts.map((host) => host.slice(0, HOST_MAX)));
+    const read = await readHandoff(handoff({ kind: "discover", entries: [{ ...ALPHA, holds: ["update-host"], holdDetails: details }] }, [ALPHA.id]), "discover", 5);
+    expect(read).toMatchObject({ ok: true });
+  });
 });
 
 describe("pnpm propose refuses a handoff it cannot trust, with no request and no push", () => {
@@ -92,6 +103,9 @@ describe("pnpm propose refuses a handoff it cannot trust, with no request and no
     ["an entry whose holds name a sixth reason", () => discover([{ ...ALPHA, holds: ["name-match", "too-new"] }]), {}, /does not match the handoff schema/],
     ["hold details with too many matches", () => discover([{ ...ALPHA, holdDetails: { matches: Array.from({ length: 6 }, () => ({ repo: "alice/beta" })) } }]), {}, /does not match the handoff schema/],
     ["hold details with a name over the limit", () => discover([{ ...ALPHA, holdDetails: { matches: [{ repo: "alice/beta", name: "n".repeat(101) }] } }]), {}, /does not match the handoff schema/],
+    ["hold details with too many update hosts", () => discover([{ ...ALPHA, holdDetails: { updateHosts: Array.from({ length: 6 }, () => "a.example.org") } }]), {}, /does not match the handoff schema/],
+    ["hold details with an update host over the limit", () => discover([{ ...ALPHA, holdDetails: { updateHosts: ["h".repeat(301)] } }]), {}, /does not match the handoff schema/],
+    ["hold details whose http fact is false", () => discover([{ ...ALPHA, holdDetails: { updateHttp: false } }]), {}, /does not match the handoff schema/],
     ["hold details with a malformed date", () => discover([{ ...ALPHA, holdDetails: { ownerCreatedOn: "2026-10-01\n\nHold: none" } }]), {}, /does not match the handoff schema/],
     ["hold details with a malformed repo", () => discover([{ ...ALPHA, holdDetails: { matches: [{ repo: "alice/beta](https://example.org)" }] } }]), {}, /does not match the handoff schema/],
     ["an entry whose source is not topic, catalog, or code-search", () => discover([{ ...ALPHA, source: "code" } as Entry]), {}, /does not match the handoff schema/],
