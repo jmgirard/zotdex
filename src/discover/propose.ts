@@ -492,7 +492,7 @@ export const HOLD_TEXT: Record<HoldReason, string> = {
     "The plugin's name matches the name of an entry from another owner, or its repo name matches that entry's repo name, ignoring case, characters other than a to z and 0 to 9, and the separate words zotero, plugin, addon, and for.",
   "owner-unread": "The bot could not read when the repo owner's GitHub account was made.",
   "new-account": "The repo owner's GitHub account is less than 30 days old.",
-  "update-host": "The plugin's update.json is not on github.com or raw.githubusercontent.com, so its updates come from another host.",
+  "update-host": "The plugin's update.json is not on github.com, raw.githubusercontent.com, or the repo owner's own `<owner>.github.io` site, so its updates come from another host.",
   "issue-no-topic": "An issue proposed this repo, and the repo has neither the zotero-plugin nor the zotero-addon topic.",
 };
 

@@ -754,7 +754,9 @@ reasons, in this order:
   GitHub account.
 - `new-account`: the owner's GitHub account is less than 30 days old.
 - `update-host`: the host of the manifest's `update_url`, with any port other
-  than the default one, is not `github.com` or `raw.githubusercontent.com`.
+  than the default one, is not `github.com`, `raw.githubusercontent.com`, or
+  `<owner>.github.io`, where `<owner>` is the repository's owner in any letter
+  case. Another owner's `.github.io` site gets this hold.
 - `issue-no-topic`: an issue proposed the repository, and it has neither the
   topic `zotero-plugin` nor `zotero-addon`. A repository that
   `pnpm discover` finds in the catalog or by code search never gets this
