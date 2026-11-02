@@ -934,20 +934,8 @@ reused._
   zotero-chinese catalog, and since M071 five GitHub code searches, so a
   plugin with no topic is missed only when neither the catalog nor GitHub's
   code index names it, or when its files match none of the five queries
-  (corrected M070, M071). On 2026-10-31 the catalog listed 132 such plugins
-  that passed the inclusion bar, and the five queries returned 1,053 repos,
-  158 of the 273 then indexed (M071 plan). The code-search backfill on
-  2026-10-31 (discover runs 41226328819, 41227301914, 41228845417, and
-  41230388429, `limit` 100, `budget` 100 then 300; merge runs 41226935599,
-  41228300346, 41229848628, and 41231059435, `wait_hours` 0) wrote 287
-  entries and merged 264, and the index went from 405 to 669 entries
-  (`pnpm check` 0 problems); the last discover run left 0 unread, and 59
-  bot pull requests stayed open. Each run got HTTP 403 on two or three code
-  search requests, so the `update_url` manifest query read no page. Since
-  M072 the code search waits for the reset an answer names and retries a
-  refused page once; the confirmation run 41234283459 after it read all
-  five queries with no warning, wrote 2 entries, and merge run 41234777412
-  merged both (corrected M072).
+  (corrected M070, M071). Since M072 the code search waits for the reset an
+  answer names and retries a refused page once (corrected M072).
 - The host check looks up a download host before the request, and fetch
   looks it up again when it connects. A DNS server that answers differently
   the second time (DNS rebinding) can still reach a private address. The

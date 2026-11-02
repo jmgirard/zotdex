@@ -666,3 +666,25 @@ misses a plugin written from scratch under a popular name, and over no name
 holds. The rest of D-033 stands. This choice is wrong if a copy merges under
 the rule and a maintainer removes it, or if a maintainer always releases
 namesake holds.
+
+### D-046: A triage pass drops candidate rows as not worth keeping
+
+2026-11-02, triage pass. A `/cairn-triage` pass weighed every candidate row
+and Known issues entry. The user accepted dropping these rows, because each
+covers a case with a low cost that a maintainer can handle by hand:
+
+- "Close small gaps in pnpm refresh-holds" would have kept a failed account
+  read from replacing a date that an earlier run wrote, kept a fenced `Hold:`
+  line that a person adds from giving a second detail block, and given the
+  command a whole-run limit. Only the maintainer runs it, and a rerun is safe.
+- "Make close-issue safe on retry and races" would have let a run whose
+  comment posted and whose close failed be rerun, and handled pull requests
+  reopened or closed during a run, comments that name only the branch, renamed
+  repos, and unusual fences around the `Closes` line. The worst case is an
+  issue that the maintainer closes or reopens by hand.
+- "Label cut reads on plugin pages" would have said that the build's time
+  limit cut a read, in place of the failure names `not-read` and
+  `request-failed`. The page already says that the build could not read the
+  plugin, and the next daily build reads it again.
+
+Each drop can be reopened by an entry that supersedes this one.
