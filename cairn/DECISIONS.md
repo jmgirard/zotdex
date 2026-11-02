@@ -705,3 +705,10 @@ whatever a redirect does. The read happens once, at the draft. The rest of D-043
 and D-044 stands. This choice is wrong if a maintainer always releases these
 holds, or if an update file reached through `github.com` or
 `raw.githubusercontent.com` turns out to be served off GitHub.
+
+### D-048: The read that decides the update-host hold happens once, narrowing D-047
+
+2026-11-02, M077 review. D-047 says "The read happens once, at the draft." That
+means the read that decides the hold. `pnpm refresh-holds` reads the update
+address again for a held pull request's detail lines, and it changes no Hold
+line. The rest of D-047 stands.

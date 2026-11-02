@@ -619,10 +619,14 @@ export async function downloadXpi(
 
 // Each URL that a read of one update.json requests, in order, with the reads' host check and
 // redirect rules. It reads no body. It throws a ReadFailure: update-json-http-error for an
-// HTTP error answer, and the reads' failures for a refused host or a failed request.
-// `pnpm refresh-holds` reads a held pull request's address with it.
-export async function readUpdateRoute(url: string, fetch: Fetch, { lookup = systemLookup }: { lookup?: Lookup } = {}): Promise<string[]> {
-  const { response, route } = await downloader(fetch, lookup)(url);
+// HTTP error answer, and the reads' failures for a refused host or a failed request, which
+// include the abort of `signal`. `pnpm refresh-holds` reads a held pull request's address with it.
+export async function readUpdateRoute(url: string, fetch: Fetch, { lookup = systemLookup, signal }: { lookup?: Lookup; signal?: AbortSignal } = {}): Promise<string[]> {
+  if (signal) {
+    fetch = boundFetch(fetch, signal);
+    lookup = boundLookup(lookup, signal);
+  }
+  const { response, route } = await downloader(fetch, lookup, signal)(url);
   await response.body?.cancel().catch(() => {});
   if (!response.ok) fail("update-json-http-error", `the update.json at ${url} returned HTTP ${response.status}`);
   return route;

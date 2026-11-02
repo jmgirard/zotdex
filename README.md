@@ -774,11 +774,12 @@ reasons, in this order:
   case. Another owner's `.github.io` site gets this hold. If a redirect of
   the bot's read takes a file on `<owner>.github.io` to any other host, the
   pull request gets this hold. A later redirect back does not change that.
-  The bot does not check the redirects of `github.com` and
+  This hold does not test the redirects of `github.com` and
   `raw.githubusercontent.com` addresses, since GitHub's release addresses
   redirect to its own file hosts. On every host, a URL of that read that uses
-  `http:` gives this hold. When the bot drafts the pull request, it reads the
-  file once.
+  `http:` gives this hold. When the bot drafts the pull request, it decides
+  this hold. `pnpm refresh-holds` changes no Hold line, so a pull request
+  drafted earlier keeps its Hold line.
 - `issue-no-topic`: an issue proposed the repository, and it has neither the
   topic `zotero-plugin` nor `zotero-addon`. A repository that
   `pnpm discover` finds in the catalog or by code search never gets this
@@ -814,8 +815,9 @@ entries on GitHub. A failed read of these says "not read" in the line and
 does not fail the pull request. For an `update-host`, it also reads the
 update file's route: it requests the `update_url` and follows its redirects,
 without reading the file's contents. A failed read of the route fails the
-pull request and leaves its body as it is. An HTTP error, a refused host, and
-a failed request are each a failed read. First update your
+pull request and leaves its body as it is. An HTTP error, a refused host, a
+failed request, and a read past 60 seconds are each a failed read. First
+update your
 checkout to the default branch, or the match
 lines can be wrong. The command acts on an open pull request that meets all
 of these conditions:

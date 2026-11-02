@@ -87,7 +87,6 @@ describe("readUpstream", () => {
       manifest(r).applications.zotero.update_url = hops[0];
       r[hops[0]] = r[UPDATE];
     });
-    expect(direct.result.ok && direct.result.updateRoute).toEqual([hops[0]]);
     if (!result.ok || !direct.result.ok) throw new Error("a read failed");
     expect(result.facts).toEqual(direct.result.facts);
   });

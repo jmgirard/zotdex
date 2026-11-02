@@ -6,11 +6,15 @@ import { botPullProblem, contents, type FileJson, newEntry, type PullJson } from
 import { CLOSING_START, DETAILS_HEADING, HOLD_LABEL, holdDetailLines, unfencedLines } from "./propose.ts";
 
 const API = "https://api.github.com";
+// The longest wait for the update.json read of one pull request. The update host is not GitHub.
+const UPDATE_READ_LIMIT_MS = 60 * 1000;
 
 export interface RefreshOptions {
   fetch: Fetch;
   // Resolves the hosts of an update.json read for the host check.
   lookup?: Lookup;
+  // The longest wait for one update.json read, for a test.
+  updateReadMs?: number;
   // The index repo as owner/repo, and its plugins/ folder, whose entries a name can match.
   indexRepo: string;
   root: string;
@@ -58,7 +62,7 @@ export function withDetailLines(body: string, lines: string[]): string | undefin
 // does not call unread, or of the update.json of an `update-host` hold leaves that body as it
 // is, and the run goes on to the next. A failed read of a name match's evidence prints that
 // fact as not read. A failed read of the list of pull requests or of `root` throws.
-export async function refreshHolds({ fetch, lookup, indexRepo, root, apply }: RefreshOptions): Promise<RefreshResult> {
+export async function refreshHolds({ fetch, lookup, updateReadMs = UPDATE_READ_LIMIT_MS, indexRepo, root, apply }: RefreshOptions): Promise<RefreshResult> {
   const github = githubClient(fetch);
   const result: RefreshResult = { changed: [], unchanged: [], skipped: [], failed: [] };
   const pulls = (await github.pages(`${API}/repos/${indexRepo}/pulls?state=open&per_page=100`)) as PullJson[];
@@ -96,7 +100,7 @@ export async function refreshHolds({ fetch, lookup, indexRepo, root, apply }: Re
       if (!repo) throw new Error("its meta.json names no owner/repo");
       const updateHost = URL.canParse(meta.updateUrl) ? new URL(meta.updateUrl).host : undefined;
       if (held.reasons.includes("update-host") && !updateHost) throw new Error("its meta.json has no update URL");
-      const updateRoute = held.reasons.includes("update-host") ? await readUpdateRoute(meta.updateUrl, fetch, { lookup }) : [];
+      const updateRoute = held.reasons.includes("update-host") ? await readUpdateRoute(meta.updateUrl, fetch, { lookup, signal: AbortSignal.timeout(updateReadMs) }) : [];
       const createdAt = await ownerCreatedAt(fetch, repo.split("/")[0]);
       if (!createdAt && !held.reasons.includes("owner-unread")) throw new Error("the read of its owner's account gave no date");
       const name = typeof meta.name === "string" ? meta.name : undefined;

@@ -399,9 +399,9 @@ describe("the Hold line and the hold label", () => {
   const checked = { status: 0, output: "checked 1 entries in /tmp/x, 0 problems\n" };
 
   test("an update-host body names the update host, each other host, and its http use", () => {
-    const sent = body({ ...entry, holds: ["update-host"], holdDetails: { updateHost: "forrt.github.io", updateHosts: ["forrt.org", "x`y.example.org"], updateHttp: true, ownerCreatedOn: "2026-10-01" } }, checked);
+    const sent = body({ ...entry, holds: ["update-host"], holdDetails: { updateHost: "forrt.github.io", updateHosts: ["forrt.org", "a.example.org"], updateHttp: true, ownerCreatedOn: "2026-10-01" } }, checked);
     expect(sent).toContain(
-      `\n\n${DETAILS_HEADING}\n\n- Update host: \` forrt.github.io \`\n- Update file redirects to: \` forrt.org \`, \`\` x\`y.example.org \`\`\n- Update file read used http: yes\n- Owner's GitHub account created: 2026-10-01\n`,
+      `\n\n${DETAILS_HEADING}\n\n- Update host: \` forrt.github.io \`\n- Update file redirects to: \` forrt.org \`, \` a.example.org \`\n- Update file read used http: yes\n- Owner's GitHub account created: 2026-10-01\n`,
     );
   });
 

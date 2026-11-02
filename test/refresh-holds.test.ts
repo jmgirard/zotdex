@@ -261,6 +261,12 @@ describe("pnpm refresh-holds", () => {
     expect(patches).toEqual([]);
   });
 
+  test("an update file read that stalls stops at its limit and lists the pull request as failed", async () => {
+    const { fetch } = fixtureFetch({ [LIST]: { json: [pull(1)] }, ...entry(1), [UPDATE]: { stall: "headers" } });
+    const result = await refreshHolds({ fetch, lookup: publicLookup, updateReadMs: 20, indexRepo: "example/index", root: PLUGINS, apply: true });
+    expect(result.failed).toEqual([{ number: 1, message: expect.stringContaining("aborted due to timeout") }]);
+  });
+
   test("an account read with no date leaves a body that does not say owner-unread", async () => {
     const { result, patches } = await run({ [LIST]: { json: [pull(1)] }, ...entry(1), "https://api.github.com/users/bob": { status: 404, json: {} } });
     expect(result.failed).toEqual([{ number: 1, message: "the read of its owner's account gave no date" }]);
