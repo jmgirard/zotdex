@@ -247,7 +247,7 @@ export async function buildData(
   }
   const buildLevel = entries.flatMap(({ id }, i) => (buildLevelAt.has(i) ? [id] : []));
   const reports = countReports(issues, records);
-  const plugins = records.map(({ id, repoUrl, paidService, upstream, failure, overrides }) => {
+  const plugins = records.map(({ id, repoUrl, paidService, upstream, failure, overrides }): PluginRecord => {
     const paid = paidService ? { paidService } : {};
     return upstream ? { id, repoUrl, ...paid, upstream, reports: reports.get(id) ?? [], overrides } : { id, repoUrl, ...paid, failure, overrides };
   });

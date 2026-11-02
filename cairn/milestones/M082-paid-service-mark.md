@@ -64,6 +64,7 @@ Show on the site when a plugin's main use needs a paid service from its maker, a
 - 2026-11-02: split: all parts stay in M082; re-reading new plugins goes to the candidate row "Read new plugins for paid services".
 - 2026-11-02: T1 done: the index schema gains `paidService`, and 11 check tests failed before the schema change and pass after it; `pnpm test` passes with 2155 tests. No test added for `text-request`, since it edits only `overrides` of the parsed file.
 - 2026-11-02: T2 done: the build writes `paidService` on read, read-failure, `not-read`, and `facts-invalid` records; `addResults` keeps it through its spread, as a test shows; a test holds the two schemas' shapes equal.
+- 2026-11-02: the T2 commit went in with a type error at `src/build/build.ts:268` because a pipe hid the failed test run, so the T2 line above was early; the next commit fixes it and T2 stands only with that commit's test run.
 
 ## Decisions
 
