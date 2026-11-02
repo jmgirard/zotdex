@@ -1,7 +1,7 @@
 # Roadmap
 
 _The only authority on milestone status. Grouped by status, not ID._
-_Last hygiene check: 2026-11-02 (M078 archived; "Add a dark mode toggle to the site" graduated; new parked row "Check the theme button's double label"; M075 row pruned; 25 lessons, 11 marked used; validate green)_
+_Last hygiene check: 2026-11-02 (lessons pass: dropped 2026-10-26 M010 and 2026-10-30 M062 by planner test, and 2026-10-31 M066 (home control, rank 66), M066 (CATEGORIES tuning, rank 67), and M067 (overrides, rank 67) by rank; 20 lessons left; no decision entry; validate green)_
 
 ## Milestones
 
