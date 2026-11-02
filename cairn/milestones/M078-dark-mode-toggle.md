@@ -72,6 +72,8 @@ Each page of the site has a top-bar button that flips between the light and dark
 - 2026-11-02: claim audit: 46 claims read, 1 corrected — site/src/layouts/Base.astro.
 - 2026-11-02: open concern from the claim audit: if only `setItem` throws, as on a full quota, a press works, and the next `pageshow` or `storage` event undoes it, since the read finds no saved value; the tests cover storage whose every method throws.
 - 2026-11-02: left 8 simple-english hook hits in `CHANGELOG.md` lines 243 to 425 unfixed: they are older entries outside this milestone, and the new entry has none.
+- 2026-11-02: left 3 simple-english hook hits in `README.md` lines 276, 1027, and 1512 unfixed, for the same reason.
+- 2026-11-02: step-7 approval: m078-dark-mode-toggle approved for merge
 
 ## Decisions
 
