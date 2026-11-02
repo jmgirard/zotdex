@@ -66,6 +66,7 @@ Each home page row with a GitHub repo shows that repo's owner, so plugins of one
 - 2026-11-02: the simple-english hook flagged 1 new README line, now fixed, and 3 older README and 8 older CHANGELOG hits; the older lines stay, since this milestone did not write them and several quote program output.
 - 2026-11-02: claim audit: 20 claims read, 1 corrected — README.md, CHANGELOG.md, site/src/layouts/Base.astro, test/site.test.ts
 - 2026-11-02: correction to the T3 lines: those iframe widths were 371 and 1276 px, since the border took 4 px, so `CentreForDigitalHumanities` was cut only at 371; at a true 375 px no current owner is cut (Review, AC5).
+- 2026-11-02: override at the merge question: the user chose a smaller, fainter owner line over the agent's recommended smaller one; `.owner` now takes `--text-xs` and `--faint`. Contrast is 3.47 on `--surface` and 3.09 on `--hover` in light, 3.25 and 2.96 in dark, against 5.36 and 6.58 on `--surface` for `--muted`; the user is shown these figures at the merge question.
 
 ## Decisions
 
@@ -77,9 +78,9 @@ Evidence read 2026-11-02 at de66952; origin/main is an ancestor of the branch, s
 - AC2: the same test passes for `repo-gitlab@example.org` (another host) and `ssh-plugin@example.org` (not a URL): no owner. Read again at d8c8b13.
 - AC3: "shows each owner on two rows of one name" passes: both rows display First Plugin, one shows `example`, one the 39-letter owner.
 - AC4: the exact name-cell test passes for every fixture id, with the owner outside both attributes. "matches a row on its name but not on its owner's text alone" passes: `?q=first+plugin` shows both rows, `?q=<39-letter owner>` shows none.
-- AC5: site built at de66952 (no site source changed since) from the deployed data with 2 owners planted, every one of 671 rows unhidden, in a borderless iframe with a 375 px viewport: document scrollWidth 375 = clientWidth 375, `.table-card` 341 = 341. Tallest owner 19.5 px (one line), `white-space: nowrap`, `text-overflow: ellipsis`. Only the 39-letter owner and the 39-character hyphenated owner are cut; no current owner is. With `contain` removed, the document is 420 against 375 and `.table-card` 435 against 341, so the check can fail. At 1280 px, 1280 = 1280 and 1006 = 1006, nothing cut.
+- AC5: site built at de66952 (no site source changed since) from the deployed data with 2 owners planted, every one of 671 rows unhidden, in a borderless iframe with a 375 px viewport: document scrollWidth 375 = clientWidth 375, `.table-card` 341 = 341. Tallest owner 19.5 px (one line), `white-space: nowrap`, `text-overflow: ellipsis`. Only the 39-letter owner and the 39-character hyphenated owner are cut; no current owner is. With `contain` removed, the document is 420 against 375 and `.table-card` 435 against 341, so the check can fail. At 1280 px, 1280 = 1280 and 1006 = 1006, nothing cut. Read again with the owner at 12 px and `--faint`: the same widths and the same 2 owners cut, tallest owner 18 px.
 - AC6: README line 16 and DESIGN line 150 state "By <owner>"; CHANGELOG's Unreleased section has the entry.
-- AC7: at d8c8b13, `pnpm test`: 1934 passed, 6 skipped, type check clean. `pnpm check`: 671 entries, 0 problems.
+- AC7: with the owner style change, `pnpm test`: 1934 passed, 6 skipped, type check clean. `pnpm check`: 671 entries, 0 problems.
 - Gate: `cairn_validate.py` all checks passed; the generic profile adds no toolchain checks; no principle changed, so `cairn_impact` is skipped.
 - spawned: diff-bug, blame-history, prior-review, ripple
 - diff-bug #1: README's "with or without a trailing slash" for home rows has no test — fix now, fixed d8c8b13
