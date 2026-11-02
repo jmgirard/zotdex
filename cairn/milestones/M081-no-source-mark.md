@@ -67,6 +67,7 @@ Show on the site when a plugin's GitHub repo has no source code at its top level
 - 2026-11-02: claim audit: about 65 claims read, 12 corrected — README.md, CHANGELOG.md, site/src/pages/about.astro, src/build/source.ts, cairn/DESIGN.md; the workflow time-limit comment also gained the new read; the reader's re-read of the corrections is pending at this checkpoint.
 - 2026-11-02: claim audit: 65 claims read, 12 corrected — README.md, CHANGELOG.md, site/src/pages/about.astro, src/build/source.ts, cairn/DESIGN.md; the same reader re-read the corrections once and found nothing still wrong.
 - 2026-11-02: review added a legend line under the home table for touch and keyboard users (diff-bug #10), inside the mark's scope; no criterion changed.
+- 2026-11-02: step-7 approval: m081-no-source-mark approved for merge
 
 ## Decisions
 
