@@ -715,6 +715,17 @@ function mainText(html: string): string {
 describe("the About page", () => {
   const about = () => readFileSync(join(out, "about/index.html"), "utf8");
 
+  test.each([
+    ["where the fact comes from", "the build reads the top-level file and folder names of the repository's default branch"],
+    ["that it reads no code", "The index reads no code to decide this"],
+    ["what yes does not mean", '"Yes" does not mean an open-source license, and it does not mean that the XPI was built from that code'],
+    ["that no can be wrong", '"No" can be wrong, because the index does not look inside folders'],
+    ["that the plugin stays listed", "A plugin with no source code stays listed"],
+  ])("says %s", (_, claim) => {
+    const section = /<section class="card" id="source"[\s\S]*?<\/section>/.exec(about())![0];
+    expect(unescaped(section).replace(/\s+/g, " ")).toContain(claim);
+  });
+
   test("has one section for each part of the method, each under its h2", () => {
     expect([...about().matchAll(/<section class="card" id="([^"]+)" data-about="\1">\s*<h2>([^<]*)<\/h2>/g)].map(([, id, h2]) => [id, h2])).toEqual([
       ["declared", "Declared range"],
@@ -723,6 +734,7 @@ describe("the About page", () => {
       ["descriptions", "Descriptions"],
       ["overrides", "Overrides"],
       ["categories", "Categories"],
+      ["source", "Source code"],
       ["not-vetted", "What the index does not do"],
     ]);
   });

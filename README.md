@@ -20,7 +20,9 @@ shows the plugin's name, the owner of its repository as `By <owner>`, and
 its description. If the repository address is not of the form
 `https://github.com/<owner>/<repo>`, with or without a trailing slash, the
 row shows no owner. If the plugin's GitHub
-repository is archived, the row shows "Archived" after the name. Then come
+repository is archived, the row shows "Archived" after the name. If the index
+found no source code at the top level of the repository, the row shows a lock
+after the name. Then come
 one cell for each Zotero major version from 7 to 10 and a "Menus and
 settings" cell. Next comes the month of
 the release that the index read, as the year and month in UTC, such as
@@ -252,6 +254,18 @@ home page and the name on its page show "Archived". The Details card of its
 page shows the fact "Archived on GitHub" with the value "Yes". GitHub makes
 an archived repository read-only until someone with admin access to it
 unarchives it.
+
+The index also lists a plugin whose repository shows no source code. Each day
+the build reads the top-level file and folder names of the repository's default
+branch, in `src/build/source.ts`. It reads no code. A README, license,
+changelog, or notice file, an XPI, an update file, an image, a Markdown or text
+file, a dotfile, and a folder such as `docs` or `dist` do not count as source
+code. Any other name does. If no name counts, the row on the home page and the
+name on the plugin page show a lock, and the link to the repository reads
+"Repository" in place of "Source code" or "Source". The Details card of each
+page shows "Source code at the repository's top level" with "Yes" or "No". "Yes"
+does not mean an open-source license or an XPI built from that code. "No" can be
+wrong, because the index does not look inside folders.
 
 ## Using the data
 
@@ -1264,7 +1278,11 @@ one record for each entry. Each record keeps the upstream facts in an
 `overrides` block. The schema for the file is
 [`schemas/plugins.v1.schema.json`](schemas/plugins.v1.schema.json). If the
 GitHub response for the repository says whether it is archived, the
-`upstream` block has an `archived` field, `true` or `false`. The `upstream`
+`upstream` block has an `archived` field, `true` or `false`. If the build read
+the repository's top-level names, the block has a `sourceInRepo` field, `true`
+or `false`. A failed read leaves the field out, prints a warning, and does not
+fail the build. If you validate against a saved copy of the schema, fetch the
+schema again. The `upstream`
 block also has a `prerelease` field, `true` or `false`. It says whether
 GitHub marks the release that the reader read as a prerelease. It also has
 a `languages` list and an `xpiUrl` field, which "Using the data"
