@@ -13,7 +13,10 @@ page lists every plugin in one table, sorted by name. Without JavaScript the
 table shows every row. With it, the table shows 50 rows at a time, as the
 pager paragraph below says. The sort ignores letter case
 and accents, and names that are then equal sort by plugin id. Each row
-shows the plugin's name and its description. If the plugin's GitHub
+shows the plugin's name, the owner of its repository as `By <owner>`, and
+its description. If the repository address is not of the form
+`https://github.com/<owner>/<repo>`, with or without a trailing slash, the
+row shows no owner. If the plugin's GitHub
 repository is archived, the row shows "Archived" after the name. Then come
 one cell for each Zotero major version from 7 to 10 and a "Menus and
 settings" cell. Next comes the month of
@@ -61,7 +64,8 @@ can replace that file later. A link whose address does not start with
 
 On a screen 760 pixels wide or less, the table hides the languages and the
 release columns. At 560 pixels or less, it also hides the descriptions and
-the source links.
+the source links. An owner stays on one line, and an ellipsis cuts an owner
+that is too long for the cell.
 
 The description comes from the plugin's manifest or from the About text of
 its GitHub repository. A manifest name or description of the form
@@ -103,8 +107,9 @@ description has a lower share. In all other cases the site shows the
 manifest description, or no description.
 
 The home page has a search box. It shows only the plugins whose name or
-description holds the text you type. The search ignores letter case and the
-spaces before and after the text, but not accents. The page keeps the text
+description holds the text you type. It does not read the owner. The search
+ignores letter case and the spaces before and after the text, but not
+accents. The page keeps the text
 in the `q` query parameter of its address, such as `?q=pdf`.
 
 The home page has a "Category" menu. It lists each category that at least

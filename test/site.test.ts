@@ -129,6 +129,8 @@ function fact(html: string, name: string): string | undefined {
 const page = (id: string) => readFileSync(join(out, "plugins", id, "index.html"), "utf8");
 const home = () => readFileSync(join(out, "index.html"), "utf8");
 const records = (fixture as unknown as PluginsFile).plugins;
+// GitHub's longest owner length, with no hyphen to break at.
+const LONG_OWNER = "abcdefghijklmnopqrstuvwxyzabcdefghijklm";
 // The failure records whose repo URL each break one part of the repo line's URL form, in
 // home table order.
 const NO_REPO_LINE_IDS = [
@@ -836,6 +838,7 @@ describe("the home page", () => {
       "a-cafe@example.org",
       "b-cafe@example.org",
       "first-plugin@example.org",
+      "same-name-plugin@example.org",
       "{c2a6e4c8-1b7d-4f3a-9e2b-5d8f0a1c3e7b}",
       "locale-plugin@example.org",
       "min-only-plugin@example.org",
@@ -856,13 +859,39 @@ describe("the home page", () => {
   test.each(ids)("shows the name cell of %s", (id) => {
     const record = records.find((r) => r.id === id)!;
     const description = shownDescription(record);
+    const owner = githubRepo(record.upstream?.repoUrl ?? record.repoUrl)?.owner;
     expect(row(id).cells[0]!.attributes).toBe(' scope="row" class="name"');
     expect(row(id).cells.map(({ tag }) => tag)).toEqual(["th", ...row(id).cells.slice(1).map(() => "td")]);
     expect(row(id).cells[0]!.html).toBe(
       `<a href="${escaped(pluginHref(id))}" data-name>${escaped(displayName(record))}</a>` +
         (record.upstream?.archived === true ? '<span class="badge" data-archived>Archived</span>' : "") +
+        (owner ? `<div class="owner" data-owner>By ${escaped(owner)}</div>` : "") +
         (description ? `<div class="desc" data-description>${escaped(description)}</div>` : ""),
     );
+  });
+
+  const shownOwner = (id: string) => /<div class="owner" data-owner>By ([^<]*)<\/div>/.exec(row(id).cells[0]!.html)?.[1];
+
+  // same-name-plugin's two repo URLs name different owners, so its row also shows that the
+  // upstream URL comes first.
+  test.each([
+    ["first-plugin@example.org", "example"],
+    ["broken-plugin@example.org", "example"],
+    ["same-name-plugin@example.org", LONG_OWNER],
+    ["repo-gitlab@example.org", undefined],
+    ["ssh-plugin@example.org", undefined],
+  ])("shows the owner of %s as %s", (id, owner) => {
+    expect(shownOwner(id)).toBe(owner);
+  });
+
+  test("reads the owner of a repo URL with a trailing slash", () => {
+    expect(githubRepo("https://github.com/example/first-plugin/")?.owner).toBe("example");
+  });
+
+  test("shows each owner on two rows of one name", () => {
+    const same = ["first-plugin@example.org", "same-name-plugin@example.org"];
+    expect(same.map((id) => displayName(records.find((r) => r.id === id)!))).toEqual(["First Plugin", "First Plugin"]);
+    expect(same.map(shownOwner)).toEqual(["example", LONG_OWNER]);
   });
 
   test("marks only the archived plugin", () => {
@@ -1001,6 +1030,7 @@ describe("the home page", () => {
       ["a-cafe@example.org", "de en fr it ja"],
       ["b-cafe@example.org", "en"],
       ["first-plugin@example.org", "en es zh"],
+      ["same-name-plugin@example.org", ""],
       ["{c2a6e4c8-1b7d-4f3a-9e2b-5d8f0a1c3e7b}", ""],
       ["locale-plugin@example.org", "es pt"],
       ["min-only-plugin@example.org", "zh"],
@@ -1020,6 +1050,7 @@ describe("the home page", () => {
       ["a-cafe@example.org", "7 8 9"],
       ["b-cafe@example.org", "7"],
       ["first-plugin@example.org", "7 8"],
+      ["same-name-plugin@example.org", ""],
       ["{c2a6e4c8-1b7d-4f3a-9e2b-5d8f0a1c3e7b}", "9"],
       ["locale-plugin@example.org", "7 8 9"],
       ["min-only-plugin@example.org", "8 9 10"],
@@ -1273,6 +1304,11 @@ describe("the home page script", () => {
     expect(page.visible()).toEqual(["a-cafe@example.org", "b-cafe@example.org"]);
     expect(page.status.textContent).toBe(`2 of ${ids.length} plugins`);
     expect([...page.shown].sort()).toEqual(["buttons", "category", "count", "menu", "search"]);
+  });
+
+  test("matches a row on its name but not on its owner's text alone", () => {
+    expect(homeScript(`${PAGE}?q=first+plugin`).visible()).toEqual(["first-plugin@example.org", "same-name-plugin@example.org"]);
+    expect(homeScript(`${PAGE}?q=${LONG_OWNER}`).visible()).toEqual([]);
   });
 
   test("passes what the visitor types to the row test and writes it to q once typing stops", () => {

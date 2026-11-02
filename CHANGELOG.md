@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Each home page row whose repository address has the form
+  `https://github.com/<owner>/<repo>` now shows the owner as `By <owner>`
+  under the plugin's name, so plugins that share a name can be told apart.
+  The search box does not read the owner.
 - A plugin's name or repository name that matches another owner's entry no
   longer gets the `name-match` hold by itself, so plugins that share a name
   are listed side by side. Two repositories with the same first commit keep

@@ -384,6 +384,16 @@ const { generatedAt } = loadData();
         color: var(--link);
         text-decoration: underline;
       }
+      /* contain adds nothing to the cell's minimum width, so a long owner is cut to the cell's
+         width and does not widen the table. */
+      .owner {
+        contain: inline-size;
+        overflow: hidden;
+        font-size: var(--text-xs);
+        color: var(--faint);
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
       .desc {
         display: -webkit-box;
         -webkit-line-clamp: 2;

@@ -98,6 +98,26 @@
       "overrides": []
     },
     {
+      "id": "same-name-plugin@example.org",
+      "repoUrl": "https://github.com/example/same-name-plugin",
+      "upstream": {
+        "id": "same-name-plugin@example.org",
+        "name": "First Plugin",
+        "version": "1.0.0",
+        "updateUrl": "https://example.org/same-name-plugin/update.json",
+        "updateHost": "example.org",
+        "repoUrl": "https://github.com/abcdefghijklmnopqrstuvwxyzabcdefghijklm/same-name-plugin",
+        "repoCreatedAt": "2025-06-01T00:00:00Z",
+        "openIssues": 0,
+        "releaseCount": 1,
+        "latestReleaseDate": "2026-08-01T00:00:00Z",
+        "prerelease": false,
+        "archived": false,
+        "languages": []
+      },
+      "overrides": []
+    },
+    {
       "id": "no-range-plugin@example.org",
       "repoUrl": "https://github.com/example/no-range-plugin",
       "upstream": {
