@@ -147,7 +147,11 @@ declared range is not a test result (M053). The home table also shows the
 language subtags in list order (the first 2 and "+N" past 3), the month of
 the release read, and source and `.xpi` links that pass `safeHref` (M053).
 The month is the UTC year and month as `YYYY-MM`, and its `<time datetime>`
-holds the same text (M063).
+holds the same text (M063). The name cell shows "By <owner>" when `githubRepo`
+reads `upstream?.repoUrl ?? record.repoUrl`, so plugins of one name can be
+told apart. It sits outside `[data-name]` and `[data-description]`, so the
+search does not read it, and `contain: inline-size` cuts a long owner with an
+ellipsis and keeps it from widening the table (M076).
 A manifest `__MSG_` name or description takes its message from
 `_locales/en/`, `en_US/`, or `en_GB/` before the default locale (M055).
 The data also carries the GitHub repo's About text as `repoDescription`.
