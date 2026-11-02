@@ -1128,8 +1128,8 @@ A plugin's manifest and GitHub About text are the first place to change its
 text. A manifest edit shows after a new release with an `.xpi`. If the
 manifest's description is missing, only repeats the name, or is half or more
 Chinese, Japanese, or Korean, an About edit changes the description. A
-repository's owner can also ask the index for another name or description, through the link in the
-plugin page's Details card. It opens the form
+repository's owner can also ask the index for another name or description,
+through the link in the plugin page's Details card. It opens the form
 `.github/ISSUE_TEMPLATE/text-change.yml`, which adds the label `text-change`.
 
 The new text follows these rules, which `src/text-request/rules.ts` holds:
