@@ -1,21 +1,19 @@
 # Roadmap
 
 _The only authority on milestone status. Grouped by status, not ID._
-_Last hygiene check: 2026-10-31 (M072 review: M072 archived; candidate "Harden code search against limits" narrowed and parked; M069 row pruned; 6 lessons marked used M072, none captured; validate green)_
+_Last hygiene check: 2026-11-02 (M073 review: M073 archived; candidate "Show hold details in bot pull requests" graduated; new parked row "Close small gaps in pnpm refresh-holds"; M070 row pruned; 4 lessons marked used M073, none captured; validate green)_
 
 ## Milestones
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M073 | Show hold details in bot pull requests | review | — | normal | milestones/M073-hold-details.md |
 | M074 | Allow owner GitHub Pages update hosts | planned | — | normal | milestones/M074-owner-pages-hosts.md |
+| M073 | Show hold details in bot pull requests | done | — | normal | milestones/archive/M073-hold-details.md |
 | M072 | Wait for GitHub's code search reset | done | — | high | milestones/archive/M072-code-search-reset.md |
 | M071 | Find plugins by GitHub code search | done | M070 | normal | milestones/archive/M071-code-search-discovery.md |
-| M070 | Find plugins in the zotero-chinese catalog | done | — | normal | milestones/archive/M070-catalog-discovery.md |
 <!-- rows grouped by status, not by ID; keep the 3 most recent done/dropped rows; older ones: milestones/archive/ + git -->
 
 ## Candidates
-- Show hold details in bot pull requests: a held bot pull request body names only the hold reason, so the maintainer must search for the entry that a `name-match` hold matched and read the diff for an `update-host` host. Name the matched entry's name and repo, the update host, and the owner's account date in the body. On 2026-10-31, 36 of 58 held pull requests were `name-match`. See "Close gaps in bot holds and merges" — added 2026-11-02 — M056, D-033 — started M073
 - Allow owner GitHub Pages update hosts: `update-host` holds every `update_url` host other than github.com and raw.githubusercontent.com, so an update file on the owner's own `<owner>.github.io` site is held. On 2026-10-31, 5 of 18 `update-host` holds were such sites (#473, #142, #468, #510, #753). A change to the hold rule needs a D-entry that annotates D-033 — added 2026-11-02 — M056, D-033 — started M074
 - [low] Close gaps in bot holds and merges: M056 holds a bot pull request for five fixed reasons; also (1) start each candidate in Zotero before the merge job merges it, as the daily start-test does after; (2) `name-match` sees only indexed entries, not those of open bot pull requests or drafted earlier in the same run, and its name key keeps only a-z and 0-9, so a name wholly in another script never matches and a homoglyph passes; (3) hold a repo under 30 days old, which would have held 16 of the first 44 merged bot pull requests against 8 for the chosen rules (M056 plan); (4) put the `hold` label on a pull request whose merge-time check fails, so the daily job stops failing on it (M056 criteria audit); (5) a rate limit or 5xx on `GET /users/<owner>` holds for good as `owner-unread`; (6) `pnpm merge-discover` has no whole-run limit and prints only at the end, so a job cut at 30 minutes loses the summary, as "Bound the whole discover workflow's time" says for discover runs; (7) it checks against its checkout, not the commit the squash lands on (M056 review) — added 2026-10-29 — M056, D-033
 - [low] Check the restored discovery state: the discover read job restores `discovery-state-` by prefix from the default branch's cache in the same job that reads repos anyone can tag, so a job that a crafted repo took over could save a state entry that hides repos from later runs for up to 30 days; check the restored state's shape or keep the state outside the cache (M016 review); since M070 the state also keeps a record of a repo that a run does not find, so a forged entry can hide a catalog repo for the same 30 days (M070 review) — added 2026-10-26 — M009, M016, M070
