@@ -364,8 +364,10 @@ exception is a report that is abuse.
   minutes as a build-level `request-failed`, not recorded, and `pnpm
   discover` starts no lookup request and no read after 18 minutes from the
   command's start (lookups corrected M071),
-  counting the rest in `unread` with a warning. The `git check-ref-format`
-  check stops at 30 seconds and throws; in `pnpm propose` each other git
+  counting the rest in `unread` with a warning. The evidence reads of a name
+  match come after the repo read, with their own 60 seconds (M075), and a
+  repo read started before the 18 minutes can start them after it. The
+  `git check-ref-format` check stops at 30 seconds and throws; in `pnpm propose` each other git
   process stops at 2 minutes and `pnpm check` at 5 minutes, failing only
   its entry (M030).
   `pnpm close-issue` reads the pull request that `PR_NUMBER` names. When it
@@ -774,7 +776,8 @@ reused._
   requires. For a name match, `matchEvidence` (M075) reads the commits and tree
   of the new repo, and the meta, commits, and tree of each named entry on
   github.com, within 60 seconds for all of them. A read that fails leaves its
-  fact out, and a failed read of the newest commit also leaves out the files.
+  fact out, a failed read of the newest commit also leaves out the files, and
+  after a 403 or 429 it sends no more of these reads.
   `body()` in `propose.ts` writes `Hold: none` or the reasons with a
   `HOLD_TEXT` sentence each, and `proposeHandoff` posts the `hold` label to a
   held pull request. `holdDetails` (M073) gives the facts behind the reasons,

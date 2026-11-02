@@ -1,4 +1,4 @@
-import { boundFetch, type Fetch, githubClient } from "../upstream/reader.ts";
+import { boundFetch, type Fetch, githubClient, ReadFailure } from "../upstream/reader.ts";
 
 // The GitHub topics that discovery searches.
 export const TOPICS = ["zotero-plugin", "zotero-addon"];
@@ -212,16 +212,27 @@ export function starsOf(value: unknown): number | undefined {
   return Number.isInteger(value) && (value as number) >= 0 ? (value as number) : undefined;
 }
 
-// What one read gives, or undefined when it fails.
-async function attempt<T>(read: () => Promise<T>): Promise<T | undefined> {
-  try {
-    return await read();
-  } catch {
-    return undefined;
-  }
+// The reads of one `matchEvidence` call, which all stop at `ms`. Each gives the answer, or
+// undefined when it fails. After a 403 or 429, which can mean a rate limit, it sends no more.
+function evidenceReader(fetch: Fetch, ms: number) {
+  const github = githubClient(boundFetch(fetch, AbortSignal.timeout(ms)));
+  let refused = false;
+  return async (url: string) => {
+    if (refused) return undefined;
+    try {
+      return await github.get(url);
+    } catch (error) {
+      if (error instanceof ReadFailure && (error.status === 403 || error.status === 429)) refused = true;
+      return undefined;
+    }
+  };
 }
 
+type EvidenceRead = ReturnType<typeof evidenceReader>;
+
 const SHA = /^[0-9a-f]{40}$/;
+// The blob of an empty file, which says nothing about a plugin's code.
+const EMPTY_BLOB = "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391";
 
 // The SHA of the last commit on a page of the commits API.
 function lastSha(page: unknown): string | undefined {
@@ -236,53 +247,59 @@ function countedBlobs(tree: unknown): string[] | undefined {
   if (truncated !== false || !Array.isArray(items)) return undefined;
   const files = items.filter((item) => item?.type === "blob");
   if (!files.every((file) => typeof file.path === "string" && typeof file.sha === "string" && SHA.test(file.sha))) return undefined;
-  return files.filter((file) => !BOILERPLATE.test(file.path)).map((file) => file.sha as string);
+  return files.filter((file) => !BOILERPLATE.test(file.path) && file.sha !== EMPTY_BLOB).map((file) => file.sha as string);
 }
-
-type Github = ReturnType<typeof githubClient>;
 
 // A repo's first commit and counted files. The commits come one to a page, so the last page
 // holds the commit that GitHub lists last, taken as the first commit. A repo with one commit
-// has no last-page link. With no newest commit, there is no tree to read.
-async function gitFacts(github: Github, base: string): Promise<Pick<RepoFacts, "firstCommit" | "blobs">> {
-  const newest = await attempt(() => github.get(`${base}/commits?per_page=1`));
+// has no next-page or last-page link; a next-page link alone does not say where the first
+// commit is. With no newest commit, there is no tree to read.
+async function gitFacts(read: EvidenceRead, base: string): Promise<Pick<RepoFacts, "firstCommit" | "blobs">> {
+  const newest = await read(`${base}/commits?per_page=1`);
   const head = lastSha(newest?.body);
   if (head === undefined) return {};
-  const last = /<([^>]+)>;\s*rel="last"/.exec(newest?.link ?? "")?.[1];
-  const firstCommit = last === undefined ? head : lastSha((await attempt(() => github.get(last)))?.body);
-  const blobs = countedBlobs((await attempt(() => github.get(`${base}/git/trees/${head}?recursive=1`)))?.body);
+  const link = newest?.link ?? "";
+  const last = /<([^>]+)>;\s*rel="last"/.exec(link)?.[1];
+  const firstCommit = last !== undefined ? lastSha((await read(last))?.body) : /rel="next"/.test(link) ? undefined : head;
+  const blobs = countedBlobs((await read(`${base}/git/trees/${head}?recursive=1`))?.body);
   return { ...(firstCommit && { firstCommit }), ...(blobs && { blobs }) };
 }
 
 const repoBase = (repo: string) => `${API}/repos/${repo.split("/").map(encodeURIComponent).join("/")}`;
 
-async function metaFacts(github: Github, base: string): Promise<Pick<RepoFacts, "createdAt" | "stars">> {
-  const meta = (await attempt(() => github.json(base))) as { created_at?: unknown; stargazers_count?: unknown } | null | undefined;
+async function metaFacts(read: EvidenceRead, base: string): Promise<Pick<RepoFacts, "createdAt" | "stars">> {
+  const meta = (await read(base))?.body as { created_at?: unknown; stargazers_count?: unknown } | null | undefined;
   const createdAt = createdAtOf(meta?.created_at);
   const stars = starsOf(meta?.stargazers_count);
   return { ...(createdAt && { createdAt }), ...(stars !== undefined && { stars }) };
 }
 
-// The evidence for the entries that `facts` matches and names on github.com. With none, it
-// sends no request and gives only `ownMeta`, the new repo's date and stars when the caller
-// read them already. A read that fails or that `ms` cuts leaves its fact out, and it never
-// throws.
+// The evidence for the entries that `facts` matches and names on github.com. With no such
+// match it sends no request. `ownMeta` gives the new repo's date and stars when the caller
+// read them already. The new repo's reads go beside the entries', so a stalled read of one
+// leaves the other's facts. A read that fails or that `ms` cuts leaves its fact out, and it
+// never throws.
 export async function matchEvidence(
   fetch: Fetch,
   facts: Pick<HoldFacts, "repo" | "name" | "indexed">,
   ownMeta?: Pick<RepoFacts, "createdAt" | "stars">,
   ms = EVIDENCE_LIMIT_MS,
 ): Promise<MatchEvidence> {
-  const named = namedEntries(matchedEntries(facts)).filter((entry) => entry.github === true);
+  const named = namedEntries(matchedEntries(facts));
   if (named.length === 0) return { own: ownMeta ?? {}, entries: new Map() };
-  const github = githubClient(boundFetch(fetch, AbortSignal.timeout(ms)));
+  const readable = named.filter((entry) => entry.github === true);
+  const read = evidenceReader(fetch, ms);
   const ownBase = repoBase(facts.repo);
-  const own = { ...(ownMeta ?? (await metaFacts(github, ownBase))), ...(await gitFacts(github, ownBase)) };
-  const entries = new Map<string, RepoFacts>();
-  for (const entry of named) {
-    const base = repoBase(entryRepo(entry));
-    entries.set(entryRepo(entry), { ...(await metaFacts(github, base)), ...(await gitFacts(github, base)) });
-  }
+  const readOwn = async (): Promise<RepoFacts> => ({ ...(ownMeta ?? (await metaFacts(read, ownBase))), ...(readable.length > 0 ? await gitFacts(read, ownBase) : {}) });
+  const readEntries = async () => {
+    const entries = new Map<string, RepoFacts>();
+    for (const entry of readable) {
+      const base = repoBase(entryRepo(entry));
+      entries.set(entryRepo(entry), { ...(await metaFacts(read, base)), ...(await gitFacts(read, base)) });
+    }
+    return entries;
+  };
+  const [own, entries] = await Promise.all([readOwn(), readEntries()]);
   return { own, entries };
 }
 

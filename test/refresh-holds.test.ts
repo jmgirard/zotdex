@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { afterAll, describe, expect, test } from "vitest";
@@ -157,6 +157,16 @@ describe("pnpm refresh-holds", () => {
     const { result } = await run({ [LIST]: { json: [pull(1, { body: source(1, ["name-match"]) })] }, ...entry(1, { name: "Zotero Second" }), ...evidence, [url]: { status: 500, json: {} } }, false);
     expect(result.failed).toEqual([]);
     expect(result.changed).toEqual([{ number: 1, lines: [...lines, "- Owner's GitHub account created: 2026-10-20"] }]);
+  });
+
+  test("a match with no entry on github.com reads and prints the new repo's facts", async () => {
+    const root = mkdtempSync(join(tmpdir(), "zpi-refresh-root-"));
+    temps.push(root);
+    mkdirSync(join(root, "a@x"));
+    writeFileSync(join(root, "a@x", "meta.json"), JSON.stringify({ name: "Zotero Second", repoUrl: "https://gitlab.com/carol/second" }));
+    const { fetch } = fixtureFetch({ [LIST]: { json: [pull(1, { body: source(1, ["name-match"]) })] }, ...entry(1, { name: "Zotero Second" }), ...evidence });
+    const result = await refreshHolds({ fetch, indexRepo: "example/index", root, apply: false });
+    expect(result.changed[0].lines[0]).toBe("- This repo: created 2026-03-04, 2 stars");
   });
 
   test("a pull request held without name-match sends no request for these facts", async () => {

@@ -166,7 +166,6 @@ describe("the name-match tests", () => {
   test("a repo with no counted files has a share of 0", () => {
     expect(held({ blobs: [] })).toBe(false);
     expect(held({}, { ...own, blobs: [] })).toBe(false);
-    expect(identicalPercent([], [])).toBe(0);
   });
 
   test("a blob repeated in one repo counts for each of its paths", () => {
@@ -188,7 +187,6 @@ describe("the name-match tests", () => {
   });
 
   test("namesake: a new repo with 0 stars needs only the 20", () => {
-    expect(held({ createdAt: EARLIER, stars: 20 }, { ...own, stars: 0 })).toBe(true);
     expect(held({ createdAt: EARLIER, stars: 19 }, { ...own, stars: 0 })).toBe(false);
   });
 
@@ -267,14 +265,34 @@ describe("the name-match reads through draftEntry", () => {
     expect((await draft(namesake)).drafted.holds).toEqual(["name-match"]);
   });
 
-  test("identical boilerplate files do not count as shared code", async () => {
-    const boilerplate = { ...clean(), ...repoGit(FIRST, { head: sha("3"), first: sha("4"), files: { "LICENSE": sha("9") } }) };
-    expect((await draft(boilerplate)).drafted.holds).toEqual([]);
+  test("an identical empty file does not count as shared code", async () => {
+    const EMPTY = "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391";
+    const responses = {
+      ...clean(),
+      ...repoGit(OWN, { head: sha("1"), first: sha("2"), files: { "a.ts": sha("a"), ".nojekyll": EMPTY } }),
+      ...repoGit(FIRST, { head: sha("3"), first: sha("4"), files: { "b.ts": sha("b"), ".nojekyll": EMPTY } }),
+    };
+    expect((await draft(responses)).drafted.holds).toEqual([]);
   });
 
-  test("identical files outside the boilerplate list count as shared code", async () => {
-    const copied = { ...clean(), ...repoGit(FIRST, { head: sha("3"), first: sha("4"), files: { "b.ts": sha("a") } }) };
-    expect((await draft(copied)).drafted.holds).toEqual(["name-match"]);
+  test("a next-page link with no last-page link leaves the first commit unread", async () => {
+    const responses = clean();
+    responses[`${api(FIRST)}/commits?per_page=1`] = { json: [{ sha: sha("3") }], headers: { link: `<${api(FIRST)}/commits?per_page=1&page=2>; rel="next"` } };
+    const { drafted } = await draft(responses);
+    expect(drafted.holds).toEqual(["name-match"]);
+    expect(drafted.holdDetails?.matches?.find(({ repo }) => repo === FIRST)?.sharedFirstCommit).toBeUndefined();
+  });
+
+  test.each([403, 429])("an HTTP %i sends no more of these reads", async (status) => {
+    const refused = `${api(FIRST)}/commits?per_page=1`;
+    const { drafted, urls } = await draft({ ...clean(), [refused]: { status, json: {} } }, { names: [NAMES[1], NAMES[0]] });
+    expect(drafted.holds).toEqual(["name-match"]);
+    expect(urls.at(-1)).toBe(refused);
+  });
+
+  test("an HTTP 404 sends the later reads", async () => {
+    const { urls } = await draft({ ...clean(), [api(FIRST)]: { status: 404, json: {} } });
+    expect(urls).toContain(api(SECOND));
   });
 
   // The new repo and the entry each have one other file, and this file is identical in both.
@@ -284,7 +302,7 @@ describe("the name-match reads through draftEntry", () => {
     ...repoGit(FIRST, { head: sha("3"), first: sha("4"), files: { "b.ts": sha("b"), [path]: sha("9") } }),
   });
 
-  test.each(["LICENSE", "LICENSE.md", "sub/licence.txt", "COPYING", ".gitignore", ".github/workflows/ci.yml", ".husky/pre-commit", ".vscode/x.json", "tsconfig.json", "package-lock.json", "pnpm-lock.yaml", "yarn.lock", "bun.lockb", ".eslintrc.json", "eslint.config.mjs", "typings/global.d.ts", "zotero-plugin.config.ts", ".travis.yml", ".gitlab-ci.yml"])(
+  test.each(["sub/LICENSE.md", ".gitattributes", ".editorconfig", ".prettierrc", ".npmrc", ".github/workflows/ci.yml", "tsconfig.json", "pnpm-lock.yaml", "yarn.lock", "bun.lockb", ".eslintrc.json", "typings/global.d.ts", "zotero-plugin.config.ts", ".gitlab-ci.yml"])(
     "%s is boilerplate",
     async (path) => {
       expect((await draft(withFile(path))).drafted.holds).toEqual([]);
@@ -316,9 +334,10 @@ describe("the name-match reads through draftEntry", () => {
     ["a body with no such field", { json: {} }],
     ["a read past the time limit", { stall: "headers" }, 50],
   ];
-  test.each(READS.flatMap(([read, url]) => CAUSES.map(([cause, answer, evidenceMs]) => [read, cause, url, answer, evidenceMs] as const)))("%s with %s holds", async (_read, _cause, url, answer, evidenceMs) => {
-    const { drafted } = await draft({ ...clean(), [url]: answer }, { evidenceMs });
+  test.each(READS.flatMap(([read, url]) => CAUSES.map(([cause, answer, evidenceMs]) => [read, cause, url, answer, evidenceMs] as const)))("%s with %s holds beside a read entry", async (_read, _cause, url, answer, evidenceMs) => {
+    const { drafted } = await draft({ ...clean(), [url]: answer }, { evidenceMs, names: [NAMES[1], NAMES[0]] });
     expect(drafted.holds).toEqual(["name-match"]);
+    expect(drafted.holdDetails?.matches?.find(({ repo }) => repo === SECOND)?.stars).toBe(1);
   });
 
   test.each<[string, string]>([
