@@ -493,7 +493,7 @@ export const HOLD_TEXT: Record<HoldReason, string> = {
   "owner-unread": "The bot could not read when the repo owner's GitHub account was made.",
   "new-account": "The repo owner's GitHub account is less than 30 days old.",
   "update-host":
-    "The plugin's update.json is not on github.com, raw.githubusercontent.com, or the repo owner's own `<owner>.github.io` site, a redirect takes the read of it off the owner's site, or a URL of that read uses `http:`, so another party can change its updates.",
+    "The plugin's update.json is not on github.com, raw.githubusercontent.com, or the repo owner's own `<owner>.github.io` site, a redirect takes the read of it off the owner's site, or a URL of that read uses `http:`, so its updates come from another host or over an unencrypted connection.",
   "issue-no-topic": "An issue proposed this repo, and the repo has neither the zotero-plugin nor the zotero-addon topic.",
 };
 

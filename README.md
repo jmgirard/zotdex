@@ -812,8 +812,10 @@ To write these lines to held pull requests that are already open, run
 account. For a `name-match`, it also reads the new repository and the named
 entries on GitHub. A failed read of these says "not read" in the line and
 does not fail the pull request. For an `update-host`, it also reads the
-update file at the `update_url`. A failed read of that file fails the pull
-request and leaves its body as it is. First update your
+update file's route: it requests the `update_url` and follows its redirects,
+without reading the file's contents. A failed read of the route fails the
+pull request and leaves its body as it is. An HTTP error, a refused host, and
+a failed request are each a failed read. First update your
 checkout to the default branch, or the match
 lines can be wrong. The command acts on an open pull request that meets all
 of these conditions:

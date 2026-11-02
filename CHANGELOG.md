@@ -10,8 +10,8 @@
   owner's own `<owner>.github.io` site to any other host, the bot pull request
   now gets the `update-host` hold. On every host, a URL of that read that uses
   `http:` also gives this hold. The hold's details name the other hosts and
-  the `http:` use, and `pnpm refresh-holds` reads the update file to work them
-  out.
+  the `http:` use, and `pnpm refresh-holds` requests the `update_url` and
+  follows its redirects to work them out.
 - A plugin's name or repository name that matches another owner's entry no
   longer gets the `name-match` hold by itself, so plugins that share a name
   are listed side by side. Two repositories with the same first commit keep
