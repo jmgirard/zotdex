@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Each page's footer and the home page's intro now say: "This index is
+  unofficial and not affiliated with or endorsed by Zotero, and it cannot vet
+  the plugins it lists." This replaces the footer's line that the index does
+  not vet the plugins it lists. The About page gives the reason, and its title
+  and the plugin page links now read "How the index reads plugins".
 - Each plugin page's Details card now links to a new issue form where the
   repository's owner can ask for another name or description. The form and the
   About page state the rules: English, a name of 2 to 40 characters, and a
@@ -509,7 +514,7 @@
   facts, the release that the index read, and the languages. The
   overrides sit under their own heading in that card. The About page says
   how the index shows the declared range, runs the start test, counts user
-  reports, and applies overrides. It also says that the index does not vet
+  reports, and applies overrides. It also says that the index cannot vet
   the plugins it lists. The notes on the start test and the overrides that
   the plugin pages held before are now on the About page.
 - The index shows more plugin descriptions in English. A manifest name or

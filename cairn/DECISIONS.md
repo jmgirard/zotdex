@@ -744,3 +744,14 @@ not its replacement. `pnpm check` allows one override of a field with no
 `version`, so an owner's text takes the place of a text that a maintainer wrote
 under D-030 to D-038, and the older reason stays only in git. The command prints
 the override that a request replaces or removes, so the maintainer sees it first.
+
+### D-051: The pages say the index cannot vet plugins, replacing the footer's does-not-vet line
+
+2026-11-02, M080. M054's plan kept a footer line on every page that said the
+index does not vet the plugins it lists. At the question set the user asked for
+one disclaimer that also says the index is unofficial and that it is unable to
+vet. So every page's footer and the home page's intro now say that the index
+cannot vet, which goes past "does not". The holds and the start tests screen in
+part, and neither is a review of plugin code. About gives the reason: one person
+maintains the index, and each plugin can change with any release. This choice is
+wrong if the index comes to review plugin code.

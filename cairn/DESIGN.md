@@ -133,8 +133,10 @@ and its marks, the start test, which reports count, and how overrides and
 the Used column work (M054), and the categories, each with its `about`
 text (M066). The home table marks an archived plugin with
 "Archived" after its name (M053), and the data carries the same `archived`
-fact (M013). Each page says that the index does not vet the plugins it
-lists.
+fact (M013). Each page's footer and the home page's intro say: "This index
+is unofficial and not affiliated with or endorsed by Zotero, and it cannot vet
+the plugins it lists." (`DISCLAIMER`, M080, D-051). The holds and the start
+tests screen in part, and neither is a review of plugin code.
 
 Each plugin page's table shows one row, and the home table one declared
 mark, for each Zotero major version in `ZOTERO_MAJORS` (7 to 10). A

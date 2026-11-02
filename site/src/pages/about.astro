@@ -11,7 +11,7 @@ const offered = new Set(categoryOptions(plugins).map(({ value }) => value));
 
 <Base title="About: Zotero plugin index">
   <div class="hero">
-    <h1>How the index checks plugins</h1>
+    <h1>How the index reads plugins</h1>
     <p class="intro">
       Each day, a build reads every listed plugin's GitHub repository and releases. A plugin page shows the facts that
       the build found for one release, the release the index read. This page says where each fact comes from and what it
@@ -175,8 +175,10 @@ const offered = new Set(categoryOptions(plugins).map(({ value }) => value));
   <section class="card" id="not-vetted" data-about="not-vetted">
     <h2>What the index does not do</h2>
     <p>
-      This index does not vet the plugins it lists. It does not review plugin code, and it does not endorse plugins. It
-      does not host plugin files: the download link on a plugin page goes to the author's own file, which the index does
+      The index is unofficial: it is not affiliated with or endorsed by Zotero. It cannot vet the plugins it lists,
+      because one person maintains it and each plugin can change with any release. The start test is not a review of
+      plugin code: it shows only whether a plugin starts. The index does not endorse plugins. It does not host plugin
+      files: the download link on a plugin page goes to the author's own file, which the index does
       not copy.
     </p>
   </section>

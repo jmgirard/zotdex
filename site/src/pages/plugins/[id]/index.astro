@@ -196,7 +196,7 @@ const { min, max } = declaredRange(record);
                 Declared range: <span data-fact="declared-range">{rangeText(record)}</span>.{" "}
               </>
             )}
-            <a href={`${BASE}about/`}>How the index checks plugins</a>
+            <a href={`${BASE}about/`}>How the index reads plugins</a>
           </p>
           <div class="report-row" data-reports>
             <p id="report-prompt" data-fact="report-prompt">Tried version {upstream.version} on Zotero? Report what you found:</p>
@@ -213,7 +213,7 @@ const { min, max } = declaredRange(record);
               The last build could not read this plugin: <code>{failure.name}</code>: {failure.message}
             </p>
             <p class="fineprint" data-about-line>
-              <a href={`${BASE}about/`}>How the index checks plugins</a>
+              <a href={`${BASE}about/`}>How the index reads plugins</a>
             </p>
           </>
         )
