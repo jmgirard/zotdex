@@ -1,13 +1,13 @@
 # M082: Mark plugins that need a paid service
 
-- **Status:** planned
+- **Status:** in-progress
 - **Priority:** normal
 - **Depends on:** —
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — the data file and the site show a new fact to visitors and data consumers
-- **Branch/PR:** —
+- **Branch/PR:** m082-paid-service-mark
 
 ## Goal
 
@@ -41,7 +41,7 @@ Show on the site when a plugin's main use needs a paid service from its maker, a
 
 ## Tasks
 
-- [ ] T1: Add `paidService` to `schemas/index.v1.schema.json`, with tests in `test/check.test.ts` for each refusal that AC1 names. `src/text-request/request.ts:154` already keeps other fields of `index.json`; confirm that with a test only if the change could break it.
+- [x] T1: Add `paidService` to `schemas/index.v1.schema.json`, with tests in `test/check.test.ts` for each refusal that AC1 names. `src/text-request/request.ts:154` already keeps other fields of `index.json`; confirm that with a test only if the change could break it.
 - [ ] T2: Add the field to `PluginRecord`, `readEntry`, and every record path in `src/build/build.ts` (lines 215, 222, 229, and the map at 241), and to `schemas/plugins.v1.schema.json`. Confirm that `pnpm add-start-results` keeps it, with tests.
 - [ ] T3: Add a credit card icon to `Icon.astro` and a `PaidServiceMark.astro` beside `NoSourceMark.astro`. Show it on the home row and in the h1, add the legend line and the Details fact (linked through `safeHref`), and add fixture records by text edit. Add a fixture id to each hand list in `test/site.test.ts`. Check 375 and 1280 px in the browser pane, with a site built from the deployed data.
 - [ ] T4: Read the entries at a named commit by AC6's procedure, using login and account words as well as payment words. Write `cairn/references/paid-service-sweep.md` with its Provenance block and `INDEX.md` line, and write `paidService` on each entry that the read marks, with an English `note` that says what is paid. An entry in `plugins/` that the named `plugins.json` lacks is listed as not read for that text. At review, a reader re-reads 20 random verdicts of no mark, and a wrong one is a finding.
@@ -62,6 +62,7 @@ Show on the site when a plugin's main use needs a paid service from its maker, a
 - 2026-11-02: plan chose a hand-kept field over bot detection because 197 of 671 listed plugins hit a wide word list and most hits read as false in a sample; falsified by a rule that separates them with few errors.
 - 2026-11-02: plan chose a record-level optional v1 data field over a list in the site build because the site builds from the data, and marks must show on failure records too; falsified by a data consumer that a schema refetch breaks.
 - 2026-11-02: split: all parts stay in M082; re-reading new plugins goes to the candidate row "Read new plugins for paid services".
+- 2026-11-02: T1 done: the index schema gains `paidService`, and 11 check tests failed before the schema change and pass after it; `pnpm test` passes with 2155 tests. No test added for `text-request`, since it edits only `overrides` of the parsed file.
 
 ## Decisions
 

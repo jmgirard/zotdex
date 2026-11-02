@@ -11,6 +11,31 @@
       "description": "Version of this schema.",
       "const": 1
     },
+    "paidService": {
+      "description": "Set when a maintainer read that the plugin's main use stops without paying its maker, or stops after a trial. A lasting free plan with a paid upgrade, a plugin that also works with a third party's key, and a donation do not count.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["note", "source", "read"],
+      "properties": {
+        "note": {
+          "description": "What the plugin needs to be paid for, in English.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "\\S"
+        },
+        "source": {
+          "description": "The page that says so.",
+          "type": "string",
+          "pattern": "^https://\\S+$"
+        },
+        "read": {
+          "description": "The date the maintainer read that page, as YYYY-MM-DD.",
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        }
+      }
+    },
     "overrides": {
       "description": "Corrections to upstream facts that the plugin author cannot or will not fix upstream. A description override can also give English text for a plugin whose manifest and GitHub descriptions are each missing, not in English, only repeat the name, or are half or more Chinese, Japanese, or Korean. It can also replace an English description of fewer than six words that the site shows without the override. A repository's owner can also ask for a name or description override, whatever the upstream text says.",
       "type": "array",
