@@ -53,7 +53,7 @@ A held bot pull request's body names the facts behind its hold reasons, when the
 - [x] T1: In `src/discover/holds.ts:53`, let one function decide the matches for both `holdReasons` and the details, so the two cannot disagree. Cut a matched name to 100 characters, list at most 5 entries, and keep the count of the others. Add the `test/holds.test.ts` cases.
 - [x] T2: Add the optional details to `PlannedEntry` and `entrySchema` (`src/discover/handoff.ts:27`, `:60`) and to `planned()`, `Drafted`, and the written `ReadItem` (`src/discover/discover.ts:100`, `:291`). Add the `test/handoff.test.ts` refusals.
 - [x] T3: In `body()` (`src/discover/propose.ts:540`), write the detail lines through `code()`, with each repo as a link to `https://github.com/<owner>/<repo>`. Add the `test/propose.test.ts` cases and the `test/merge.test.ts` skip. Extend the body-length test to the longest details the schema allows.
-- [ ] T4: Add `src/discover/refresh-holds.ts`, `src/discover/refresh-holds-cli.ts`, and the `package.json` script, in the shape of `merge.ts` and `merge-cli.ts`. Read each entry's `meta.json` at the head SHA, the index with `indexed()`, and the account date with `ownerCreatedAt`. Share the detail lines with `body()`. If a `name-match` matches nothing now, say so in its line. Add `test/refresh-holds.test.ts`.
+- [x] T4: Add `src/discover/refresh-holds.ts`, `src/discover/refresh-holds-cli.ts`, and the `package.json` script, in the shape of `merge.ts` and `merge-cli.ts`. Read each entry's `meta.json` at the head SHA, the index with `indexed()`, and the account date with `ownerCreatedAt`. Share the detail lines with `body()`. If a `name-match` matches nothing now, say so in its line. Add `test/refresh-holds.test.ts`.
 - [ ] T5: Write the README, DESIGN, and CHANGELOG text, and wrap it near 76 columns. Run the verify slot.
 - [ ] T6: Run `pnpm refresh-holds` without `--apply` on this repo with `GITHUB_TOKEN` from `gh auth token`, and put the count and the 3 compared facts in the work log.
 
@@ -74,6 +74,7 @@ A held bot pull request's body names the facts behind its hold reasons, when the
 - 2026-11-02: T1 done: `matchedEntries` now decides both the `name-match` reason and `holdDetails`; a matched entry whose repo the handoff would refuse counts in `moreMatches`, so one odd entry cannot refuse a whole handoff; verify clean.
 - 2026-11-02: T2 done: `holdDetails` rides on the drafted entry, the written item, and `planned()`, and `entrySchema` bounds it; `REPO` moved to `holds.ts`; verify clean.
 - 2026-11-02: T3 done: `body()` writes `DETAILS_HEADING` and `holdDetailLines` after the reason sentences; one line per fact, with each repo as a link; verify clean.
+- 2026-11-02: T4 done: `pnpm refresh-holds [--apply]` shares `botPullProblem`, `newEntry`, and `contents` with `pnpm merge-discover`; it looks for the Hold line and detail heading from the body's end, so quoted check output cannot pose as them; verify clean.
 
 ## Decisions
 

@@ -33,7 +33,7 @@ export interface MergeResult {
   failed: { number: number; message: string }[];
 }
 
-interface PullJson {
+export interface PullJson {
   number?: unknown;
   state?: unknown;
   draft?: unknown;
@@ -45,20 +45,27 @@ interface PullJson {
   base?: { ref?: unknown } | null;
 }
 
-interface FileJson {
+export interface FileJson {
   filename?: unknown;
   status?: unknown;
+}
+
+// Why a pull request is not the bot's own, or undefined when it is.
+export function botPullProblem(pull: PullJson, indexRepo: string): string | undefined {
+  const ref = pull.head?.ref;
+  const headRepo = pull.head?.repo?.full_name;
+  if (typeof ref !== "string" || !ref.startsWith(PREFIX)) return `its head branch does not start with ${PREFIX}`;
+  if (typeof headRepo !== "string" || headRepo.toLowerCase() !== indexRepo.toLowerCase()) return `its head branch is not in ${indexRepo}`;
+  if (pull.user?.login !== BOT_LOGIN) return `its author is not ${BOT_LOGIN}`;
+  return undefined;
 }
 
 // The first of the conditions on a pull request's own record that it fails, or undefined.
 // The body's one Hold line outside fenced code must be `Hold: none`, so a line in the
 // quoted check output cannot stand in for it.
 function recordProblem(pull: PullJson, indexRepo: string, now: Date, waitHours: number): string | undefined {
-  const ref = pull.head?.ref;
-  const headRepo = pull.head?.repo?.full_name;
-  if (typeof ref !== "string" || !ref.startsWith(PREFIX)) return `its head branch does not start with ${PREFIX}`;
-  if (typeof headRepo !== "string" || headRepo.toLowerCase() !== indexRepo.toLowerCase()) return `its head branch is not in ${indexRepo}`;
-  if (pull.user?.login !== BOT_LOGIN) return `its author is not ${BOT_LOGIN}`;
+  const notBot = botPullProblem(pull, indexRepo);
+  if (notBot) return notBot;
   const holdLines = typeof pull.body === "string" ? unfencedLines(pull.body).filter((line) => line.startsWith("Hold:")) : [];
   if (holdLines.join("\n") !== "Hold: none") return "its body has no Hold: none line";
   // GitHub label names are unique ignoring case.
@@ -176,7 +183,7 @@ export async function mergeDiscover(options: MergeOptions): Promise<MergeResult>
 
 // The id of the one entry that `files` adds, when they are exactly its two files, both
 // added, and nothing else.
-function newEntry(files: FileJson[]): string | undefined {
+export function newEntry(files: FileJson[]): string | undefined {
   if (files.length !== ENTRY_FILES.length) return undefined;
   const ids = new Set<string>();
   const names: string[] = [];
@@ -192,7 +199,7 @@ function newEntry(files: FileJson[]): string | undefined {
 }
 
 // The text of a file from the contents API, which gives it in base64.
-async function contents(github: ReturnType<typeof githubClient>, url: string): Promise<string> {
+export async function contents(github: ReturnType<typeof githubClient>, url: string): Promise<string> {
   const file = (await github.json(url)) as { encoding?: unknown; content?: unknown; size?: unknown } | null;
   if (file?.encoding !== "base64" || typeof file.content !== "string") throw new Error(`GET ${url} returned no base64 content`);
   const bytes = Buffer.from(file.content, "base64");
