@@ -1,16 +1,15 @@
 # Roadmap
 
 _The only authority on milestone status. Grouped by status, not ID._
-_Last hygiene check: 2026-11-02 (M077 archived; "Hold update files that leave owner sites" graduated; new parked row "Tighten the refresh-holds update read"; M074 row pruned; 25 lessons, 4 marked used; validate green)_
+_Last hygiene check: 2026-11-02 (M078 archived; "Add a dark mode toggle to the site" graduated; new parked row "Check the theme button's double label"; M075 row pruned; 25 lessons, 11 marked used; validate green)_
 
 ## Milestones
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M078 | Add a dark mode toggle to the site | review | — | normal | milestones/M078-dark-mode-toggle.md |
+| M078 | Add a dark mode toggle to the site | done | — | normal | milestones/archive/M078-dark-mode-toggle.md |
 | M077 | Hold update files that leave owner sites | done | — | normal | milestones/archive/M077-update-files-leaving-sites.md |
 | M076 | Show the owner on home page rows | done | — | normal | milestones/archive/M076-owner-on-rows.md |
-| M075 | Hold name matches only on evidence of copying | done | — | normal | milestones/archive/M075-name-holds.md |
 <!-- rows grouped by status, not by ID; keep the 3 most recent done/dropped rows; older ones: milestones/archive/ + git -->
 
 ## Candidates
@@ -20,7 +19,6 @@ _Last hygiene check: 2026-11-02 (M077 archived; "Hold update files that leave ow
 - [low] Let a run by hand start every plugin: after a change to the start-test code, the reporter, or a Zotero pin, carried results stay up to 7 days, and nothing lets a maintainer skip the carry for one run (M059 review) — added 2026-10-30 — M059, D-035
 - [low] Check categories on new plugins: M066's 0 wrong of 363 was read on the tuning data, and 2 of 27 were wrong on 19 untuned plugins; patterns still match words out of sense ("Note:", "easy to read", "two-column layout", "magnifying glass", a Zotero "translator", 期刊缩写); read the categories of plugins added since 2026-10-31 and tune; a plugin page's category links name only the category, after "Index categories" (M066 review); low, as About says a category can be wrong — added 2026-10-31 — M066, D-037
 - [low] Review repeats of a listed add-on id: `entry-exists` refuses a second repo with a listed add-on id, so the repo read first keeps the id, as D-045 ended for names; the count of such refusals is not read; Zotero treats one id as one plugin, so both cannot simply be listed (M075 plan) — added 2026-11-02 — M075, D-045
-- [low] Add a dark mode toggle to the site: the site only follows `prefers-color-scheme`; add a top-bar button, a saved choice, and a pre-paint script on every page, which D-026 allows; low, as the system setting already switches it — added 2026-11-02 — D-026 — started M078
 - [parked] Check the restored discovery state: the discover read job restores `discovery-state-` by prefix from the default branch's cache in the same job that reads repos anyone can tag, so a job that a crafted repo took over could save a state entry that hides repos from later runs for up to 30 days; check the restored state's shape or keep the state outside the cache (M016 review); since M070 the state also keeps a record of a repo that a run does not find, so a forged entry can hide a catalog repo for the same 30 days (M070 review); promote when a discover read job runs plugin code or a restored state hides a repo — added 2026-10-26 — M009, M016, M070
 - [parked] Block more IPv6 ranges in the host check: the M004 host check lets through ::ffff:0:0:0/96 (SIIT), 64:ff9b:1::/48 (local NAT64), 100::/64, 2001::/23 (Teredo included), fec0::/10, 3fff::/20, 5f00::/16, and 192.88.99.0/24; the translated ones reach a private address only on a NAT64 or SIIT network (M004 review); promote when the build runs on a NAT64 or SIIT network — added 2026-10-25 — M004
 - [parked] Close the gaps in the issue sweeps: a report sweep and a hand rerun of a failed report run can both read no bot comment and comment twice; a close-only rerun after the reporter edits a refused report into a valid one closes it as completed under the old refusal comment, so it counts; an "Add a plugin" issue whose body no longer parses closes as not planned while its own bot pull request stays open; if GitHub's pull request list lags, the second of two batch issues naming one repo can force-push the first's branch; a report sweep reads every open report issue and the comments of each one in the age window, capped only in answers, and anyone can open report issues without limit, each run spends the repo's shared API budget, and a build whose issue read fails withholds the deploy (D-013) (M020 review); `discover.yml` still compares `github.ref_name` with the default branch, which a tag of that name passes, and its dispatches from another ref still enter the `discover` group, where one from a branch cut before M043 keeps the default one-pending setting, which GitHub's docs do not say how it meets `queue: max` (M040 review, M043 plan); row "Limit floods of report issues" merged 2026-10-31 by the M066 review for the line cap; promote when a run log or report issue shows one of these gaps — added 2026-10-28 — M020, M040, D-013
