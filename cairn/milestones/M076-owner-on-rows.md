@@ -24,11 +24,11 @@ Each home page row with a GitHub repo shows that repo's owner, so plugins of one
 
 ## Acceptance criteria
 
-- [ ] AC1: In the name cell, a row whose `upstream.repoUrl`, or else `record.repoUrl`, gives a result from `githubRepo` shows that owner in an element outside `[data-name]`. A site test shows an upstream record and a failed record.
+- [ ] AC1: In the name cell, a row whose `upstream?.repoUrl ?? record.repoUrl`, as the source link reads it, gives a result from `githubRepo` shows that owner. The owner's element sits outside `[data-name]` and `[data-description]`. A site test shows an upstream record and a failed record.
 - [ ] AC2: A row whose repo URL is on another host, or is not a URL, shows no owner. A site test shows both.
 - [ ] AC3: A site test shows two records with one display name and different owners, each showing its own owner.
-- [ ] AC4: The search box does not match a row on its owner's text alone, shown by the home script test.
-- [ ] AC5: At 375 px wide, the home page has no horizontal scroll and an owner breaks at no letter. A hand check in the browser pane records this in the Review section.
+- [ ] AC4: The search box does not match a row on its owner's text alone. The exact name-cell check shows the owner outside both attributes, and the home script test shows no match.
+- [ ] AC5: At 375 px wide, with the longest current owner and a 39-letter fixture owner, neither the document nor `.table-card` scrolls sideways. An owner breaks only at a hyphen or is cut with an ellipsis.
 - [ ] AC6: README's home page text and DESIGN's home table text state the owner. CHANGELOG's Unreleased section has an entry for it.
 - [ ] AC7: The `verify` slot of `cairn/PROFILE.md` runs clean.
 
@@ -56,6 +56,7 @@ Each home page row with a GitHub repo shows that repo's owner, so plugins of one
 - 2026-11-02: idea vet: none found; 5 names already appear twice in the index, read 2026-11-02.
 - 2026-11-02: question set: show the owner — no preference; the agent took the recommendation to show it.
 - 2026-11-02: lessons used: 2026-10-27 (M021), 2026-10-28 (M035), 2026-10-29 (M048), 2026-10-29 (M054), 2026-10-30 (M061).
+- 2026-11-02: criteria audit (full): 3 findings, on AC1's source, AC4's test stand-in, and AC5's scroll element and long owners; all taken in this amendment after e38c8aa. The first pass found the same source and search facts.
 
 ## Decisions
 
