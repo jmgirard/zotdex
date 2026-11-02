@@ -15,7 +15,8 @@ pager paragraph below says. The sort ignores letter case
 and accents, and names that are then equal sort by plugin id. Each row
 shows the plugin's name, the owner of its repository as `By <owner>`, and
 its description. If the repository address is not of the form
-`https://github.com/<owner>/<repo>`, the row shows no owner. If the plugin's GitHub
+`https://github.com/<owner>/<repo>`, with or without a trailing slash, the
+row shows no owner. If the plugin's GitHub
 repository is archived, the row shows "Archived" after the name. Then come
 one cell for each Zotero major version from 7 to 10 and a "Menus and
 settings" cell. Next comes the month of

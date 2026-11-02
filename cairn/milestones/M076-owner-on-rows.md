@@ -1,6 +1,6 @@
 # M076: Show the owner on home page rows
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** normal
 - **Depends on:** —
 - **Driving RR:** —
@@ -64,6 +64,7 @@ Each home page row with a GitHub repo shows that repo's owner, so plugins of one
 - 2026-11-02: T3 also: every owner stays on one line; at 375 px the 2 planted owners and the real `CentreForDigitalHumanities` are cut with an ellipsis; light and dark seen at both widths with no console error; searching "windingwind" shows 1 of its 7 rows, whose description names it.
 - 2026-11-02: T4 done: README, DESIGN, and CHANGELOG state the owner; `pnpm test` and `pnpm check` pass.
 - 2026-11-02: the simple-english hook flagged 1 new README line, now fixed, and 3 older README and 8 older CHANGELOG hits; the older lines stay, since this milestone did not write them and several quote program output.
+- 2026-11-02: claim audit: 20 claims read, 1 corrected — README.md, CHANGELOG.md, site/src/layouts/Base.astro, test/site.test.ts
 
 ## Decisions
 
