@@ -461,7 +461,8 @@ exception is a report that is abuse.
   built-ins (M060);
   `rowMajors` in `version.ts` gives each row's `data-zotero`.
   `src/site/theme.ts` holds `applySavedTheme` and `wireThemeButton`, whose
-  source text the layout's classic scripts carry, under the same limit (M078).
+  source text the layout's classic scripts carry, so each calls and reads
+  nothing from outside its body except built-ins and browser globals (M078).
   `site/src/data.ts` holds the template helpers, among them `homeOrder`,
   `majorStart`, `shortLanguages`, and `monthYear` for the home table, and
   `compatMajors`, `majorReport`, and `startWords` for the plugin page's

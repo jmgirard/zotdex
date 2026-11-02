@@ -8,7 +8,9 @@ it does not review or endorse plugins.
 
 The website <https://jmgirard.github.io/zotero-plugin-index/> shows the index.
 A top bar on every page links to the home page and to the About page. It
-also links to the "Add a plugin" issue form and to the data file. The home
+also links to the "Add a plugin" issue form and to the data file. With
+JavaScript, it also has a button that flips the page between the light and
+dark color schemes. The home
 page lists every plugin in one table, sorted by name. Without JavaScript the
 table shows every row. With it, the table shows 50 rows at a time, as the
 pager paragraph below says. The sort ignores letter case

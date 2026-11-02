@@ -20,8 +20,7 @@ export function applySavedTheme(): void {
 export function wireThemeButton(): void {
   const key = "zotero-plugin-index-theme";
   const root = document.documentElement;
-  const button = document.querySelector("[data-theme-toggle]");
-  if (!button) return;
+  const button = document.querySelector("[data-theme-toggle]")!;
   const system = matchMedia("(prefers-color-scheme: dark)");
   const systemScheme = () => (system.matches ? "dark" : "light");
   const otherScheme = () => ((root.getAttribute("data-theme") ?? systemScheme()) === "dark" ? "light" : "dark");
@@ -32,14 +31,18 @@ export function wireThemeButton(): void {
     button.setAttribute("title", words);
     button.setAttribute("data-gives", other);
   };
+  // A press whose save failed holds only on this page, so a later read must not undo it.
+  let unsaved = false;
   // Another page or tab can change the saved scheme, and Back can restore this page as it was.
   const reread = () => {
-    try {
-      const saved = localStorage.getItem(key);
-      if (saved === "light" || saved === "dark") root.setAttribute("data-theme", saved);
-      else root.removeAttribute("data-theme");
-    } catch {
-      // Blocked storage keeps what a press set on this page.
+    if (!unsaved) {
+      try {
+        const saved = localStorage.getItem(key);
+        if (saved === "light" || saved === "dark") root.setAttribute("data-theme", saved);
+        else root.removeAttribute("data-theme");
+      } catch {
+        // A failed read leaves the scheme as it is.
+      }
     }
     draw();
   };
@@ -51,8 +54,9 @@ export function wireThemeButton(): void {
     try {
       if (follow) localStorage.removeItem(key);
       else localStorage.setItem(key, other);
+      unsaved = false;
     } catch {
-      // Blocked storage keeps the choice on this page only.
+      unsaved = true;
     }
     draw();
   });

@@ -194,8 +194,9 @@ const themeButton = `(${wireThemeButton})();`;
       }
       .topbar nav {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
-        gap: var(--space-10);
+        gap: var(--space-2) var(--space-10);
         margin-left: auto;
         font-size: var(--text-m);
       }
@@ -338,7 +339,7 @@ const themeButton = `(${wireThemeButton})();`;
         font-size: var(--text-s);
         color: var(--muted);
       }
-      /* The script removes hidden from each control, so a page without JavaScript shows none. */
+      /* A script removes hidden from each control, so a page without JavaScript shows none. */
       [data-theme-toggle][hidden],
       .search[hidden],
       .language-filter[hidden],

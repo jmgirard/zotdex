@@ -5,11 +5,12 @@ export const THEME_KEY = "zotero-plugin-index-theme";
 export const SOURCE_SCRIPTS = { head: `(${applySavedTheme})();`, button: `(${wireThemeButton})();` };
 
 type Scheme = "light" | "dark";
-// "getter" throws on reading localStorage, and "methods" throws on each of its methods.
-type Blocked = "getter" | "methods" | undefined;
+// "getter" throws on reading localStorage, "methods" throws on each of its methods, and
+// "writes" throws only on the two that change it.
+type Blocked = "getter" | "methods" | "writes" | undefined;
 
 // The theme scripts run against stand-ins for <html>, the button, the system setting, storage,
-// and the window. With head only, the button script does not run.
+// and the window.
 export function themePage(
   { system, saved, blocked, headOnly }: { system: Scheme; saved?: string; blocked?: Blocked; headOnly?: boolean },
   scripts = SOURCE_SCRIPTS,
@@ -40,11 +41,11 @@ export function themePage(
       return stored.get(name) ?? null;
     },
     setItem(name: string, value: string) {
-      if (state.blocked === "methods") throw new Error("blocked");
+      if (state.blocked === "methods" || state.blocked === "writes") throw new Error("blocked");
       stored.set(name, value);
     },
     removeItem(name: string) {
-      if (state.blocked === "methods") throw new Error("blocked");
+      if (state.blocked === "methods" || state.blocked === "writes") throw new Error("blocked");
       stored.delete(name);
     },
   };

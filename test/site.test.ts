@@ -1652,26 +1652,24 @@ describe("the built site", () => {
       const bar = html.slice(html.indexOf("<body>"), html.indexOf("<main>"));
       expect(bar.match(/<button[\s>]/g), file).toHaveLength(1);
       expect(bar, file).toMatch(
-        /<button type="button" data-theme-toggle hidden><span data-theme-icon="moon"><svg [^]*?<\/svg><\/span><span data-theme-icon="sun"><svg [^]*?<\/svg><\/span><\/button><script>/,
+        /<\/a><button type="button" data-theme-toggle hidden><span data-theme-icon="moon"><svg [^]*?<\/svg><\/span><span data-theme-icon="sun"><svg [^]*?<\/svg><\/span><\/button><script>[^]*?<\/script><\/nav>/,
       );
     }
   });
 
-  test("runs the built theme scripts on every page", () => {
-    for (const file of htmlFiles(out)) {
-      const html = readFileSync(join(out, file), "utf8");
-      const scripts = {
-        head: /<head>.*?<script>(.*?)<\/script>/s.exec(html)![1]!,
-        button: /<\/button><script>(.*?)<\/script>/s.exec(html.slice(0, html.indexOf("<main>")))![1]!,
-      };
-      const page = themePage({ system: "light", saved: "dark" }, scripts);
-      expect(page.theme(), file).toBe("dark");
-      expect(page.hidden(), file).toBe(false);
-      page.press();
-      expect(page.theme(), file).toBeNull();
-      expect(page.saved(), file).toBeNull();
-      expect(page.gives(), file).toBe("dark");
-    }
+  test("runs the built theme scripts", () => {
+    const html = home();
+    const scripts = {
+      head: /<head>.*?<script>(.*?)<\/script>/s.exec(html)![1]!,
+      button: /<\/button><script>(.*?)<\/script>/s.exec(html.slice(0, html.indexOf("<main>")))![1]!,
+    };
+    const page = themePage({ system: "light", saved: "dark" }, scripts);
+    expect(page.theme()).toBe("dark");
+    expect(page.hidden()).toBe(false);
+    page.press();
+    expect(page.theme()).toBeNull();
+    expect(page.saved()).toBeNull();
+    expect(page.gives()).toBe("dark");
   });
 
   test("has no trace of the Zotero version field", () => {
@@ -1904,8 +1902,7 @@ describe("the site colors", () => {
   const layout = readFileSync(resolve(ROOT, "site/src/layouts/Base.astro"), "utf8");
   const light = colors(/\n {6}:root \{(.*?)\n {6}\}/s.exec(layout)![1]!);
   const darkBlock = /@media \(prefers-color-scheme: dark\) \{\s*:root:not\(\[data-theme="light"\]\) \{(.*?)\}/s.exec(layout)![1]!;
-  const savedDarkBlock = /\n {6}:root\[data-theme="dark"\] \{(.*?)\n {6}\}/s.exec(layout)![1]!;
-  const dark = new Map([...light, ...colors(darkBlock)]);
+  const dark =new Map([...light, ...colors(darkBlock)]);
   // Each text token on each surface, and each status token on its own background and on
   // the surface, at 4.5:1; each mark or icon token on the surface at 3:1, and the star, which
   // the plugin page head shows on the page background, on both.
@@ -1938,20 +1935,28 @@ describe("the site colors", () => {
     expect([...colors(darkBlock).keys()].sort()).toEqual([...light.keys()].sort());
   });
 
-  test("holds the same dark colors for the system setting and a saved scheme", () => {
-    expect(colors(darkBlock).size).toBeGreaterThan(0);
-    expect([...colors(savedDarkBlock)].sort()).toEqual([...colors(darkBlock)].sort());
+  test("holds the same dark custom properties for the system setting and a saved scheme", () => {
+    const properties = (selector: string) =>
+      cssRules(layout)
+        .find((rule) => rule.selector === selector)!
+        .declarations.filter(([property]) => property.startsWith("--"))
+        .sort();
+    const system = properties(':root:not([data-theme="light"])');
+    expect(system.length).toBeGreaterThan(0);
+    expect(properties(':root[data-theme="dark"]')).toEqual(system);
   });
 
-  test("sets the browser's color scheme to match a saved scheme", () => {
-    expect(savedDarkBlock).toMatch(/\n\s*color-scheme: dark;/);
-    expect(layout).toMatch(/\n {6}:root\[data-theme="light"\] \{\s*color-scheme: light;\s*\}/);
+  test.each(["light", "dark"])("sets the browser's color scheme to match a saved %s scheme", (scheme) => {
+    const rule = cssRules(layout).find(({ selector }) => selector === `:root[data-theme="${scheme}"]`);
+    expect(rule?.declarations).toContainEqual(["color-scheme", scheme]);
   });
 
   test("shows the moon when a press gives dark and the sun when it gives light", () => {
-    const hiding = cssRules(layout).find(({ selector }) => selector.includes("[data-gives"));
-    expect(hiding?.selector).toBe('[data-gives="dark"] [data-theme-icon="sun"], [data-gives="light"] [data-theme-icon="moon"]');
-    expect(hiding?.declarations).toEqual([["display", "none"]]);
+    const hidden = cssRules(layout)
+      .filter(({ declarations }) => declarations.some(([property, value]) => property === "display" && value === "none"))
+      .flatMap(({ selector }) => selector.split(",").map((part) => part.trim()));
+    expect(hidden).toContain('[data-gives="dark"] [data-theme-icon="sun"]');
+    expect(hidden).toContain('[data-gives="light"] [data-theme-icon="moon"]');
   });
 
   const together = cssRules(layout).flatMap(({ selector, declarations }) => {

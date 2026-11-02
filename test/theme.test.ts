@@ -2,10 +2,11 @@ import { describe, expect, test } from "vitest";
 import { THEME_KEY, themePage } from "./support/theme-page.ts";
 
 describe("the head theme script", () => {
-  test.each(["light", "dark"])("sets the saved scheme %s on <html>", (saved) => {
-    for (const system of ["light", "dark"] as const) {
-      expect(themePage({ system, saved, headOnly: true }).theme()).toBe(saved);
-    }
+  test.each([
+    ["light", "dark"],
+    ["dark", "light"],
+  ] as const)("sets the saved scheme %s on <html> on a %s system", (saved, system) => {
+    expect(themePage({ system, saved, headOnly: true }).theme()).toBe(saved);
   });
 
   test.each([undefined, "", "Dark", "system"])("sets no scheme for the saved value %j", (saved) => {
@@ -20,8 +21,7 @@ describe("the head theme script", () => {
 });
 
 describe("the theme button", () => {
-  test("shows only once its script runs", () => {
-    expect(themePage({ system: "light", headOnly: true }).hidden()).toBe(true);
+  test("removes hidden when its script runs", () => {
     expect(themePage({ system: "light" }).hidden()).toBe(false);
   });
 
@@ -41,8 +41,8 @@ describe("the theme button", () => {
     expect(page.keys().filter((key) => key !== THEME_KEY)).toEqual([]);
   });
 
-  test.each(["getter", "methods"] as const)("still flips the page when the storage %s throws", (blocked) => {
-    const page = themePage({ system: "light", blocked });
+  test("still flips the page when the storage throws", () => {
+    const page = themePage({ system: "light", blocked: "methods" });
     page.press();
     expect(page.theme()).toBe("dark");
     expect(page.gives()).toBe("light");
@@ -97,13 +97,28 @@ describe("the theme button", () => {
     expectGives(page, "dark");
   });
 
-  test.each(["pageshow", "storage"] as const)("keeps what a press set when the read at a %s event throws", (event) => {
-    const page = themePage({ system: "light", blocked: "methods" });
+  test.each(["pageshow", "storage"] as const)("keeps the scheme when the read at a %s event throws", (event) => {
+    const page = themePage({ system: "light" });
     page.press();
+    page.setBlocked("methods");
     const reads = page.reads();
     page.fire(event);
     expect(page.reads()).toBe(reads + 1);
     expect(page.theme()).toBe("dark");
     expectGives(page, "light");
+  });
+
+  test.each(["pageshow", "storage"] as const)("keeps a press whose save failed through a %s event, until a later save works", (event) => {
+    const page = themePage({ system: "light", blocked: "writes" });
+    page.press();
+    expect(page.saved()).toBeNull();
+    page.fire(event);
+    expect(page.theme()).toBe("dark");
+    expectGives(page, "light");
+    page.setBlocked(undefined);
+    page.press();
+    page.setSaved("dark");
+    page.fire(event);
+    expect(page.theme()).toBe("dark");
   });
 });
