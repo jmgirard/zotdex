@@ -77,6 +77,7 @@ The bot holds a pull request whose update file leaves the repo owner's `<owner>.
 - 2026-11-02: T6: `pnpm test` 1967 passed, 6 skipped; `pnpm check` 671 entries, 0 problems; `pnpm refresh-holds` without `--apply` exits 0, with 10 to edit, 15 unchanged, and 36 skipped; #142's lines name `forrt.org`, and 7 pull requests gain a redirect line; the other 3 to edit (#289, #485, #592) are `name-match` holds whose read facts differ from their bodies.
 - 2026-11-02: claim audit: 72 claims read, 2 corrected — CHANGELOG.md, README.md, src/discover/holds.ts, src/discover/propose.ts, src/discover/refresh-holds.ts, src/upstream/reader.ts, test/handoff.test.ts, test/holds.test.ts, test/propose.test.ts, test/refresh-holds.test.ts, test/support/plugin-repo.ts, test/upstream.test.ts; the corrections are `HOLD_TEXT`'s closing clause and the text on what `pnpm refresh-holds` reads; the same reader re-read both, and they hold.
 - 2026-11-02: T7 stays open at this handoff, since it runs after the merge at review, by its own wording; `pnpm test` after the corrections: 1967 passed, 6 skipped.
+- 2026-11-02: step-7 approval: m077-update-files-leaving-sites approved for merge
 
 ## Decisions
 
