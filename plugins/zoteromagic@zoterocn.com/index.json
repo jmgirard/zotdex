@@ -1,8 +1,3 @@
 {
-  "schemaVersion": 1,
-  "paidService": {
-    "note": "The license section lists a 7-day full-feature trial and a purchase link in the plugin's settings.",
-    "source": "https://github.com/l0o0/MagicZotero/blob/HEAD/README.md",
-    "read": "2026-11-02"
-  }
+  "schemaVersion": 1
 }

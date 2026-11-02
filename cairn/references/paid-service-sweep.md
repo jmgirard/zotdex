@@ -43,6 +43,13 @@ to the service, or what stops after the trial. For `ai4paper-v2@cpc.dev`
 the session also read the maker's docs page. Its purchase page needs a login,
 which the session did not attempt.
 
+A later check of the notes against their sources changed two of the 7 marks.
+The README of `filetrans@euclpts.com` does not say that the code is bought, so
+its source is now the maker's tutorial, which does. `zoteromagic@zoterocn.com`
+lost its mark, for the same reason as `ai4paper-v2@cpc.dev`. The session read its
+README, its site's home page, and the start of its docs. The docs page text did
+not load in full. So 6 entries carry a mark.
+
 A mark means that the plugin's main use stops without paying its maker, or
 stops after a trial (D-054).
 
@@ -85,12 +92,11 @@ README file found was read.
 The `note` and `source` of each are in the entry's `index.json`.
 
 - fanyipaiban@fanyipaiban.com: translation spends credits bought from the maker
-- filetrans@euclpts.com: needs an activation code, translation deducts credits from a balance
+- filetrans@euclpts.com: needs a purchased activation code, translation deducts credits from a balance
 - geyi-zotero-translator@geyi.net: needs a paid Geyi membership, new accounts get a one-day trial
 - zotero-ai-guided-reader@jhj223: new generation stops after a 7-day trial without the maker's Pro plan
 - zotero@equalang.com: document translation spends Equalang credits after one-time free credits
 - zotero@immersivetranslate.com: works only for paying Immersive Translate Pro members
-- zoteromagic@zoterocn.com: the only free use named is a 7-day trial, beside a purchase link
 
 ## No mark
 
@@ -417,6 +423,7 @@ The `note` and `source` of each are in the entry's `index.json`.
 - zoteroinspire@itp.ac.cn: subscription means arXiv categories
 - zoterojs-bridge@local: local bridge, collection membership only
 - zoterolinkedmindmaps@oekeur.github.io: node membership, syncs through Zotero, no separate account
+- zoteromagic@zoterocn.com: states a 7-day trial and a purchase link, not what stops after the trial
 - zoteronamedannotations@oliverdudgeon.dev: credits means acknowledgements
 - zoteropaperagent@github.com: free QR login gives a key, no payment named
 - zoteropdftranslate@euclpts.com: free engines plus third-party translators
