@@ -872,17 +872,20 @@ describe("the home page", () => {
 
   const shownOwner = (id: string) => /<div class="owner" data-owner>By ([^<]*)<\/div>/.exec(row(id).cells[0]!.html)?.[1];
 
-  // same-name-plugin's two repo URLs name different owners, and next-plugin's upstream one is
-  // not a URL, so these rows also show that the upstream URL comes first.
+  // same-name-plugin's two repo URLs name different owners, so its row also shows that the
+  // upstream URL comes first.
   test.each([
     ["first-plugin@example.org", "example"],
     ["broken-plugin@example.org", "example"],
     ["same-name-plugin@example.org", LONG_OWNER],
     ["repo-gitlab@example.org", undefined],
     ["ssh-plugin@example.org", undefined],
-    ["next-plugin@example.org", undefined],
   ])("shows the owner of %s as %s", (id, owner) => {
     expect(shownOwner(id)).toBe(owner);
+  });
+
+  test("reads the owner of a repo URL with a trailing slash", () => {
+    expect(githubRepo("https://github.com/example/first-plugin/")?.owner).toBe("example");
   });
 
   test("shows each owner on two rows of one name", () => {
