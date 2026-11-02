@@ -23,12 +23,12 @@ Each page of the site and the README say that the index is unofficial, not affil
 
 ## Acceptance criteria
 
-- [ ] AC1: Every HTML file that the site build writes from the site test fixture, as `htmlFiles(out)` lists them, has in its footer one `<p data-fact="disclaimer">` whose text is "This index is unofficial and not affiliated with or endorsed by Zotero, and it cannot vet the plugins it lists." None holds `data-fact="not-vetted"` or the words "does not vet".
-- [ ] AC2: The built home page's `.intro` paragraph, above the table, opens with that sentence.
-- [ ] AC3: The built About page's `not-vetted` section says that the index is unofficial and not affiliated with or endorsed by Zotero, that it cannot vet the plugins it lists, and that the start test is not a review of plugin code.
-- [ ] AC4: The opening paragraph of `README.md` says that the index is unofficial, is not affiliated with or endorsed by Zotero, and cannot vet the plugins it lists. `README.md` "The site" and `cairn/DESIGN.md` Contract boundary quote that sentence, and `CHANGELOG.md` Unreleased states it.
-- [ ] AC5: In the browser pane, on the site that `npx -y pnpm@12.15.0 site --out <dir>` builds over the downloaded deployed `v1/plugins.json`, the footer line shows on the home, About, and one plugin page at 375 and 1280 px, wrapping at spaces only by eye, and in a same-origin `<iframe>` of that width with `border: 0` the `scrollWidth` of `documentElement` does not pass its `clientWidth`.
-- [ ] AC6: The active profile's verify slot is clean, run as the slot names its commands.
+- [x] AC1: Every HTML file that the site build writes from the site test fixture, as `htmlFiles(out)` lists them, has in its footer one `<p data-fact="disclaimer">` whose text is "This index is unofficial and not affiliated with or endorsed by Zotero, and it cannot vet the plugins it lists." None holds `data-fact="not-vetted"` or the words "does not vet".
+- [x] AC2: The built home page's `.intro` paragraph, above the table, opens with that sentence.
+- [x] AC3: The built About page's `not-vetted` section says that the index is unofficial and not affiliated with or endorsed by Zotero, that it cannot vet the plugins it lists, and that the start test is not a review of plugin code.
+- [x] AC4: The opening paragraph of `README.md` says that the index is unofficial, is not affiliated with or endorsed by Zotero, and cannot vet the plugins it lists. `README.md` "The site" and `cairn/DESIGN.md` Contract boundary quote that sentence, and `CHANGELOG.md` Unreleased states it.
+- [x] AC5: In the browser pane, on the site that `npx -y pnpm@12.15.0 site --out <dir>` builds over the downloaded deployed `v1/plugins.json`, the footer line shows on the home, About, and one plugin page at 375 and 1280 px, wrapping at spaces only by eye, and in a same-origin `<iframe>` of that width with `border: 0` the `scrollWidth` of `documentElement` does not pass its `clientWidth`.
+- [x] AC6: The active profile's verify slot is clean, run as the slot names its commands.
 
 ## Coverage
 
@@ -63,3 +63,12 @@ Each page of the site and the README say that the index is unofficial, not affil
 ## Decisions
 
 ## Review
+
+Evidence read 2026-11-02 at bdedf54, the branch level with `origin/main`.
+
+- AC1 evidence: the site tests "puts the top bar and the footer on every page" and "drops the old footer line from every page…" pass over `htmlFiles(out)` with the sentence stated literally in the test; on the real site's 673 built pages, a read found the line on 673 and "does not vet" on 0.
+- AC2 evidence: the site test "…opens the home intro with the disclaimer" passes, and it checks the intro's start and its place before the table; the pane shows it at 375 and 1280 px.
+- AC3 evidence: the About site test passes on "The index is unofficial: it is not affiliated with or endorsed by Zotero.", "It cannot vet the plugins it lists.", and "The start test is not a review of plugin code."
+- AC4 evidence: a joined read of `README.md` finds the opening's statement and the quoted sentence in "The site"; a joined read of `cairn/DESIGN.md` finds the quoted sentence in Contract boundary; `CHANGELOG.md` Unreleased opens with it.
+- AC5 evidence: pane, site built from the downloaded deployed data at bdedf54: home, About, and BetterRSS plugin page at 375 and 1280 px in iframes with `border: 0`: the line has width and `scrollWidth` equals `clientWidth` in all 6; a planted 900 px block read 900 at T3; screenshots at T3 and now show words breaking only at spaces.
+- AC6 evidence: `pnpm test` 2088 passed, 6 skipped; `pnpm check` 671 entries, 0 problems; tracking checks pass; no snapshot files changed.
