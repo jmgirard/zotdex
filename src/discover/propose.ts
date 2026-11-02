@@ -489,7 +489,7 @@ export const HOLD_LABEL = "hold";
 // The sentence a pull request body gives for each hold reason.
 export const HOLD_TEXT: Record<HoldReason, string> = {
   "name-match":
-    "The plugin's name matches the name of an entry from another owner, or its repo name matches that entry's repo name, ignoring case, characters other than a to z and 0 to 9, and the separate words zotero, plugin, addon, and for.",
+    "The plugin's name matches the name of an entry from another owner, or its repo name matches that entry's repo name, ignoring case, characters other than a to z and 0 to 9, and the separate words zotero, plugin, addon, and for. The bot holds such a match if the two repos have the same first commit, or if identical files are at least 30% of either repo's files other than boilerplate. It also holds if the entry's repo is older, has at least 20 stars, and has at least 10 times this repo's stars, or if the bot could not read these facts.",
   "owner-unread": "The bot could not read when the repo owner's GitHub account was made.",
   "new-account": "The repo owner's GitHub account is less than 30 days old.",
   "update-host": "The plugin's update.json is not on github.com, raw.githubusercontent.com, or the repo owner's own `<owner>.github.io` site, so its updates come from another host.",
@@ -559,9 +559,18 @@ export function body(entry: Written, checked: { status: number; output: string }
 // The lines under DETAILS_HEADING. A name goes in a code span, so it cannot add a line or
 // a mention; the schema's repo pattern keeps a repo safe in a link.
 export function holdDetailLines(details: HoldDetails): string[] {
+  const matched = (details.matches?.length ?? 0) > 0 || details.moreMatches;
+  const created = (day: string | undefined) => `created ${day ?? "not read"}`;
+  const stars = (count: number | undefined) => (count === undefined ? "stars not read" : `${count} stars`);
+  const firstCommit = (shared: boolean | undefined) => (shared === undefined ? "first commit not read" : shared ? "same first commit" : "another first commit");
+  const identical = (percent: number | undefined) => (percent === undefined ? "identical files not read" : `${percent}% identical files`);
   return [
     ...(details.matches?.length === 0 && !details.moreMatches ? ["- Matching entries: none now"] : []),
-    ...(details.matches ?? []).map(({ repo, name }) => `- Matching entry: ${name === undefined ? "" : `${code(name)} `}[${repo}](https://github.com/${repo})`),
+    ...(matched ? [`- This repo: ${created(details.repoCreatedOn)}, ${stars(details.repoStars)}`] : []),
+    ...(details.matches ?? []).map(
+      (match) =>
+        `- Matching entry: ${match.name === undefined ? "" : `${code(match.name)} `}[${match.repo}](https://github.com/${match.repo}): ${created(match.createdOn)}, ${stars(match.stars)}, ${firstCommit(match.sharedFirstCommit)}, ${identical(match.identicalPercent)}`,
+    ),
     ...(details.moreMatches ? [`- Other matching entries: ${details.moreMatches}`] : []),
     ...(details.updateHost === undefined ? [] : [`- Update host: ${code(details.updateHost)}`]),
     `- Owner's GitHub account created: ${details.ownerCreatedOn ?? "the bot could not read the date"}`,

@@ -749,7 +749,15 @@ reasons, in this order:
   an entry's repository. The match ignores letter case and each character
   other than `a` to `z` and `0` to `9`. It also drops `zotero`, `plugin`,
   `addon`, and `for` where they stand apart as words. A name with nothing
-  left matches no entry.
+  left matches no entry. Two plugins can share a name, so a match alone is
+  no hold. The bot holds for a matched entry in one of these cases:
+  - The two default branches have the same first commit.
+  - Identical files are at least 30% of either repository's files, not
+    counting boilerplate such as licenses, lock files, and CI files.
+  - The entry's repository is older, has at least 20 stars, and has at least
+    10 times the new repository's stars.
+  - The bot did not get one of these facts. This includes an entry that is
+    not on GitHub and an entry past the 5 that the body names.
 - `owner-unread`: the bot did not get the creation date of the owner's
   GitHub account.
 - `new-account`: the owner's GitHub account is less than 30 days old.
@@ -771,8 +779,12 @@ issue still gets the comment that names the pull request.
 Below the reasons, a held pull request's body has the lines "Details for
 the maintainer". They give the facts behind the hold:
 
-- For `name-match`, one line for each matched entry, with its name and a
-  link to its repository. The body names at most 5 and counts the others.
+- For `name-match`, one line with the new repository's creation day and
+  stars, and one line for each matched entry. An entry's line has its name
+  and a link to its repository. It also has the repository's creation day
+  and stars, whether the first commit is the same, and the larger share of
+  identical files. The body names at most 5 and counts the others. A fact
+  that the bot did not get says "not read".
 - For `update-host`, the host of the manifest's `update_url`.
 - For every hold, the day that the owner's GitHub account was made, or a
   note that the bot did not get that day.
@@ -781,7 +793,9 @@ To write these lines to held pull requests that are already open, run
 `pnpm refresh-holds` by hand. No workflow runs it. It needs
 `GITHUB_REPOSITORY`. It works out the facts again from the pull request's
 `meta.json`, the `plugins/` folder in your checkout, and the owner's
-account. So first update your checkout to the default branch, or the match
+account. For a `name-match`, it also reads the repositories on GitHub, and a
+failed read says "not read" in the line and fails nothing. First update your
+checkout to the default branch, or the match
 lines can be wrong. The command acts on an open pull request that meets all
 of these conditions:
 

@@ -1,13 +1,13 @@
 # M075: Hold name matches only on evidence of copying
 
-- **Status:** planned
+- **Status:** in-progress
 - **Priority:** normal
 - **Depends on:** —
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — the rule decides which plugins reach the public index
-- **Branch/PR:** —
+- **Branch/PR:** m075-name-holds
 
 ## Goal
 
@@ -56,11 +56,11 @@ An entry is unread if any fact that its tests need is not read. A failed request
 
 ## Tasks
 
-- [ ] T1: In `holds.ts`, add the boilerplate list and pure functions for the two tests, and add the evidence to `HoldFacts`. Keep `holdReasons` synchronous. Export `matchedEntries`. Add a github.com flag to `IndexedName` in `indexed()`.
-- [ ] T2: In `discover.ts`, read the evidence after `ownerCreatedAt` and before `holdReasons`. Read the new repo's first commit and tree once, and each entry's meta, first commit, and tree. Parse `rel="last"` from `github.get`'s `link` for the first commit. Encode owner and repo. Apply a time limit that a test can set. Update existing name-match fixtures and exact-line fixtures in `test/propose.test.ts` and `test/refresh-holds.test.ts`, since they would otherwise pass as unread.
-- [ ] T3: Add the new `HoldDetails` fields with bounds to `holds.ts` and `handoff.ts`. Write `HOLD_TEXT` and `holdDetailLines` in `propose.ts`.
-- [ ] T4: Make `refresh-holds.ts` read the evidence and pass it to `holdDetails`.
-- [ ] T5: Update README, DESIGN, and CHANGELOG. Run the `verify` slot.
+- [x] T1: In `holds.ts`, add the boilerplate list and pure functions for the two tests, and add the evidence to `HoldFacts`. Keep `holdReasons` synchronous. Export `matchedEntries`. Add a github.com flag to `IndexedName` in `indexed()`.
+- [x] T2: In `discover.ts`, read the evidence after `ownerCreatedAt` and before `holdReasons`. Read the new repo's first commit and tree once, and each entry's meta, first commit, and tree. Parse `rel="last"` from `github.get`'s `link` for the first commit. Encode owner and repo. Apply a time limit that a test can set. Update existing name-match fixtures and exact-line fixtures in `test/propose.test.ts` and `test/refresh-holds.test.ts`, since they would otherwise pass as unread.
+- [x] T3: Add the new `HoldDetails` fields with bounds to `holds.ts` and `handoff.ts`. Write `HOLD_TEXT` and `holdDetailLines` in `propose.ts`.
+- [x] T4: Make `refresh-holds.ts` read the evidence and pass it to `holdDetails`.
+- [x] T5: Update README, DESIGN, and CHANGELOG. Run the `verify` slot.
 - [ ] T6: After the merge, run `pnpm refresh-holds --apply`. Then release each open pull request whose only hold is `name-match` and whose refreshed facts pass no test and show no unread entry and no `moreMatches` count. Set `Hold: none` with `UNHELD_TEXT`, and remove the detail lines and the `hold` label. Read each one first and read it back. The user granted this at the question set.
 
 ## Work log
@@ -76,6 +76,8 @@ An entry is unread if any fact that its tests need is not read. A failed request
 - 2026-11-02: collision: D-033 holds every name match; D-045 annotates it. Candidate "Close gaps in bot holds and merges" stays, cross-referenced in Out. Inbox: 0 open issues; 36 open bot pull requests overlap, handled by T6.
 - 2026-11-02: lessons used: 2026-10-25 (M001), 2026-10-31 (M070), 2026-11-02 (M074).
 - 2026-11-02: criteria audit (full), two passes. First pass ran on the star-only draft; its findings on handoff validation, draft wiring, refresh-holds, non-GitHub entries, read limits, and test axes are taken. Second pass, committed after e38c8aa by the stop hook's order, gave 6 findings on AC1, AC2, AC3, AC5, AC6, and T2/T6; all taken in this amendment. The derived fact `holds: []` narrowed to its clean case.
+- 2026-11-02: T1, T2: `matchEvidence` in `holds.ts` does the reads, since `ownerCreatedAt` already reads there; `draftEntry` calls it. An identical-file share rounds down to a whole percent, so the bound compares what the body prints.
+- 2026-11-02: T3 to T5: `pluginRepo` sends no `stargazers_count` unless a test sets it, since `test/build.test.ts` compares build output with a fixed file; such a test's name match reads as unread. `pnpm test` 1891 passed, `pnpm check` 0 problems. The other README and CHANGELOG lines that the writing hook flags were there before this milestone and stay.
 
 ## Decisions
 

@@ -1,11 +1,11 @@
-import { mkdtempSync, rmSync } from "node:fs";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { afterAll, describe, expect, test } from "vitest";
 import { draftEntry, indexed } from "../src/discover/discover.ts";
-import { holdDetails, holdReasons, type IndexedName } from "../src/discover/holds.ts";
+import { holdDetails, holdReasons, identicalPercent, type IndexedName, matchEvidence, type RepoFacts } from "../src/discover/holds.ts";
 import { fixtureFetch, type Responses } from "./support/fixture-fetch.ts";
-import { pluginRepo } from "./support/plugin-repo.ts";
+import { pluginRepo, repoGit, sha } from "./support/plugin-repo.ts";
 
 const NOW = new Date("2026-10-29T12:00:00Z");
 const DAY = 24 * 60 * 60 * 1000;
@@ -118,6 +118,262 @@ describe("the hold reasons", () => {
       "new-account",
       "update-host",
       "issue-no-topic",
+    ]);
+  });
+});
+
+describe("the name-match tests", () => {
+  const OWN_DAY = new Date("2026-06-01T00:00:00Z");
+  const EARLIER = new Date("2026-01-01T00:00:00Z");
+  const own: RepoFacts = { createdAt: OWN_DAY, stars: 2, firstCommit: "own", blobs: ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"] };
+  const other: RepoFacts = { createdAt: new Date("2026-09-01T00:00:00Z"), stars: 0, firstCommit: "other", blobs: ["x"] };
+  const MATCH: IndexedName = { owner: "alice", repoPart: "zotero-paper-sidebar", name: "Paper Sidebar", github: true };
+  const SECOND: IndexedName = { owner: "carol", repoPart: "paper-sidebar", name: "Paper Sidebar", github: true };
+  const reasons = (entries: [IndexedName, RepoFacts][], ownFacts: RepoFacts = own) =>
+    holdReasons({
+      repo: "bob/paper-tool",
+      name: "Paper Sidebar",
+      updateHost: "github.com",
+      topics: [],
+      issueRun: false,
+      ownerCreatedAt: new Date("2015-01-01T00:00:00Z"),
+      now: NOW,
+      indexed: entries.map(([entry]) => entry),
+      evidence: { own: ownFacts, entries: new Map(entries.map(([entry, facts]) => [`${entry.owner}/${entry.repoPart}`, facts])) },
+    });
+  const held = (facts: RepoFacts, ownFacts?: RepoFacts) => reasons([[MATCH, { ...other, ...facts }]], ownFacts).includes("name-match");
+
+  test("an entry that passes no test does not hold", () => {
+    expect(held({})).toBe(false);
+  });
+
+  // `same` blobs that both have, then blobs that only `prefix` has, up to `total`.
+  const files = (same: number, total: number, prefix: string) => [...Array.from({ length: same }, (_, n) => `same${n}`), ...Array.from({ length: total - same }, (_, n) => `${prefix}${n}`)];
+
+  test("a shared first commit holds with no file in common", () => {
+    expect(held({ firstCommit: "own" })).toBe(true);
+  });
+
+  test.each<[string, number, number, number, boolean]>([
+    ["30% of the new repo's files", 30, 100, 1000, true],
+    ["29% of the new repo's files", 29, 100, 1000, false],
+    ["30% of the entry's files", 30, 1000, 100, true],
+    ["29% of the entry's files", 29, 1000, 100, false],
+  ])("shared code: %s", (_name, same, ownTotal, entryTotal, expected) => {
+    expect(held({ blobs: files(same, entryTotal, "entry") }, { ...own, blobs: files(same, ownTotal, "own") })).toBe(expected);
+  });
+
+  test("a repo with no counted files has a share of 0", () => {
+    expect(held({ blobs: [] })).toBe(false);
+    expect(held({}, { ...own, blobs: [] })).toBe(false);
+    expect(identicalPercent([], [])).toBe(0);
+  });
+
+  test("a blob repeated in one repo counts for each of its paths", () => {
+    expect(identicalPercent(["a", "a", "b", "c"], ["a", "t", "u", "v", "w", "x", "y", "z"])).toBe(50);
+  });
+
+  test.each<[string, RepoFacts, boolean]>([
+    ["older, 20 stars, 10 times", { createdAt: EARLIER, stars: 20 }, true],
+    ["older, 19 stars, 9.5 times", { createdAt: EARLIER, stars: 19 }, false],
+    ["created at the same time", { createdAt: OWN_DAY, stars: 200 }, false],
+    ["created later", { createdAt: new Date("2026-07-01T00:00:00Z"), stars: 200 }, false],
+  ])("namesake against 2 stars: %s", (_name, facts, expected) => {
+    expect(held(facts)).toBe(expected);
+  });
+
+  test("namesake: 49 stars against 5 is under 10 times, and 50 is not", () => {
+    expect(held({ createdAt: EARLIER, stars: 49 }, { ...own, stars: 5 })).toBe(false);
+    expect(held({ createdAt: EARLIER, stars: 50 }, { ...own, stars: 5 })).toBe(true);
+  });
+
+  test("namesake: a new repo with 0 stars needs only the 20", () => {
+    expect(held({ createdAt: EARLIER, stars: 20 }, { ...own, stars: 0 })).toBe(true);
+    expect(held({ createdAt: EARLIER, stars: 19 }, { ...own, stars: 0 })).toBe(false);
+  });
+
+  test("the second of two entries can hold alone", () => {
+    expect(reasons([[MATCH, other], [SECOND, { ...other, firstCommit: "own" }]])).toEqual(["name-match"]);
+  });
+
+  test("facts split across two entries do not hold", () => {
+    const older = { ...other, createdAt: EARLIER };
+    const starred = { ...other, stars: 500 };
+    expect(reasons([[MATCH, older], [SECOND, starred]])).toEqual([]);
+  });
+
+  test.each<[string, keyof RepoFacts]>([
+    ["created date", "createdAt"],
+    ["star count", "stars"],
+    ["first commit", "firstCommit"],
+    ["tree", "blobs"],
+  ])("an entry with no %s holds, and so does a new repo with none", (_name, fact) => {
+    const { [fact]: _gone, ...entryLess } = other;
+    const { [fact]: _ownGone, ...ownLess } = own;
+    expect(reasons([[MATCH, entryLess]])).toEqual(["name-match"]);
+    expect(reasons([[MATCH, other]], ownLess)).toEqual(["name-match"]);
+  });
+
+  test("a matched entry with no evidence holds", () => {
+    const facts = { repo: "bob/paper-tool", name: "Paper Sidebar", updateHost: "github.com", topics: [], issueRun: false, ownerCreatedAt: new Date("2015-01-01T00:00:00Z"), now: NOW, indexed: [MATCH] };
+    expect(holdReasons(facts)).toEqual(["name-match"]);
+    expect(holdReasons({ ...facts, evidence: { own, entries: new Map() } })).toEqual(["name-match"]);
+  });
+});
+
+describe("the name-match reads through draftEntry", () => {
+  const OWN = "bob/sidebar-tool";
+  const FIRST = "alice/zotero-paper-sidebar";
+  const SECOND = "carol/paper-sidebar";
+  const api = (repo: string) => `https://api.github.com/repos/${repo}`;
+  const NAMES: IndexedName[] = [
+    { owner: "alice", repoPart: "zotero-paper-sidebar", name: "Paper Sidebar", github: true },
+    { owner: "carol", repoPart: "paper-sidebar", name: "Paper Sidebar", github: true },
+  ];
+  const entryMeta = { json: { created_at: "2026-02-01T00:00:00Z", stargazers_count: 1 } };
+  // A new repo and two entries that it matches and that pass no test.
+  const clean = (): Responses => ({
+    ...pluginRepo(OWN, "x@example.org", { name: "Paper Sidebar", stars: 2 }),
+    ...repoGit(OWN, { head: sha("1"), first: sha("2"), files: { "a.ts": sha("a"), "LICENSE": sha("9") } }),
+    [api(FIRST)]: entryMeta,
+    ...repoGit(FIRST, { head: sha("3"), first: sha("4"), files: { "b.ts": sha("b"), "LICENSE": sha("9") } }),
+    [api(SECOND)]: entryMeta,
+    ...repoGit(SECOND, { head: sha("5"), first: sha("6"), files: { "c.ts": sha("c"), "LICENSE": sha("9") } }),
+  });
+  async function draft(responses: Responses, options: { names?: IndexedName[]; evidenceMs?: number } = {}) {
+    const { fetch, requests } = fixtureFetch(responses);
+    const drafted = await draftEntry(`https://github.com/${OWN}`, { fetch, lookup: publicLookup, outDir: tempDir(), ids: new Set(), names: options.names ?? NAMES, now: NOW, evidenceMs: options.evidenceMs });
+    if (!drafted.ok) throw new Error(`draftEntry refused: ${drafted.message}`);
+    return { drafted, urls: requests.map(({ url }) => url) };
+  }
+
+  test("a matched entry that passes no test gets no name-match, and a clean entry no hold at all", async () => {
+    const { drafted } = await draft(clean());
+    expect(drafted.holds).toEqual([]);
+    expect(drafted.holdDetails).toBeUndefined();
+  });
+
+  test("a name-match stands beside another reason", async () => {
+    const responses = { ...clean(), ...pluginRepo(OWN, "x@example.org", { name: "Paper Sidebar", stars: 2, updateHost: "updates.example.org" }), ...repoGit(OWN, { head: sha("1"), first: sha("2"), files: { "a.ts": sha("a") } }) };
+    expect((await draft(responses)).drafted.holds).toEqual(["update-host"]);
+    responses[api(FIRST)] = { status: 500, json: {} };
+    expect((await draft(responses)).drafted.holds).toEqual(["name-match", "update-host"]);
+  });
+
+  test("a shared first commit, and a far larger and older namesake, each hold", async () => {
+    const shared = { ...clean(), ...repoGit(SECOND, { head: sha("5"), first: sha("2"), files: { "c.ts": sha("c") } }) };
+    expect((await draft(shared)).drafted.holds).toEqual(["name-match"]);
+    const namesake = { ...clean(), [api(FIRST)]: { json: { created_at: "2020-01-01T00:00:00Z", stargazers_count: 20 } } };
+    expect((await draft(namesake)).drafted.holds).toEqual(["name-match"]);
+  });
+
+  test("identical boilerplate files do not count as shared code", async () => {
+    const boilerplate = { ...clean(), ...repoGit(FIRST, { head: sha("3"), first: sha("4"), files: { "LICENSE": sha("9") } }) };
+    expect((await draft(boilerplate)).drafted.holds).toEqual([]);
+  });
+
+  test("identical files outside the boilerplate list count as shared code", async () => {
+    const copied = { ...clean(), ...repoGit(FIRST, { head: sha("3"), first: sha("4"), files: { "b.ts": sha("a") } }) };
+    expect((await draft(copied)).drafted.holds).toEqual(["name-match"]);
+  });
+
+  const READS: [string, string][] = [
+    ["the entry's meta", api(FIRST)],
+    ["the entry's newest commit", `${api(FIRST)}/commits?per_page=1`],
+    ["the entry's oldest commit", `${api(FIRST)}/commits?per_page=1&page=7`],
+    ["the entry's tree", `${api(FIRST)}/git/trees/${sha("3")}?recursive=1`],
+    ["the new repo's newest commit", `${api(OWN)}/commits?per_page=1`],
+    ["the new repo's oldest commit", `${api(OWN)}/commits?per_page=1&page=7`],
+    ["the new repo's tree", `${api(OWN)}/git/trees/${sha("1")}?recursive=1`],
+  ];
+  const CAUSES: [string, Responses[string], number?][] = [
+    ["an error answer", { status: 500, json: {} }],
+    ["a failed request", { error: "connection reset" }],
+    ["a body with no such field", { json: {} }],
+    ["a read past the time limit", { stall: "headers" }, 50],
+  ];
+  test.each(READS.flatMap(([read, url]) => CAUSES.map(([cause, answer, evidenceMs]) => [read, cause, url, answer, evidenceMs] as const)))("%s with %s holds", async (_read, _cause, url, answer, evidenceMs) => {
+    const { drafted } = await draft({ ...clean(), [url]: answer }, { evidenceMs });
+    expect(drafted.holds).toEqual(["name-match"]);
+  });
+
+  test.each<[string, string]>([
+    ["the entry's", `${api(FIRST)}/git/trees/${sha("3")}?recursive=1`],
+    ["the new repo's", `${api(OWN)}/git/trees/${sha("1")}?recursive=1`],
+  ])("%s truncated tree holds", async (_name, url) => {
+    expect((await draft({ ...clean(), [url]: { json: { truncated: true, tree: [] } } })).drafted.holds).toEqual(["name-match"]);
+  });
+
+  test.each<[string, object]>([
+    ["a malformed created date", { created_at: "not a date", stargazers_count: 1 }],
+    ["no star count", { created_at: "2026-02-01T00:00:00Z" }],
+    ["a negative star count", { created_at: "2026-02-01T00:00:00Z", stargazers_count: -1 }],
+  ])("an entry with %s holds", async (_name, json) => {
+    expect((await draft({ ...clean(), [api(FIRST)]: { json } })).drafted.holds).toEqual(["name-match"]);
+  });
+
+  test.each<[string, object]>([
+    ["a malformed created date", { created_at: "not a date", stargazers_count: 2 }],
+    ["no star count", { created_at: "2025-01-10T09:00:00Z" }],
+  ])("a new repo with %s holds", async (_name, change) => {
+    const responses = clean();
+    responses[api(OWN)] = { json: { full_name: OWN, html_url: `https://github.com/${OWN}`, fork: false, open_issues_count: 0, topics: ["zotero-plugin"], ...change } };
+    expect((await draft(responses)).drafted.holds).toEqual(["name-match"]);
+  });
+
+  test("an entry that is not on github.com holds, and the bot sends no read for it", async () => {
+    const names = [{ owner: "alice", repoPart: "zotero-paper-sidebar", name: "Paper Sidebar", github: false }, NAMES[1]];
+    const { drafted, urls } = await draft(clean(), { names });
+    expect(drafted.holds).toEqual(["name-match"]);
+    expect(urls.filter((url) => url.startsWith(api(FIRST)))).toEqual([]);
+  });
+
+  test("a sixth matched entry, which the details do not name, holds, and the bot sends no read for it", async () => {
+    const owners = ["o1", "o2", "o3", "o4", "o5"];
+    const responses = clean();
+    for (const owner of owners) {
+      Object.assign(responses, { [api(`${owner}/p`)]: entryMeta }, repoGit(`${owner}/p`, { head: sha("7"), first: sha("8"), files: { "d.ts": sha("d") } }));
+    }
+    const named: IndexedName[] = owners.map((owner) => ({ owner, repoPart: "p", name: "Paper Sidebar", github: true }));
+    expect((await draft(responses, { names: named })).drafted.holds).toEqual([]);
+    const { drafted, urls } = await draft(responses, { names: [...named, { owner: "o6", repoPart: "p", name: "Paper Sidebar", github: true }] });
+    expect(drafted.holds).toEqual(["name-match"]);
+    expect(urls.filter((url) => url.startsWith(api("o6/p")))).toEqual([]);
+  });
+
+  test("a repo with one commit has no last-page link, and its head is its first commit", async () => {
+    const responses = clean();
+    responses[`${api(FIRST)}/commits?per_page=1`] = { json: [{ sha: sha("2") }] };
+    responses[`${api(FIRST)}/git/trees/${sha("2")}?recursive=1`] = { json: { truncated: false, tree: [{ path: "b.ts", type: "blob", sha: sha("b") }] } };
+    expect((await draft(responses)).drafted.holds).toEqual(["name-match"]);
+  });
+
+  test("an odd repo goes into the address encoded", async () => {
+    const { fetch, requests } = fixtureFetch({});
+    await matchEvidence(fetch, { repo: "bob/x y", name: "Paper Sidebar", indexed: NAMES });
+    expect(requests[0].url).toBe(api("bob/x%20y"));
+  });
+
+  test.each<[string, IndexedName[]]>([
+    ["no matched entry", [{ owner: "alice", repoPart: "other", name: "Other", github: true }]],
+    ["only an entry of its own owner", [{ owner: "bob", repoPart: "paper-sidebar", name: "Paper Sidebar", github: true }]],
+  ])("a repo with %s sends no request for these tests", async (_name, names) => {
+    const { drafted, urls } = await draft(pluginRepo(OWN, "x@example.org", { name: "Paper Sidebar", stars: 2 }), { names });
+    expect(drafted.holds).toEqual([]);
+    expect(urls.filter((url) => url.includes("/commits") || url.includes("/git/trees") || url === api("alice/other") || url === api("bob/paper-sidebar"))).toEqual([]);
+  });
+
+  test("indexed() marks which entries are on github.com", async () => {
+    const root = tempDir();
+    for (const [dir, repoUrl] of [["a@x", "https://github.com/Alice/A"], ["b@x", "https://www.github.com/bob/b"], ["c@x", "https://gitlab.com/carol/c"]]) {
+      mkdirSync(join(root, dir));
+      writeFileSync(join(root, dir, "meta.json"), JSON.stringify({ repoUrl }));
+    }
+    const { names } = await indexed(root);
+    expect(names.map(({ owner, github }) => [owner, github]).sort()).toEqual([
+      ["alice", true],
+      ["bob", true],
+      ["carol", false],
     ]);
   });
 });

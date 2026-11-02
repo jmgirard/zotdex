@@ -23,7 +23,7 @@ import {
 } from "../src/discover/propose.ts";
 import { fixtureFetch, loadFixture, type Responses } from "./support/fixture-fetch.ts";
 import { checkout as gitCheckout, git, pushFromClone } from "./support/git-checkout.ts";
-import { pluginRepo, searchPage } from "./support/plugin-repo.ts";
+import { pluginRepo, repoGit, searchPage, sha } from "./support/plugin-repo.ts";
 
 const ROOT = resolve(import.meta.dirname, "..");
 const PRELOAD = resolve(ROOT, "test/support/preload-fixture.ts");
@@ -367,7 +367,30 @@ describe("the Hold line and the hold label", () => {
     const { posts } = await twoStep(responses, checkout().work, undefined, resolve(ROOT, "test/fixtures/build/plugins"));
     const sent = JSON.parse(posts[0].body!).body as string;
     expect(sent).toContain("\nHold: name-match\n");
-    expect(sent).toContain("- Matching entry: ` Second Plugin ` [example/second-plugin](https://github.com/example/second-plugin)\n- Owner's GitHub account created: 2015-01-01\n");
+    expect(sent).toContain(`- \`name-match\`: ${HOLD_TEXT["name-match"]}\n`);
+    expect(HOLD_TEXT["name-match"]).toMatch(/same first commit.*at least 30%.*older, has at least 20 stars, and has at least 10 times.*could not read these facts/);
+    // No fact of this entry's repo is recorded, so it prints as not read.
+    expect(sent).toContain(
+      "- This repo: created 2025-01-10, stars not read\n- Matching entry: ` Second Plugin ` [example/second-plugin](https://github.com/example/second-plugin): created not read, stars not read, first commit not read, identical files not read\n- Owner's GitHub account created: 2015-01-01\n",
+    );
+  });
+
+  test("a name-match entry's facts pass the handoff schema and reach the body", async () => {
+    const responses = {
+      ...indexRepo,
+      ...searched([["bob/tagger", "2026-10-01T00:00:00Z"]]),
+      ...pluginRepo("bob/tagger", "tagger@example.org", { name: "Zotero Second", stars: 3 }),
+      ...repoGit("bob/tagger", { head: sha("1"), first: sha("2"), files: { "a.ts": sha("a"), "b.ts": sha("b") } }),
+      "https://api.github.com/repos/example/second-plugin": { json: { created_at: "2020-05-06T00:00:00Z", stargazers_count: 40 } },
+      ...repoGit("example/second-plugin", { head: sha("3"), first: sha("2"), files: { "a.ts": sha("a"), "c.ts": sha("c"), "d.ts": sha("d"), "e.ts": sha("e") } }),
+      [`POST ${PULLS}`]: created,
+      [`POST ${LABELS}`]: { status: 200, json: [{ name: "hold" }] },
+    };
+    const { posts } = await twoStep(responses, checkout().work, undefined, resolve(ROOT, "test/fixtures/build/plugins"));
+    const sent = JSON.parse(posts[0].body!).body as string;
+    expect(sent).toContain(
+      "- This repo: created 2025-01-10, 3 stars\n- Matching entry: ` Second Plugin ` [example/second-plugin](https://github.com/example/second-plugin): created 2020-05-06, 40 stars, same first commit, 50% identical files\n",
+    );
   });
 
   const entry: Written = { repo: "example/x", repoUrl: "https://github.com/example/x", outcome: "written", id: "x@example.org", dir: "/tmp/x", version: "1.0.0", holds: ["name-match"] };
@@ -380,8 +403,26 @@ describe("the Hold line and the hold label", () => {
   });
 
   test.each<[string, HoldDetails, string[]]>([
-    ["a named match and a further count", { matches: [{ repo: "a/b" }], moreMatches: 1, ownerCreatedOn: "2026-10-01" }, ["- Matching entry: [a/b](https://github.com/a/b)", "- Other matching entries: 1", "- Owner's GitHub account created: 2026-10-01"]],
-    ["only an entry whose repo cannot show", { matches: [], moreMatches: 1, ownerCreatedOn: "2026-10-01" }, ["- Other matching entries: 1", "- Owner's GitHub account created: 2026-10-01"]],
+    [
+      "a named match and a further count",
+      { matches: [{ repo: "a/b" }], moreMatches: 1, ownerCreatedOn: "2026-10-01" },
+      [
+        "- This repo: created not read, stars not read",
+        "- Matching entry: [a/b](https://github.com/a/b): created not read, stars not read, first commit not read, identical files not read",
+        "- Other matching entries: 1",
+        "- Owner's GitHub account created: 2026-10-01",
+      ],
+    ],
+    [
+      "every fact of a match",
+      { matches: [{ repo: "a/b", createdOn: "2020-01-02", stars: 0, sharedFirstCommit: false, identicalPercent: 0 }], repoCreatedOn: "2021-03-04", repoStars: 0 },
+      [
+        "- This repo: created 2021-03-04, 0 stars",
+        "- Matching entry: [a/b](https://github.com/a/b): created 2020-01-02, 0 stars, another first commit, 0% identical files",
+        "- Owner's GitHub account created: the bot could not read the date",
+      ],
+    ],
+    ["only an entry whose repo cannot show", { matches: [], moreMatches: 1, ownerCreatedOn: "2026-10-01" }, ["- This repo: created not read, stars not read", "- Other matching entries: 1", "- Owner's GitHub account created: 2026-10-01"]],
     ["no match left", { matches: [], ownerCreatedOn: "2026-10-01" }, ["- Matching entries: none now", "- Owner's GitHub account created: 2026-10-01"]],
     ["an owner the bot could not read", {}, ["- Owner's GitHub account created: the bot could not read the date"]],
   ])("the detail lines for %s", (_name, details, lines) => {

@@ -228,7 +228,11 @@ shows each one separately. A combined verdict is out of scope.
    form, and the bot drafts the entry. A daily sweep answers such an issue
    that no run answered, up to 3 a run (M040). Each bot pull request body
    has a Hold line (M056, D-033). The bot holds a pull request for the
-   maintainer when its name or repo name matches another owner's entry, its
+   maintainer when its name or repo name matches another owner's entry and
+   the two repos have the same first commit, or identical files are at least
+   30% of either repo's files other than boilerplate, or that entry's repo is
+   older with at least 20 stars and at least 10 times the new repo's stars, or
+   any of these facts cannot be read (M075, D-045). It also holds when its
    owner's account is under 30 days old or cannot be read, the host of its
    `update_url` is not github.com, raw.githubusercontent.com, or the repo
    owner's own `<owner>.github.io` site (D-043, D-044), or an issue proposed a
@@ -767,7 +771,10 @@ reused._
   `HOLD_REASONS`, and `holdReasons`. `draftEntry` reads `GET /users/<owner>` and the repo's
   `topics`, which `readUpstream` returns beside `facts` and the build does not
   publish, and fills each planned entry's `holds`, which the handoff schema
-  requires. `body()` in `propose.ts` writes `Hold: none` or the reasons with a
+  requires. For a name match, `matchEvidence` (M075) reads the commits and tree
+  of the new repo, and the meta, commits, and tree of each named entry on
+  github.com, within 60 seconds; a read that fails only leaves its fact out.
+  `body()` in `propose.ts` writes `Hold: none` or the reasons with a
   `HOLD_TEXT` sentence each, and `proposeHandoff` posts the `hold` label to a
   held pull request. `holdDetails` (M073) gives the facts behind the reasons,
   which the handoff carries and `holdDetailLines` writes under
