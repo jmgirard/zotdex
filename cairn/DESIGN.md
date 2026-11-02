@@ -240,7 +240,9 @@ shows each one separately. A combined verdict is out of scope.
    any of these facts cannot be read (M075, D-045). It also holds when its
    owner's account is under 30 days old or cannot be read, the host of its
    `update_url` is not github.com, raw.githubusercontent.com, or the repo
-   owner's own `<owner>.github.io` site (D-043, D-044), or an issue proposed a
+   owner's own `<owner>.github.io` site (D-043, D-044), a redirect of the
+   bot's read takes an update file on that site to another host, a URL of
+   that read uses `http:` (D-047), or an issue proposed a
    repo with neither topic. A catalog or code-search repo with neither
    topic gets no hold (D-042). A held pull request gets the `hold` label. A
    daily job merges a pull request that says `Hold: none` and has no `hold`

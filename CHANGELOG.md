@@ -6,6 +6,12 @@
   `https://github.com/<owner>/<repo>` now shows the owner as `By <owner>`
   under the plugin's name, so plugins that share a name can be told apart.
   The search box does not read the owner.
+- If a redirect of the bot's read of an update file goes from the repository
+  owner's own `<owner>.github.io` site to any other host, the bot pull request
+  now gets the `update-host` hold. On every host, a URL of that read that uses
+  `http:` also gives this hold. The hold's details name the other hosts and
+  the `http:` use, and `pnpm refresh-holds` reads the update file to work them
+  out.
 - A plugin's name or repository name that matches another owner's entry no
   longer gets the `name-match` hold by itself, so plugins that share a name
   are listed side by side. Two repositories with the same first commit keep
