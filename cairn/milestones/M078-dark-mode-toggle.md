@@ -86,3 +86,37 @@ Evidence read 2026-11-02 at fd5822a, the branch level with `origin/main`; the br
 - AC5 evidence: the "holds the same dark colors" and "sets the browser's color scheme" site tests pass; pane, on the home, About, and BetterRSS plugin pages, for all six pairs (18 cases): body background matched the expected `--bg` at load and after a reload, and a scripted `.click()` changed it to the other `--bg`; one pointer click on the plugin page also flipped it, with system dark and no saved choice, to `rgb(247, 247, 245)`, saved `light`.
 - AC6 evidence: pane, 12 cases of three pages, 375 and 1280 px, saved light and dark: the button was inside the top bar, `scrollWidth` equaled `clientWidth`, and a planted 900 px block read 900; Tab reached the button with `:focus-visible` and a solid outline equal to `--link` in all 12; no console errors.
 - AC7 evidence: `pnpm test` 2000 passed, 6 skipped; `pnpm check` 671 entries, 0 problems; `CHANGELOG.md` Unreleased opens with the toggle entry; `cairn/DESIGN.md` says "every page carries two classic inline theme scripts" and names `:root:not([data-theme="light"])` and `:root[data-theme="dark"]`.
+- Evidence after the review fixes, at f52d8f6: `pnpm test` 2002 passed, 6 skipped; `pnpm check` 0 problems. AC1's test now also requires the button right after a link and its script right before `</nav>`. AC2 now runs each saved scheme against the opposite system. AC3's throwing-storage test now uses throwing methods, and a new test keeps a press whose save failed. AC4's throwing-read test now blocks storage after a working press. AC5's site test now compares every custom property, not only hex values. Pane on the rebuilt site: all 18 AC5 cases pass again, all 12 AC6 width and placement cases pass, and one focus case, home at 375 px in the system dark scheme, shows the outline in `--link`; the other 11 focus reads stand from fd5822a, since the fixes change no focus rule. At 200% root text, the About and plugin pages do not scroll sideways; the home page does (599 px against 375 px), with the button inside the view, from content below the top bar.
+
+spawned: diff-bug, blame-history, prior-review, ripple
+
+- diff-bug #1: if only `setItem` or `removeItem` throws, the next `reread` undoes a press, and `pageshow` also fires at the end of a normal load — fix now, fixed f52d8f6.
+- diff-bug #2: the `storage` listener does not filter on `event.key`, so another `jmgirard.github.io` site's write runs `reread` — reject, false: a reread with the same saved value changes nothing, and a press whose save failed is now kept.
+- diff-bug #3: `setBlocked` is never called, so storage that works at load and then fails at an event never runs — fix now, fixed f52d8f6.
+- diff-bug #4: `colors()` sees only `#rrggbb`, so the AC5 comparison misses another value form — fix now, fixed f52d8f6.
+- diff-bug #5: `if (!button) return` has no test and cannot run — fix now, removed, fixed f52d8f6.
+- diff-bug #6: the icon test pins the rule's exact selector string — fix now, fixed f52d8f6.
+- diff-bug #7: the color-scheme test matches source text with a fixed indent — fix now, fixed f52d8f6.
+- diff-bug #8: the nav does not wrap, so the button can make it overflow at a larger text size at 375 px — fix now, `flex-wrap` added and checked at 200% text, fixed f52d8f6.
+- diff-bug #9: on Safari before 14, `MediaQueryList.addEventListener` is missing, so the script throws and logs an error, and the button stays hidden — reject, edge: Safari before 14 is outside common use, and the site still follows the system setting.
+- diff-bug #10: DESIGN's "under the same limit" points at a limit worded as built-ins only — fix now, fixed f52d8f6.
+- diff-bug #11: a comment in `test/support/theme-page.ts` repeats the code — fix now, fixed f52d8f6.
+- diff-bug #12: after a tap on a touch screen the button can keep its hover background — reject, style: no control on the site guards against this.
+- diff-bug #13: the 28 px button is smaller than the 32 px pager button — reject, style: it matches the 28 px icon links in the home table and passes the 24 px minimum.
+- diff-bug #14: the head test loops over a system scheme that the function never reads — fix now, fixed f52d8f6.
+- diff-bug #15: the built-script test repeats one layout's scripts on all 22 pages — fix now, it runs on the home page, fixed f52d8f6.
+- diff-bug #16: the press test runs "getter" and "methods" into one catch — fix now, fixed f52d8f6.
+- diff-bug #17: `""`, `Dark`, and `system` run down one branch — reject, planned change: AC2 names each value.
+- diff-bug #18: the first assertion of the hidden test reads only the stand-in's start value — fix now, removed, fixed f52d8f6.
+- blame-history #1: a press whose save failed can be undone, the same defect as diff-bug #1 — fix now, fixed f52d8f6.
+- blame-history #2: the top bar test strips the button, so no test keeps it inside the nav — fix now, fixed f52d8f6.
+- blame-history #3: `??` in the inline script fails to parse before about Chrome 80, Safari 13.1, or Firefox 72, which leaves the button hidden — reject, edge: browsers from before 2020 are outside common use, and the site still follows the system setting.
+- blame-history #4: `align-items: center` on the nav also centers the links — reject, false: the button makes the row taller, and centered links are the intended look, seen at 375 and 1280 px.
+- prior-review #1: the button has no visible edge, against the 3:1 edge rule for controls — reject, false: the icon links in the home table, also icon-only, have no edge, and the icon itself measures 5.36:1 and 6.58:1 on `--surface`.
+- prior-review #2: `aria-label` and `title` hold the same words, so a screen reader can read them twice, as M064 found for another control — follow-up, parked row "Check the theme button's double label", promote when a user reports it, since AC4 asks for both and no use is known to fail.
+- ripple #1: the candidate row still says the site only follows `prefers-color-scheme` — reject, false: post-merge hygiene removes the row, which ends with `started M078`.
+- ripple #2: the README's top bar list omits the button — fix now, fixed f52d8f6.
+- ripple #3: the style-value test excludes only the exact selector `:root` — reject, false: the new blocks hold no such property, so the test and DESIGN do not disagree on any value.
+- ripple #4: the 2026-10-30 lesson says "except built-ins", while the theme scripts also read browser globals — fix now, corrected in place, fixed f52d8f6.
+- ripple #5: the comment "The script removes hidden" now covers two scripts — fix now, fixed f52d8f6.
+- ripple #6: a test title says "the dark block" while two exist — reject, style: the next test compares the two blocks.
