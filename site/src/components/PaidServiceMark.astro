@@ -1,0 +1,8 @@
+---
+// The mark of a plugin whose main use needs a paid service from its maker (D-054). The icon and
+// its tooltip are hidden from screen readers, so the hidden span carries the words once.
+import { PAID_SERVICE_TEXT as TEXT } from "../data.ts";
+import Icon from "./Icon.astro";
+---
+
+<span class="paid-service" data-paid-service><span aria-hidden="true" title={TEXT}><Icon name="card" /></span><span class="visually-hidden">{TEXT}</span></span>

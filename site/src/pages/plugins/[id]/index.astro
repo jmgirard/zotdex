@@ -2,6 +2,7 @@
 import { majorSupport } from "../../../../../src/site/version.ts";
 import Icon from "../../../components/Icon.astro";
 import NoSourceMark from "../../../components/NoSourceMark.astro";
+import PaidServiceMark from "../../../components/PaidServiceMark.astro";
 import Base from "../../../layouts/Base.astro";
 import {
   BASE,
@@ -17,6 +18,7 @@ import {
   majorReport,
   majorStart,
   overrideUsed,
+  PAID_SERVICE_TEXT,
   rangeText,
   reportHref,
   textChangeHref,
@@ -37,7 +39,8 @@ export function getStaticPaths() {
 
 const { record } = Astro.props as { record: PluginRecord };
 const { zoteroRelease } = loadData();
-const { upstream, failure, overrides } = record;
+const { upstream, failure, overrides, paidService } = record;
+const paidHref = paidService && safeHref(paidService.source);
 const repoUrl = upstream?.repoUrl ?? record.repoUrl;
 const repoHref = safeHref(repoUrl);
 const github = githubRepo(repoUrl);
@@ -66,6 +69,14 @@ const { min, max } = declaredRange(record);
           <>
             {" "}
             <NoSourceMark />
+          </>
+        )
+      }
+      {
+        paidService && (
+          <>
+            {" "}
+            <PaidServiceMark />
           </>
         )
       }
@@ -236,6 +247,17 @@ const { min, max } = declaredRange(record);
         <dt>Plugin id</dt>
         <dd data-fact="id"><code>{record.id}</code></dd>
       </div>
+      {
+        paidService && (
+          <div>
+            <dt>{PAID_SERVICE_TEXT}</dt>
+            <dd data-fact="paid-service">
+              {paidService.note}{" "}
+              {paidHref ? <a href={paidHref} data-paid-source>Source</a> : paidService.source}, read {paidService.read}
+            </dd>
+          </div>
+        )
+      }
       {
         upstream && (
           <>

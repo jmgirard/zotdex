@@ -3,10 +3,12 @@ import { PAGE_SIZE, prePaintStyle } from "../../../src/site/home-filter.ts";
 import { majorSupport, ZOTERO_MAJORS } from "../../../src/site/version.ts";
 import Icon from "../components/Icon.astro";
 import NoSourceMark from "../components/NoSourceMark.astro";
+import PaidServiceMark from "../components/PaidServiceMark.astro";
 import Base from "../layouts/Base.astro";
 import {
   categoryOptions,
   DISCLAIMER,
+  PAID_SERVICE_TEXT,
   displayName,
   githubRepo,
   homeOrder,
@@ -154,6 +156,14 @@ const prePaint = `if ("noModule" in HTMLScriptElement.prototype) {
                       </>
                     )
                   }
+                  {
+                    record.paidService && (
+                      <>
+                        {" "}
+                        <PaidServiceMark />
+                      </>
+                    )
+                  }
                   {owner && <div class="owner" data-owner>By {owner}</div>}
                   {description && <div class="desc" data-description>{description}</div>}
                 </th>
@@ -236,6 +246,7 @@ const prePaint = `if ("noModule" in HTMLScriptElement.prototype) {
     <li><span class="mark" data-support="none" aria-hidden="true">{MARKS.none}</span> Declares none of it</li>
     <li>No mark: the plugin declares no range</li>
     <li><Icon name="lock" /> No source code at the top level of the repository</li>
+    <li><Icon name="card" /> {PAID_SERVICE_TEXT}</li>
     <li><span class="start" data-start="started" aria-hidden="true">●</span> Started in the start test</li>
     <li><span class="start" data-start="start-error" aria-hidden="true">✕</span> Failed to install, start, or answer in the start test</li>
     <li data-legend-note>

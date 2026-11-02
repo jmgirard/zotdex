@@ -17,6 +17,9 @@ import { BASE } from "./base.ts";
 export { BASE, CATEGORIES, categories, categoryOptions, declaredRange, languageName, languageOptions, shownDescription };
 export type { Override, PluginRecord };
 
+// The words of the paid service mark, its legend line, and its Details fact (D-054).
+export const PAID_SERVICE_TEXT = "Needs a paid service from its maker";
+
 let loaded: { path: string; data: PluginsFile } | undefined;
 
 // pnpm site sets ZPI_SITE_DATA to the data file it builds the pages from. Every page

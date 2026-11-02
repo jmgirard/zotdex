@@ -43,8 +43,8 @@ Show on the site when a plugin's main use needs a paid service from its maker, a
 
 - [x] T1: Add `paidService` to `schemas/index.v1.schema.json`, with tests in `test/check.test.ts` for each refusal that AC1 names. `src/text-request/request.ts:154` already keeps other fields of `index.json`; confirm that with a test only if the change could break it.
 - [x] T2: Add the field to `PluginRecord`, `readEntry`, and every record path in `src/build/build.ts` (lines 215, 222, 229, and the map at 241), and to `schemas/plugins.v1.schema.json`. Confirm that `pnpm add-start-results` keeps it, with tests.
-- [ ] T3: Add a credit card icon to `Icon.astro` and a `PaidServiceMark.astro` beside `NoSourceMark.astro`. Show it on the home row and in the h1, add the legend line and the Details fact (linked through `safeHref`), and add fixture records by text edit. Add a fixture id to each hand list in `test/site.test.ts`. Check 375 and 1280 px in the browser pane, with a site built from the deployed data.
-- [ ] T4: Read the entries at a named commit by AC6's procedure, using login and account words as well as payment words. Write `cairn/references/paid-service-sweep.md` with its Provenance block and `INDEX.md` line, and write `paidService` on each entry that the read marks, with an English `note` that says what is paid. An entry in `plugins/` that the named `plugins.json` lacks is listed as not read for that text. At review, a reader re-reads 20 random verdicts of no mark, and a wrong one is a finding.
+- [x] T3: Add a credit card icon to `Icon.astro` and a `PaidServiceMark.astro` beside `NoSourceMark.astro`. Show it on the home row and in the h1, add the legend line and the Details fact (linked through `safeHref`), and add the field to two fixture records by text edit.
+- [ ] T4: Read the entries at a named commit by AC6's procedure, using login and account words as well as payment words. Write `cairn/references/paid-service-sweep.md` with its Provenance block and `INDEX.md` line, and write `paidService` on each entry that the read marks, with an English `note` that says what is paid. An entry in `plugins/` that the named `plugins.json` lacks is listed as not read for that text. Check 375 and 1280 px in the browser pane, with a site built from the deployed data and the new marks. At review, a reader re-reads 20 random verdicts of no mark, and a wrong one is a finding.
 - [ ] T5: Write the About section and the intro sentences with site tests, then the README, the changelog entry, and DESIGN's Contract boundary, Data sources, Inclusion bar, and Function Families text. Run `pnpm test` and `pnpm check`.
 
 ## Work log
@@ -65,6 +65,7 @@ Show on the site when a plugin's main use needs a paid service from its maker, a
 - 2026-11-02: T1 done: the index schema gains `paidService`, and 11 check tests failed before the schema change and pass after it; `pnpm test` passes with 2155 tests. No test added for `text-request`, since it edits only `overrides` of the parsed file.
 - 2026-11-02: T2 done: the build writes `paidService` on read, read-failure, `not-read`, and `facts-invalid` records; `addResults` keeps it through its spread, as a test shows; a test holds the two schemas' shapes equal.
 - 2026-11-02: the T2 commit went in with a type error at `src/build/build.ts:268` because a pipe hid the failed test run, so the T2 line above was early; the next commit fixes it and T2 stands only with that commit's test run.
+- 2026-11-02: T3 done: the mark, legend line, and Details fact show with tests, and `pnpm test` exits 0 with 2166 tests. Minor amendment: the browser check moved to T4 so that it sees real marks, and two existing fixture records carry the field, so no hand list of fixture ids changes.
 
 ## Decisions
 
