@@ -625,3 +625,16 @@ apply to these finds as to topic finds. The user chose no hold over a hold
 for each source. This choice is wrong if bot pull requests from these
 sources add repos that are not Zotero plugins, or that a maintainer would
 close.
+
+### D-043: An update file on the repo owner's own GitHub Pages site gets no hold, annotating D-033
+
+2026-11-02, M074 plan. D-033 holds a bot pull request for an update host
+outside GitHub, and M056 built that as every host other than github.com and
+raw.githubusercontent.com. From M074 on, the host `<owner>.github.io` also
+passes when `<owner>` is the repo's owner. GitHub serves that site, and only
+the owner can publish to it, so it gives no new party control of the
+plugin's updates. Another owner's `.github.io` site and every host outside
+GitHub stay held. The user chose this rule, and chose to release the open
+pull requests held only for it. The rest of D-033 stands. This choice is
+wrong if an update file on an owner's Pages site serves a plugin that a
+maintainer would have closed.
