@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { promisify } from "node:util";
 import { Ajv } from "ajv";
 import { duration } from "../upstream/time-limit.ts";
-import { DAY, HOLD_REASONS, type HoldDetails, type HoldReason, HOST_MAX, MATCHES_MAX, NAME_MAX, REPO, SOURCES, type Source } from "./holds.ts";
+import { DAY, HOLD_REASONS, type HoldDetails, type HoldReason, HOST_MAX, MATCHES_MAX, NAME_MAX, REPO, REPO_MAX, SOURCES, type Source } from "./holds.ts";
 
 // A handoff is what a read job leaves for the write job: `plan.json` and one directory
 // `entries/<id>/` for each drafted entry. The read job reads repos that anyone can name,
@@ -56,7 +56,7 @@ export type Plan = { kind: "discover"; entries: PlannedEntry[] } | ({ kind: "iss
 // A Mozilla add-on id: a GUID in braces, or email-like.
 const ADDON_ID = /^(\{[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\}|[A-Za-z0-9-._]*@[A-Za-z0-9-._]+)$/;
 
-const text =(maxLength: number) => ({ type: "string", minLength: 1, maxLength });
+const text = (maxLength: number) => ({ type: "string", minLength: 1, maxLength });
 const entrySchema = {
   type: "object",
   additionalProperties: false,
@@ -80,7 +80,7 @@ const entrySchema = {
             type: "object",
             additionalProperties: false,
             required: ["repo"],
-            properties: { repo: { type: "string", maxLength: 200, pattern: REPO.source }, name: text(NAME_MAX) },
+            properties: { repo: { type: "string", maxLength: REPO_MAX, pattern: REPO.source }, name: text(NAME_MAX) },
           },
         },
         moreMatches: { type: "integer", minimum: 1 },
@@ -88,7 +88,7 @@ const entrySchema = {
         ownerCreatedOn: { type: "string", pattern: DAY.source },
       },
     },
-    source:{ enum: [...SOURCES] },
+    source: { enum: [...SOURCES] },
   },
 };
 const issue = (outcome: string, properties: Record<string, unknown>, optional: Record<string, unknown> = {}) => ({

@@ -1,14 +1,24 @@
-import { resolve } from "node:path";
-import { describe, expect, test } from "vitest";
+import { spawnSync } from "node:child_process";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
+import { afterAll, describe, expect, test } from "vitest";
 import { type Written, body, DETAILS_HEADING } from "../src/discover/propose.ts";
 import { refreshHolds, withDetailLines } from "../src/discover/refresh-holds.ts";
 import { fixtureFetch, type Responses } from "./support/fixture-fetch.ts";
 
+const ROOT = resolve(import.meta.dirname, "..");
+const PRELOAD = resolve(ROOT, "test/support/preload-fixture.ts");
 // Three entries, one of them "Second Plugin" from example/second-plugin.
 const PLUGINS = resolve(import.meta.dirname, "fixtures/build/plugins");
 const INDEX = "https://api.github.com/repos/example/index";
 const LIST = `${INDEX}/pulls?state=open&per_page=100`;
 const PAGE_2 = `${LIST}&page=2`;
+const temps: string[] = [];
+afterAll(() => {
+  for (const dir of temps.splice(0)) rmSync(dir, { recursive: true, force: true });
+});
+
 const sha = (n: number) => String(n).padStart(40, "0");
 const id = (n: number) => `plugin-${n}@example.org`;
 
@@ -22,6 +32,7 @@ function pull(n: number, change: Record<string, unknown> = {}) {
     user: { login: "github-actions[bot]" },
     labels: [{ name: "hold" }],
     head: { ref: `discover/bob/p${n}`, sha: sha(n), repo: { full_name: "example/index" } },
+    state: "open",
     ...change,
   };
 }
@@ -38,6 +49,8 @@ function entry(n: number, meta: Record<string, unknown> = {}): Responses {
     },
     [`${INDEX}/contents/plugins/${encodeURIComponent(id(n))}/meta.json?ref=${sha(n)}`]: { json: { encoding: "base64", content: Buffer.from(text).toString("base64") } },
     "https://api.github.com/users/bob": { json: { created_at: "2026-10-20T12:00:00Z" } },
+    // The read just before the edit finds the pull request unchanged.
+    [`${INDEX}/pulls/${n}`]: { json: pull(n) },
     [`PATCH ${INDEX}/pulls/${n}`]: { json: { number: n } },
   };
 }
@@ -75,7 +88,6 @@ describe("pnpm refresh-holds", () => {
   test("the refreshed body less its detail lines is the source body, and a second run sends no PATCH", async () => {
     const { patches } = await run({ [LIST]: { json: [pull(1)] }, ...entry(1) });
     const refreshed = patches[0].sent.body as string;
-    expect(refreshed).toContain(`\n\n${DETAILS_HEADING}\n\n${HOST_LINES.join("\n")}\n\n`);
     expect(refreshed.replace(`\n\n${DETAILS_HEADING}\n\n${HOST_LINES.join("\n")}`, "")).toBe(source(1));
     const second = await run({ [LIST]: { json: [pull(1, { body: refreshed })] }, ...entry(1) });
     expect(second.patches).toEqual([]);
@@ -84,14 +96,24 @@ describe("pnpm refresh-holds", () => {
 
   test("new facts replace the old detail lines", async () => {
     const old = withDetailLines(source(1), ["- Update host: ` old.example.org `", "- Owner's GitHub account created: 2020-01-01"])!;
-    const { patches } = await run({ [LIST]: { json: [pull(1, { body: old })] }, ...entry(1) });
+    const { patches } = await run({ [LIST]: { json: [pull(1, { body: old })] }, ...entry(1), [`${INDEX}/pulls/1`]: { json: pull(1, { body: old }) } });
     expect(patches[0].sent.body).toBe(withDetailLines(source(1), HOST_LINES));
+  });
+
+  test.each<[string, Record<string, unknown>]>([
+    ["another body, such as a release", { body: "Hold: none\n" }],
+    ["no hold label", { labels: [] }],
+    ["a close", { state: "closed" }],
+  ])("--apply sends no PATCH to a pull request that has %s at the read before the edit", async (_name, change) => {
+    const { result, patches } = await run({ [LIST]: { json: [pull(1)] }, ...entry(1), [`${INDEX}/pulls/1`]: { json: pull(1, change) } });
+    expect(result.skipped).toEqual([{ number: 1, reason: "it changed during the run" }]);
+    expect(result.changed).toEqual([]);
+    expect(patches).toEqual([]);
   });
 
   test("detail heading text in the quoted check output is not taken for the heading", () => {
     const quoted = body(written(1, ["update-host"]), { status: 1, output: `\n\n${DETAILS_HEADING}\n\n- x\n` });
     const refreshed = withDetailLines(quoted, HOST_LINES)!;
-    expect(refreshed).toContain(`\n\n${DETAILS_HEADING}\n\n- x\n`);
     expect(refreshed.replace(`\n\n${DETAILS_HEADING}\n\n${HOST_LINES.join("\n")}`, "")).toBe(quoted);
   });
 
@@ -115,6 +137,23 @@ describe("pnpm refresh-holds", () => {
     expect(patches).toEqual([]);
   });
 
+  test("skips a pull request whose files are not exactly one new entry", async () => {
+    const { result } = await run({ [LIST]: { json: [pull(1)] }, ...entry(1), [`${INDEX}/pulls/1/files?per_page=100`]: { json: [{ filename: "README.md", status: "modified" }] } });
+    expect(result.skipped).toEqual([{ number: 1, reason: "its files are not exactly plugins/<id>/meta.json and plugins/<id>/index.json, both added" }]);
+  });
+
+  test.each<[string, Responses, Record<string, unknown>, RegExp]>([
+    ["its files", { [`${INDEX}/pulls/1/files?per_page=100`]: { status: 500, json: {} } }, {}, /pulls\/1\/files.*returned HTTP 500/],
+    ["its head SHA", {}, { head: { ref: "discover/bob/p1", repo: { full_name: "example/index" } } }, /^its head has no commit SHA$/],
+    ["its repo", entry(1, { repoUrl: "not a url" }), {}, /^its meta\.json names no owner\/repo$/],
+    ["its update URL", entry(1, { updateUrl: "not a url" }), {}, /^its meta\.json has no update URL$/],
+    ["its edit", { [`PATCH ${INDEX}/pulls/1`]: { status: 403, json: { message: "Forbidden" } } }, {}, /returned HTTP 403: Forbidden/],
+  ])("a pull request fails on %s", async (_name, responses, change, message) => {
+    const { result } = await run({ [LIST]: { json: [pull(1, change)] }, ...entry(1), ...responses });
+    expect(result.failed).toEqual([{ number: 1, message: expect.stringMatching(message) }]);
+    expect(result.changed).toEqual([]);
+  });
+
   test("a failed meta.json read leaves that body and goes on to the next", async () => {
     const { result, patches } = await run({
       [LIST]: { json: [pull(1), pull(2)] },
@@ -133,7 +172,64 @@ describe("pnpm refresh-holds", () => {
   });
 
   test("an account read with no date on an owner-unread pull request says that the bot could not read it", async () => {
-    const { result } = await run({ [LIST]: { json: [pull(1, { body: source(1, ["owner-unread"]) })] }, ...entry(1), "https://api.github.com/users/bob": { status: 404, json: {} } });
+    const { result } = await run({ [LIST]: { json: [pull(1, { body: source(1, ["owner-unread"]) })] }, ...entry(1), "https://api.github.com/users/bob": { status: 404, json: {} } }, false);
     expect(result.changed).toEqual([{ number: 1, lines: ["- Owner's GitHub account created: the bot could not read the date"] }]);
+  });
+});
+
+describe("pnpm refresh-holds on the command line", () => {
+  // Runs the command against `responses`, logging each request it sends to a file.
+  function cli(args: string[], responses: Responses, env: Record<string, string>) {
+    const pnpmPath = process.env.npm_execpath;
+    if (!pnpmPath) throw new Error("run the tests with `pnpm test`, so they can call pnpm");
+    const dir = mkdtempSync(join(tmpdir(), "zpi-refresh-"));
+    temps.push(dir);
+    const fixture = join(dir, "responses.json");
+    writeFileSync(fixture, JSON.stringify({ source: "refresh test", repoUrl: "", responses }));
+    const log = join(dir, "requests.jsonl");
+    writeFileSync(log, "");
+    const { INIT_CWD: _outer, GITHUB_TOKEN: _token, GITHUB_REPOSITORY: _repo, ...outer } = process.env;
+    Object.assign(outer, { ZPI_FIXTURE: fixture, ZPI_REQUESTS: log, NODE_OPTIONS: `--import=${PRELOAD}` }, env);
+    const result = spawnSync(pnpmPath, ["--silent", "--dir", ROOT, "refresh-holds", ...args], { cwd: dir, encoding: "utf8", env: outer, timeout: 50_000 });
+    return { result, requests: readFileSync(log, "utf8") };
+  }
+  const printed = HOST_LINES.join("\n");
+  const responses = { [LIST]: { json: [pull(1), pull(2, { labels: [] })] }, ...entry(1) };
+
+  test("without --apply it prints what it would edit and what it skipped", () => {
+    const { result, requests } = cli([], responses, { GITHUB_REPOSITORY: "example/index" });
+    expect(result.stdout).toBe(`to edit #1:\n${printed}\nskipped #2: it has no hold label\n`);
+    expect(requests).not.toContain("PATCH");
+    expect(result.status).toBe(0);
+  });
+
+  test("with --apply it prints what it edited", () => {
+    const { result, requests } = cli(["--apply"], responses, { GITHUB_REPOSITORY: "example/index", GITHUB_TOKEN: "t" });
+    expect(result.stdout).toBe(`edited #1:\n${printed}\nskipped #2: it has no hold label\n`);
+    expect(requests).toContain("PATCH");
+    expect(result.status).toBe(0);
+  });
+
+  test("a failed pull request is printed on stderr, and the command exits 1", () => {
+    const { result } = cli([], { ...responses, [`${INDEX}/pulls/1/files?per_page=100`]: { status: 500, json: {} } }, { GITHUB_REPOSITORY: "example/index" });
+    expect(result.stderr).toMatch(/^failed #1: .*HTTP 500/);
+    expect(result.status).toBe(1);
+  });
+
+  test("a failed list read refreshes nothing, and the command exits 1", () => {
+    const { result } = cli([], { [LIST]: { status: 500, json: {} } }, { GITHUB_REPOSITORY: "example/index" });
+    expect(result.stderr).toMatch(/^refreshed nothing: .*HTTP 500/);
+    expect(result.status).toBe(1);
+  });
+
+  test.each<[string, string[], Record<string, string>, RegExp]>([
+    ["another argument", ["--force"], { GITHUB_REPOSITORY: "example/index" }, /^usage: pnpm refresh-holds/],
+    ["no index repo", [], {}, /^GITHUB_REPOSITORY must name the index repo/],
+    ["--apply with no token", ["--apply"], { GITHUB_REPOSITORY: "example/index" }, /^--apply needs GITHUB_TOKEN/],
+  ])("refuses %s and sends no request", (_name, args, env, message) => {
+    const { result, requests } = cli(args, responses, env);
+    expect(result.stderr).toMatch(message);
+    expect(requests).toBe("");
+    expect(result.status).toBe(1);
   });
 });

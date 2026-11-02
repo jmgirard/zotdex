@@ -105,10 +105,6 @@ describe("the hold reasons", () => {
 describe("the hold details", () => {
   const facts = { repo: "bob/zotero-tagger", name: "Paper Sidebar", updateHost: "updates.example.org:8443", ownerCreatedAt: new Date(ago(10)), indexed: INDEXED };
 
-  test("name-match names the matched entry", () => {
-    expect(holdDetails(facts, ["name-match"])?.matches).toEqual([{ repo: "alice/zotero-paper-sidebar", name: "Paper Sidebar" }]);
-  });
-
   test("name-match names 5 of 6 matches and counts the other", () => {
     const indexed = Array.from({ length: 6 }, (_, n) => ({ owner: `owner${n}`, repoPart: `part${n}`, name: "Paper Sidebar" }));
     const details = holdDetails({ ...facts, indexed }, ["name-match"]);
@@ -126,15 +122,20 @@ describe("the hold details", () => {
   });
 
   test("an entry whose repo the handoff would refuse counts as a further match", () => {
-    const details = holdDetails({ ...facts, indexed: [{ owner: "a b", repoPart: "c", name: "Paper Sidebar" }, ...INDEXED] }, ["name-match"]);
+    const refused = [
+      { owner: "a b", repoPart: "c", name: "Paper Sidebar" },
+      { owner: "a", repoPart: "c".repeat(199), name: "Paper Sidebar" },
+    ];
+    const details = holdDetails({ ...facts, indexed: [...refused, ...INDEXED] }, ["name-match"]);
     expect(details?.matches).toEqual([{ repo: "alice/zotero-paper-sidebar", name: "Paper Sidebar" }]);
-    expect(details?.moreMatches).toBe(1);
+    expect(details?.moreMatches).toBe(2);
   });
 
-  test("a long matched name is cut to 100 characters, and a blank one is left out", () => {
+  test("a long matched name is cut to 100 characters after its outer spaces go, and a blank one is left out", () => {
     const emoji = String.fromCodePoint(0x1f600);
     const entry = (name: string) => [{ owner: "alice", repoPart: "zotero-tagger", name }];
     expect(holdDetails({ ...facts, indexed: entry(emoji.repeat(101)) }, ["name-match"])?.matches?.[0].name).toBe(emoji.repeat(100));
+    expect(holdDetails({ ...facts, indexed: entry(`${" ".repeat(100)}x`) }, ["name-match"])?.matches?.[0].name).toBe("x");
     expect(holdDetails({ ...facts, indexed: entry("  ") }, ["name-match"])?.matches).toEqual([{ repo: "alice/zotero-tagger" }]);
   });
 

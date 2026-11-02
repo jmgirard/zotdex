@@ -779,18 +779,27 @@ To write these lines to held pull requests that are already open, run
 `pnpm refresh-holds` by hand. No workflow runs it. It needs
 `GITHUB_REPOSITORY`. It works out the facts again from the pull request's
 `meta.json`, the `plugins/` folder in your checkout, and the owner's
-account. It acts on an open pull request that meets all of these conditions:
+account. So first update your checkout to the default branch, or the match
+lines can be wrong. The command acts on an open pull request that meets all
+of these conditions:
 
 - Its branch and author pass the first two conditions of
   `pnpm merge-discover`.
 - It has the `hold` label.
 - Its one Hold line names reasons.
+- Its files are exactly `plugins/<id>/meta.json` and
+  `plugins/<id>/index.json`, both added.
+- Its body has the closing sentence below the Hold line.
 
 If nothing matches a `name-match` now, the line says so. Without options,
 the command prints a `to edit #<n>:` line and the new lines for each pull
 request whose body changes. With `--apply` and a `GITHUB_TOKEN` that can
 edit pull requests, it sends the new body and prints `edited #<n>:` instead.
-It changes only these lines, never a Hold line or a label, so it holds or
+Just before it sends a body, it reads the pull request again. If the
+pull request closed, lost its `hold` label, or has another body, the command
+skips it. The command changes only the text from the "Details for the
+maintainer" line to the closing sentence. So a note that you add there is
+lost on the next run. It changes no Hold line and no label, so it holds or
 releases nothing.
 
 The command also prints `unchanged #<n>`, and `skipped #<n>: <reason>` for

@@ -23,6 +23,9 @@ export interface RefreshResult {
   failed: { number: number; message: string }[];
 }
 
+// GitHub label names are unique ignoring case.
+const hasHoldLabel = (pull: PullJson) => (pull.labels ?? []).some((label) => typeof label?.name === "string" && label.name.toLowerCase() === HOLD_LABEL);
+
 // The reasons on a body's one Hold line outside fenced code, or why it has none to refresh.
 function heldReasons(body: unknown): { reasons: HoldReason[] } | { problem: string } {
   const lines = typeof body === "string" ? unfencedLines(body).filter((line) => line.startsWith("Hold:")) : [];
@@ -66,7 +69,7 @@ export async function refreshHolds({ fetch, indexRepo, root, apply }: RefreshOpt
       skip(notBot);
       continue;
     }
-    if (!(pull.labels ?? []).some((label) => typeof label?.name === "string" && label.name.toLowerCase() === HOLD_LABEL)) {
+    if (!hasHoldLabel(pull)) {
       skip(`it has no ${HOLD_LABEL} label`);
       continue;
     }
@@ -102,7 +105,16 @@ export async function refreshHolds({ fetch, indexRepo, root, apply }: RefreshOpt
       } else if (next === pull.body) {
         result.unchanged.push(number);
       } else {
-        if (apply) await github.patch(`${API}/repos/${indexRepo}/pulls/${number}`, { body: next });
+        if (apply) {
+          // Read again, so an edit, a lost label, or a close since the list read stops the
+          // write, and a release that a person made stands.
+          const fresh = (await github.json(`${API}/repos/${indexRepo}/pulls/${number}`)) as PullJson | null;
+          if (fresh?.state !== "open" || fresh.body !== pull.body || !hasHoldLabel(fresh)) {
+            skip("it changed during the run");
+            continue;
+          }
+          await github.patch(`${API}/repos/${indexRepo}/pulls/${number}`, { body: next });
+        }
         result.changed.push({ number, lines });
       }
     } catch (error) {

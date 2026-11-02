@@ -7,8 +7,9 @@ const PACKAGE_ROOT = resolve(import.meta.dirname, "../..");
 
 // Prints the detail lines of each open held bot pull request, matching names against this
 // checkout's plugins/ folder. With `--apply` it also writes them to the pull request's
-// body. It exits 1 on a refused argument or GITHUB_REPOSITORY, when any pull request failed,
-// or when the list of pull requests or the plugins/ folder could not be read.
+// body. It exits 1 on a refused argument or GITHUB_REPOSITORY, on `--apply` with no
+// GITHUB_TOKEN, when any pull request failed, or when the list of pull requests or the
+// plugins/ folder could not be read.
 async function main(): Promise<number> {
   const args = argv.slice(2);
   if (args.length > 1 || (args.length === 1 && args[0] !== "--apply")) {
@@ -19,6 +20,10 @@ async function main(): Promise<number> {
   const indexRepo = process.env.GITHUB_REPOSITORY ?? "";
   if (!/^[\w.-]+\/[\w.-]+$/.test(indexRepo)) {
     console.error(`GITHUB_REPOSITORY must name the index repo as <owner>/<repo>\n${USAGE}`);
+    return 1;
+  }
+  if (apply && !process.env.GITHUB_TOKEN) {
+    console.error(`--apply needs GITHUB_TOKEN to edit pull requests\n${USAGE}`);
     return 1;
   }
   let result: Awaited<ReturnType<typeof refreshHolds>>;

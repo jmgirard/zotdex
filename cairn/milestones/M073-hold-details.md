@@ -95,3 +95,36 @@ Evidence, 2026-11-02, on `m073-hold-details` at 5670519, level with `origin/main
 - AC7: README holds the detail lines text and `pnpm refresh-holds`; `git diff main...HEAD -- CHANGELOG.md` adds one entry of 6 lines under `## Unreleased`; `pnpm test` and `pnpm check` (671 entries, 0 problems) exit 0.
 
 Consistency gate: `cairn_validate` all checks passed; no principle changed; the `generic` profile's slot names no toolchain checks.
+
+spawned: diff-bug, blame-history, prior-review, ripple
+
+- diff-bug #1: the PATCH sends a body built from the list read, so an edit or release during the run is overwritten — fix now.
+- diff-bug #2: names come from the working tree with no freshness check, so a stale checkout writes wrong match lines — fix now: the README now says to update the checkout first, as T4 planned the `indexed()` read; the run after the merge uses a fresh `main`.
+- diff-bug #3: `plannedProblem` is not given `holdDetails`, so a bad detail refuses the whole run — fix now through diff-bug #4, after which `holdDetails` only gives values the schema takes.
+- diff-bug #4: the repo filter checks `REPO` but not the schema's 200 characters — fix now.
+- diff-bug #5: on an `owner-unread` pull request, a failed account read later replaces a good date — follow-up, row "Close small gaps in pnpm refresh-holds", parked: no such pull request is open.
+- diff-bug #6: error branches for files, SHA, repo, update URL, and a refused PATCH, and the printed `edited` line, have no test — fix now.
+- diff-bug #7: the README's condition list omits the exact-files and closing-sentence conditions — fix now.
+- diff-bug #8: `--apply` does not check for `GITHUB_TOKEN` — fix now.
+- diff-bug #9: a maintainer's note between the heading and the closing sentence is lost on a later run, and the README does not say so — fix now.
+- diff-bug #10: results print only at the end, so an interrupted run shows nothing — follow-up, same row, parked: a rerun is safe.
+- diff-bug #11: the blank check runs before the cut, so 100 spaces and a letter give a blank code span — fix now.
+- diff-bug #12: a refreshed date can sit under an older reason sentence, such as a date over 30 days old under `new-account` — reject, planned change: T4 reads the date fresh, and the date is a true fact.
+- diff-bug #13: `const text =(` and `source:{` in `handoff.ts` — fix now.
+- diff-bug #14: two `toContain` checks before an exact `toBe` in `test/refresh-holds.test.ts` — fix now.
+- diff-bug #15: the single-match test in `test/holds.test.ts` is weaker than the exact row — fix now: removed.
+- diff-bug #16: the `new-account` and `issue-no-topic` rows run one code path — reject, planned change: AC2 names each of the five reasons.
+- blame-history #1: the match list comes from the checkout, against M042's push-base check — fix now, as diff-bug #2; the Hold line is not recomputed, so only detail text can be stale.
+- blame-history #2: D-043 is not in the code — reject, planned change: M074 does it.
+- blame-history #3: the same formatting as diff-bug #13 — fix now.
+- prior-review #1: no re-read before the write, against M056's finding — fix now, as diff-bug #1.
+- prior-review #2: the loop has no whole-run limit, against M056's follow-up — follow-up, row "Close small gaps in pnpm refresh-holds", parked: a hand run that a rerun repeats safely.
+- prior-review #3: the checkout read, against M056's follow-up — fix now, as diff-bug #2.
+- prior-review #4: `withDetailLines` finds the Hold line by `lastIndexOf`, not outside fences — follow-up, same row, parked: only a fenced `Hold:` line that a person adds below the real one reaches it, and its effect is a second detail block.
+- ripple #1: DESIGN's `body()` sentence does not name the detail lines — reject, false: the next sentence, which the diff adds, does.
+- ripple #2: the README's list of body contents omits the detail lines — reject, false: it does not claim to be whole, and the detail lines have their own paragraph.
+- ripple #3: DESIGN's list of `holds.ts` names omits the new ones — reject, false: the list was partial before, and the diff names `holdDetails` beside it.
+- ripple #4: the comment above `body()` does not cover the detail lines — reject, false: its statement holds, and `holdDetailLines` has its own comment.
+- ripple #5: DESIGN's `readHandoff` list omits the detail limits — reject, false: nothing it states is wrong.
+
+No finding shows a criterion failing or a load-bearing defect in a run on today's bodies: the diff-bug reviewer round-tripped all 58 real bodies byte for byte, so nothing returned to implement. A planted defect check: the "changed during the run" tests fail when the re-read is removed (below).

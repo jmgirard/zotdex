@@ -16,9 +16,10 @@ export type HoldReason = (typeof HOLD_REASONS)[number];
 export const REPO = /^[a-z0-9_.-]+\/[a-z0-9_.-]+$/;
 // A day as YYYY-MM-DD.
 export const DAY = /^\d{4}-\d{2}-\d{2}$/;
-// The most matched entries that a hold's details name, and the most characters of a name
-// and of an update host there.
+// The most matched entries that a hold's details name, and the most characters of a repo,
+// a name, and an update host there.
 export const MATCHES_MAX = 5;
+export const REPO_MAX = 200;
 export const NAME_MAX = 100;
 export const HOST_MAX = 300;
 
@@ -103,8 +104,8 @@ export function holdDetails(facts: Pick<HoldFacts, "repo" | "name" | "updateHost
   if (reasons.includes("name-match")) {
     const matched = matchedEntries(facts);
     details.matches = matched
-      .map(({ owner, repoPart, name }) => ({ repo: `${owner}/${repoPart}`.toLowerCase(), ...(name?.trim() && { name: cut(name, NAME_MAX) }) }))
-      .filter(({ repo }) => REPO.test(repo))
+      .map(({ owner, repoPart, name }) => ({ repo: `${owner}/${repoPart}`.toLowerCase(), ...(name?.trim() && { name: cut(name.trim(), NAME_MAX) }) }))
+      .filter(({ repo }) => repo.length <= REPO_MAX && REPO.test(repo))
       .slice(0, MATCHES_MAX);
     if (matched.length > details.matches.length) details.moreMatches = matched.length - details.matches.length;
   }
