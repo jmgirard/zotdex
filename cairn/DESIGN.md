@@ -768,7 +768,12 @@ reused._
   publish, and fills each planned entry's `holds`, which the handoff schema
   requires. `body()` in `propose.ts` writes `Hold: none` or the reasons with a
   `HOLD_TEXT` sentence each, and `proposeHandoff` posts the `hold` label to a
-  held pull request. `pnpm merge-discover` (`src/discover/merge.ts`) reads
+  held pull request. `holdDetails` (M073) gives the facts behind the reasons,
+  which the handoff carries and `holdDetailLines` writes under
+  `DETAILS_HEADING`. `pnpm refresh-holds` (`src/discover/refresh-holds.ts`),
+  run by hand, works them out again for open held pull requests and replaces
+  those lines. It sends no label request and keeps each Hold line.
+  `pnpm merge-discover` (`src/discover/merge.ts`) reads
   every page of open pull requests, skips each that fails a condition (the
   Hold line read outside fences with `unfencedLines`, the label in any case,
   the wait, an opening time that is unreadable or after the run, no draft,

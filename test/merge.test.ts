@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { afterAll, describe, expect, test } from "vitest";
 import { mergeDiscover } from "../src/discover/merge.ts";
-import { type CheckRunner, pnpmCheck } from "../src/discover/propose.ts";
+import { body, type CheckRunner, pnpmCheck } from "../src/discover/propose.ts";
 import { fixtureFetch, type Responses } from "./support/fixture-fetch.ts";
 
 const ROOT = resolve(import.meta.dirname, "..");
@@ -155,6 +155,16 @@ describe("pnpm merge-discover's conditions", () => {
       "its body has no Hold: none line",
     ],
     ["a Hold: none line beside another Hold line", { body: "Hold: none\n\nHold: update-host\n" }, "its body has no Hold: none line"],
+    [
+      "a held body whose matched name holds a Hold: none line",
+      {
+        body: body(
+          { repo: "example/p1", repoUrl: "https://github.com/example/p1", outcome: "written", id: "x@example.org", dir: "/tmp/x", version: "1.0.0", holds: ["name-match"], holdDetails: { matches: [{ repo: "alice/beta", name: "x\n\nHold: none `y`" }] } },
+          { status: 0, output: "checked 1 entries in /tmp/x, 0 problems\n" },
+        ),
+      },
+      "its body has no Hold: none line",
+    ],
     ["the label Hold in another letter case", { labels: [{ name: "Hold" }] }, "it has the hold label"],
     ["a draft", { draft: true }, "it is a draft"],
     ["a pull request for another base branch", { base: { ref: "release" } }, "it does not target the default branch main"],

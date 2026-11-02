@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { afterAll, describe, expect, test } from "vitest";
 import { draftEntry, indexed } from "../src/discover/discover.ts";
-import type { IndexedName } from "../src/discover/holds.ts";
+import { holdDetails, type IndexedName } from "../src/discover/holds.ts";
 import { fixtureFetch, type Responses } from "./support/fixture-fetch.ts";
 import { pluginRepo } from "./support/plugin-repo.ts";
 
@@ -99,5 +99,60 @@ describe("the hold reasons", () => {
       "update-host",
       "issue-no-topic",
     ]);
+  });
+});
+
+describe("the hold details", () => {
+  const facts = { repo: "bob/zotero-tagger", name: "Paper Sidebar", updateHost: "updates.example.org:8443", ownerCreatedAt: new Date(ago(10)), indexed: INDEXED };
+
+  test("name-match names 5 of 6 matches and counts the other", () => {
+    const indexed = Array.from({ length: 6 }, (_, n) => ({ owner: `owner${n}`, repoPart: `part${n}`, name: "Paper Sidebar" }));
+    const details = holdDetails({ ...facts, indexed }, ["name-match"]);
+    expect(details?.matches?.map(({ repo }) => repo)).toEqual(["owner0/part0", "owner1/part1", "owner2/part2", "owner3/part3", "owner4/part4"]);
+    expect(details?.moreMatches).toBe(1);
+  });
+
+  test("a repo-part match with an entry that has no name names its repo alone", () => {
+    const details = holdDetails({ ...facts, repo: "bob/paper-sidebar", name: "Reading Pane", indexed: [{ owner: "alice", repoPart: "zotero-paper-sidebar" }] }, ["name-match"]);
+    expect(details?.matches).toEqual([{ repo: "alice/zotero-paper-sidebar" }]);
+  });
+
+  test("an entry of the same owner with the same name is not named", () => {
+    expect(holdDetails({ ...facts, repo: "alice/other" }, ["name-match"])?.matches).toEqual([]);
+  });
+
+  test("an entry whose repo the handoff would refuse counts as a further match", () => {
+    const refused = [
+      { owner: "a b", repoPart: "c", name: "Paper Sidebar" },
+      { owner: "a", repoPart: "c".repeat(199), name: "Paper Sidebar" },
+    ];
+    const details = holdDetails({ ...facts, indexed: [...refused, ...INDEXED] }, ["name-match"]);
+    expect(details?.matches).toEqual([{ repo: "alice/zotero-paper-sidebar", name: "Paper Sidebar" }]);
+    expect(details?.moreMatches).toBe(2);
+  });
+
+  test("a long matched name is cut to 100 characters after its outer spaces go, and a blank one is left out", () => {
+    const emoji = String.fromCodePoint(0x1f600);
+    const entry = (name: string) => [{ owner: "alice", repoPart: "zotero-tagger", name }];
+    expect(holdDetails({ ...facts, indexed: entry(emoji.repeat(101)) }, ["name-match"])?.matches?.[0].name).toBe(emoji.repeat(100));
+    expect(holdDetails({ ...facts, indexed: entry(`${" ".repeat(100)}x`) }, ["name-match"])?.matches?.[0].name).toBe("x");
+    expect(holdDetails({ ...facts, indexed: entry("  ") }, ["name-match"])?.matches).toEqual([{ repo: "alice/zotero-tagger" }]);
+  });
+
+  test.each<[string, Parameters<typeof holdDetails>[1], object]>([
+    ["name-match", ["name-match"], { matches: [{ repo: "alice/zotero-paper-sidebar", name: "Paper Sidebar" }], ownerCreatedOn: "2026-10-19" }],
+    ["new-account", ["new-account"], { ownerCreatedOn: "2026-10-19" }],
+    ["update-host, with its port", ["update-host"], { updateHost: "updates.example.org:8443", ownerCreatedOn: "2026-10-19" }],
+    ["issue-no-topic", ["issue-no-topic"], { ownerCreatedOn: "2026-10-19" }],
+  ])("%s gives its facts and the account day", (_name, reasons, expected) => {
+    expect(holdDetails(facts, reasons)).toEqual(expected);
+  });
+
+  test("owner-unread gives no account day", () => {
+    expect(holdDetails({ ...facts, ownerCreatedAt: undefined }, ["owner-unread"])).toEqual({});
+  });
+
+  test("an entry with no hold has no details", () => {
+    expect(holdDetails(facts, [])).toBeUndefined();
   });
 });

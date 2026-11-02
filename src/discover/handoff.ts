@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { promisify } from "node:util";
 import { Ajv } from "ajv";
 import { duration } from "../upstream/time-limit.ts";
-import { HOLD_REASONS, type HoldReason, SOURCES, type Source } from "./holds.ts";
+import { DAY, HOLD_REASONS, type HoldDetails, type HoldReason, HOST_MAX, MATCHES_MAX, NAME_MAX, REPO, REPO_MAX, SOURCES, type Source } from "./holds.ts";
 
 // A handoff is what a read job leaves for the write job: `plan.json` and one directory
 // `entries/<id>/` for each drafted entry. The read job reads repos that anyone can name,
@@ -32,6 +32,8 @@ export interface PlannedEntry {
   strictMaxVersion?: string;
   // Why the pull request waits for the maintainer, in HOLD_REASONS order; empty for none.
   holds: HoldReason[];
+  // The facts behind those reasons, for the pull request body.
+  holdDetails?: HoldDetails;
   // How discover found the repo. An issue run's entry has none.
   source?: Source;
 }
@@ -53,8 +55,6 @@ export type Plan = { kind: "discover"; entries: PlannedEntry[] } | ({ kind: "iss
 
 // A Mozilla add-on id: a GUID in braces, or email-like.
 const ADDON_ID = /^(\{[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\}|[A-Za-z0-9-._]*@[A-Za-z0-9-._]+)$/;
-// A lowercase owner/repo, as the bot keys repos.
-const REPO = /^[a-z0-9_.-]+\/[a-z0-9_.-]+$/;
 
 const text = (maxLength: number) => ({ type: "string", minLength: 1, maxLength });
 const entrySchema = {
@@ -69,6 +69,25 @@ const entrySchema = {
     strictMinVersion: text(500),
     strictMaxVersion: text(500),
     holds: { type: "array", uniqueItems: true, items: { enum: [...HOLD_REASONS] } },
+    holdDetails: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        matches: {
+          type: "array",
+          maxItems: MATCHES_MAX,
+          items: {
+            type: "object",
+            additionalProperties: false,
+            required: ["repo"],
+            properties: { repo: { type: "string", maxLength: REPO_MAX, pattern: REPO.source }, name: text(NAME_MAX) },
+          },
+        },
+        moreMatches: { type: "integer", minimum: 1 },
+        updateHost: text(HOST_MAX),
+        ownerCreatedOn: { type: "string", pattern: DAY.source },
+      },
+    },
     source: { enum: [...SOURCES] },
   },
 };
@@ -241,6 +260,6 @@ async function entryDirProblem(entryDir: string, id: string): Promise<string | u
 
 // The fields of a drafted entry that the plan carries.
 export function planned(written: PlannedEntry): PlannedEntry {
-  const { repo, repoUrl, id, version, strictMinVersion, strictMaxVersion, holds, source } = written;
-  return { repo, repoUrl, id, version, strictMinVersion, strictMaxVersion, holds, source };
+  const { repo, repoUrl, id, version, strictMinVersion, strictMaxVersion, holds, holdDetails, source } = written;
+  return { repo, repoUrl, id, version, strictMinVersion, strictMaxVersion, holds, holdDetails, source };
 }

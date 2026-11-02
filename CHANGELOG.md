@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- A held bot pull request's body now gives the facts behind its hold: the
+  entries that a `name-match` matched, the host of an `update-host`, and the
+  day that the owner's GitHub account was made. The new `pnpm refresh-holds`
+  command prints these lines for held pull requests that are already open.
+  With `--apply` it writes them to the bodies. It changes no Hold line and
+  no label.
 - `pnpm discover` also runs five GitHub code searches for the
   `manifest.json` and `package.json` files of Zotero plugins, as the README
   lists, so a plugin that no topic and no catalog names can reach the index.

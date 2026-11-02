@@ -766,6 +766,49 @@ as a failed entry and exits with status 1. The pull request stays open, and
 its Hold line still keeps the bot from merging it. In an issue run, the
 issue still gets the comment that names the pull request.
 
+Below the reasons, a held pull request's body has the lines "Details for
+the maintainer". They give the facts behind the hold:
+
+- For `name-match`, one line for each matched entry, with its name and a
+  link to its repository. The body names at most 5 and counts the others.
+- For `update-host`, the host of the manifest's `update_url`.
+- For every hold, the day that the owner's GitHub account was made, or a
+  note that the bot did not get that day.
+
+To write these lines to held pull requests that are already open, run
+`pnpm refresh-holds` by hand. No workflow runs it. It needs
+`GITHUB_REPOSITORY`. It works out the facts again from the pull request's
+`meta.json`, the `plugins/` folder in your checkout, and the owner's
+account. So first update your checkout to the default branch, or the match
+lines can be wrong. The command acts on an open pull request that meets all
+of these conditions:
+
+- Its branch and author pass the first two conditions of
+  `pnpm merge-discover`.
+- It has the `hold` label.
+- Its one Hold line names reasons.
+- Its files are exactly `plugins/<id>/meta.json` and
+  `plugins/<id>/index.json`, both added.
+- Its body has the closing sentence below the Hold line.
+
+If nothing matches a `name-match` now, the line says so. Without options,
+the command prints a `to edit #<n>:` line and the new lines for each pull
+request whose body changes. With `--apply` and a `GITHUB_TOKEN` that can
+edit pull requests, it sends the new body and prints `edited #<n>:` instead.
+Just before it sends a body, it reads the pull request again. If the
+pull request closed, lost its `hold` label, or has another body, the command
+skips it. The command changes only the text from the "Details for the
+maintainer" line to the closing sentence. So a note that you add there is
+lost on the next run. It changes no Hold line and no label, so it holds or
+releases nothing.
+
+The command also prints `unchanged #<n>`, and `skipped #<n>: <reason>` for
+each other open pull request. If a read of a pull request fails, it leaves
+that body as it is. If the owner's account gives no date and the Hold line
+does not name `owner-unread`, it does the same. In both cases it prints
+`failed #<n>: <error>` on stderr and goes on to the next. If a pull request
+failed, it exits with status 1.
+
 If you close a bot pull request without a merge, the bot does not propose
 that owner/repo name again. The bot also skips a repository whose bot pull
 request is still open, and a plugin whose id an open bot pull request already

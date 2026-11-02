@@ -6,7 +6,7 @@ import type { Lookup } from "../upstream/host-guard.ts";
 import { type Failure, type Fetch, githubClient, type RateLimit, ReadFailure, readUpstream } from "../upstream/reader.ts";
 import { duration, READ_LIMIT_MS, withinLimit } from "../upstream/time-limit.ts";
 import { plannedProblem } from "./handoff.ts";
-import { type HoldReason, holdReasons, type IndexedName, ownerCreatedAt, type Source, TOPICS } from "./holds.ts";
+import { type HoldDetails, type HoldReason, holdDetails, holdReasons, type IndexedName, ownerCreatedAt, type Source, TOPICS } from "./holds.ts";
 
 const API = "https://api.github.com";
 // GitHub's repository search returns at most this many results for one query.
@@ -98,6 +98,7 @@ export type ReadItem =
       strictMinVersion?: string;
       strictMaxVersion?: string;
       holds: HoldReason[];
+      holdDetails?: HoldDetails;
     }
   | { repo: string; repoUrl: string; source: Source; outcome: "refused"; failure: DiscoveryFailure; message: string };
 
@@ -267,14 +268,14 @@ export async function discover(options: DiscoverOptions): Promise<DiscoverResult
       report.read.push({ repo, repoUrl, source, outcome: "refused", failure, message });
       continue;
     }
-    const { id, dir, version, strictMinVersion, strictMaxVersion, holds } = drafted;
+    const { id, dir, version, strictMinVersion, strictMaxVersion, holds, holdDetails: details } = drafted;
     delete state[repo];
     index.ids.add(id.toLowerCase());
     written++;
     // The name and URL that draftEntry checked, which can differ from the search
     // result's after a rename.
     const read = { repo: repoName(drafted.repoUrl) ?? repo, repoUrl: drafted.repoUrl };
-    report.read.push({ ...read, source, outcome: "written", id, dir, version, strictMinVersion, strictMaxVersion, holds });
+    report.read.push({ ...read, source, outcome: "written", id, dir, version, strictMinVersion, strictMaxVersion, holds, ...(details && { holdDetails: details }) });
   }
   return { ok: true, state, report };
 }
@@ -289,6 +290,7 @@ export type Drafted =
       strictMinVersion?: string;
       strictMaxVersion?: string;
       holds: HoldReason[];
+      holdDetails?: HoldDetails;
     }
   // `recorded` is false for a refusal that says nothing about the repo. `buildLevel` marks a
   // refusal that usually points at the bot rather than at the repo: a reader failure that
@@ -350,18 +352,18 @@ export async function draftEntry(repoUrl: string, options: DraftOptions): Promis
     return refuse(entry.failure, entry.message, unsafe, !unsafe);
   }
   const repo = repoName(read.facts.repoUrl);
-  const holds = repo
-    ? holdReasons({
-        repo,
-        name: read.facts.name,
-        updateHost: read.facts.updateHost,
-        topics: read.topics,
-        issueRun: options.issueRun ?? false,
-        ownerCreatedAt: await ownerCreatedAt(fetch, repo.split("/")[0]),
-        now: options.now ?? new Date(),
-        indexed: options.names,
-      })
-    : [];
+  const holdFacts = repo && {
+    repo,
+    name: read.facts.name,
+    updateHost: read.facts.updateHost,
+    topics: read.topics,
+    issueRun: options.issueRun ?? false,
+    ownerCreatedAt: await ownerCreatedAt(fetch, repo.split("/")[0]),
+    now: options.now ?? new Date(),
+    indexed: options.names,
+  };
+  const holds = holdFacts ? holdReasons(holdFacts) : [];
+  const details = holdFacts ? holdDetails(holdFacts, holds) : undefined;
   // `pnpm propose` refuses a handoff with an entry it cannot push, so such a repo is
   // refused here, and recorded.
   let problem: string | undefined;
@@ -377,7 +379,7 @@ export async function draftEntry(repoUrl: string, options: DraftOptions): Promis
     await rm(entry.dir, { recursive: true, force: true });
     return refuse("not-proposable", `the bot cannot propose ${read.facts.repoUrl}: ${problem}`);
   }
-  return { ok: true, id, dir: entry.dir, repoUrl: read.facts.repoUrl, version, strictMinVersion, strictMaxVersion, holds };
+  return { ok: true, id, dir: entry.dir, repoUrl: read.facts.repoUrl, version, strictMinVersion, strictMaxVersion, holds, ...(details && { holdDetails: details }) };
 }
 
 interface SearchItem {
