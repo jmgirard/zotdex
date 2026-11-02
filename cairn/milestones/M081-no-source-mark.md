@@ -66,6 +66,7 @@ Show on the site when a plugin's GitHub repo has no source code at its top level
 - 2026-11-02: T5 done: `pnpm test` and `pnpm check` pass, and the AC6 diff is empty. A live run read all 695 repos in 69 seconds and found 8 with no source, so the limit went from 2 to 3 minutes; a browser look at a fixture build showed the mark, link label, and Details fact with no console error.
 - 2026-11-02: claim audit: about 65 claims read, 12 corrected — README.md, CHANGELOG.md, site/src/pages/about.astro, src/build/source.ts, cairn/DESIGN.md; the workflow time-limit comment also gained the new read; the reader's re-read of the corrections is pending at this checkpoint.
 - 2026-11-02: claim audit: 65 claims read, 12 corrected — README.md, CHANGELOG.md, site/src/pages/about.astro, src/build/source.ts, cairn/DESIGN.md; the same reader re-read the corrections once and found nothing still wrong.
+- 2026-11-02: review added a legend line under the home table for touch and keyboard users (diff-bug #10), inside the mark's scope; no criterion changed.
 
 ## Decisions
 
@@ -79,3 +80,32 @@ Show on the site when a plugin's GitHub repo has no source code at its top level
 - AC6: The AC3 test keeps the false record's row in the home table, and `git diff origin/main...HEAD --stat -- src/discover src/upstream` prints nothing.
 - AC7: `pnpm test` passes 2139 tests with 6 skipped, and `pnpm check` reports 695 entries and 0 problems, both on 2026-11-02 at the branch head, level with `origin/main`.
 - Consistency gate: `cairn_validate.py` passes; the generic profile names no toolchain checks; no principle changed.
+- Recheck after the fixes: `pnpm test` passes 2144 tests with 6 skipped and `pnpm check` reports 695 entries and 0 problems. AC3's title now sits on the mark's `aria-hidden` child, still inside the `data-no-source` element. A browser look at a fixture build shows the mark and a new legend line.
+- spawned: diff-bug, blame-history, prior-review, ripple
+- diff-bug #1: a 200 answer with `errors` loses GitHub's message and keeps sending batches — fix now, fixed 2965fb7
+- diff-bug #2: one failed request ends the read, so every lock vanishes for that day — follow-up: parked row "Keep source facts when their read fails", since AC2 allows it and no failure is seen yet
+- diff-bug #3: the mark keeps its left margin inside the plugin page's flex h1 — fix now, fixed 2965fb7
+- diff-bug #4: nothing proves the schema's boolean type — fix now, fixed 2965fb7
+- diff-bug #5: the non-string-name branch has no test — reject, edge: GitHub's GraphQL schema types `name` as a string, and the effect is a field left out with a warning
+- diff-bug #6: the README's `LICENSE-MIT` claim has no table row — fix now, fixed 2965fb7
+- diff-bug #7: duplicate-URL behavior has no test — fix now, fixed 2965fb7
+- diff-bug #8: inserted constants separate two test comments from their code — fix now, fixed 2965fb7
+- diff-bug #9: no whitespace between the name and the hidden text — fix now, fixed 2965fb7; the Archived badge's own gap is in the existing parked row
+- diff-bug #10: a tooltip does not reach touch or keyboard users — fix now, fixed 2965fb7, with a legend line under the table
+- diff-bug #11: three style rules have no effect on the icon — fix now, fixed 2965fb7
+- diff-bug #12: README source-link wording is unconditional — fix now, fixed 2965fb7
+- diff-bug #13: the workflow comment omits the last plugin read's overrun — fix now, fixed 2965fb7
+- diff-bug #14: the field is written after `languages` — reject, style: JSON key order has no effect
+- diff-bug question (c): some site and table tests overlap, one comment restates code, and `LOCK_SVG` pins path data — reject, planned change: AC1 and AC3 to AC5 name these tests, and the pin is how a test tells the lock from other icons
+- blame-history #1: the build job's time margin fell to 4.5 minutes — reject, false: run 41524890675's build step took 683 seconds and its other steps about 12 seconds, so the bound holds; the comment was fixed under diff-bug #13
+- blame-history #2: a failed source read is not build-level, unlike D-015 and D-022 — reject, planned change: D-052 names both and makes this exception
+- blame-history #3: `README.md:199` still says "Source" — fix now, fixed 2965fb7
+- blame-history #4: a comment says `sourceMs` bounds every request — fix now, fixed 2965fb7
+- prior-review #1: `title` beside hidden words reads twice, as M064's review found — fix now, fixed 2965fb7
+- prior-review #2: the mark follows the badge with no space, as M064's review found — fix now, fixed 2965fb7
+- prior-review #3: the link's `title` and `aria-label` use different words — reject, planned change: AC3 names both, and the parked row "Check the theme button's double label" holds the pattern
+- prior-review #4: the worst-case build time — reject, false: the same finding and evidence as blame-history #1
+- prior-review #5: `white-space: nowrap` on the mark — fix now, fixed 2965fb7, by removing it
+- ripple #1 to #10: `README.md` lines 29, 199, 540, 1318, 1370, and 1381 and `cairn/DESIGN.md` lines 102, 117, 131, 418, and 485 did not state the lock, the new read, its warning, or that it is not build-level — fix now, fixed 2965fb7
+- ripple #11: the About intro does not name the new read — reject, false: the read is of the repository, so the sentence holds
+- Snapshot files: none changed. PR conversation: none, since no PR is open.
