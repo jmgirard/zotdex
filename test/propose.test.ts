@@ -415,9 +415,9 @@ describe("the Hold line and the hold label", () => {
     ],
     [
       "every fact of a match",
-      { matches: [{ repo: "a/b", createdOn: "2020-01-02", stars: 0, sharedFirstCommit: false, identicalPercent: 0 }], repoCreatedOn: "2021-03-04", repoStars: 0 },
+      { matches: [{ repo: "a/b", createdOn: "2020-01-02", stars: 0, sharedFirstCommit: false, identicalPercent: 0 }], repoCreatedOn: "2021-03-04", repoStars: 1 },
       [
-        "- This repo: created 2021-03-04, 0 stars",
+        "- This repo: created 2021-03-04, 1 star",
         "- Matching entry: [a/b](https://github.com/a/b): created 2020-01-02, 0 stars, another first commit, 0% identical files",
         "- Owner's GitHub account created: the bot could not read the date",
       ],

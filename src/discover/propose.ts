@@ -561,7 +561,7 @@ export function body(entry: Written, checked: { status: number; output: string }
 export function holdDetailLines(details: HoldDetails): string[] {
   const matched = (details.matches?.length ?? 0) > 0 || details.moreMatches;
   const created = (day: string | undefined) => `created ${day ?? "not read"}`;
-  const stars = (count: number | undefined) => (count === undefined ? "stars not read" : `${count} stars`);
+  const stars = (count: number | undefined) => (count === undefined ? "stars not read" : count === 1 ? "1 star" : `${count} stars`);
   const firstCommit = (shared: boolean | undefined) => (shared === undefined ? "first commit not read" : shared ? "same first commit" : "another first commit");
   const identical = (percent: number | undefined) => (percent === undefined ? "identical files not read" : `${percent}% identical files`);
   return [
