@@ -7,7 +7,7 @@ _Last hygiene check: 2026-10-31 (M072 review: M072 archived; candidate "Harden c
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M073 | Show hold details in bot pull requests | in-progress | — | normal | milestones/M073-hold-details.md |
+| M073 | Show hold details in bot pull requests | review | — | normal | milestones/M073-hold-details.md |
 | M074 | Allow owner GitHub Pages update hosts | planned | — | normal | milestones/M074-owner-pages-hosts.md |
 | M072 | Wait for GitHub's code search reset | done | — | high | milestones/archive/M072-code-search-reset.md |
 | M071 | Find plugins by GitHub code search | done | M070 | normal | milestones/archive/M071-code-search-discovery.md |

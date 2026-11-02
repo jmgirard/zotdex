@@ -795,8 +795,8 @@ releases nothing.
 
 The command also prints `unchanged #<n>`, and `skipped #<n>: <reason>` for
 each other open pull request. If a read of a pull request fails, it leaves
-that body as it is. It does the same if the owner's account gives no date
-and the Hold line does not name `owner-unread`. In both cases it prints
+that body as it is. If the owner's account gives no date and the Hold line
+does not name `owner-unread`, it does the same. In both cases it prints
 `failed #<n>: <error>` on stderr and goes on to the next. If a pull request
 failed, it exits with status 1.
 
