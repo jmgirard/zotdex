@@ -24,13 +24,13 @@ Each home page row with a GitHub repo shows that repo's owner, so plugins of one
 
 ## Acceptance criteria
 
-- [ ] AC1: In the name cell, a row whose `upstream?.repoUrl ?? record.repoUrl`, as the source link reads it, gives a result from `githubRepo` shows that owner. The owner's element sits outside `[data-name]` and `[data-description]`. A site test shows an upstream record and a failed record.
-- [ ] AC2: A row whose repo URL is on another host, or is not a URL, shows no owner. A site test shows both.
-- [ ] AC3: A site test shows two records with one display name and different owners, each showing its own owner.
-- [ ] AC4: The search box does not match a row on its owner's text alone. The exact name-cell check shows the owner outside both attributes, and the home script test shows no match.
-- [ ] AC5: At 375 px wide, with the longest current owner and a 39-letter fixture owner, neither the document nor `.table-card` scrolls sideways. An owner breaks only at a hyphen or is cut with an ellipsis.
-- [ ] AC6: README's home page text and DESIGN's home table text state the owner. CHANGELOG's Unreleased section has an entry for it.
-- [ ] AC7: The `verify` slot of `cairn/PROFILE.md` runs clean.
+- [x] AC1: In the name cell, a row whose `upstream?.repoUrl ?? record.repoUrl`, as the source link reads it, gives a result from `githubRepo` shows that owner. The owner's element sits outside `[data-name]` and `[data-description]`. A site test shows an upstream record and a failed record.
+- [x] AC2: A row whose repo URL is on another host, or is not a URL, shows no owner. A site test shows both.
+- [x] AC3: A site test shows two records with one display name and different owners, each showing its own owner.
+- [x] AC4: The search box does not match a row on its owner's text alone. The exact name-cell check shows the owner outside both attributes, and the home script test shows no match.
+- [x] AC5: At 375 px wide, with the longest current owner and a 39-letter fixture owner, neither the document nor `.table-card` scrolls sideways. An owner breaks only at a hyphen or is cut with an ellipsis.
+- [x] AC6: README's home page text and DESIGN's home table text state the owner. CHANGELOG's Unreleased section has an entry for it.
+- [x] AC7: The `verify` slot of `cairn/PROFILE.md` runs clean.
 
 ## Coverage
 
@@ -69,3 +69,14 @@ Each home page row with a GitHub repo shows that repo's owner, so plugins of one
 ## Decisions
 
 ## Review
+
+Evidence read 2026-11-02 at de66952; origin/main is an ancestor of the branch, so no merge was needed.
+
+- AC1: `test/site.test.ts` passes "shows the owner of first-plugin@example.org as example" (upstream record), "… broken-plugin@example.org as example" (failed record), and "shows the name cell of %s", which asserts the exact cell with `<div class="owner" data-owner>` as a sibling of `[data-name]` and `[data-description]`. same-name-plugin shows its upstream owner, not its `repoUrl` owner.
+- AC2: the same test passes for `repo-gitlab@example.org` (another host), `ssh-plugin@example.org` (not a URL), and `next-plugin@example.org` (upstream value not a URL): no owner.
+- AC3: "shows each owner on two rows of one name" passes: both rows display First Plugin, one shows `example`, one the 39-letter owner.
+- AC4: the exact name-cell test passes for every fixture id, with the owner outside both attributes. "matches a row on its name but not on its owner's text alone" passes: `?q=first+plugin` shows both rows, `?q=<39-letter owner>` shows none.
+- AC5: site built at de66952 from the deployed data with 2 owners planted, every one of 671 rows unhidden, in a 375 px iframe: document scrollWidth 371 = clientWidth 371, `.table-card` 337 = 337. Tallest owner 19.5 px (one line), `white-space: nowrap`, `text-overflow: ellipsis`. The 39-letter owner, the 39-character hyphenated owner, and `CentreForDigitalHumanities` are cut; `lelelelelelelelelelelelele`, equally 26 long, is not.
+- AC6: README line 16 and DESIGN line 150 state "By <owner>"; CHANGELOG's Unreleased section has the entry.
+- AC7: `pnpm test`: 1934 passed, 6 skipped, type check clean. `pnpm check`: 671 entries, 0 problems.
+- Gate: `cairn_validate.py` all checks passed; the generic profile adds no toolchain checks; no principle changed, so `cairn_impact` is skipped.
