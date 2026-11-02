@@ -1,13 +1,13 @@
 # M079: Let owners request name and description changes
 
-- **Status:** planned
+- **Status:** in-progress
 - **Priority:** normal
 - **Depends on:** —
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — plugin owners use the form, and each plugin page links to it
-- **Branch/PR:** —
+- **Branch/PR:** m079-owner-text-requests
 
 ## Goal
 
@@ -45,7 +45,7 @@ A plugin's repository owner can ask, through a form linked from the plugin page,
 
 ## Tasks
 
-- [ ] T1: Tests first: add `src/text-request/rules.ts` with the constants and `textProblems`, reusing `cjkShare` and the site's name-repeat check from `src/site/description.ts`.
+- [x] T1: Tests first: add `src/text-request/rules.ts` with the constants and `textProblems`, reusing `cjkShare` and the site's name-repeat check from `src/site/description.ts`.
 - [ ] T2: Add the form and `parseTextRequest`, with the labels in one exported constant as `src/reports/report.ts` keeps them, reading every line under a heading and reading `_No response_` as blank. Test the form file and the parser.
 - [ ] T3: Add `src/text-request/` and the `pnpm text-request` script for the read and the printed report, through `githubClient`, with recorded responses in tests. Reuse `nameKey`, `categories`, `displayName`, and `gapOf`, reading the checkout's overrides as `src/site/description-gaps.ts` does.
 - [ ] T4: Add `--apply` and `--owner-checked`, with each write run through `pnpm check` in a test.
@@ -65,6 +65,7 @@ A plugin's repository owner can ask, through a form linked from the plugin page,
 - 2026-11-02: plan gate chose the form with a hand-run command over a bot at the user's choice, because no owner has asked and a bot needs a new workflow; falsified by requests waiting over a week for the maintainer.
 - 2026-11-02: plan gate chose text that lasts until removed over text tied to one release at the user's choice, because some plugins release several times a week; falsified by owner text that goes stale behind better upstream text.
 - 2026-11-02: plan chose the owner from `GET /repos` over the entry's `repoUrl`, because a transfer leaves the stored owner stale; falsified by a read limit that makes this read fail for hand-run use.
+- 2026-11-02: T1: added `src/text-request/rules.ts` with `DESCRIPTION_SHOWN` beside the four limits, and `onlyRepeatsName` in `src/site/description.ts`; the rule tests pass.
 
 ## Decisions
 

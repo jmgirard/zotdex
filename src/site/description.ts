@@ -26,6 +26,11 @@ function informative(text: string | undefined, name: Set<string>): string | unde
   return [...words(text)].every((word) => name.has(word)) ? undefined : text;
 }
 
+// Whether a non-blank text only repeats the name, by the rule of `informative`.
+export function onlyRepeatsName(text: string, name: string): boolean {
+  return informative(text, words(name)) === undefined;
+}
+
 const CJK = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/gv;
 const OTHER_LETTERS = /[\p{L}--[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]]+/gv;
 
