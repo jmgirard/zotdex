@@ -19,10 +19,18 @@ export interface Override {
   reason: string;
 }
 
+// A maintainer's read that the plugin's main use needs a paid service from its maker (D-054).
+export interface PaidService {
+  note: string;
+  source: string;
+  read: string;
+}
+
 // One entry's record. The upstream facts and the overrides stay in separate blocks.
 export interface PluginRecord {
   id: string;
   repoUrl: string;
+  paidService?: PaidService;
   // `xpiUrl` addresses the XPI file that the reader read, and `xpiSha256` is the SHA-256 of its
   // bytes, the one the start plan names; data written before the build wrote them has none.
   // `sourceInRepo` says whether the top level of the repo's default branch holds a name that can
@@ -164,7 +172,7 @@ export async function buildData(
   if (listed.length === 0) return { ok: false, problems: [`there are no entries in ${root}`] };
 
   const problems: string[] = [];
-  const entries: { id: string; repoUrl: string; overrides: Override[] }[] = [];
+  const entries: { id: string; repoUrl: string; paidService?: PaidService; overrides: Override[] }[] = [];
   for (const { name, readError } of listed) {
     const entry = readError ? { problem: `cannot read the entry: ${readError}` } : await readEntry(join(root, name));
     if ("problem" in entry) problems.push(`${name}: ${entry.problem}`);
@@ -209,24 +217,25 @@ export async function buildData(
   const buildLevelAt = new Set<number>();
   const xpis = new Map<string, XpiRead>();
   for (const i of order) {
-    const { id, repoUrl, overrides } = entries[i];
+    const { id, repoUrl, paidService, overrides } = entries[i];
+    const paid = paidService ? { paidService } : {};
     if (performance.now() - startedAt >= buildMs) {
       const message = `the build reads no plugin after ${duration(buildMs)}, its time limit`;
-      records[i] = { id, repoUrl, failure: { name: "not-read", message }, overrides };
+      records[i] = { id, repoUrl, ...paid, failure: { name: "not-read", message }, overrides };
       buildLevelAt.add(i);
       continue;
     }
     const { buildLevel: counts, xpi, ...read } = await readRecord(repoUrl, fetch, readMs);
     if (counts) buildLevelAt.add(i);
     if (xpi) xpis.set(id, xpi);
-    const record: PluginRecord = { id, repoUrl, ...read, overrides };
+    const record: PluginRecord = { id, repoUrl, ...paid, ...read, overrides };
     // Facts that the schema rejects, such as a repo body with no created_at, become this
     // record's failure, so one plugin cannot stop the whole file.
     const recordProblems = validateRecord(JSON.parse(JSON.stringify(record)))
       ? []
       : (validateRecord.errors ?? []).map(describe);
     if (recordProblems.length > 0 && record.upstream) {
-      records[i] = { id, repoUrl, failure: { name: "facts-invalid", message: recordProblems.join("; ") }, overrides };
+      records[i] = { id, repoUrl, ...paid, failure: { name: "facts-invalid", message: recordProblems.join("; ") }, overrides };
     } else {
       records[i] = record;
     }
@@ -238,9 +247,10 @@ export async function buildData(
   }
   const buildLevel = entries.flatMap(({ id }, i) => (buildLevelAt.has(i) ? [id] : []));
   const reports = countReports(issues, records);
-  const plugins = records.map(({ id, repoUrl, upstream, failure, overrides }) =>
-    upstream ? { id, repoUrl, upstream, reports: reports.get(id) ?? [], overrides } : { id, repoUrl, failure, overrides },
-  );
+  const plugins = records.map(({ id, repoUrl, paidService, upstream, failure, overrides }) => {
+    const paid = paidService ? { paidService } : {};
+    return upstream ? { id, repoUrl, ...paid, upstream, reports: reports.get(id) ?? [], overrides } : { id, repoUrl, ...paid, failure, overrides };
+  });
   // The changelog reads run at the same time as the release read, so all of them end within
   // `releaseMs`.
   const majors = Object.keys(LAST_RELEASES);
@@ -325,7 +335,7 @@ export async function writePlan(path: string, plan: StartPlan): Promise<{ ok: tr
   return { ok: true };
 }
 
-async function readEntry(dir: string): Promise<{ repoUrl: string; overrides: Override[] } | { problem: string }> {
+async function readEntry(dir: string): Promise<{ repoUrl: string; paidService?: PaidService; overrides: Override[] } | { problem: string }> {
   const meta = await readJson(join(dir, "meta.json"));
   if ("problem" in meta) return meta;
   const repoUrl = (meta.value as { repoUrl?: unknown } | null)?.repoUrl;
@@ -336,7 +346,8 @@ async function readEntry(dir: string): Promise<{ repoUrl: string; overrides: Ove
   if (!validateIndex(index.value)) {
     return { problem: `index.json: ${(validateIndex.errors ?? []).map(describe).join("; ")}` };
   }
-  return { repoUrl, overrides: (index.value as { overrides?: Override[] }).overrides ?? [] };
+  const { paidService, overrides } = index.value as { paidService?: PaidService; overrides?: Override[] };
+  return { repoUrl, ...(paidService ? { paidService } : {}), overrides: overrides ?? [] };
 }
 
 async function readRecord(
