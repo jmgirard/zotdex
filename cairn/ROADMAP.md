@@ -1,18 +1,17 @@
 # Roadmap
 
 _The only authority on milestone status. Grouped by status, not ID._
-_Last hygiene check: 2026-11-02 (M081 archived; M079 row pruned; 22 lessons, 1 marked used; validate green)_
+_Last hygiene check: 2026-11-02 (M082 archived; paid service row graduated; 24 lessons, 5 marked used; validate green)_
 
 ## Milestones
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M082 | Mark plugins that need a paid service | review | — | normal | milestones/M082-paid-service-mark.md |
+| M082 | Mark plugins that need a paid service | done | — | normal | milestones/archive/M082-paid-service-mark.md |
 | M081 | Show when a repo holds no source code | done | — | normal | milestones/archive/M081-no-source-mark.md |
 <!-- rows grouped by status, not by ID; keep the 3 most recent done/dropped rows; older ones: milestones/archive/ + git -->
 
 ## Candidates
-- Mark plugins that sell a paid service: show an icon and a fact for a plugin that needs the maker's own trial, credits, membership, or activation code, not only a third party's API key; payment words are too noisy to detect it, so it needs a hand-kept index.json field — added 2026-11-02 — M081, D-052 — started M082
 - [low] Close gaps in bot holds and merges: M056 holds a bot pull request for five fixed reasons; also (1) start each candidate in Zotero before the merge job merges it, as the daily start-test does after; (2) `name-match` sees only indexed entries, not those of open bot pull requests or drafted earlier in the same run, and its name key keeps only a-z and 0-9, so a name wholly in another script never matches and a homoglyph passes; (3) hold a repo under 30 days old, which would have held 16 of the first 44 merged bot pull requests against 8 for the chosen rules (M056 plan); (4) put the `hold` label on a pull request whose merge-time check fails, so the daily job stops failing on it (M056 criteria audit); (5) a rate limit or 5xx on `GET /users/<owner>` holds for good as `owner-unread`; (6) `pnpm merge-discover` has no whole-run limit and prints only at the end, so a job cut at 30 minutes loses the summary, as "Bound the whole discover workflow's time" says for discover runs; (7) it checks against its checkout, not the commit the squash lands on (M056 review); (8) a hold reads the update file once, at the draft, so a redirect or `update_url` that a repo adds later gets no hold (M077 plan) — added 2026-10-29 — M056, D-033
 - [low] Fix two pnpm check message problems: (1) a `languages` override value that the pattern rejects makes `pnpm check` print two lines, one holding the whole pattern (317 characters for an override value since M036; corrected M036) and one saying it must match the `then` schema; print one short line (M023 review); (2) `id-matches-directory` prints the `meta.json` id raw, and the registry schema does not limit it, so an id holding a newline makes `pnpm check` print a forged finding line in CI and in a bot pull request body; quote it with `JSON.stringify` as `unique-override` does (M032 review) — added 2026-10-27 — M001, M023, M032
 - [low] Close gaps in the description pick: (1) `cjkShare` counts by `Script=`, so the Script=Common kana marks ー (U+30FC) and 〆 count as other-letter runs, and a decomposed (NFD) Latin word splits at its combining marks, so kana-heavy or NFD text scores low; `Script_Extensions` and NFC would fix both but change AC3's rule; (2) a whitespace-only manifest description shows an empty "Manifest description" row in Details; (3) the Overrides table's "Upstream value" for a description override shows only the manifest text, not the GitHub text (M055 review); (4) plugins added after 2026-10-31 need `pnpm description-gaps` and overrides (M067 plan) — added 2026-10-29 — M055
