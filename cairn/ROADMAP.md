@@ -7,7 +7,7 @@ _Last hygiene check: 2026-11-02 (M074 review: M074 archived; candidate "Allow ow
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M075 | Hold name matches only on evidence of copying | in-progress | — | normal | milestones/M075-name-holds.md |
+| M075 | Hold name matches only on evidence of copying | review | — | normal | milestones/M075-name-holds.md |
 | M076 | Show the owner on home page rows | planned | — | normal | milestones/M076-owner-on-rows.md |
 | M074 | Allow owner GitHub Pages update hosts | done | — | normal | milestones/archive/M074-owner-pages-hosts.md |
 | M073 | Show hold details in bot pull requests | done | — | normal | milestones/archive/M073-hold-details.md |

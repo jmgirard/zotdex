@@ -368,7 +368,7 @@ describe("the Hold line and the hold label", () => {
     const sent = JSON.parse(posts[0].body!).body as string;
     expect(sent).toContain("\nHold: name-match\n");
     expect(sent).toContain(`- \`name-match\`: ${HOLD_TEXT["name-match"]}\n`);
-    expect(HOLD_TEXT["name-match"]).toMatch(/same first commit.*at least 30%.*older, has at least 20 stars, and has at least 10 times.*did not read any one of these facts/);
+    expect(HOLD_TEXT["name-match"]).toMatch(/same first commit.*at least 30%.*older, has at least 20 stars, and has at least 10 times.*did not get one of these facts/);
     // No fact of this entry's repo is recorded, so it prints as not read.
     expect(sent).toContain(
       "- This repo: created 2025-01-10, stars not read\n- Matching entry: ` Second Plugin ` [example/second-plugin](https://github.com/example/second-plugin): created not read, stars not read, first commit not read, identical files not read\n- Owner's GitHub account created: 2015-01-01\n",

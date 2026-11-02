@@ -489,7 +489,7 @@ export const HOLD_LABEL = "hold";
 // The sentence a pull request body gives for each hold reason.
 export const HOLD_TEXT: Record<HoldReason, string> = {
   "name-match":
-    "The plugin's name matches the name of an entry from another owner, or its repo name matches that entry's repo name, ignoring case, characters other than a to z and 0 to 9, and the separate words zotero, plugin, addon, and for. The bot holds such a match if the two repos have the same first commit, or if identical files are at least 30% of either repo's files other than boilerplate. It also holds if the entry's repo is older, has at least 20 stars, and has at least 10 times this repo's stars, or if the bot did not read any one of these facts.",
+    "The plugin's name matches the name of an entry from another owner, or its repo name matches that entry's repo name, ignoring case, characters other than a to z and 0 to 9, and the separate words zotero, plugin, addon, and for. The bot holds such a match if the two repos have the same first commit, or if identical files are at least 30% of either repo's files other than boilerplate. It also holds if the entry's repo is older, has at least 20 stars, and has at least 10 times this repo's stars, or if the bot did not get one of these facts.",
   "owner-unread": "The bot could not read when the repo owner's GitHub account was made.",
   "new-account": "The repo owner's GitHub account is less than 30 days old.",
   "update-host": "The plugin's update.json is not on github.com, raw.githubusercontent.com, or the repo owner's own `<owner>.github.io` site, so its updates come from another host.",
