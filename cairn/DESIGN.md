@@ -1008,3 +1008,9 @@ reused._
   the release order undefined, and an offset would give the plugin page and
   the home page different months. Routed from candidates 2026-10-31; added
   2026-10-26 — M014, M053, M063.
+- The home table's owner line uses `--faint` at `--text-xs`, which measures
+  3.47:1 on `--surface` and 3.09:1 on `--hover` in the light scheme and
+  3.25:1 and 2.96:1 in the dark scheme, below WCAG AA's 4.5:1 for text this
+  size. No site test lists this pair. `--muted` at the same size measures
+  5.36:1 and 6.58:1 on `--surface`. The maintainer chose the fainter look at
+  the merge question with these figures shown. Added 2026-11-02 — M076.

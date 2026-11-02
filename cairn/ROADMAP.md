@@ -1,16 +1,15 @@
 # Roadmap
 
 _The only authority on milestone status. Grouped by status, not ID._
-_Last hygiene check: 2026-11-02 (M075 review: M075 archived; 3 new rows; 29 pull requests released, 7 stay held; M072 row pruned; 5 lessons marked used M075, 1 captured, 1 evicted by rank; validate green)_
+_Last hygiene check: 2026-11-02 (M076 review: M076 archived; 1 new row; 1 Known issues entry; M073 row pruned; 5 lessons marked used M076, none captured; validate green)_
 
 ## Milestones
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M076 | Show the owner on home page rows | review | — | normal | milestones/M076-owner-on-rows.md |
+| M076 | Show the owner on home page rows | done | — | normal | milestones/archive/M076-owner-on-rows.md |
 | M075 | Hold name matches only on evidence of copying | done | — | normal | milestones/archive/M075-name-holds.md |
 | M074 | Allow owner GitHub Pages update hosts | done | — | normal | milestones/archive/M074-owner-pages-hosts.md |
-| M073 | Show hold details in bot pull requests | done | — | normal | milestones/archive/M073-hold-details.md |
 <!-- rows grouped by status, not by ID; keep the 3 most recent done/dropped rows; older ones: milestones/archive/ + git -->
 
 ## Candidates
