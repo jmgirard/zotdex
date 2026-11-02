@@ -26,6 +26,7 @@ import { appliedLanguages, languageName } from "../src/site/languages.ts";
 import { START_LIMIT_MS } from "../src/start-test/start-test.ts";
 import { compareVersions, declaredRange, majorSupport, ZOTERO_MAJORS } from "../src/site/version.ts";
 import { PRE_PAINT_CASES } from "./support/pre-paint.ts";
+import { themePage } from "./support/theme-page.ts";
 
 const ROOT = resolve(import.meta.dirname, "..");
 const FIXTURE = resolve(ROOT, "test/fixtures/site/plugins.json");
@@ -1127,7 +1128,7 @@ describe("the home page", () => {
     expect(toolbar).toMatch(/<p class="filter-status" role="status" data-filter-status hidden><\/p>$/);
     expect(html.match(/<input[\s>]/g)).toHaveLength(1);
     expect(html.match(/<select[\s>]/g)).toHaveLength(2);
-    expect(html.match(/<button[\s>]/g)).toHaveLength(ZOTERO_MAJORS.length + 3);
+    expect(html.match(/<button[\s>]/g)).toHaveLength(ZOTERO_MAJORS.length + 4);
     expect(html.match(/\sdata-filter-status/g)).toHaveLength(1);
     expect(html).toContain(
       '</table></div><nav class="pager" aria-label="Pages" data-pager hidden><button type="button" data-page-step="-1">Previous</button><span role="status" data-page-status></span><button type="button" data-page-step="1">Next</button></nav>',
@@ -1139,7 +1140,7 @@ describe("the home page", () => {
       declarations.some(([property, value]) => property === "display" && value === "none"),
     );
     const selectors = hiding.flatMap(({ selector }) => selector.split(",").map((part) => part.trim()));
-    for (const control of [".search[hidden]", ".category-filter[hidden]", ".language-filter[hidden]", ".version-filter[hidden]", ".filter-status[hidden]", ".pager[hidden]"]) {
+    for (const control of ["[data-theme-toggle][hidden]", ".search[hidden]", ".category-filter[hidden]", ".language-filter[hidden]", ".version-filter[hidden]", ".filter-status[hidden]", ".pager[hidden]"]) {
       expect(selectors, control).toContain(control);
     }
   });
@@ -1544,7 +1545,7 @@ describe("the home page script", () => {
 // the window's error listeners on fire().
 function prePaintScript(search: string, modules = true) {
   const html = home();
-  const script = /<script>(.*?)<\/script>/s.exec(html)![1]!;
+  const script = /<script>(.*?)<\/script>/s.exec(html.slice(html.indexOf("<main>")))![1]!;
   type Element = { attributes: Record<string, string>; textContent: string; removed: boolean };
   const appended: Element[] = [];
   const document = {
@@ -1578,8 +1579,9 @@ function prePaintScript(search: string, modules = true) {
 describe("the home page's classic script", () => {
   test("comes before the table", () => {
     const html = home();
-    expect(html.indexOf("<script>")).toBeGreaterThan(-1);
-    expect(html.indexOf("<script>")).toBeLessThan(html.indexOf('<table class="plugins">'));
+    const script = html.indexOf("<script>", html.indexOf("<main>"));
+    expect(script).toBeGreaterThan(-1);
+    expect(script).toBeLessThan(html.indexOf('<table class="plugins">'));
   });
 
   test.each(PRE_PAINT_CASES.map(([search]) => search))("adds the style that prePaintStyle writes for %j", (search) => {
@@ -1605,7 +1607,7 @@ describe("the built site", () => {
     for (const path of files) {
       const html = readFileSync(join(out, path), "utf8");
       const bar = /<body><header class="topbar"><div class="topbar-inner">(.*?)<\/div><\/header><main>/s.exec(html)?.[1];
-      expect(bar, path).toBe(
+      expect(bar?.replace(/<button .*<\/script>/s, ""), path).toBe(
         '<a class="brand" href="/zotero-plugin-index/">Zotero plugin index</a><nav aria-label="Site">' +
           '<a href="/zotero-plugin-index/about/">About</a>' +
           '<a href="https://github.com/jmgirard/zotero-plugin-index/issues/new?template=add-plugin.yml" data-add-plugin>Add a plugin</a>' +
@@ -1630,11 +1632,44 @@ describe("the built site", () => {
     }
   });
 
-  test("has scripts on the home page only, a classic one and then a module", () => {
+  test("has two classic theme scripts on every page, and on the home page also a classic one and then a module", () => {
     const files = htmlFiles(out);
     expect(files).toContain("index.html");
-    for (const file of files) expect(readFileSync(join(out, file), "utf8").includes("<script"), file).toBe(file === "index.html");
-    expect(readFileSync(join(out, "index.html"), "utf8").match(/<script[\s>]/g)).toEqual(["<script>", "<script "]);
+    for (const file of files) {
+      const scripts = readFileSync(join(out, file), "utf8").match(/<script[\s>]/g);
+      expect(scripts, file).toEqual(file === "index.html" ? ["<script>", "<script>", "<script>", "<script "] : ["<script>", "<script>"]);
+    }
+  });
+
+  test("starts every page with no scheme on <html>, a theme script in <head>, and the hidden button before its script", () => {
+    const files = htmlFiles(out);
+    expect(files).toHaveLength(ids.length + 2);
+    for (const file of files) {
+      const html = readFileSync(join(out, file), "utf8");
+      expect(html, file).toMatch(/^<!DOCTYPE html><html lang="en"><head>/);
+      const head = html.slice(0, html.indexOf("<body>"));
+      expect(head.match(/<script[\s>]/g), file).toEqual(["<script>"]);
+      const bar = html.slice(html.indexOf("<body>"), html.indexOf("<main>"));
+      expect(bar.match(/<button[\s>]/g), file).toHaveLength(1);
+      expect(bar, file).toMatch(
+        /<\/a><button type="button" data-theme-toggle hidden><span data-theme-icon="moon"><svg [^]*?<\/svg><\/span><span data-theme-icon="sun"><svg [^]*?<\/svg><\/span><\/button><script>[^]*?<\/script><\/nav>/,
+      );
+    }
+  });
+
+  test("runs the built theme scripts", () => {
+    const html = home();
+    const scripts = {
+      head: /<head>.*?<script>(.*?)<\/script>/s.exec(html)![1]!,
+      button: /<\/button><script>(.*?)<\/script>/s.exec(html.slice(0, html.indexOf("<main>")))![1]!,
+    };
+    const page = themePage({ system: "light", saved: "dark" }, scripts);
+    expect(page.theme()).toBe("dark");
+    expect(page.hidden()).toBe(false);
+    page.press();
+    expect(page.theme()).toBeNull();
+    expect(page.saved()).toBeNull();
+    expect(page.gives()).toBe("dark");
   });
 
   test("has no trace of the Zotero version field", () => {
@@ -1866,8 +1901,8 @@ function contrast(a: string, b: string): number {
 describe("the site colors", () => {
   const layout = readFileSync(resolve(ROOT, "site/src/layouts/Base.astro"), "utf8");
   const light = colors(/\n {6}:root \{(.*?)\n {6}\}/s.exec(layout)![1]!);
-  const darkBlock = /@media \(prefers-color-scheme: dark\) \{\s*:root \{(.*?)\}/s.exec(layout)![1]!;
-  const dark = new Map([...light, ...colors(darkBlock)]);
+  const darkBlock = /@media \(prefers-color-scheme: dark\) \{\s*:root:not\(\[data-theme="light"\]\) \{(.*?)\}/s.exec(layout)![1]!;
+  const dark =new Map([...light, ...colors(darkBlock)]);
   // Each text token on each surface, and each status token on its own background and on
   // the surface, at 4.5:1; each mark or icon token on the surface at 3:1, and the star, which
   // the plugin page head shows on the page background, on both.
@@ -1898,6 +1933,30 @@ describe("the site colors", () => {
 
   test("redefines every hex color of the light block in the dark block, so none falls back to it", () => {
     expect([...colors(darkBlock).keys()].sort()).toEqual([...light.keys()].sort());
+  });
+
+  test("holds the same dark custom properties for the system setting and a saved scheme", () => {
+    const properties = (selector: string) =>
+      cssRules(layout)
+        .find((rule) => rule.selector === selector)!
+        .declarations.filter(([property]) => property.startsWith("--"))
+        .sort();
+    const system = properties(':root:not([data-theme="light"])');
+    expect(system.length).toBeGreaterThan(0);
+    expect(properties(':root[data-theme="dark"]')).toEqual(system);
+  });
+
+  test.each(["light", "dark"])("sets the browser's color scheme to match a saved %s scheme", (scheme) => {
+    const rule = cssRules(layout).find(({ selector }) => selector === `:root[data-theme="${scheme}"]`);
+    expect(rule?.declarations).toContainEqual(["color-scheme", scheme]);
+  });
+
+  test("shows the moon when a press gives dark and the sun when it gives light", () => {
+    const hidden = cssRules(layout)
+      .filter(({ declarations }) => declarations.some(([property, value]) => property === "display" && value === "none"))
+      .flatMap(({ selector }) => selector.split(",").map((part) => part.trim()));
+    expect(hidden).toContain('[data-gives="dark"] [data-theme-icon="sun"]');
+    expect(hidden).toContain('[data-gives="light"] [data-theme-icon="moon"]');
   });
 
   const together = cssRules(layout).flatMap(({ selector, declarations }) => {

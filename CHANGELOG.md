@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Each page's top bar now has a button that flips the site between the light
+  and dark color schemes. The browser saves the choice for later visits.
+  Flipping back to the scheme of the system setting clears the saved choice,
+  so the site follows the system setting again. Without JavaScript the button
+  stays hidden and the system setting alone sets the scheme.
 - If a redirect of the bot's read of an update file goes from the repository
   owner's own `<owner>.github.io` site to any other host, the bot pull request
   now gets the `update-host` hold. On every host, a URL of that read that uses

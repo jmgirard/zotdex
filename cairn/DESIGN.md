@@ -93,7 +93,12 @@ filters pass on every page while a filter is on, or that none match (M044,
 M053, M058). Typing writes `?q=`
 once the visitor stops for half a second (M053 review). A top bar on every
 page links to the home page, the About page (M054), the "Add a plugin"
-issue form, and the data file (M053).
+issue form, and the data file (M053). It also holds a button that flips the
+page between the light and dark schemes and saves the choice in the
+browser's `localStorage` under `zotero-plugin-index-theme`; flipping back to
+the system's scheme clears the saved choice, so the page follows the system
+again. Without JavaScript the button stays hidden and the system setting
+alone sets the scheme (M078).
 A plugin page has one column (M054). It opens with an "All plugins" link
 home, the name with an "Archived" badge for an archived repository, a
 repo line, the description, and links with icons. For a repo URL of the
@@ -455,6 +460,9 @@ exception is a report that is abuse.
   script carries, so it calls and reads nothing outside its body except
   built-ins (M060);
   `rowMajors` in `version.ts` gives each row's `data-zotero`.
+  `src/site/theme.ts` holds `applySavedTheme` and `wireThemeButton`, whose
+  source text the layout's classic scripts carry, so each calls and reads
+  nothing from outside its body except built-ins and browser globals (M078).
   `site/src/data.ts` holds the template helpers, among them `homeOrder`,
   `majorStart`, `shortLanguages`, and `monthYear` for the home table, and
   `compatMajors`, `majorReport`, and `startWords` for the plugin page's
@@ -907,8 +915,10 @@ reused._
   M044, the status line under them, and since M053 the search box and the
   count that replaced that line, and since M058 the pager, which Astro
   inlines as a `type="module"` script. Since M060 a classic inline script
-  before the table adds the pre-paint style. The other pages carry none
-  (D-014, D-019, D-026). The templates take the Pages path
+  before the table adds the pre-paint style. Since M078 every page carries
+  two classic inline theme scripts, which D-026 allows: one in `<head>` that
+  sets the saved scheme before the body parses, and one right after the top
+  bar's button that wires and shows it. The templates take the Pages path
   from `site/src/base.ts`, because a `BASE_URL` environment variable replaces
   Astro's `import.meta.env.BASE_URL`. `build.yml`'s site job runs `pnpm site`
   after the build job (M047), so a failed site build also deploys nothing.
@@ -917,9 +927,12 @@ reused._
   are compiled by Astro without a type check (M007). A plugin page shows the
   "Archived on GitHub" fact only for a record whose `archived` is a boolean,
   and the home table's `data-archived` marker only for `archived: true` (M013).
-  All styles are global in `site/src/layouts/Base.astro`, with a
-  `prefers-color-scheme: dark` block, so Astro adds no scoped attributes to
-  the markup the site tests match (M015). Outside its `:root` blocks and
+  All styles are global in `site/src/layouts/Base.astro`, so Astro adds no
+  scoped attributes to the markup the site tests match (M015). It holds the
+  dark colors in two blocks with the same custom properties and values:
+  `:root:not([data-theme="light"])` under `@media (prefers-color-scheme:
+  dark)`, and `:root[data-theme="dark"]` for a saved choice (M078). Outside
+  its `:root` blocks and
   `.visually-hidden`, each value part of each margin, padding, gap,
   `border-radius`, and `font-size` there is a custom property, `0`, or
   `auto`, and no other `.astro` file holds a style (M049). The one style
