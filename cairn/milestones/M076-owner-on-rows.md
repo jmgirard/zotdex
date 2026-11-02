@@ -46,7 +46,7 @@ Each home page row with a GitHub repo shows that repo's owner, so plugins of one
 
 - [x] T1: Add the owner element to the name cell in `index.astro`, with `githubRepo` as its source, and style it in `Base.astro`. Write `{" "}` where a line break must stay a space.
 - [x] T2: Add the site tests. Update the exact name-cell check in `test/site.test.ts`.
-- [ ] T3: Build the site from the deployed data and read the page in the browser pane at 375 and 1280 px, in both color schemes.
+- [x] T3: Build the site from the deployed data and read the page in the browser pane at 375 and 1280 px, in both color schemes.
 - [ ] T4: Update README, DESIGN, and CHANGELOG. Run the `verify` slot.
 
 ## Work log
@@ -60,6 +60,8 @@ Each home page row with a GitHub repo shows that repo's owner, so plugins of one
 - 2026-11-02: T1, T2 done in one commit, tests first: 16 site tests failed without the code, and `pnpm test` and `pnpm check` pass with it.
 - 2026-11-02: choices: the owner is its own line under the name, "By <owner>" as on the plugin page, plain text with no link so each row keeps its tab stops, and no `title`; a block element needs no `{" "}`.
 - 2026-11-02: new fixture `same-name-plugin@example.org` shares First Plugin's name, and its upstream URL has a 39-letter owner that differs from its `repoUrl`.
+- 2026-11-02: T3 done: site built from the deployed data (671 rows) with 2 rows' owners changed to 39-character ones, one with hyphens; with every row unhidden, document and `.table-card` scrollWidth equal clientWidth at 375 and 1280 px; with `contain` removed at 375 px, `.table-card` is 435 against 337, so the check can fail.
+- 2026-11-02: T3 also: every owner stays on one line; at 375 px the 2 planted owners and the real `CentreForDigitalHumanities` are cut with an ellipsis; light and dark seen at both widths with no console error; searching "windingwind" shows 1 of its 7 rows, whose description names it.
 
 ## Decisions
 
