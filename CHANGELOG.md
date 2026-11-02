@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- If the host of a plugin's `update_url` is the repository owner's own
+  `<owner>.github.io` site, the bot no longer gives its pull request the
+  `update-host` hold. Another owner's `.github.io` site and hosts outside
+  GitHub still get this hold.
 - A held bot pull request's body now gives the facts behind its hold: the
   entries that a `name-match` matched, the host of an `update-host`, and the
   day that the owner's GitHub account was made. The new `pnpm refresh-holds`

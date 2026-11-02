@@ -26,7 +26,7 @@ export const HOST_MAX = 300;
 const API = "https://api.github.com";
 // An owner account younger than this holds the pull request.
 const NEW_ACCOUNT_MS = 30 * 24 * 60 * 60 * 1000;
-// The hosts of an update.json that GitHub serves.
+// The fixed hosts of an update.json that GitHub serves.
 const GITHUB_HOSTS = ["github.com", "raw.githubusercontent.com"];
 // Runs of a name that say nothing about which plugin it is.
 const NOISE = new Set(["zotero", "plugin", "addon", "for"]);
@@ -72,11 +72,13 @@ function matchedEntries({ repo, name, indexed }: Pick<HoldFacts, "repo" | "name"
 }
 
 export function holdReasons(facts: HoldFacts): HoldReason[] {
+  // Only the owner, and those it gives write access to its repos, can publish to its GitHub Pages site.
+  const ownerSite = `${facts.repo.split("/")[0].toLowerCase()}.github.io`;
   const held: Record<HoldReason, boolean> = {
     "name-match": matchedEntries(facts).length > 0,
     "owner-unread": facts.ownerCreatedAt === undefined,
     "new-account": facts.ownerCreatedAt !== undefined && facts.now.getTime() - facts.ownerCreatedAt.getTime() < NEW_ACCOUNT_MS,
-    "update-host": !GITHUB_HOSTS.includes(facts.updateHost),
+    "update-host": !GITHUB_HOSTS.includes(facts.updateHost) && facts.updateHost.toLowerCase() !== ownerSite,
     "issue-no-topic": facts.issueRun && !facts.topics.some((topic) => TOPICS.includes(topic)),
   };
   return HOLD_REASONS.filter((reason) => held[reason]);

@@ -229,8 +229,9 @@ shows each one separately. A combined verdict is out of scope.
    that no run answered, up to 3 a run (M040). Each bot pull request body
    has a Hold line (M056, D-033). The bot holds a pull request for the
    maintainer when its name or repo name matches another owner's entry, its
-   owner's account is under 30 days old or cannot be read, its `update.json`
-   is not on github.com or raw.githubusercontent.com, or an issue proposed a
+   owner's account is under 30 days old or cannot be read, the host of its
+   `update_url` is not github.com, raw.githubusercontent.com, or the repo
+   owner's own `<owner>.github.io` site (D-043, D-044), or an issue proposed a
    repo with neither topic. A catalog or code-search repo with neither
    topic gets no hold (D-042). A held pull request gets the `hold` label. A
    daily job merges a pull request that says `Hold: none` and has no `hold`

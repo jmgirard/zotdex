@@ -17,7 +17,7 @@ export function pluginRepo(
     [`https://api.github.com/repos/${fullName}`]: {
       json: { full_name: fullName, html_url: repoUrl, fork: false, created_at: "2025-01-10T09:00:00Z", open_issues_count: 0, topics },
     },
-    [`https://api.github.com/users/${fullName.split("/")[0]}`]: { json: { created_at: ownerCreatedAt } },
+    [`https://api.github.com/users/${fullName.split("/")[0].toLowerCase()}`]: { json: { created_at: ownerCreatedAt } },
     [`https://api.github.com/repos/${fullName}/releases?per_page=100`]: {
       json: noRelease
         ? []

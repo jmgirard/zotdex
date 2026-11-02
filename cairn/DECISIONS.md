@@ -638,3 +638,17 @@ GitHub stay held. The user chose this rule, and chose to release the open
 pull requests held only for it. The rest of D-033 stands. This choice is
 wrong if an update file on an owner's Pages site serves a plugin that a
 maintainer would have closed.
+
+### D-044: People with write access can also publish to the owner's GitHub Pages site, annotating D-043
+
+2026-11-02, M074 claim audit. D-043 says that only the owner can publish to
+`<owner>.github.io`. That host also serves the project sites of the owner's
+repos at `<owner>.github.io/<repo>`, so people to whom the owner gives write
+access can publish there too. The rule stands, since the owner chooses those
+people, and a repo's writers already control its files on
+raw.githubusercontent.com. D-043 also says that the rule gives no new party
+control of a plugin's updates. That is not so where a Pages site has a custom
+domain: the site redirects to that domain, the hold reads only the host that
+`update_url` names, and whoever controls the domain's DNS then serves the
+update file. The rule stays for now, and a candidate row asks for a hold on
+such a redirect. The rest of D-043 stands.
