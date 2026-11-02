@@ -1,6 +1,6 @@
 # M077: Hold update files that leave owner sites
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** normal
 - **Depends on:** —
 - **Driving RR:** —
@@ -74,7 +74,9 @@ The bot holds a pull request whose update file leaves the repo owner's `<owner>.
 - 2026-11-02: T2: `holdReasons` applies the redirect and `http:` rules; before the change, the 14 cases that describe new holds failed with `expected [] to deeply equal [ 'update-host' ]`, and the cases that describe no hold passed.
 - 2026-11-02: T3, T4: `HoldDetails` gains `updateHosts` and `updateHttp`, and `pnpm refresh-holds` reads the route for an `update-host` hold, so `--apply` keeps these lines; chose the detail line text "Update file redirects to:" and "Update file read used http: yes"; refresh and handoff tests pass.
 - 2026-11-02: T5: `HOLD_TEXT`, README, DESIGN, and CHANGELOG state both rules; the writing hook also flags older README and CHANGELOG sentences that this branch did not write, and those stay as they are, since they are outside this scope.
-- 2026-11-02: T6: `pnpm test` 1967 passed, 6 skipped; `pnpm check` 671 entries, 0 problems; `pnpm refresh-holds` without `--apply` exits 0, with 10 to edit, 15 unchanged, and 36 skipped; #142's lines name `forrt.org`, and 7 pull requests gain a redirect line.
+- 2026-11-02: T6: `pnpm test` 1967 passed, 6 skipped; `pnpm check` 671 entries, 0 problems; `pnpm refresh-holds` without `--apply` exits 0, with 10 to edit, 15 unchanged, and 36 skipped; #142's lines name `forrt.org`, and 7 pull requests gain a redirect line; the other 3 to edit (#289, #485, #592) are `name-match` holds whose read facts differ from their bodies.
+- 2026-11-02: claim audit: 72 claims read, 2 corrected — CHANGELOG.md, README.md, src/discover/holds.ts, src/discover/propose.ts, src/discover/refresh-holds.ts, src/upstream/reader.ts, test/handoff.test.ts, test/holds.test.ts, test/propose.test.ts, test/refresh-holds.test.ts, test/support/plugin-repo.ts, test/upstream.test.ts; the corrections are `HOLD_TEXT`'s closing clause and the text on what `pnpm refresh-holds` reads; the same reader re-read both, and they hold.
+- 2026-11-02: T7 stays open at this handoff, since it runs after the merge at review, by its own wording; `pnpm test` after the corrections: 1967 passed, 6 skipped.
 
 ## Decisions
 
