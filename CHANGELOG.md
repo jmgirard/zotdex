@@ -7,9 +7,10 @@
   a note on what is paid for, a link to the source, and the date of the read. A
   maintainer reads this by hand, so a plugin with no mark can still cost money. A
   lasting free plan with a paid upgrade, a plugin that also works with a third
-  party's key, and a donation get no mark. Such a plugin stays listed.
+  party's key, and a donation get no mark. A marked plugin stays listed.
   `index.json` and the data gain an optional `paidService` field, so fetch any
-  saved copy of `schemas/plugins.v1.schema.json` again.
+  saved copy of `schemas/plugins.v1.schema.json` and
+  `schemas/index.v1.schema.json` again.
 - The home page and plugin pages now show a lock on a plugin when the index finds
   no source code at the top level of its repository, and the Details card states
   "Source code at the repository's top level" as "Yes" or "No". The index decides

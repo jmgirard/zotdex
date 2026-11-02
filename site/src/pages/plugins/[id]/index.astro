@@ -253,7 +253,7 @@ const { min, max } = declaredRange(record);
             <dt>{PAID_SERVICE_TEXT}</dt>
             <dd data-fact="paid-service">
               {paidService.note}{" "}
-              {paidHref ? <a href={paidHref} data-paid-source>Source</a> : paidService.source}, read {paidService.read}
+              {paidHref ? <a href={paidHref} data-paid-source>Source of this fact</a> : paidService.source}, read {paidService.read}
             </dd>
           </div>
         )

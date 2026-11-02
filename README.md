@@ -184,7 +184,8 @@ The "Add a plugin" link in the top bar opens the issue form that
 account.
 
 Each plugin has its own page. It opens with an "All plugins" link back to
-the home page, the plugin's name, a repository line, and its description.
+the home page, the plugin's name with any marks, a repository line, and its
+description.
 The repository line needs an address of the form
 `https://github.com/<owner>/<repo>`, with no query or fragment. A
 trailing slash is allowed. The line reads `By <owner> · <repo>`. The
@@ -229,7 +230,9 @@ GitHub with the plugin id and that version filled in. If the last build
 failed to read a plugin, the card shows the failure in place of the table,
 with no report buttons.
 
-An open "Details" card comes last. It lists the plugin id. If the build
+An open "Details" card comes last. It lists the plugin id. For a plugin with
+the card icon, it then gives the paid service fact, whether or not the build
+read the plugin. If the build
 read the plugin, it also lists facts about the repository and the release
 that the index read. Its last fact is "Menus and settings in". That fact names the
 languages of the `languages` list that "Using the data" describes, which
@@ -1299,7 +1302,8 @@ from GitHub in the same way as `pnpm add-plugin`. It writes one file,
 `generatedAt` time, an optional `zoteroRelease` from the read below, and
 one record for each entry. Each record keeps the upstream facts in an
 `upstream` block and the overrides of the entry, with their reasons, in an
-`overrides` block. The schema for the file is
+`overrides` block. Beside them it holds any `paidService` of the entry. The
+schema for the file is
 [`schemas/plugins.v1.schema.json`](schemas/plugins.v1.schema.json). If the
 GitHub response for the repository says whether it is archived, the
 `upstream` block has an `archived` field, `true` or `false`. If the build read

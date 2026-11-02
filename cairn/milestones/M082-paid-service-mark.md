@@ -87,3 +87,40 @@ Evidence read on 2026-11-02 at `401339c`, level with `origin/main`.
 - AC6: a script took the word list from the note, the SHAs from `paid-service-sweep-shas.tsv`, and the descriptions from the shelf's `plugins-data-2026-11-02.json`, read 846 READMEs at those SHAs again, and found 357 hits, all listed, none unlisted, with 6 + 351 verdicts. Its marked set equals the entries with `paidService`. All 6 sources answer HTTP 200. A fresh Opus reader found that each of the 6 pages states its note and meets AC5's meaning, and that 20 of 20 random no verdicts hold (seed 82).
 - AC7: the same script found 6 `M` lines on `index.json` files, each differing from main only by `paidService`, and `git diff --stat main...HEAD -- src/discover/` is empty; `pnpm test` exits 0 with 2175 passed and 6 skipped, and `pnpm check` reports 695 entries and 0 problems.
 - Consistency gate: `cairn_validate.py` exits 0; the profile names no toolchain checks; no principle changed.
+
+spawned: diff-bug, blame-history, prior-review, ripple
+
+- diff-bug #1: a marked page has two links named "Source" with different targets — fix now, the fact's link now reads "Source of this fact".
+- diff-bug #2: DESIGN's site text names `NoSourceMark.astro` and not the new mark — fix now.
+- diff-bug #3: weaker mark checks after the exact name-cell test — fix now, test removed.
+- diff-bug #4: a count of marks repeats the exact test — fix now, replaced by a test naming the two marked fixture ids, which also shows the domain is not empty.
+- diff-bug #5: a weaker h1 check after the exact head test — fix now, removed.
+- diff-bug #6: absence checks that repeat the exact tests — fix now, reduced to one check of the words.
+- diff-bug #7: the add-start-results test guards code the diff does not touch — reject, planned change: AC2 asks for it.
+- diff-bug #8: eight About rows run one code path — reject, planned change: AC5 asks for each sentence.
+- diff-bug #9: "Such a plugin stays listed" reads as the unmarked plugins — fix now.
+- diff-bug #10: "Source, read" reads oddly, and a note with no period runs on — fix now for the link text; reject the rest, style: all 6 notes end in a period.
+- diff-bug #11: "the build reads the others" is broad — reject, planned change: AC5 asks for this sentence.
+- diff-bug #12: the INDEX line is out of order — fix now.
+- diff-bug #13: the README's Details text limits facts beyond the id to records the build read — fix now.
+- diff-bug #14: DESIGN's "Upstream files are the source of truth" is not annotated — reject, false: that line is a banked interview note, and the Data sources text states the hand-kept fact.
+- diff-bug #15: the plain-text fallback is unreachable under the schema pattern — reject, planned change: T3 links through `safeHref`, as the other links do.
+- diff-bug #16: the `read` pattern accepts `2026-13-99` — reject, planned change: AC1 names this pattern.
+- diff-bug #17: no fixture has both the lock and the card — reject, false: the two conditions are separate, and each has its own tests.
+- blame-history #1: an invalid `paidService` stops the build, against D-054's "no hold" — reject, false: D-054's hold means a bot pull request's hold, `pnpm check` refuses such a value before a merge, and an invalid `index.json` has stopped the build since M003.
+- blame-history #2: the home intro overclaims — reject, planned change: AC5 asks for this sentence.
+- blame-history #3: the About intro contradicts itself — reject, false: its new sentence states the exception to the one before.
+- blame-history #4: the `read` pattern is weak — reject, planned change: same as diff-bug #16.
+- prior-review #1: the plugin page's mark reaches touch and keyboard users only by tooltip — reject, false: the Details fact on the same page gives the words.
+- prior-review #2: confirm that the re-read ended before review — reject, false: the work log records it before `401339c`.
+- ripple #1: DESIGN's plugin page head omits the card — fix now.
+- ripple #2: the README's plugin page opening omits the marks — fix now.
+- ripple #3: the README's home row list omits the card — reject, false: the sentences after it name each mark, as they do for the lock.
+- ripple #4: DESIGN's "facts that a reader can check" covers a hand-read fact — reject, false: its source link makes it checkable, which D-054 states.
+- ripple #5: the README's record sentence omits `paidService` — fix now.
+- ripple #6: the changelog names one of the two changed schemas — fix now.
+- fresh reader of T4 #1: Immersive Translate's README gives no price, though the ledger says "paying" — fix now: the maker's pricing page lists Pro as paid, and the ledger now says so.
+- fresh reader of T4 #2: Geyi's README names membership tiers and recharge events but no price — reject, false: tiers and recharges show payment to the maker.
+- fresh reader of T4 #3: Equalang's selection translation may be free — reject, false: document translation is the main use, and its pricing page lists no free plan.
+- fresh reader of T4 #4 and #5: two no-mark reasons are loosely worded — reject, style: the verdicts hold.
+- claim audit: its intro finding and its four notes are recorded in the work log.

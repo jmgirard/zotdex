@@ -687,19 +687,13 @@ describe("the plugin page", () => {
   test.each([
     ["next-plugin@example.org", "Needs credits bought from the maker.", "https://example.org/pricing?plan=a&amp;b=c", "2026-11-02"],
     ["repo-path@example.org", "Stops after a 7-day trial.", "https://example.org/trial", "2026-11-01"],
-  ])("shows the paid service mark and fact on %s", (id, note, href, read) => {
-    const html = page(id);
-    expect(/<h1>.*?<\/h1>/s.exec(html)?.[0]).toContain('data-paid-service');
-    const dd = /<dd data-fact="paid-service">(.*?)<\/dd>/s.exec(html)?.[1]?.replace(/\s+/g, " ").trim();
-    expect(dd).toBe(`${note} <a href="${href}" data-paid-source>Source</a>, read ${read}`);
+  ])("shows the paid service fact on %s", (id, note, href, read) => {
+    const dd = /<dd data-fact="paid-service">(.*?)<\/dd>/s.exec(page(id))?.[1]?.replace(/\s+/g, " ").trim();
+    expect(dd).toBe(`${note} <a href="${href}" data-paid-source>Source of this fact</a>, read ${read}`);
   });
 
-  test("shows no paid service mark or fact on a page without the field", () => {
-    for (const id of ["first-plugin@example.org", "broken-plugin@example.org"]) {
-      expect(page(id)).not.toContain("data-paid-service");
-      expect(page(id)).not.toContain('data-fact="paid-service"');
-      expect(page(id)).not.toContain(PAID_TEXT);
-    }
+  test("shows no paid service words on a page without the field", () => {
+    expect(page("first-plugin@example.org")).not.toContain(PAID_TEXT);
   });
 
   test("shows the mark and calls the link the repository only for false", () => {
@@ -1007,17 +1001,9 @@ describe("the home page", () => {
     expect(home().match(/\sdata-archived/g)).toHaveLength(1);
   });
 
-  describe("marks a plugin that needs a paid service", () => {
-    test.each(["next-plugin@example.org", "repo-path@example.org"])("shows the mark on %s outside the searched text", (id) => {
-      const cell = row(id).cells[0]!.html;
-      expect(cell).toContain(paidMark(CARD_SVG));
-      expect(/<a [^>]*data-name>.*?<\/a>/.exec(cell)?.[0]).not.toContain("data-paid-service");
-      expect(/<div class="desc" data-description>.*?<\/div>/.exec(cell)?.[0] ?? "").not.toContain("data-paid-service");
-    });
-
-    test("marks only the records with the field", () => {
-      expect(home().match(/\sdata-paid-service/g)).toHaveLength(2);
-    });
+  test("marks only the records with a paid service, one read and one failed", () => {
+    const marked = rows().flatMap(({ id }) => (row(id).cells[0]!.html.includes("data-paid-service") ? [id] : []));
+    expect(marked.sort()).toEqual(["next-plugin@example.org", "repo-path@example.org"]);
   });
 
   describe("marks a repo with no source", () => {

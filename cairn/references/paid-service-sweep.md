@@ -50,6 +50,9 @@ lost its mark, for the same reason as `ai4paper-v2@cpc.dev`. The session read it
 README, its site's home page, and the start of its docs. The docs page text did
 not load in full. So 6 entries carry a mark.
 
+The README of `zotero@immersivetranslate.com` does not give a price. The maker's
+pricing page lists Pro as a paid plan (observed 2026-11-02).
+
 A mark means that the plugin's main use stops without paying its maker, or
 stops after a trial (D-054).
 

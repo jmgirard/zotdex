@@ -103,7 +103,7 @@ again. Without JavaScript the button stays hidden and the system setting
 alone sets the scheme (M078).
 A plugin page has one column (M054). It opens with an "All plugins" link
 home, the name with an "Archived" badge for an archived repository and a
-lock for a repo with no source at its top level (M081), a repo line, the description, and links with icons. For a repo URL of the
+lock for a repo with no source at its top level (M081), a card icon for a record with `paidService` (M082), a repo line, the description, and links with icons. For a repo URL of the
 form `https://github.com/<owner>/<repo>` (`githubRepo`), the repo line
 reads "By <owner> · <repo>": the owner links to the owner's GitHub page
 and the repo name to the repository (M061, M065). It adds the
@@ -968,6 +968,9 @@ reused._
   and the home table's `data-archived` marker only for `archived: true` (M013).
   `site/src/components/NoSourceMark.astro` holds the lock mark that both pages
   show for `sourceInRepo: false`, and a boolean gives the Details fact (M081).
+  `site/src/components/PaidServiceMark.astro` holds the card mark that both pages
+  show for a record with `paidService`, and `PAID_SERVICE_TEXT` in
+  `site/src/data.ts` gives its words (M082).
   All styles are global in `site/src/layouts/Base.astro`, so Astro adds no
   scoped attributes to the markup the site tests match (M015). It holds the
   dark colors in two blocks with the same custom properties and values:
