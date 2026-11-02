@@ -1,6 +1,6 @@
 # M078: Add a dark mode toggle to the site
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** normal
 - **Depends on:** —
 - **Driving RR:** —
@@ -69,6 +69,9 @@ Each page of the site has a top-bar button that flips between the light and dark
 - 2026-11-02: T2, T3: added the button inside the top bar's `nav`, so it stays beside the links when the bar wraps, with its base rule's background `--surface`, since the color test reads the pair that a rule sets together; committed together, since T2 alone fails the tests that T3 updates; `pnpm test` passes, 2000 passed and 6 skipped.
 - 2026-11-02: T4: on the real site built from the deployed data (673 pages), the pane gave the expected `--bg` on the home, About, and one plugin page for all six pairs of system scheme and saved choice, at first load, after a reload, and after a click; `scrollWidth` equaled `clientWidth` in all 12 cases at 375 and 1280 px, and a planted 900 px block read 900; the moon and sun both showed, Tab reached the button with an outline in `--link`, Return flipped it, and Back to the home page showed the new scheme; no console errors. Review reruns these.
 - 2026-11-02: T5: added the changelog entry, and DESIGN now names the button, `src/site/theme.ts`, the two scripts, and both dark blocks.
+- 2026-11-02: claim audit: 46 claims read, 1 corrected — site/src/layouts/Base.astro.
+- 2026-11-02: open concern from the claim audit: if only `setItem` throws, as on a full quota, a press works, and the next `pageshow` or `storage` event undoes it, since the read finds no saved value; the tests cover storage whose every method throws.
+- 2026-11-02: left 8 simple-english hook hits in `CHANGELOG.md` lines 243 to 425 unfixed: they are older entries outside this milestone, and the new entry has none.
 
 ## Decisions
 

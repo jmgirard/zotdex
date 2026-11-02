@@ -7,7 +7,7 @@ _Last hygiene check: 2026-11-02 (M077 archived; "Hold update files that leave ow
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M078 | Add a dark mode toggle to the site | in-progress | — | normal | milestones/M078-dark-mode-toggle.md |
+| M078 | Add a dark mode toggle to the site | review | — | normal | milestones/M078-dark-mode-toggle.md |
 | M077 | Hold update files that leave owner sites | done | — | normal | milestones/archive/M077-update-files-leaving-sites.md |
 | M076 | Show the owner on home page rows | done | — | normal | milestones/archive/M076-owner-on-rows.md |
 | M075 | Hold name matches only on evidence of copying | done | — | normal | milestones/archive/M075-name-holds.md |

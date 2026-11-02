@@ -72,7 +72,7 @@ const themeButton = `(${wireThemeButton})();`;
         --card-padding: var(--space-6) var(--space-8);
       }
       /* The next two blocks hold the same dark colors: a page with no saved scheme follows the
-         system, and the top bar's button sets data-theme for a saved one. */
+         system, and data-theme, set by the head script or the top bar's button, holds a saved one. */
       @media (prefers-color-scheme: dark) {
         :root:not([data-theme="light"]) {
           --bg: #161615;
