@@ -71,6 +71,7 @@ A plugin's repository owner can ask, through a form linked from the plugin page,
 - 2026-11-02: T6: updated README, DESIGN, CHANGELOG, and both schemas' text; created the `text-change` label on the repository; `pnpm test` 2085 passed, 6 skipped; `pnpm check` 0 problems; left the simple-english hook hits on older lines of README and CHANGELOG, and fixed those on new lines.
 - 2026-11-02: claim audit: 125 claims read, 5 corrected — .github/ISSUE_TEMPLATE/text-change.yml, README.md, cairn/DESIGN.md, src/text-request/rules.ts, src/text-request/request.ts. The count is the reader's hand count. The one re-read found the name-match line still false and two small gaps, and each was fixed; by the stopping rule no second pass ran.
 - 2026-11-02: D-050 written at review: an owner's text can replace a maintainer's description override, annotating D-049. New parked row "Tighten the text request rules".
+- 2026-11-02: step-7 approval: m079-owner-text-requests approved for merge
 
 ## Decisions
 
