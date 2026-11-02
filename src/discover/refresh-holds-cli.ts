@@ -28,7 +28,7 @@ async function main(): Promise<number> {
     console.error(`refreshed nothing: ${(error as Error).message}`);
     return 1;
   }
-  for (const { number, lines } of result.changed) console.log(`${apply ? "edited" : "would edit"} #${number}:\n${lines.join("\n")}`);
+  for (const { number, lines } of result.changed) console.log(`${apply ? "edited" : "to edit"} #${number}:\n${lines.join("\n")}`);
   for (const number of result.unchanged) console.log(`unchanged #${number}`);
   for (const { number, reason } of result.skipped) console.log(`skipped #${number}: ${reason}`);
   for (const { number, message } of result.failed) console.error(`failed #${number}: ${message}`);
