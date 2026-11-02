@@ -9,8 +9,10 @@ body:
         The repository's owner files this form. A maintainer reads each request
         and answers here.
 
-        Edit the plugin's manifest or GitHub About text upstream first. The index
-        reads both, and an upstream edit needs no request.
+        Edit the plugin's manifest or GitHub About text upstream first. A manifest
+        edit shows after a new release with an `.xpi`. An About edit changes the
+        description only when the manifest's is missing, only repeats the name,
+        or is half or more Chinese, Japanese, or Korean.
 
         Rules for the new text:
 
@@ -18,7 +20,8 @@ body:
         - A name has 2 to 40 characters and starts with a letter or digit.
         - A description has at least 6 words and at most 200 characters. Write one
           or two plain sentences that say what the plugin does, with the point in
-          the first 120 characters, about what a home page row shows.
+          the first 120 characters, about what a home page row shows on a wide
+          screen.
 
         The text stays through new releases, and it hides later upstream edits.
         To remove the index's override and show the upstream text again, leave

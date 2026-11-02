@@ -1125,9 +1125,11 @@ bot comment stays for a maintainer, as does a report issue opened more than
 ## Changing a plugin's name or description
 
 A plugin's manifest and GitHub About text are the first place to change its
-text, and an edit there needs no request. A repository's owner can also ask
-the index for another name or description, through the link in the plugin
-page's Details card. It opens the form
+text. A manifest edit shows after a new release with an `.xpi`. If the
+manifest's description is missing, only repeats the name, or is half or more
+Chinese, Japanese, or Korean, an About edit changes the description. A
+repository's owner can also ask the index for another name or description, through the link in the
+plugin page's Details card. It opens the form
 `.github/ISSUE_TEMPLATE/text-change.yml`, which adds the label `text-change`.
 
 The new text follows these rules, which `src/text-request/rules.ts` holds:
@@ -1136,10 +1138,10 @@ The new text follows these rules, which `src/text-request/rules.ts` holds:
   is Chinese, Japanese, or Korean, so a maintainer reads for other languages.
 - A name has 2 to 40 characters and starts with a letter or digit.
 - A description has at least 6 words and at most 200 characters, and it does
-  more than repeat the name. A home page row shows about the first 120
-  characters.
-- The text has no link, no `<`, and no control or format characters, line
-  breaks included.
+  more than repeat the name. On a wide screen, a home page row shows about the
+  first 120 characters. On a narrow screen, it shows no description.
+- The text has no `http://`, `https://`, or `www.`, no `<`, and no control or
+  format characters, line breaks included.
 
 The rules bind requests only, so existing text can break them.
 
@@ -1156,20 +1158,20 @@ GitHub API. It prints the plugin, the field, the text, the issue's author, the
 owner, and whether the two match, ignoring letter case. It also prints:
 
 - each rule that the text breaks,
-- each other plugin that shows the same name, which the command does not
-  refuse,
+- each other plugin whose shown name has the same Latin letters and digits,
+  which the command does not refuse,
 - the categories that the text adds,
 - an override with a `version` that still wins over the text,
-- for a blank text, the description gap that removing the override leaves, in
-  the words of `pnpm description-gaps`.
+- for a blank text, the description gap that removing the override leaves:
+  `missing`, `cjk`, or `short`, as `pnpm description-gaps` names them, or `none`.
 
 For an owner that is an organization, it says to check the author by hand.
 
 The command has three exit statuses:
 
-- 0: `--apply` can write.
-- 1: the text breaks a rule, the author and owner differ, or the owner is an
-  organization.
+- 0: nothing blocks `--apply`. A blank text with no override writes nothing.
+- 1: the text breaks a rule, or the author and owner differ or the owner is an
+  organization, unless `--owner-checked` clears the author.
 - 2: a named failure, such as a plugin that the data file does not have.
 
 With `--apply`, the command writes the entry's `index.json`. A text adds an

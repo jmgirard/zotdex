@@ -6,7 +6,8 @@ export const NAME_MIN = 2;
 export const NAME_MAX = 40;
 export const DESCRIPTION_MIN_WORDS = 6;
 export const DESCRIPTION_MAX = 200;
-// About as much as the two lines of a home table row hold: the form's advice, not a limit.
+// About as much as the two lines of a home table row hold on a wide screen; a narrow one shows
+// no description. This is the form's advice, not a limit.
 export const DESCRIPTION_SHOWN = 120;
 
 export type TextField = "name" | "description";

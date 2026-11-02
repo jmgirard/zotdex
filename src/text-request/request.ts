@@ -25,8 +25,9 @@ export interface RequestOptions {
   ownerChecked?: boolean;
 }
 
-// status 0: --apply can write, or wrote, without a further check. 1: a problem, a mismatch, or
-// an organization owner. 2: a named failure.
+// status 0: nothing blocks --apply, or it ran, which for a blank text with no override writes
+// nothing. 1: a problem, or a mismatch or an organization owner that --owner-checked did not
+// clear. 2: a named failure.
 export interface RequestResult {
   status: 0 | 1 | 2;
   lines: string[];

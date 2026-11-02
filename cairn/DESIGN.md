@@ -492,8 +492,9 @@ exception is a report that is abuse.
   --data <file> [--apply [--owner-checked]]` (`request.ts`, `cli.ts`), which
   reads a `text-change` issue and the live owner of the entry's repository,
   prints the facts a maintainer needs, and with `--apply` writes or removes
-  the override. Exit 0 means that it can write, 1 a broken rule, a mismatch, or
-  an organization owner, and 2 a named failure (M079, D-049).
+  the override. Exit 0 means that nothing blocks `--apply`, 1 a broken rule, or
+  a mismatch or organization owner that `--owner-checked` did not clear, and 2 a
+  named failure (M079, D-049).
 - Start tests (`src/start-test/`): `pnpm start-test --zotero --xpi --out
   [--limit]` starts one Zotero binary with one XPI in a new profile, with
   the reporter plugin of `src/start-test/reporter/`, and writes one of the

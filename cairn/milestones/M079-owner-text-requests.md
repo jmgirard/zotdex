@@ -69,6 +69,7 @@ A plugin's repository owner can ask, through a form linked from the plugin page,
 - 2026-11-02: T2, T3, T4: added the form, `parseTextRequest`, `textRequest`, and `pnpm text-request`; `readData` and `checkoutOverrides` are now exported from `description-gaps.ts`, and `parseRepoUrl` from the reader; a read data or entry failure keeps its own name, such as `data-unreadable` and `entry-not-json`; after `--apply` writes, the exit is 0, also past `--owner-checked`; the name-match reads the data file's shown names; the tests passed before the commit.
 - 2026-11-02: T5: added `textChangeHref`, the link at the end of the Details card, and the About paragraph; the pane on the real site at 375 px shows the link inside the Details card, the `href` with the plugin id, no sideways scroll, and no console errors.
 - 2026-11-02: T6: updated README, DESIGN, CHANGELOG, and both schemas' text; created the `text-change` label on the repository; `pnpm test` 2085 passed, 6 skipped; `pnpm check` 0 problems; left the simple-english hook hits on older lines of README and CHANGELOG, and fixed those on new lines.
+- 2026-11-02: claim audit first pass: about 125 claims read by a hand count; 5 corrected in the form, README, DESIGN, and the comments of `rules.ts` and `request.ts`; the reader's re-read of those 5 is still owed at this checkpoint.
 
 ## Decisions
 
