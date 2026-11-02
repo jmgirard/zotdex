@@ -22,7 +22,8 @@ its description. If the repository address is not of the form
 row shows no owner. If the plugin's GitHub
 repository is archived, the row shows "Archived" after the name. If the index
 found no source code at the top level of the repository, the row shows a lock
-after the name. Then come
+after the name. If a maintainer read that the plugin's main use needs a paid
+service from its maker, the row shows a card icon after the name. Then come
 one cell for each Zotero major version from 7 to 10 and a "Menus and
 settings" cell. Next comes the month of
 the release that the index read, as the year and month in UTC, such as
@@ -183,7 +184,8 @@ The "Add a plugin" link in the top bar opens the issue form that
 account.
 
 Each plugin has its own page. It opens with an "All plugins" link back to
-the home page, the plugin's name, a repository line, and its description.
+the home page, the plugin's name with any marks, a repository line, and its
+description.
 The repository line needs an address of the form
 `https://github.com/<owner>/<repo>`, with no query or fragment. A
 trailing slash is allowed. The line reads `By <owner> · <repo>`. The
@@ -228,7 +230,9 @@ GitHub with the plugin id and that version filled in. If the last build
 failed to read a plugin, the card shows the failure in place of the table,
 with no report buttons.
 
-An open "Details" card comes last. It lists the plugin id. If the build
+An open "Details" card comes last. It lists the plugin id. For a plugin with
+the card icon, it then gives the paid service fact, whether or not the build
+read the plugin. If the build
 read the plugin, it also lists facts about the repository and the release
 that the index read. Its last fact is "Menus and settings in". That fact names the
 languages of the `languages` list that "Using the data" describes, which
@@ -273,6 +277,12 @@ page shows "Source code at the repository's top level" with "Yes" or "No". "Yes"
 does not mean an open-source license or an XPI built from that code. "Yes" can be
 wrong, because a name such as `LICENSE-MIT` counts. "No" can be wrong, because the
 index does not look inside folders.
+
+The card icon comes from a read by hand, not from the build. A maintainer sets
+it when the plugin's main use stops without paying its maker, or stops after a
+trial. The name on the home page and on the plugin page shows the icon. The
+Details card shows "Needs a paid service from its maker" with a note, a link to
+the source, and the date of the read. A plugin with no mark can still cost money.
 
 ## Using the data
 
@@ -469,6 +479,16 @@ only registry fields. Its `id` must equal the directory name.
 
 - `schemaVersion`: the version of the `index.json` schema. The current version
   is `1`. This field is required.
+- `paidService`: set when a maintainer read that the plugin's main use stops
+  without paying its maker, or stops after a trial. A lasting free plan with
+  a paid upgrade, a plugin that also works with a third party's key, and a
+  donation do not count. The build copies the field to the data. It has these
+  fields, all required:
+  - `note`: what the plugin needs to be paid for, in English, in 1 to 160
+    characters.
+  - `source`: the page that says so, as an address that starts with
+    `https://`.
+  - `read`: the date that the maintainer read that page, as `YYYY-MM-DD`.
 - `overrides`: a list of corrections to upstream facts. Use an override only
   when the plugin author cannot or will not fix the fact upstream, or in the
   cases that follow. A `description` override can also give English text for
@@ -1282,14 +1302,16 @@ from GitHub in the same way as `pnpm add-plugin`. It writes one file,
 `generatedAt` time, an optional `zoteroRelease` from the read below, and
 one record for each entry. Each record keeps the upstream facts in an
 `upstream` block and the overrides of the entry, with their reasons, in an
-`overrides` block. The schema for the file is
+`overrides` block. Beside them it holds any `paidService` of the entry. The
+schema for the file is
 [`schemas/plugins.v1.schema.json`](schemas/plugins.v1.schema.json). If the
 GitHub response for the repository says whether it is archived, the
 `upstream` block has an `archived` field, `true` or `false`. If the build read
 the repository's top-level names, the block has a `sourceInRepo` field, `true`
 or `false`. A failed read leaves the field out, prints a warning, and does not
-fail the build. If you validate against a saved copy of the schema, fetch the
-schema again. The `upstream`
+fail the build. If the entry's `index.json` has a `paidService` field, the
+record has the same field, whether or not the read succeeds. If you validate
+against a saved copy of the schema, fetch the schema again. The `upstream`
 block also has a `prerelease` field, `true` or `false`. It says whether
 GitHub marks the release that the reader read as a prerelease. It also has
 a `languages` list and an `xpiUrl` field, which "Using the data"

@@ -1,5 +1,10 @@
 {
   "schemaVersion": 1,
+  "paidService": {
+    "note": "After a 7-day trial, generating new guides needs the maker's monthly or yearly Pro plan.",
+    "source": "https://github.com/jhj223/zotero-ai-guided-reader/blob/HEAD/README.md",
+    "read": "2026-11-02"
+  },
   "overrides": [
     {
       "field": "description",

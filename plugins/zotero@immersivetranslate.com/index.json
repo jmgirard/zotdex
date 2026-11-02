@@ -1,3 +1,8 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "paidService": {
+    "note": "Works only for Immersive Translate Pro users, through an authorization code from their profile.",
+    "source": "https://github.com/immersive-translate/zotero-immersivetranslate/blob/HEAD/README.md",
+    "read": "2026-11-02"
+  }
 }

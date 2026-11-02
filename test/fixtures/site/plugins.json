@@ -310,6 +310,7 @@
     {
       "id": "next-plugin@example.org",
       "repoUrl": "https://github.com/example/next-plugin",
+      "paidService": { "note": "Needs credits bought from the maker.", "source": "https://example.org/pricing?plan=a&b=c", "read": "2026-11-02" },
       "upstream": {
         "id": "next-plugin@example.org",
         "name": "Next Plugin",
@@ -351,6 +352,7 @@
     {
       "id": "repo-path@example.org",
       "repoUrl": "https://github.com/example/repo-path/tree/main",
+      "paidService": { "note": "Stops after a 7-day trial.", "source": "https://example.org/trial", "read": "2026-11-01" },
       "failure": { "name": "no-xpi-release", "message": "no release of example/repo-path has an .xpi asset" },
       "overrides": []
     },

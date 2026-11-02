@@ -1,3 +1,8 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "paidService": {
+    "note": "Translation spends credits from the user's FanyiPaiban account, which are recharged on the maker's site.",
+    "source": "https://github.com/garlicwu/fanyipaiban-zotero/blob/HEAD/README.md",
+    "read": "2026-11-02"
+  }
 }

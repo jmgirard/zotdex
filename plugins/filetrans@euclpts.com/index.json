@@ -1,3 +1,8 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "paidService": {
+    "note": "Translation needs a purchased activation code, and more credits are bought as new codes.",
+    "source": "https://sci-translate.top/filetrans/filetrans-zotero/",
+    "read": "2026-11-02"
+  }
 }

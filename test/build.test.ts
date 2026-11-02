@@ -6,6 +6,7 @@ import { join, resolve } from "node:path";
 import { Ajv } from "ajv";
 import dns from "node:dns";
 import { afterAll, beforeAll, describe, expect, test, vi } from "vitest";
+import indexSchema from "../schemas/index.v1.schema.json" with { type: "json" };
 import pluginsSchema from "../schemas/plugins.v1.schema.json" with { type: "json" };
 import { buildData, checkOutput, INDEX_REPO, type PluginsFile, writeData } from "../src/build/build.ts";
 import { changelogUrl, ZOTERO_RELEASE_URL } from "../src/build/zotero-release.ts";
@@ -92,6 +93,7 @@ function pnpmBuild(args: string[], fixture?: string, extra: Record<string, strin
 interface Output {
   plugins: {
     id: string;
+    paidService?: unknown;
     upstream?: Record<string, unknown>;
     reports?: unknown[];
     failure?: { name: string; message: string };
@@ -1011,6 +1013,60 @@ describe("buildData", () => {
       } finally {
         vi.useRealTimers();
       }
+    });
+  });
+
+  describe("with a paidService in index.json", () => {
+    const paidService = { note: "Needs credits bought from the maker.", source: "https://example.org/pricing", read: "2026-11-02" };
+    const withPaid = (tree: string, id: string) => writeFileSync(join(tree, id, "index.json"), JSON.stringify({ schemaVersion: 1, paidService }));
+
+    test("writes it on a record with upstream, and no field on an entry without one", async () => {
+      const tree = treeOf(BETTER_NOTES, SECOND);
+      withPaid(tree, SECOND);
+      const result = await buildData(tree, fixtureFetch(responses()).fetch);
+      if (!result.ok) throw new Error(result.problems.join("\n"));
+      const output: Output = JSON.parse(result.text);
+      expect(record(output, SECOND)?.upstream?.id).toBe(SECOND);
+      expect(record(output, SECOND)?.paidService).toEqual(paidService);
+      expect(record(output, BETTER_NOTES)).not.toHaveProperty("paidService");
+    });
+
+    test("writes it on a facts-invalid record", async () => {
+      const tree = treeOf(BETTER_NOTES, SECOND);
+      withPaid(tree, SECOND);
+      const recorded = responses();
+      delete (recorded["https://api.github.com/repos/example/second-plugin"].json as Record<string, unknown>).created_at;
+      const result = await buildData(tree, fixtureFetch(recorded).fetch);
+      if (!result.ok) throw new Error(result.problems.join("\n"));
+      const second = record(JSON.parse(result.text), SECOND);
+      expect(second?.failure?.name).toBe("facts-invalid");
+      expect(second?.paidService).toEqual(paidService);
+    });
+
+    test("writes it on a read failure and on a not-read record", async () => {
+      const tree = tempDir();
+      const recorded: Responses = { [LABEL]: { json: { name: "report" } }, [ISSUES]: { json: [] } };
+      for (const name of ["a-gone", "b-gone"]) {
+        const id = `${name}@example.org`;
+        mkdirSync(join(tree, id));
+        writeFileSync(join(tree, id, "meta.json"), JSON.stringify({ id, name, repoUrl: `https://github.com/example/${name}` }));
+        withPaid(tree, id);
+      }
+      const read = await buildData(tree, fixtureFetch(recorded).fetch);
+      if (!read.ok) throw new Error(read.problems.join("\n"));
+      const failed = record(JSON.parse(read.text), "a-gone@example.org");
+      expect(failed?.failure?.name).not.toBe("not-read");
+      expect(failed?.paidService).toEqual(paidService);
+
+      const cut = await buildData(tree, fixtureFetch(recorded).fetch, undefined, undefined, { buildMs: 0 });
+      if (!cut.ok) throw new Error(cut.problems.join("\n"));
+      const notRead = record(JSON.parse(cut.text), "a-gone@example.org");
+      expect(notRead?.failure?.name).toBe("not-read");
+      expect(notRead?.paidService).toEqual(paidService);
+    });
+
+    test("the data schema gives the field the shape of the index schema", () => {
+      expect(pluginsSchema.definitions.record.properties.paidService).toEqual(indexSchema.properties.paidService);
     });
   });
 

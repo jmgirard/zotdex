@@ -136,6 +136,10 @@ const NO_SOURCE_TEXT = "No source code at the top level of the repository";
 const LOCK_SVG =
   '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 11h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2z"></path><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
 const noSourceMark = (icon: string) => `<span class="no-source" data-no-source><span aria-hidden="true" title="${NO_SOURCE_TEXT}">${icon}</span><span class="visually-hidden">${NO_SOURCE_TEXT}</span></span>`;
+const PAID_TEXT = "Needs a paid service from its maker";
+const CARD_SVG =
+  '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"></path><path d="M2 10h20"></path></svg>';
+const paidMark = (icon: string) => `<span class="paid-service" data-paid-service><span aria-hidden="true" title="${PAID_TEXT}">${icon}</span><span class="visually-hidden">${PAID_TEXT}</span></span>`;
 // GitHub's longest owner length, with no hyphen to break at.
 const LONG_OWNER = "abcdefghijklmnopqrstuvwxyzabcdefghijklm";
 // The failure records whose repo URL each break one part of the repo line's URL form, in
@@ -426,6 +430,7 @@ describe("the plugin page", () => {
     // A space keeps the name and the badge apart in the heading's text.
     const archived = record.upstream?.archived === true ? ' <span class="badge" data-archived>Archived</span>' : "";
     const noSource = record.upstream?.sourceInRepo === false ? ` ${noSourceMark("<svg>")}` : "";
+    const paid = record.paidService ? ` ${paidMark("<svg>")}` : "";
     const main = html.slice(html.indexOf("<main>") + "<main>".length, html.indexOf("</main>"));
     const head = new RegExp(
       `^<a class="back" href="/zotero-plugin-index/" data-back>${ICON}All plugins</a>` +
@@ -449,7 +454,7 @@ describe("the plugin page", () => {
           `${upstream.stars.toLocaleString("en")}</span><span class="visually-hidden">${starsText(upstream.stars)}</span></span>`
         : "";
     expect(head?.[1]?.replace(new RegExp(ICON, "g"), "<svg>")).toBe(
-      `<h1>${escaped(displayName(record))}${archived}${noSource}</h1>` +
+      `<h1>${escaped(displayName(record))}${archived}${noSource}${paid}</h1>` +
         (github
           ? `<p class="repo-line" data-repo-line>By <a href="https://github.com/${escaped(github.owner)}" data-repo-owner>${escaped(github.owner)}</a>` +
             `<span aria-hidden="true">·</span><a href="${escaped(repoUrl)}" data-repo-name>${escaped(github.repo)}</a>${stars}</p>`
@@ -567,6 +572,7 @@ describe("the plugin page", () => {
     const { upstream } = record;
     expect(items).toEqual([
       ["Plugin id", "id"],
+      ...(record.paidService ? [[PAID_TEXT, "paid-service"]] : []),
       ...(upstream
         ? [
             ...(upstream.description !== undefined ? [["Manifest description", "manifest-description"]] : []),
@@ -678,6 +684,18 @@ describe("the plugin page", () => {
     expect(page("no-range-plugin@example.org")).not.toMatch(/\sdata-fact="source-in-repo"/);
   });
 
+  test.each([
+    ["next-plugin@example.org", "Needs credits bought from the maker.", "https://example.org/pricing?plan=a&amp;b=c", "2026-11-02"],
+    ["repo-path@example.org", "Stops after a 7-day trial.", "https://example.org/trial", "2026-11-01"],
+  ])("shows the paid service fact on %s", (id, note, href, read) => {
+    const dd = /<dd data-fact="paid-service">(.*?)<\/dd>/s.exec(page(id))?.[1]?.replace(/\s+/g, " ").trim();
+    expect(dd).toBe(`${note} <a href="${href}" data-paid-source>Source of this fact</a>, read ${read}`);
+  });
+
+  test("shows no paid service words on a page without the field", () => {
+    expect(page("first-plugin@example.org")).not.toContain(PAID_TEXT);
+  });
+
   test("shows the mark and calls the link the repository only for false", () => {
     const link = (id: string) => /data-link="source">\s*<svg[\s\S]*?<\/svg>\s*([A-Za-z]+)/.exec(page(id))?.[1];
     expect(page("b-cafe@example.org")).toContain(noSourceMark(LOCK_SVG));
@@ -728,6 +746,28 @@ describe("the About page", () => {
     expect(unescaped(section).replace(/\s+/g, " ")).toContain(claim);
   });
 
+  test.each([
+    ["what the mark means", "the plugin's main use stops without paying its maker, or stops after a trial, whether the payment is for credits, a membership, an activation code, or a paid plan"],
+    ["that a free plan gets no mark", "A lasting free plan with a paid upgrade gets no mark"],
+    ["that a third party's key gets no mark", "A plugin that also works with a third party's key gets no mark"],
+    ["that a donation gets no mark", "A donation gets no mark"],
+    ["that a maintainer reads it by hand", "A maintainer reads this by hand"],
+    ["that no mark can still cost money", "A plugin with no mark can still cost money"],
+    ["that the plugin stays listed", "A marked plugin stays listed"],
+    ["that an author can correct it", "An author can open an issue to correct it"],
+  ])("says %s", (_, claim) => {
+    const section = /<section class="card" id="paid-service"[\s\S]*?<\/section>/.exec(about())![0];
+    expect(unescaped(section).replace(/\s+/g, " ")).toContain(claim);
+  });
+
+  test("the About and home intros say who reads the paid service fact", () => {
+    const claim = "A maintainer reads the paid service fact by hand, and the build reads the others";
+    for (const html of [about(), home()]) {
+      const intro = /<p class="intro">([\s\S]*?)<\/p>/.exec(html)![1]!;
+      expect(unescaped(intro).replace(/\s+/g, " ")).toContain(claim);
+    }
+  });
+
   test("has one section for each part of the method, each under its h2", () => {
     expect([...about().matchAll(/<section class="card" id="([^"]+)" data-about="\1">\s*<h2>([^<]*)<\/h2>/g)].map(([, id, h2]) => [id, h2])).toEqual([
       ["declared", "Declared range"],
@@ -737,6 +777,7 @@ describe("the About page", () => {
       ["overrides", "Overrides"],
       ["categories", "Categories"],
       ["source", "Source code"],
+      ["paid-service", "Paid service"],
       ["not-vetted", "What the index does not do"],
     ]);
   });
@@ -926,6 +967,7 @@ describe("the home page", () => {
       `<a href="${escaped(pluginHref(id))}" data-name>${escaped(displayName(record))}</a>` +
         (record.upstream?.archived === true ? '<span class="badge" data-archived>Archived</span>' : "") +
         (record.upstream?.sourceInRepo === false ? ` ${noSourceMark(LOCK_SVG)}` : "") +
+        (record.paidService ? ` ${paidMark(CARD_SVG)}` : "") +
         (owner ? `<div class="owner" data-owner>By ${escaped(owner)}</div>` : "") +
         (description ? `<div class="desc" data-description>${escaped(description)}</div>` : ""),
     );
@@ -957,6 +999,11 @@ describe("the home page", () => {
 
   test("marks only the archived plugin", () => {
     expect(home().match(/\sdata-archived/g)).toHaveLength(1);
+  });
+
+  test("marks only the records with a paid service, one read and one failed", () => {
+    const marked = rows().flatMap(({ id }) => (row(id).cells[0]!.html.includes("data-paid-service") ? [id] : []));
+    expect(marked.sort()).toEqual(["next-plugin@example.org", "repo-path@example.org"]);
   });
 
   describe("marks a repo with no source", () => {
@@ -1101,6 +1148,7 @@ describe("the home page", () => {
       '<span class="mark" data-support="none" aria-hidden="true">–</span> Declares none of it',
       "No mark: the plugin declares no range",
       `${LOCK_SVG} ${NO_SOURCE_TEXT}`,
+      `${CARD_SVG} ${PAID_TEXT}`,
       '<span class="start" data-start="started" aria-hidden="true">●</span> Started in the start test',
       '<span class="start" data-start="start-error" aria-hidden="true">✕</span> Failed to install, start, or answer in the start test',
       "A declared range comes from the plugin's manifest and the index's overrides, not from a test. A start test does not show that a plugin works.",

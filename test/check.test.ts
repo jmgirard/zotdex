@@ -220,6 +220,34 @@ describe("pnpm check <root>", () => {
     expect(runCheck(root).status).toBe(0);
   });
 
+  const paidService = { note: "Translation uses credits bought from the maker.", source: "https://example.org/pricing", read: "2026-11-02" };
+
+  test("passes a valid paidService", () => {
+    const root = treeWith((dir) => editJson(join(dir, "index.json"), (index) => (index.paidService = paidService)));
+    expect(runCheck(root).status).toBe(0);
+  });
+
+  test("passes a paidService note of 160 characters", () => {
+    const root = treeWith((dir) => editJson(join(dir, "index.json"), (index) => (index.paidService = { ...paidService, note: "x".repeat(160) })));
+    expect(runCheck(root).status).toBe(0);
+  });
+
+  test.each([
+    ["no note", { source: paidService.source, read: paidService.read }, "/paidService must have required property 'note'"],
+    ["no source", { note: paidService.note, read: paidService.read }, "/paidService must have required property 'source'"],
+    ["no read", { note: paidService.note, source: paidService.source }, "/paidService must have required property 'read'"],
+    ["an empty note", { ...paidService, note: "" }, "/paidService/note"],
+    ["a blank note", { ...paidService, note: " \t　" }, "/paidService/note"],
+    ["a note of 161 characters", { ...paidService, note: "x".repeat(161) }, "/paidService/note"],
+    ["an http source", { ...paidService, source: "http://example.org/pricing" }, "/paidService/source"],
+    ["a read with no day", { ...paidService, read: "2026-11" }, "/paidService/read"],
+    ["an extra property", { ...paidService, price: "5" }, '/paidService has field "price"'],
+  ])("index-schema: a paidService with %s", (_name, value, finding) => {
+    const root = treeWith((dir) => editJson(join(dir, "index.json"), (index) => (index.paidService = value)));
+    const result = expectOnlyRule(root, "index-schema");
+    expect(result.stdout).toContain(finding);
+  });
+
   test("id-matches-directory: meta.json id differs from the directory", () => {
     const root = treeWith((dir) => editJson(join(dir, "meta.json"), (meta) => (meta.id = "other@example.org")));
     expectOnlyRule(root, "id-matches-directory");

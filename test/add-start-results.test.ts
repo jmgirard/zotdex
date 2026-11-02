@@ -237,6 +237,19 @@ describe("the startTests schema", () => {
     expect(checkOutput(withTests(startTests))).toContain(problem);
   });
 
+  test("keeps a paidService on a record that gets results and on one that gets none", async () => {
+    const paidService = { note: "Needs credits.", source: "https://example.org/pricing", read: "2026-11-02" };
+    const input = data();
+    input.plugins = input.plugins.map((record) => ({ ...record, paidService }));
+    const files = await readResultsDir(resultsDir({ "start-results-10.0.6": [alpha("10.0.6")] }));
+    const { data: output } = addResults(input, PLAN, files, TESTED);
+    expect(output.plugins.map(({ id, startTests, paidService: paid }) => [id, startTests !== undefined, paid])).toEqual([
+      ["alpha", true, paidService],
+      ["beta", false, paidService],
+      ["gamma", false, paidService],
+    ]);
+  });
+
   test("rejects startTests on a record with no upstream", () => {
     const file = data();
     Object.assign(file.plugins[2], { startTests: [{ zotero: "10.0.6", result: "started" }] });
