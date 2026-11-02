@@ -445,9 +445,9 @@ only registry fields. Its `id` must equal the directory name.
 - `schemaVersion`: the version of the `index.json` schema. The current version
   is `1`. This field is required.
 - `overrides`: a list of corrections to upstream facts. Use an override only
-  when the plugin author cannot or will not fix the fact upstream. A
-  `description` override can also give English text for a plugin with no
-  English description upstream. "Upstream" here means the manifest, its
+  when the plugin author cannot or will not fix the fact upstream, or in the
+  cases that follow. A `description` override can also give English text for
+  a plugin with no English description upstream. "Upstream" here means the manifest, its
   English locale files, and the About text of the GitHub repository. A
   description that is not in English or only repeats the name counts as
   none. So does a description of which half or more is Chinese, Japanese,
@@ -459,9 +459,9 @@ only registry fields. Its `id` must equal the directory name.
   change them. After you write one, check the plugin's categories. A
   repository's owner can also ask for a `name` or `description` override, as
   "Changing a plugin's name or description" says. Each item has these fields:
-  - `field`: the fact to correct or fill in. The value is one of `name`,
-    `description`, `homepage`, `strict_min_version`, `strict_max_version`,
-    or `languages`.
+  - `field`: the fact to correct, fill in, or replace. The value is one of
+    `name`, `description`, `homepage`, `strict_min_version`,
+    `strict_max_version`, or `languages`.
   - `version`: the plugin version that the override applies to. If you leave
     it out, the override applies to every version.
   - `value`: the corrected value. For `languages`, the value is one or more
@@ -473,7 +473,8 @@ only registry fields. Its `id` must equal the directory name.
   - `reason`: why the upstream value is wrong. For English description
     text, the reason names the upstream file or section the text came
     from. It also says which case above each upstream description is, or
-    that it is in English and not shown. The reason must hold a character
+    that it is in English and not shown. For a text that the repository's
+    owner asks for, the reason names the issue. The reason must hold a character
     other than whitespace, as JavaScript's `\s` defines it, and Unicode
     format characters, such as U+200B.
 
@@ -1162,8 +1163,12 @@ owner, and whether the two match, ignoring letter case. It also prints:
   in `src/discover/holds.ts` gives it, which the command does not refuse,
 - the categories that the text adds,
 - an override with a `version` that still wins over the text,
-- for a blank text, the description gap that removing the override leaves:
-  `missing`, `cjk`, or `short`, as `pnpm description-gaps` names them, or `none`.
+- the age of the data file, by its `generatedAt`,
+- a note for a plugin that the data file has no read of,
+- the override that the request replaces or removes,
+- the description gap that the request leaves: `missing`, `cjk`, or `short`, as
+  `pnpm description-gaps` names them. A blank text prints `none` for no gap, and
+  a new text with no gap prints no such line.
 
 For an owner that is an organization, it says to check the author by hand.
 
@@ -1182,7 +1187,8 @@ removes that override.
 
 The command writes nothing past a broken rule. If the author and owner differ,
 or the owner is an organization, check the author by hand, then add
-`--owner-checked`. Then read the text, answer the issue, and open a pull
+`--owner-checked`. The issue can change between two runs, so read the report of
+the `--apply` run. Then read the text, answer the issue, and open a pull
 request with the change.
 
 ## Checking entries

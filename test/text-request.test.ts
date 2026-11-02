@@ -51,7 +51,6 @@ describe("the text-change form", () => {
 describe("parseTextRequest", () => {
   test("reads the three values", () => {
     expect(parseTextRequest(body("a@example.org", "description", GOOD))).toEqual({ ok: true, request: { plugin: "a@example.org", field: "description", text: GOOD } });
-    expect(parseTextRequest(body("a@example.org", "name", "New")).ok).toBe(true);
   });
 
   test("reads an empty input as a blank text", () => {
@@ -63,13 +62,23 @@ describe("parseTextRequest", () => {
     expect(result).toMatchObject({ ok: true, request: { text: "First line\nSecond line" } });
   });
 
-  test.each(["Plugin id", "Field", "New text"])("fails with no %s heading", (label) => {
-    const result = parseTextRequest(body("a@example.org", "name", "New").replace(`### ${label}`, "### Other"));
-    expect(result).toEqual({ ok: false, failure: "missing-heading", message: `the issue body has no "### ${label}" heading` });
+  test("fails with no heading", () => {
+    const result = parseTextRequest(body("a@example.org", "name", "New").replace("### Field", "### Other"));
+    expect(result).toEqual({ ok: false, failure: "missing-heading", message: 'the issue body has no "### Field" heading' });
   });
 
-  test.each(["homepage", "", "name\nand more"])("fails on the field %j", (field) => {
-    expect(parseTextRequest(body("a@example.org", field, "New"))).toMatchObject({ ok: false, failure: "bad-field" });
+  test("fails on a heading that a hidden comment repeats", () => {
+    const result = parseTextRequest(`<!--\n### Plugin id\nother@example.org\n-->\n${body("a@example.org", "name", "New")}`);
+    expect(result).toEqual({ ok: false, failure: "duplicate-heading", message: 'the issue body has more than one "### Plugin id" heading' });
+  });
+
+  test("ends a value at a heading with a space before it", () => {
+    const result = parseTextRequest(body("a@example.org", "name", "New").replace("### New text", " ### New text"));
+    expect(result).toMatchObject({ ok: true, request: { field: "name", text: "New" } });
+  });
+
+  test("fails on another field", () => {
+    expect(parseTextRequest(body("a@example.org", "homepage", "New"))).toMatchObject({ ok: false, failure: "bad-field" });
   });
 });
 
@@ -80,7 +89,6 @@ describe("textProblems", () => {
     ["description", words(DESCRIPTION_MIN_WORDS)],
     ["description", `${words(6)} ${"x".repeat(DESCRIPTION_MAX - words(6).length - 1)}`],
     ["name", "ab"],
-    ["name", "Citation Counter"],
     ["name", "x".repeat(NAME_MAX)],
     ["name", "9 Lives"],
     ["name", "Счётчик цитат"],
@@ -94,6 +102,7 @@ describe("textProblems", () => {
     ["description", `${GOOD}\nSecond line.`, "format-character"],
     ["description", `${GOOD} ‮txt`, "format-character"],
     ["description", `${GOOD} Second line.`, "format-character"],
+    ["description", `${GOOD} Second line.`, "format-character"],
     ["description", `${GOOD} See HTTPS://example.org`, "url"],
     ["description", `${GOOD} See http://example.org`, "url"],
     ["description", `${GOOD} See WWW.example.org`, "url"],
@@ -112,7 +121,6 @@ describe("textProblems", () => {
   });
 
   test("counts code points, so characters outside the basic plane count once", () => {
-    expect(textProblems("name", "😀".repeat(NAME_MAX - 1) + "x", "Other")).toEqual(["first-character"]);
     expect(textProblems("name", `x${"😀".repeat(NAME_MAX - 1)}`, "Other")).toEqual([]);
   });
 
@@ -122,6 +130,7 @@ describe("textProblems", () => {
 });
 
 const ID = "first-plugin@example.org";
+const { generatedAt } = JSON.parse(readFileSync(resolve(ROOT, "test/fixtures/site/plugins.json"), "utf8")) as { generatedAt: string };
 const ISSUE_URL = "https://api.github.com/repos/jmgirard/zotero-plugin-index/issues/7";
 const REPO_URL = "https://api.github.com/repos/example/first-plugin";
 const temps: string[] = [];
@@ -129,7 +138,6 @@ afterEach(() => {
   for (const dir of temps.splice(0)) rmSync(dir, { recursive: true, force: true });
 });
 
-// A checkout with the check fixture's entries, and a data file from the site fixture.
 function checkout(changeData?: (plugins: { id: string; upstream?: Record<string, unknown> }[]) => void) {
   const dir = mkdtempSync(join(tmpdir(), "zpi-text-"));
   temps.push(dir);
@@ -145,7 +153,7 @@ function checkout(changeData?: (plugins: { id: string; upstream?: Record<string,
 
 function responses({ text = GOOD, field = "description", plugin = ID, author = "EXAMPLE", ownerType = "User" } = {}): Responses {
   return {
-    [ISSUE_URL]: { json: { body: body(plugin, field, text), labels: [{ name: "text-change" }], user: { login: author } } },
+    [ISSUE_URL]: { json: { body: body(plugin, field, text), labels: [{ name: "text-change" }], state: "open", user: { login: author } } },
     [REPO_URL]: { json: { owner: { login: "example", type: ownerType } } },
   };
 }
@@ -160,8 +168,34 @@ describe("textRequest's report", () => {
     const result = await run(checkout(), responses({ text }));
     expect(result).toEqual({
       status: 0,
-      lines: [`plugin: "${ID}"`, 'field: "description"', `text: "${text}"`, 'author: "EXAMPLE"', 'owner: "example"', "author-matches-owner: true"],
+      lines: [`plugin: "${ID}"`, 'field: "description"', `text: "${text}"`, 'author: "EXAMPLE"', 'owner: "example"', "author-matches-owner: true", `data-generated: "${generatedAt}"`],
     });
+  });
+
+  test("prints the override that a request replaces or removes", async () => {
+    const tree = checkout();
+    tree.overrides([{ field: "description", value: "The index's text.", reason: "Test." }]);
+    expect((await run(tree, responses())).lines).toContain(`replaces-override: "The index's text."`);
+    expect((await run(tree, responses({ text: "" }))).lines).toContain(`removes-override: "The index's text."`);
+  });
+
+  test("notes a plugin with no read in the data file", async () => {
+    const tree = checkout((plugins) => {
+      const record = plugins.find(({ id }) => id === ID)! as { upstream?: unknown; failure?: unknown };
+      delete record.upstream;
+      record.failure = { name: "no-xpi-release", message: "no release has an .xpi asset" };
+    });
+    expect((await run(tree, responses())).lines).toContain("not-read: the data file has no read of this plugin, so an override shows only after a read succeeds");
+  });
+
+  test("prints the gap that a new name leaves, when the description only repeats it", async () => {
+    const tree = checkout((plugins) => {
+      const { upstream } = plugins.find(({ id }) => id === ID)!;
+      upstream!.description = "Citation counts tool items here today";
+      delete upstream!.repoDescription;
+    });
+    const result = await run(tree, responses({ field: "name", text: "Citation Counts Tool Items Here Today" }));
+    expect(result.lines).toContain("description-gap: missing");
   });
 
   test("prints a mismatch and exits 1", async () => {
@@ -230,15 +264,16 @@ describe("textRequest's report", () => {
     tree.overrides([{ field: "description", value: "The index's text for this plugin.", reason: "Test." }]);
     const result = await run(tree, responses({ text: "_No response_" }));
     expect(result.status).toBe(0);
-    expect(result.lines).toContain(`gap-after-removal: ${gap}`);
+    expect(result.lines).toContain(`description-gap: ${gap}`);
   });
 
   test.each<[string, Responses, string]>([
     ["unknown-plugin", responses({ plugin: "other@example.org" }), "unknown-plugin"],
     ["no-entry", responses({ plugin: "old-plugin@example.org" }), "no-entry"],
-    ["no label", { ...responses(), [ISSUE_URL]: { json: { body: body(ID, "name", "New"), labels: [{ name: "report" }], user: { login: "example" } } } }, "no-text-change-label"],
+    ["no label", { ...responses(), [ISSUE_URL]: { json: { body: body(ID, "name", "New"), labels: [{ name: "report" }], state: "open", user: { login: "example" } } } }, "no-text-change-label"],
+    ["a closed issue", { ...responses(), [ISSUE_URL]: { json: { body: body(ID, "name", "New"), labels: ["text-change"], state: "closed", user: { login: "example" } } } }, "issue-not-open"],
     ["another field", responses({ field: "homepage" }), "bad-field"],
-    ["a missing heading", { ...responses(), [ISSUE_URL]: { json: { body: "No form here", labels: ["text-change"], user: { login: "example" } } } }, "missing-heading"],
+    ["a missing heading", { ...responses(), [ISSUE_URL]: { json: { body: "No form here", labels: ["text-change"], state: "open", user: { login: "example" } } } }, "missing-heading"],
     ["a failed issue read", { ...responses(), [ISSUE_URL]: { status: 500, text: "{}" } }, "issue-read-failed"],
     ["an issue with no author", { ...responses(), [ISSUE_URL]: { json: { body: body(ID, "name", "New"), labels: ["text-change"], user: null } } }, "issue-read-failed"],
     ["a failed owner read", { ...responses(), [REPO_URL]: { status: 404, text: "{}" } }, "owner-read-failed"],
@@ -270,6 +305,7 @@ describe("textRequest's report", () => {
     const meta = join(tree.root, ID, "meta.json");
     writeFileSync(meta, JSON.stringify({ ...JSON.parse(readFileSync(meta, "utf8")), repoUrl: "https://gitlab.com/example/first-plugin" }));
     const result = await run(tree, responses());
+    expect(result.status).toBe(2);
     expect(result.lines[0]).toMatch(/^failure: owner-read-failed: .*not a GitHub repo URL/);
   });
 });

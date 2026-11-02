@@ -715,7 +715,7 @@ describe("the About page", () => {
     );
     const text = mainText(about());
     expect(text).toContain("It assigns them from words in a plugin's name and descriptions, and it adds or removes some by hand.");
-    expect(text).toContain("A category can be wrong or missing, and plugin authors do not choose them.");
+    expect(text).toContain("A category can be wrong or missing. Plugin authors do not choose them, but a requested name or description can change the words they read.");
   });
 
   test("names each declared mark and says that a range is not a test result", () => {
@@ -1675,7 +1675,9 @@ describe("the built site", () => {
       expect(links[0]![1]!.replace(/&amp;/g, "&").replace(/&#38;/g, "&"), id).toBe(
         `https://github.com/jmgirard/zotero-plugin-index/issues/new?template=text-change.yml&plugin=${encodeURIComponent(id)}`,
       );
-      expect(links[0]!.index, id).toBeGreaterThan(html.indexOf('data-section="details"'));
+      const details = html.indexOf('data-section="details"');
+      expect(links[0]!.index, id).toBeGreaterThan(details);
+      expect(links[0]!.index, id).toBeLessThan(html.indexOf("</section>", details));
       expect(mainText(html), id).toContain("Is this your plugin? Ask to change its name or description.");
     }
     expect(home()).not.toContain("data-text-change");

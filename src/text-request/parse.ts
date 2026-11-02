@@ -12,29 +12,30 @@ export interface TextRequest {
   text: string;
 }
 
-export type ParseResult = { ok: true; request: TextRequest } | { ok: false; failure: "missing-heading" | "bad-field"; message: string };
+export type ParseResult = { ok: true; request: TextRequest } | { ok: false; failure: "missing-heading" | "duplicate-heading" | "bad-field"; message: string };
 
-// Reads a request from an issue body, which anyone who files the issue can edit.
+// Reads a request from an issue body, which anyone who files the issue can edit. A heading
+// that appears twice is refused, since one can sit in an HTML comment that the issue page hides.
 export function parseTextRequest(body: string): ParseResult {
   const lines = body.split(/\r?\n/);
   const values: Partial<Record<keyof typeof TEXT_REQUEST_LABELS, string>> = {};
   for (const id of ["plugin", "field", "text"] as const) {
-    const value = under(lines, TEXT_REQUEST_LABELS[id]);
-    if (value === undefined) return { ok: false, failure: "missing-heading", message: `the issue body has no "### ${TEXT_REQUEST_LABELS[id]}" heading` };
-    values[id] = value;
+    const heading = `### ${TEXT_REQUEST_LABELS[id]}`;
+    const count = lines.filter((line) => line.trim() === heading).length;
+    if (count === 0) return { ok: false, failure: "missing-heading", message: `the issue body has no "${heading}" heading` };
+    if (count > 1) return { ok: false, failure: "duplicate-heading", message: `the issue body has more than one "${heading}" heading` };
+    values[id] = under(lines, heading);
   }
   const { plugin, field, text } = values as Record<keyof typeof TEXT_REQUEST_LABELS, string>;
   if (field !== "name" && field !== "description") return { ok: false, failure: "bad-field", message: "the field must be name or description" };
   return { ok: true, request: { plugin, field, text } };
 }
 
-// All lines under the heading `label`, before the next heading, joined and with outer space
-// removed, or undefined with no such heading. GitHub writes _No response_ for an empty input.
-function under(lines: string[], label: string): string | undefined {
-  const heading = lines.findIndex((line) => line.trim() === `### ${label}`);
-  if (heading === -1) return undefined;
-  const rest = lines.slice(heading + 1);
-  const end = rest.findIndex((line) => line.startsWith("### "));
+// All lines under a heading that the body holds, before the next heading, joined and with outer
+// space removed. GitHub writes _No response_ for an empty input.
+function under(lines: string[], heading: string): string {
+  const rest = lines.slice(lines.findIndex((line) => line.trim() === heading) + 1);
+  const end = rest.findIndex((line) => line.trim().startsWith("### "));
   const value = (end === -1 ? rest : rest.slice(0, end)).join("\n").trim();
   return value === "_No response_" ? "" : value;
 }

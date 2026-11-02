@@ -11,7 +11,7 @@ import { type Fetch, githubClient, parseRepoUrl } from "../upstream/reader.ts";
 import { parseTextRequest, type TextRequest } from "./parse.ts";
 import { textProblems } from "./rules.ts";
 
-export const TEXT_CHANGE_LABEL = "text-change";
+const TEXT_CHANGE_LABEL = "text-change";
 
 export interface RequestOptions {
   // The checkout's plugins/ directory.
@@ -45,7 +45,7 @@ function failed(name: string, message: string): RequestResult {
 
 // The overrides after the edit that --apply makes. Only an override of the field with no
 // `version` changes: a new text takes its place, or joins the end, and a blank text removes it.
-export function editedOverrides(overrides: Override[], { field, text }: TextRequest, issue: number): Override[] {
+function editedOverrides(overrides: Override[], { field, text }: TextRequest, issue: number): Override[] {
   const at = overrides.findIndex((override) => override.field === field && override.version === undefined);
   if (text === "") return overrides.filter((_, index) => index !== at);
   const edited: Override = { field, value: text, reason: `The repository's owner asked for this text in issue #${issue}.` };
@@ -67,14 +67,16 @@ export async function textRequest(options: RequestOptions): Promise<RequestResul
   let body: unknown;
   let labels: unknown;
   let author: unknown;
+  let state: unknown;
   try {
-    const record = (await github.json(`https://api.github.com/repos/${indexRepo}/issues/${issue}`)) as { body?: unknown; labels?: unknown; user?: { login?: unknown } | null };
-    ({ body, labels } = record);
+    const record = (await github.json(`https://api.github.com/repos/${indexRepo}/issues/${issue}`)) as { body?: unknown; labels?: unknown; state?: unknown; user?: { login?: unknown } | null };
+    ({ body, labels, state } = record);
     author = record.user?.login;
   } catch (error) {
     return failed("issue-read-failed", (error as Error).message);
   }
   if (typeof author !== "string") return failed("issue-read-failed", "the issue has no author login");
+  if (state !== "open") return failed("issue-not-open", `issue #${issue} is not open, so its request was answered`);
   const names = (Array.isArray(labels) ? labels : []).map((label: unknown) => (typeof label === "string" ? label : (label as { name?: unknown } | null)?.name));
   if (!names.includes(TEXT_CHANGE_LABEL)) return failed("no-text-change-label", `issue #${issue} does not have the label ${TEXT_CHANGE_LABEL}`);
 
@@ -118,8 +120,12 @@ export async function textRequest(options: RequestOptions): Promise<RequestResul
     `author: ${quoted(author)}`,
     `owner: ${quoted(owner.login)}`,
     `author-matches-owner: ${matches}`,
+    `data-generated: ${quoted(data.data.generatedAt)}`,
   ];
   if (organization) lines.push("owner-check: the owner is an organization, so check the author by hand");
+  if (!record.upstream) lines.push("not-read: the data file has no read of this plugin, so an override shows only after a read succeeds");
+  const replaced = overrides.find(({ field, version }) => field === request.field && version === undefined);
+  if (replaced) lines.push(`${request.text === "" ? "removes" : "replaces"}-override: ${quoted(replaced.value)}`);
   for (const problem of problems) lines.push(`problem: ${problem}`);
   if (request.field === "name" && request.text !== "") {
     const key = nameKey(request.text);
@@ -131,7 +137,9 @@ export async function textRequest(options: RequestOptions): Promise<RequestResul
   for (const slug of categories(after)) if (!had.has(slug)) lines.push(`adds-category: ${quoted(slug)}`);
   const winner = usedOverride(after, request.field);
   if (winner?.version !== undefined) lines.push(`version-override-wins: ${quoted(winner.version)} ${quoted(winner.value)}`);
-  if (request.text === "") lines.push(`gap-after-removal: ${gapOf(after) ?? "none"}`);
+  // A new name can also leave a gap, since a description that only repeats it is dropped.
+  const gap = gapOf(after);
+  if (request.text === "" || gap) lines.push(`description-gap: ${gap ?? "none"}`);
 
   const ownerOk = matches && !organization;
   const status = problems.length === 0 && ownerOk ? 0 : 1;
@@ -144,7 +152,8 @@ export async function textRequest(options: RequestOptions): Promise<RequestResul
   const path = join(entry, "index.json");
   try {
     const index = JSON.parse(await readFile(path, "utf8")) as { overrides?: Override[] };
-    if (edited.length > 0) index.overrides = edited;
+    const written = editedOverrides(index.overrides ?? [], request, issue);
+    if (written.length > 0) index.overrides = written;
     else delete index.overrides;
     await writeFile(path, `${JSON.stringify(index, null, 2)}\n`);
   } catch (error) {

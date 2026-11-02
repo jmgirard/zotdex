@@ -289,8 +289,8 @@ shows each one separately. A combined verdict is out of scope.
    (D-030, D-031, D-032, D-038). A repository's owner can also ask for a
    `name` or `description` override, through a form linked from the plugin
    page's Details card, after trying an upstream edit first. No bot answers.
-   A maintainer runs `pnpm text-request`, and the override has no `version`
-   (M079, D-049).
+   A maintainer runs `pnpm text-request`. The override has no `version`, and
+   its reason names the issue (M079, D-049, D-050).
 4. User reports. Two issue forms take a "works" or a "broken" report with
    the plugin id, the plugin version, and the Zotero version. A bot checks
    each report, comments, and closes the issue (M020), and a daily sweep
