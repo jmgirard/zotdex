@@ -1,6 +1,6 @@
 # M082: Mark plugins that need a paid service
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** normal
 - **Depends on:** —
 - **Driving RR:** —
@@ -71,6 +71,7 @@ Show on the site when a plugin's main use needs a paid service from its maker, a
 - 2026-11-02: T5 done: the About section, both intros, README, changelog, and DESIGN state the fact, with site tests for the About sentences and the intros. The style hook names older text in README and CHANGELOG; this change leaves that text alone, as outside the milestone.
 - 2026-11-02: claim audit: 52 claims read, 3 corrected — `plugins/fanyipaiban@fanyipaiban.com/index.json`, `plugins/filetrans@euclpts.com/index.json`, `plugins/zoteromagic@zoterocn.com/index.json`. The Fanyipaiban note's wording changed; `filetrans` now cites the maker's tutorial, which says the code is bought; `zoteromagic` lost its mark because no public page read says what stops after the trial, so 6 entries are marked, not the 7 of the T4 line.
 - 2026-11-02: claim audit finding rejected: the reader called "the build reads the others" too broad because categories and overrides are hand-made. AC5 asks for this sentence, categories are not facts (D-037), and the build reads overrides from each entry. A fourth note finding on Equalang's selection translation changes nothing, since document translation is the plugin's main use.
+- 2026-11-02: claim audit re-read: the three corrected claims hold; the `filetrans` tutorial and README share one support contact, so the seller reads as the maker. Ready for review: `pnpm test` exits 0 with 2175 tests, and `pnpm check` reports 695 entries and 0 problems.
 
 ## Decisions
 

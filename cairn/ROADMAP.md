@@ -7,7 +7,7 @@ _Last hygiene check: 2026-11-02 (M081 archived; M079 row pruned; 22 lessons, 1 m
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M082 | Mark plugins that need a paid service | in-progress | — | normal | milestones/M082-paid-service-mark.md |
+| M082 | Mark plugins that need a paid service | review | — | normal | milestones/M082-paid-service-mark.md |
 | M081 | Show when a repo holds no source code | done | — | normal | milestones/archive/M081-no-source-mark.md |
 <!-- rows grouped by status, not by ID; keep the 3 most recent done/dropped rows; older ones: milestones/archive/ + git -->
 
