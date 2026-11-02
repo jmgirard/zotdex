@@ -1,0 +1,7 @@
+{
+  "id": "zotero-ai-collection@jiaxin.fan",
+  "name": "Collection for Zotero",
+  "description": "AI-powered literature classification for Zotero",
+  "repoUrl": "https://github.com/justinfjx/zotero-ai-collection",
+  "updateUrl": "https://raw.githubusercontent.com/justinfjx/zotero-ai-collection/bootstrap/update.json"
+}
