@@ -73,3 +73,29 @@ The bot no longer holds a pull request whose `update.json` is on the repo owner'
 - AC2 evidence (same run): each of `alice.github.io`, `bob.github.io:8443`, `sub.bob.github.io`, `bob.evil.github.io`, `bobx.github.io`, `bob-x.github.io`, `bob.github.io.example.org`, `bob.gitlab.io`, and `github.io` gives exactly `["update-host"]` for `bob/zotero-tagger`, and "update-host for github.com with a port" still passes.
 - AC3 evidence (same head): read `HOLD_TEXT["update-host"]` (`src/discover/propose.ts:495`), README's `update-host` bullet (lines 756-759), and DESIGN's hold sentence (lines 232-235); each names the owner's `<owner>.github.io` site. `git diff` shows one new CHANGELOG entry under `## Unreleased`. `pnpm test` exit 0 (1815 passed, 6 skipped); `pnpm check` exit 0 (671 entries, 0 problems).
 - Consistency gate: `cairn_validate.py` exit 0, all checks passed; no DESIGN principle changed, so `cairn_impact.py` is skipped; the `generic` profile names no toolchain checks.
+- spawned: diff-bug, blame-history, prior-review, ripple
+- diff-bug #1: `holdReasons` reads only the declared host, and `forrtproject.github.io/flora-zotero/update.json` answers 301 to `forrt.org` (confirmed by `curl -L` in this review; the other 4 of the 5 answer 200 with no redirect), so a domain the owner picked gets no hold — follow-up: candidate row "Hold update files that leave owner sites", normal. It is not a criterion failure, and it is not load-bearing, since the hold is one check on a list that states facts and the one live case can stay held by hand.
+- diff-bug #2: the release test in Scope passes #142, and the work log's "github.com URLs have the same gap" has no read behind it, while a Pages redirect goes to a domain the owner picks — fix now: the work-log line is corrected below, and the choice on #142 goes to the merge question.
+- diff-bug #3: the `forrtproject` test case answers 200 directly, unlike the live host — reject, planned change: AC1 names that case, and the candidate row covers the redirect.
+- diff-bug #4: the `bob` and `forrtproject` positive cases run one path — reject, planned change: AC1 names both.
+- diff-bug #5: the 9 negative cases overlap — reject, planned change: AC2 names them all.
+- diff-bug #6: the lowercase test uses an input production never sends — reject, planned change: AC1 and T1 name that direct call.
+- diff-bug #7: `GITHUB_HOSTS.includes` is case-sensitive beside a lowercase compare — reject, style: `repoName` and `URL.host` lowercase both values, so production cannot reach the difference.
+- diff-bug #8: DESIGN's hold sentence has a short line — fix now, fixed d21f064.
+- diff-bug #9: the test title "not bob's own site" is loose for the port case — reject, style.
+- diff-bug #10: `http://bob.github.io` also passes — follow-up: same candidate row; the hold has never read the scheme.
+- diff-bug #11: open pull requests keep the old `HOLD_TEXT` sentence — reject, false: the sentence stays true for each pull request still held, and it requests no action.
+- blame-history #1: the rule passes the whole `<owner>.github.io` host, so also another repo's project site — reject, planned change: D-043 and D-044 accept this.
+- blame-history #2: the redirect concern is only in the work log, and "a Pages site cannot redirect to another host" — follow-up: same candidate row; the claim is false, since the probe of #142 shows such a redirect.
+- blame-history #3: D-043's "no new party" still stands — fix now: D-044 now corrects it, fixed d21f064.
+- blame-history #4: the defensive lowercase and its test go beyond `HoldFacts.repo`'s lowercase contract — reject, planned change: AC1 and T1 name them.
+- blame-history #5: `pluginRepo` keys `/users/<owner>` in lowercase only — reject, planned change: T1 asks for it, and production requests the lowercase owner.
+- blame-history #6: the hold compares the host and never the scheme — follow-up: same candidate row.
+- blame-history #7: `refresh-holds.ts:93` skips the http and https check — reject, false: the reader refuses other schemes before any `meta.json` is written, so it has no effect.
+- prior-review #1: the redirect gap, against M004's follow-redirects rule — follow-up: same candidate row.
+- prior-review #2: DESIGN omits letter case and the other-owner clause that README states — reject, style: DESIGN summarizes, README holds the detail, and AC3 asks DESIGN only to name the site.
+- ripple #1: the candidate row "Allow owner GitHub Pages update hosts" still states the old rule — reject, false: the row carries `started M074`, and this merge's hygiene removes it.
+- ripple #2: DESIGN's "is not on" can read as the final host after redirects — fix now, fixed d21f064; the CHANGELOG entry took the same wording.
+- correction: the implement work log says that github.com URLs have the same redirect gap; no read backs that, and only a Pages custom domain is shown to leave GitHub.
+- snapshot list: empty; the branch changes no `_snaps` or `__snapshots__` file.
+- verify after fixes (d21f064): `pnpm test` exit 0 (1815 passed, 6 skipped); `pnpm check` exit 0 (671 entries, 0 problems). Findings: 22 in all; 4 fixed on the branch, 5 sent to one candidate row, 13 rejected.
