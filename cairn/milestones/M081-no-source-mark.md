@@ -1,6 +1,6 @@
 # M081: Show when a repo holds no source code
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** normal
 - **Depends on:** —
 - **Driving RR:** —
@@ -65,6 +65,7 @@ Show on the site when a plugin's GitHub repo has no source code at its top level
 - 2026-11-02: T4 done: a new About section with five tested claims, `README.md`, `CHANGELOG.md` with the schema notice, and `cairn/DESIGN.md`.
 - 2026-11-02: T5 done: `pnpm test` and `pnpm check` pass, and the AC6 diff is empty. A live run read all 695 repos in 69 seconds and found 8 with no source, so the limit went from 2 to 3 minutes; a browser look at a fixture build showed the mark, link label, and Details fact with no console error.
 - 2026-11-02: claim audit: about 65 claims read, 12 corrected — README.md, CHANGELOG.md, site/src/pages/about.astro, src/build/source.ts, cairn/DESIGN.md; the workflow time-limit comment also gained the new read; the reader's re-read of the corrections is pending at this checkpoint.
+- 2026-11-02: claim audit: 65 claims read, 12 corrected — README.md, CHANGELOG.md, site/src/pages/about.astro, src/build/source.ts, cairn/DESIGN.md; the same reader re-read the corrections once and found nothing still wrong.
 
 ## Decisions
 
