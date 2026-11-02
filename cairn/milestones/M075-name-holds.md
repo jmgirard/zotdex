@@ -83,6 +83,7 @@ An entry is unread if any fact that its tests need is not read. A failed request
 - 2026-11-02: the claim reader's one re-read corrected 2 more wordings (`HOLD_TEXT`'s last clause, README's refresh sentence). T1 to T5 are done; T6 stays open because it runs after the merge. Status set to review.
 - 2026-11-02: review return 1: AC2 failed, since a commits answer with a next-page link and no last-page link read the head as the first commit, and the time-limit case had no second read entry. Fixed in this commit with the other fix-now findings; verify green, 1915 tests passed. The return ran in the review session, not through a new implement phase; a second review pass reads the fixes.
 - 2026-11-02: second pass ripple finding taken: README, DESIGN, and CHANGELOG now say that empty files are not counted.
+- 2026-11-02: step-7 approval: m075-name-holds approved for merge
 
 ## Decisions
 
