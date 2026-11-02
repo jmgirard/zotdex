@@ -5,6 +5,7 @@ import Icon from "../components/Icon.astro";
 import Base from "../layouts/Base.astro";
 import {
   categoryOptions,
+  DISCLAIMER,
   displayName,
   githubRepo,
   homeOrder,
@@ -23,7 +24,6 @@ import {
   startText,
   SUPPORT_MARKS as MARKS,
   supportText,
-  DISCLAIMER,
 } from "../data.ts";
 
 const { plugins, zoteroRelease } = loadData();
@@ -47,9 +47,9 @@ const prePaint = `if ("noModule" in HTMLScriptElement.prototype) {
   <div class="hero">
     <h1>Plugins for Zotero 7 and later</h1>
     <p class="intro">
-      {DISCLAIMER} A daily build reads these facts from each plugin's GitHub repository and releases. It starts each
-      plugin once in each tested Zotero release that its manifest's range covers, and starts it again for a new plugin file, after a
-      failed start, and once a week.
+      {DISCLAIMER} A daily build reads the facts below from each plugin's GitHub repository and releases. It starts each
+      plugin once in each tested Zotero release that its manifest's range covers, and starts it again for a new plugin
+      file, after a failed start, and once a week.
     </p>
   </div>
   <div class="toolbar">

@@ -244,7 +244,8 @@ start test runs. It says which user reports count. It also says how
 overrides and the Used column of the Overrides table work. Each page's footer
 and the home page's intro say: "This index is unofficial and not affiliated
 with or endorsed by Zotero, and it cannot vet the plugins it lists." The About
-page also says that the start test is not a review of plugin code.
+page gives the reason, and it says that the start test is not a review of
+plugin code.
 
 The index lists a plugin whose GitHub repository is archived. Its row on the
 home page and the name on its page show "Archived". The Details card of its

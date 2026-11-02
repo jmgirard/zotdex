@@ -780,11 +780,17 @@ describe("the About page", () => {
       "Of one GitHub account's reports on one plugin and Zotero major, only the newest counts.",
       'Its Used column says "yes" for the override that applies to the plugin version that the index read.',
       'The declared range uses the strict_min_version and strict_max_version overrides marked "yes".',
-      "The index is unofficial: it is not affiliated with or endorsed by Zotero.",
-      "It cannot vet the plugins it lists.",
-      "The start test is not a review of plugin code.",
     ]) {
       expect(text).toContain(line);
+    }
+    const section = /<section class="card" id="not-vetted" data-about="not-vetted">(.*?)<\/section>/s.exec(about());
+    const said = mainText(`<main>${section?.[1] ?? ""}</main>`);
+    for (const line of [
+      "The index is unofficial: it is not affiliated with or endorsed by Zotero.",
+      "It cannot vet the plugins it lists, because one person maintains it and each plugin can change with any release.",
+      "The start test is not a review of plugin code: it shows only whether a plugin starts.",
+    ]) {
+      expect(said).toContain(line);
     }
   });
 
@@ -802,7 +808,7 @@ describe("the About page", () => {
     const main = html.slice(html.indexOf("<main>"), html.indexOf("</main>"));
     expect(main.split('href="/zotero-plugin-index/about/"').length - 1).toBe(1);
     const line = /<p class="fineprint" data-about-line>(.*?)<\/p>/s.exec(main)?.[1];
-    expect(line).toMatch(/<a href="\/zotero-plugin-index\/about\/">How the index checks plugins<\/a>\s*$/);
+    expect(line).toMatch(/<a href="\/zotero-plugin-index\/about\/">How the index reads plugins<\/a>\s*$/);
     const card = sections(html).find(({ name }) => name === "compatibility")!.body;
     expect(card).toContain("data-about-line");
     if (records.find((r) => r.id === id)!.upstream) expectInOrder(card, ["</table>", "data-about-line", 'data-fact="report-prompt"']);
@@ -1634,14 +1640,13 @@ describe("the built site", () => {
     expect(existsSync(join(ROOT, ".github/ISSUE_TEMPLATE/add-plugin.yml"))).toBe(true);
   });
 
-  test("drops the old footer line from every page, and opens the home intro with the disclaimer", () => {
-    for (const file of htmlFiles(out)) {
-      const html = readFileSync(join(out, file), "utf8");
-      expect(html, file).not.toContain("does not vet");
-      expect(html, file).not.toContain('data-fact="not-vetted"');
-    }
+  test("leaves the old words off every page", () => {
+    for (const file of htmlFiles(out)) expect(readFileSync(join(out, file), "utf8"), file).not.toContain("does not vet");
+  });
+
+  test("opens the home intro with the disclaimer, above the table", () => {
     const intro = /<p class="intro">\s*(.*?)<\/p>/s.exec(home())?.[1];
-    expect(intro?.startsWith(`${DISCLAIMER_TEXT} A daily build`)).toBe(true);
+    expect(intro?.slice(0, DISCLAIMER_TEXT.length + 1)).toBe(`${DISCLAIMER_TEXT} `);
     expect(home().indexOf('<p class="intro">')).toBeLessThan(home().indexOf('<table class="plugins">'));
   });
 
