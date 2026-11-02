@@ -646,4 +646,9 @@ maintainer would have closed.
 repos at `<owner>.github.io/<repo>`, so people to whom the owner gives write
 access can publish there too. The rule stands, since the owner chooses those
 people, and a repo's writers already control its files on
-raw.githubusercontent.com. The rest of D-043 stands.
+raw.githubusercontent.com. D-043 also says that the rule gives no new party
+control of a plugin's updates. That is not so where a Pages site has a custom
+domain: the site redirects to that domain, the hold reads only the host that
+`update_url` names, and whoever controls the domain's DNS then serves the
+update file. The rule stays for now, and a candidate row asks for a hold on
+such a redirect. The rest of D-043 stands.

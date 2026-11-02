@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- If a plugin's `update.json` is on the repository owner's own
+- If the host of a plugin's `update_url` is the repository owner's own
   `<owner>.github.io` site, the bot no longer gives its pull request the
   `update-host` hold. Another owner's `.github.io` site and hosts outside
   GitHub still get this hold.
