@@ -433,7 +433,7 @@ exception is a report that is abuse.
   (D-027). After the plugin reads, `readZoteroRelease` in
   `src/build/source.ts` (M081) holds `holdsSource`, which decides the fact from
   a repo's top-level names, and `readSourceFacts`, which reads those names in
-  GraphQL batches of 40 after the plugin reads, within 2 minutes. A failure
+  GraphQL batches of 40 after the plugin reads, within 3 minutes. A failure
   leaves `sourceInRepo` out and sets `sourceProblem`, which the CLI prints as a
   warning, and it never withholds a deploy (D-052).
   `src/build/zotero-release.ts` reads the current Zotero release from

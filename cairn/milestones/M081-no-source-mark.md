@@ -45,7 +45,7 @@ Show on the site when a plugin's GitHub repo has no source code at its top level
 - [x] T2: Add a bounded, batched GraphQL read after the plugin reads in `buildData` (`src/build/build.ts`; `src/discover/discover.ts:640` shows the post), with `sourceProblem`, the warning in `src/build/cli.ts`, the schema field, and the build tests.
 - [x] T3: Add the `lock` icon to `site/src/components/Icon.astro`, the home mark and link label (`site/src/pages/index.astro:147`, `:192`), the plugin page mark and fact (`site/src/pages/plugins/[id]/index.astro:56`, `:245`), any plugin page link that says source code, and the site tests.
 - [x] T4: Write the About section, `README.md`, `CHANGELOG.md`, and `cairn/DESIGN.md`.
-- [ ] T5: Run `pnpm test`, `pnpm check`, and the diff that AC6 names.
+- [x] T5: Run `pnpm test`, `pnpm check`, and the diff that AC6 names.
 
 ## Work log
 
@@ -63,6 +63,7 @@ Show on the site when a plugin's GitHub repo has no source code at its top level
 - 2026-11-02: T2 done: one read after the plugin reads in batches of 40, a 2-minute limit, `sourceProblem`, a CLI warning, and the schema field; `responses()` in the build tests gained a default answer so that a clean build still warns of nothing.
 - 2026-11-02: T3 done: `NoSourceMark.astro` holds the mark for both pages, the plugin page's Source button reads "Repository" for false, and the site fixture gained one true and one false record.
 - 2026-11-02: T4 done: a new About section with five tested claims, `README.md`, `CHANGELOG.md` with the schema notice, and `cairn/DESIGN.md`.
+- 2026-11-02: T5 done: `pnpm test` and `pnpm check` pass, and the AC6 diff is empty. A live run read all 695 repos in 69 seconds and found 8 with no source, so the limit went from 2 to 3 minutes; a browser look at a fixture build showed the mark, link label, and Details fact with no console error.
 
 ## Decisions
 

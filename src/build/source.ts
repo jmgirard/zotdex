@@ -2,7 +2,7 @@ import { boundFetch, type Fetch, githubClient, parseRepoUrl } from "../upstream/
 import { withinLimit } from "../upstream/time-limit.ts";
 
 // The longest wait for all the requests of one `readSourceFacts` call.
-export const SOURCE_READ_LIMIT_MS = 2 * 60 * 1000;
+export const SOURCE_READ_LIMIT_MS = 3 * 60 * 1000;
 // The repos that one GraphQL request asks for.
 const SOURCE_BATCH = 40;
 const GRAPHQL = "https://api.github.com/graphql";
