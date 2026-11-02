@@ -230,7 +230,7 @@ shows each one separately. A combined verdict is out of scope.
    has a Hold line (M056, D-033). The bot holds a pull request for the
    maintainer when its name or repo name matches another owner's entry and
    the two repos have the same first commit, or identical files are at least
-   30% of either repo's files other than boilerplate, or that entry's repo is
+   30% of either repo's files other than empty files and boilerplate, or that entry's repo is
    older with at least 20 stars and at least 10 times the new repo's stars, or
    any of these facts cannot be read (M075, D-045). It also holds when its
    owner's account is under 30 days old or cannot be read, the host of its

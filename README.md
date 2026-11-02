@@ -753,7 +753,8 @@ reasons, in this order:
   no hold. The bot holds for a matched entry in one of these cases:
   - The two default branches have the same first commit.
   - Identical files are at least 30% of either repository's files, not
-    counting boilerplate such as licenses, lock files, and `.github` folders.
+    counting empty files and boilerplate such as licenses, lock files, and
+    `.github` folders.
   - The entry's repository is older, has at least 20 stars, and has at least
     10 times the new repository's stars.
   - The bot did not get one of these facts. This includes an entry that is

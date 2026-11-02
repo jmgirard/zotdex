@@ -82,6 +82,7 @@ An entry is unread if any fact that its tests need is not read. A failed request
 - 2026-11-02: claim audit: 71 claims read, 6 corrected — README.md, cairn/DESIGN.md, src/discover/holds.ts, src/discover/propose.ts. The audit also showed that the boilerplate pattern dropped code paths such as `src/license-check.ts`, so it now matches whole file names; a repeat read-only run gave the same 7 held, and the highest share without a shared first commit is 13%. A match with no named github.com entry now keeps the new repo's facts in its details.
 - 2026-11-02: the claim reader's one re-read corrected 2 more wordings (`HOLD_TEXT`'s last clause, README's refresh sentence). T1 to T5 are done; T6 stays open because it runs after the merge. Status set to review.
 - 2026-11-02: review return 1: AC2 failed, since a commits answer with a next-page link and no last-page link read the head as the first commit, and the time-limit case had no second read entry. Fixed in this commit with the other fix-now findings; verify green, 1915 tests passed. The return ran in the review session, not through a new implement phase; a second review pass reads the fixes.
+- 2026-11-02: second pass ripple finding taken: README, DESIGN, and CHANGELOG now say that empty files are not counted.
 
 ## Decisions
 
