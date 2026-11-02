@@ -1,6 +1,6 @@
 # M074: Allow owner GitHub Pages update hosts
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** normal
 - **Depends on:** —
 - **Driving RR:** —
@@ -60,6 +60,9 @@ The bot no longer holds a pull request whose `update.json` is on the repo owner'
 - 2026-11-02: T2 done: `HOLD_TEXT["update-host"]`, README, DESIGN, and one CHANGELOG entry name the owner's site. Choice: `HOLD_TEXT` puts `<owner>.github.io` in a code span, since a pull request body would read a bare `<owner>` as an HTML tag and drop it.
 - 2026-11-02: the simple-english lint hook flagged 3 README lines and 8 CHANGELOG lines; none is a line this branch adds, so they stay as they are, outside this milestone's scope; the one hit on a new CHANGELOG line is fixed.
 - 2026-11-02: claim audit in progress: the fresh reader found 1 of 13 claims wrong, the `holds.ts` comment that only the owner can publish to its Pages site; the comment is corrected and D-044 annotates D-043; the reader's re-read of that comment is still pending.
+- 2026-11-02: claim audit: 13 claims read, 1 corrected — src/discover/holds.ts
+- 2026-11-02: the reader's re-read found the corrected comment true; GitHub's Pages docs, read this session, say a project site is at `<owner>.github.io/<repositoryname>` and that a push to the source branch publishes it, so a person who can push can publish. The reader also changed `GITHUB_HOSTS`' comment to "fixed hosts".
+- 2026-11-02: open concern for review: the hold reads the host of the declared `update_url`, while `checkUpdateJson` follows redirects, so a `<owner>.github.io` URL that redirects to another domain gets no hold; github.com URLs have the same gap, and the plan does not cover it.
 
 ## Decisions
 
