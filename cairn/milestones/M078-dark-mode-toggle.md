@@ -48,8 +48,8 @@ Each page of the site has a top-bar button that flips between the light and dark
 - [x] T1: Tests first: add `src/site/theme.ts` with the head function and the button function, each calling and reading nothing outside its body except built-ins and browser globals, and run them in `node:vm` for AC2, AC3, and AC4 in `test/site.test.ts` or a new test file.
 - [x] T2: In `site/src/layouts/Base.astro`, add the head script and the button with its script through `<script is:inline set:html={…}>`, the second dark block, the two `color-scheme` rules, the `[data-theme-toggle][hidden]` rule, and the button's styles from tokens, with an outline in `--link` at `:focus-visible`. Add `sun` and `moon` to `site/src/components/Icon.astro`.
 - [x] T3: Update the site tests that the new scripts and blocks change in `test/site.test.ts`: the dark-block regex at line 1869, whose null would stop the contrast block at collection; the classic script match at 1547 and the position check at 1581, which must read the home page's pre-paint script and not the head script; the hiding-rule list at 1138; and the checks near 1130, 1603, and 1636-1637. Add the AC1 test over `htmlFiles(out)` and the AC5 test that compares the two blocks.
-- [ ] T4: Build the real site for a hand check (lessons M035 and M015), and run the AC4, AC5, and AC6 checks in the browser pane, with iframes for the width check (lesson M048). Look at the 375 px view, and record each result.
-- [ ] T5: Add the `CHANGELOG.md` entry, update the script and style text in `cairn/DESIGN.md` (the home page's "The other pages carry none" sentence and the `prefers-color-scheme` block sentence near "All styles are global"), and run `pnpm test` and `pnpm check`.
+- [x] T4: Build the real site for a hand check (lessons M035 and M015), and run the AC4, AC5, and AC6 checks in the browser pane, with iframes for the width check (lesson M048). Look at the 375 px view, and record each result.
+- [x] T5: Add the `CHANGELOG.md` entry, update the script and style text in `cairn/DESIGN.md` (the home page's "The other pages carry none" sentence and the `prefers-color-scheme` block sentence near "All styles are global"), and run `pnpm test` and `pnpm check`.
 
 ## Work log
 
@@ -67,6 +67,8 @@ Each page of the site has a top-bar button that flips between the light and dark
 - 2026-11-02: plan gate chose the two-state flip that returns to the system over a three-state button at the user's choice; falsified by users asking to pin the scheme that matches their system.
 - 2026-11-02: T1: added `src/site/theme.ts`, `test/support/theme-page.ts`, and `test/theme.test.ts`; 27 tests pass, and three planted defects (the key, the return to the system, the `pageshow` read) failed them; the button's icon follows a `data-gives` attribute; the site test on the built scripts comes at T3.
 - 2026-11-02: T2, T3: added the button inside the top bar's `nav`, so it stays beside the links when the bar wraps, with its base rule's background `--surface`, since the color test reads the pair that a rule sets together; committed together, since T2 alone fails the tests that T3 updates; `pnpm test` passes, 2000 passed and 6 skipped.
+- 2026-11-02: T4: on the real site built from the deployed data (673 pages), the pane gave the expected `--bg` on the home, About, and one plugin page for all six pairs of system scheme and saved choice, at first load, after a reload, and after a click; `scrollWidth` equaled `clientWidth` in all 12 cases at 375 and 1280 px, and a planted 900 px block read 900; the moon and sun both showed, Tab reached the button with an outline in `--link`, Return flipped it, and Back to the home page showed the new scheme; no console errors. Review reruns these.
+- 2026-11-02: T5: added the changelog entry, and DESIGN now names the button, `src/site/theme.ts`, the two scripts, and both dark blocks.
 
 ## Decisions
 
