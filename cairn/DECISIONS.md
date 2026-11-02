@@ -796,3 +796,20 @@ as a fact.
 The first pass closed one pull request, for a plugin that kept Zotero's sample
 plugin's id and update address. This choice is wrong if a held plugin that passes
 these questions misleads users.
+
+### D-054: A plugin whose main use needs its maker's paid service shows a hand-read fact, annotating D-037 and D-052
+
+2026-11-02, M082 plan. Upstream files are the source of the other facts, but
+payment words in a README cannot show this one, so a maintainer reads it and
+keeps it in `index.json` with its note, source, and read date. Unlike a category
+(D-037), it is a fact that a reader can check against the source. At the question
+set the user chose to mark only a plugin whose main use stops without paying its
+maker, or stops after a trial. The user rejected marking every plugin whose maker
+sells something, since a mark then says less. So a lasting free plan with a paid
+upgrade, a plugin that also works with a third party's key, and a donation get no
+mark. The user also chose to read new plugins by hand later, over a command that
+lists them, so a plugin with no mark can still cost money and the About page says
+so. Such a plugin stays listed with a shown fact, as D-052 does for a repo with
+no source, and inclusion stays no judgment of quality. There is no hold and no
+refusal. This choice is wrong if users want a paid upgrade marked, or if marks
+fall far behind the new plugins.
