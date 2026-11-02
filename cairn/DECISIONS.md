@@ -652,3 +652,17 @@ domain: the site redirects to that domain, the hold reads only the host that
 `update_url` names, and whoever controls the domain's DNS then serves the
 update file. The rule stays for now, and a candidate row asks for a hold on
 such a redirect. The rest of D-043 stands.
+
+### D-045: A name match holds a bot pull request only on evidence of copying, annotating D-033
+
+2026-11-02, M075 plan. D-033 holds a bot pull request for a name that matches
+another owner's entry. The bot's read order decides which repo reaches the
+index first, so that rule made the later repo wait for a reason that says
+nothing about either plugin. A name is not a claim, and the index keys entries
+on the add-on id. From M075 on, a name match holds only if the two repos share
+code or the listed repo is a far larger, older namesake. If the bot cannot read
+these facts, it holds. The user chose this rule over shared code alone, which
+misses a plugin written from scratch under a popular name, and over no name
+holds. The rest of D-033 stands. This choice is wrong if a copy merges under
+the rule and a maintainer removes it, or if a maintainer always releases
+namesake holds.
