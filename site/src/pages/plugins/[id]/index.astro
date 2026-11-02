@@ -18,6 +18,7 @@ import {
   overrideUsed,
   rangeText,
   reportHref,
+  textChangeHref,
   safeHref,
   shownDescription,
   starsText,
@@ -312,5 +313,8 @@ const { min, max } = declaredRange(record);
         </div>
       )
     }
+    <p class="fineprint">
+      Is this your plugin? <a href={textChangeHref(record)} data-text-change>Ask to change its name or description</a>.
+    </p>
   </section>
 </Base>

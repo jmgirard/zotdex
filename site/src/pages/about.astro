@@ -1,5 +1,6 @@
 ---
 import { knownRelease, ZOTERO_MAJORS } from "../../../src/site/version.ts";
+import { DESCRIPTION_MAX, DESCRIPTION_MIN_WORDS, NAME_MAX, NAME_MIN } from "../../../src/text-request/rules.ts";
 import Base from "../layouts/Base.astro";
 import { BASE, CATEGORIES, categoryOptions, loadData, SUPPORT_MARKS as MARKS } from "../data.ts";
 
@@ -139,6 +140,12 @@ const offered = new Set(categoryOptions(plugins).map(({ value }) => value));
       description upstream. That covers a description that is not in English, that only repeats the name, or that is
       half or more Chinese, Japanese, or Korean. It can also replace an English description of fewer than six words.
     </p>
+    <p data-owner-text>
+      A repository's owner can also ask for a name or description override, through the link in the plugin's Details,
+      after trying an upstream edit first. The text is in English. A name has {NAME_MIN} to {NAME_MAX} characters, and a
+      description has at least {DESCRIPTION_MIN_WORDS} words and at most {DESCRIPTION_MAX} characters. A maintainer reads
+      each request. The text stays through new releases until the owner asks to remove it.
+    </p>
     <p>
       The Overrides table in a plugin's Details lists each override beside the upstream value. Its Used column says
       "yes" for the override that applies to the plugin version that the index read. An override for that version wins
@@ -151,7 +158,8 @@ const offered = new Set(categoryOptions(plugins).map(({ value }) => value));
     <p>
       The index sorts plugins into categories of its own, so that you can find plugins of one kind. It assigns them from
       words in a plugin's name and descriptions, and it adds or removes some by hand. A plugin can have several
-      categories. A category can be wrong or missing, and plugin authors do not choose them.
+      categories. A category can be wrong or missing. Plugin authors do not choose them, but a requested name or
+      description can change the words they read.
     </p>
     <ul class="about-list" role="list" data-category-list>
       {

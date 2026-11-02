@@ -1,0 +1,53 @@
+name: Change a plugin's name or description
+description: For a plugin repository's owner. Ask the index to show another name or description.
+title: Change a plugin's name or description
+labels: ["text-change"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The repository's owner files this form. A maintainer reads each request
+        and answers here.
+
+        Edit the plugin's manifest or GitHub About text upstream first. A manifest
+        edit shows once the index reads a new release with it. An About edit changes the
+        description only when the manifest's is missing, only repeats the name,
+        or is half or more Chinese, Japanese, or Korean.
+
+        Rules for the new text:
+
+        - Write in English, on one line, with no links and no `<`.
+        - A name has 2 to 40 characters and starts with a letter or digit.
+        - A description has at least 6 words and at most 200 characters. Write one
+          or two plain sentences that say what the plugin does, with the point in
+          the first 120 characters, about what a home page row shows on a wide
+          screen.
+
+        The text stays through new releases, and it hides later upstream edits.
+        To remove the index's override and show the upstream text again, leave
+        the new text blank. The upstream text then shows even if it is short or
+        not in English.
+  # src/text-request/parse.ts finds each value under its label's heading in the issue body.
+  - type: input
+    id: plugin
+    attributes:
+      label: Plugin id
+      description: The plugin page's link fills this in.
+    validations:
+      required: true
+  - type: dropdown
+    id: field
+    attributes:
+      label: Field
+      options:
+        - name
+        - description
+    validations:
+      required: true
+  - type: input
+    id: text
+    attributes:
+      label: New text
+      description: Leave this blank to remove the index's override.
+    validations:
+      required: false

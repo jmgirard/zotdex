@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Each plugin page's Details card now links to a new issue form where the
+  repository's owner can ask for another name or description. The form and the
+  About page state the rules: English, a name of 2 to 40 characters, and a
+  description of at least 6 words and at most 200 characters. `pnpm
+  text-request <issue> --data <file>` checks a request for a maintainer and,
+  with `--apply`, writes or removes the override.
 - Each page's top bar now has a button that flips the site between the light
   and dark color schemes. The browser saves the choice for later visits.
   Flipping back to the scheme of the system setting clears the saved choice,

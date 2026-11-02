@@ -24,6 +24,7 @@
     "propose": "node src/discover/propose-cli.ts",
     "report-issue": "node src/reports/issue-cli.ts",
     "site": "node src/site/cli.ts",
+    "text-request": "node src/text-request/cli.ts",
     "start-test": "node src/start-test/cli.ts",
     "start-tests": "node src/start-test/start-tests-cli.ts",
     "unanswered-issues": "node src/issues/cli.ts",

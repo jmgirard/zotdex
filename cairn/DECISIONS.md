@@ -736,3 +736,11 @@ they bind requests only.
 
 This choice is wrong if owners use the form for advertising that the maintainer
 cannot keep up with, or if owner text goes stale behind better upstream text.
+
+### D-050: An owner's text can replace a maintainer's description override, annotating D-049
+
+2026-11-02, M079 review. D-049 names an owner's removal of the index's text and
+not its replacement. `pnpm check` allows one override of a field with no
+`version`, so an owner's text takes the place of a text that a maintainer wrote
+under D-030 to D-038, and the older reason stays only in git. The command prints
+the override that a request replaces or removes, so the maintainer sees it first.

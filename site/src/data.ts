@@ -143,6 +143,12 @@ export function reportHref(record: PluginRecord, verdict: "works" | "broken"): s
   return `${NEW_ISSUE}?${fields.join("&")}`;
 }
 
+// The issue form where a plugin repository's owner asks for another name or description, with
+// the plugin filled in.
+export function textChangeHref(record: PluginRecord): string {
+  return `${NEW_ISSUE}?template=text-change.yml&plugin=${encodeURIComponent(record.id)}`;
+}
+
 // Each start-test result in words.
 const START_WORDS: Record<StartTestRecord["result"], string> = {
   started: "started",

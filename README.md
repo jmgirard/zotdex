@@ -445,9 +445,9 @@ only registry fields. Its `id` must equal the directory name.
 - `schemaVersion`: the version of the `index.json` schema. The current version
   is `1`. This field is required.
 - `overrides`: a list of corrections to upstream facts. Use an override only
-  when the plugin author cannot or will not fix the fact upstream. A
-  `description` override can also give English text for a plugin with no
-  English description upstream. "Upstream" here means the manifest, its
+  when the plugin author cannot or will not fix the fact upstream, or in the
+  cases that follow. A `description` override can also give English text for
+  a plugin with no English description upstream. "Upstream" here means the manifest, its
   English locale files, and the About text of the GitHub repository. A
   description that is not in English or only repeats the name counts as
   none. So does a description of which half or more is Chinese, Japanese,
@@ -456,11 +456,12 @@ only registry fields. Its `id` must equal the directory name.
   word is a run of letters, marks, and digits. This case reads the
   description that the site shows without the override. The site's
   categories read the shown description, so a `description` override can
-  change them. After you write one, check the plugin's categories. Each
-  item has these fields:
-  - `field`: the fact to correct or fill in. The value is one of `name`,
-    `description`, `homepage`, `strict_min_version`, `strict_max_version`,
-    or `languages`.
+  change them. After you write one, check the plugin's categories. A
+  repository's owner can also ask for a `name` or `description` override, as
+  "Changing a plugin's name or description" says. Each item has these fields:
+  - `field`: the fact to correct, fill in, or replace. The value is one of
+    `name`, `description`, `homepage`, `strict_min_version`,
+    `strict_max_version`, or `languages`.
   - `version`: the plugin version that the override applies to. If you leave
     it out, the override applies to every version.
   - `value`: the corrected value. For `languages`, the value is one or more
@@ -472,7 +473,8 @@ only registry fields. Its `id` must equal the directory name.
   - `reason`: why the upstream value is wrong. For English description
     text, the reason names the upstream file or section the text came
     from. It also says which case above each upstream description is, or
-    that it is in English and not shown. The reason must hold a character
+    that it is in English and not shown. For a text that the repository's
+    owner asks for, the reason names the issue. The reason must hold a character
     other than whitespace, as JavaScript's `\s` defines it, and Unicode
     format characters, such as U+200B.
 
@@ -1120,6 +1122,74 @@ holds also for an issue whose `report` label was added after it opened. An
 issue with a
 bot comment stays for a maintainer, as does a report issue opened more than
 7 days before the sweep.
+
+## Changing a plugin's name or description
+
+A plugin's manifest and GitHub About text are the first place to change its
+text. A manifest edit shows once the index reads a new release with it. If the
+manifest's description is missing, only repeats the name, or is half or more
+Chinese, Japanese, or Korean, an About edit changes the description. A
+repository's owner can also ask the index for another name or description,
+through the link in the plugin page's Details card. It opens the form
+`.github/ISSUE_TEMPLATE/text-change.yml`, which adds the label `text-change`.
+
+The new text follows these rules, which `src/text-request/rules.ts` holds:
+
+- The text is in English. The command refuses only text of which half or more
+  is Chinese, Japanese, or Korean, so a maintainer reads for other languages.
+- A name has 2 to 40 characters and starts with a letter or digit.
+- A description has at least 6 words and at most 200 characters, and it does
+  more than repeat the name. On a wide screen, a home page row shows about the
+  first 120 characters. On a narrow screen, it shows no description.
+- The text has no `http://`, `https://`, or `www.`, no `<`, and no control or
+  format characters, line breaks included.
+
+The rules bind requests only, so existing text can break them.
+
+No bot answers the form. To check a request, download the deployed data file
+and run the command with the issue's number:
+
+```sh
+curl -sSLo plugins.json https://jmgirard.github.io/zotero-plugin-index/v1/plugins.json
+pnpm text-request <issue> --data plugins.json
+```
+
+The command reads the issue and the owner of the entry's repository from the
+GitHub API. It prints the plugin, the field, the text, the issue's author, the
+owner, and whether the two match, ignoring letter case. It also prints:
+
+- each rule that the text breaks,
+- each other plugin whose shown name has the same non-empty key, as `nameKey`
+  in `src/discover/holds.ts` gives it, which the command does not refuse,
+- the categories that the text adds,
+- an override with a `version` that still wins over the text,
+- the age of the data file, by its `generatedAt`,
+- a note for a plugin that the data file has no read of,
+- the override that the request replaces or removes,
+- the description gap that the request leaves: `missing`, `cjk`, or `short`, as
+  `pnpm description-gaps` names them. A blank text prints `none` for no gap, and
+  a new text with no gap prints no such line.
+
+For an owner that is an organization, it says to check the author by hand.
+
+The command has three exit statuses:
+
+- 0: nothing blocks `--apply`. A blank text with no override writes nothing.
+- 1: the text breaks a rule, or the author and owner differ or the owner is an
+  organization, unless `--owner-checked` clears the author.
+- 2: a named failure, such as a plugin that the data file does not have, or a
+  wrong command line.
+
+With `--apply`, the command writes the entry's `index.json`. A text adds an
+override with no `version`, or replaces the override that has none. So the
+text stays through new releases and hides later upstream edits. A blank text
+removes that override.
+
+The command writes nothing past a broken rule. If the author and owner differ,
+or the owner is an organization, check the author by hand, then add
+`--owner-checked`. The issue can change between two runs, so read the report of
+the `--apply` run. Then read the text, answer the issue, and open a pull
+request with the change.
 
 ## Checking entries
 

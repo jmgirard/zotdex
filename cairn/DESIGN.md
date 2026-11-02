@@ -286,7 +286,11 @@ shows each one separately. A combined verdict is out of scope.
    0.5 or more. It can also replace an English description that the site
    shows without the override and that has fewer than six words (D-038).
    Its reason names its upstream source and which case each text is
-   (D-030, D-031, D-032, D-038).
+   (D-030, D-031, D-032, D-038). A repository's owner can also ask for a
+   `name` or `description` override, through a form linked from the plugin
+   page's Details card, after trying an upstream edit first. No bot answers.
+   A maintainer runs `pnpm text-request`. The override has no `version`, and
+   its reason names the issue (M079, D-049, D-050).
 4. User reports. Two issue forms take a "works" or a "broken" report with
    the plugin id, the plugin version, and the Zotero version. A bot checks
    each report, comments, and closes the issue (M020), and a daily sweep
@@ -483,6 +487,14 @@ exception is a report that is abuse.
   `countReports(issues, records)` (`src/reports/count.ts`) counts the closed
   report issues for each record that has `upstream`, by Zotero major
   (M021).
+- Text requests (`src/text-request/`): `textProblems` and its limits
+  (`rules.ts`), `parseTextRequest` (`parse.ts`), and `pnpm text-request <issue>
+  --data <file> [--apply [--owner-checked]]` (`request.ts`, `cli.ts`), which
+  reads a `text-change` issue and the live owner of the entry's repository,
+  prints the facts a maintainer needs, and with `--apply` writes or removes
+  the override. Exit 0 means that nothing blocks `--apply`, 1 a broken rule, or
+  a mismatch or organization owner that `--owner-checked` did not clear, and 2 a
+  named failure (M079, D-049).
 - Start tests (`src/start-test/`): `pnpm start-test --zotero --xpi --out
   [--limit]` starts one Zotero binary with one XPI in a new profile, with
   the reporter plugin of `src/start-test/reporter/`, and writes one of the

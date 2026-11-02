@@ -387,7 +387,7 @@ function checkMaxVersion(value: unknown): string | undefined {
   return value;
 }
 
-function parseRepoUrl(url: string): { owner: string; repo: string } {
+export function parseRepoUrl(url: string): { owner: string; repo: string } {
   let parsed: URL | undefined;
   try {
     parsed = new URL(url);
