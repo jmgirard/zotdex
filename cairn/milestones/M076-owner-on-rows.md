@@ -67,6 +67,7 @@ Each home page row with a GitHub repo shows that repo's owner, so plugins of one
 - 2026-11-02: claim audit: 20 claims read, 1 corrected — README.md, CHANGELOG.md, site/src/layouts/Base.astro, test/site.test.ts
 - 2026-11-02: correction to the T3 lines: those iframe widths were 371 and 1276 px, since the border took 4 px, so `CentreForDigitalHumanities` was cut only at 371; at a true 375 px no current owner is cut (Review, AC5).
 - 2026-11-02: override at the merge question: the user chose a smaller, fainter owner line over the agent's recommended smaller one; `.owner` now takes `--text-xs` and `--faint`. Contrast is 3.47 on `--surface` and 3.09 on `--hover` in light, 3.25 and 2.96 in dark, against 5.36 and 6.58 on `--surface` for `--muted`; the user is shown these figures at the merge question.
+- 2026-11-02: step-7 approval: m076-owner-on-rows approved for merge
 
 ## Decisions
 
