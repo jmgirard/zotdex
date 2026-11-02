@@ -1,16 +1,15 @@
 # Roadmap
 
 _The only authority on milestone status. Grouped by status, not ID._
-_Last hygiene check: 2026-11-02 (lessons pass: dropped 2026-10-26 M010 and 2026-10-30 M062 by planner test, and 2026-10-31 M066 (home control, rank 66), M066 (CATEGORIES tuning, rank 67), and M067 (overrides, rank 67) by rank; 20 lessons left; no decision entry; validate green)_
+_Last hygiene check: 2026-11-02 (M079 archived; new parked row "Tighten the text request rules"; M076 row pruned; 21 lessons, 9 marked used, 1 added; validate green)_
 
 ## Milestones
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M079 | Let owners request name and description changes | review | — | normal | milestones/M079-owner-text-requests.md |
+| M079 | Let owners request name and description changes | done | — | normal | milestones/archive/M079-owner-text-requests.md |
 | M078 | Add a dark mode toggle to the site | done | — | normal | milestones/archive/M078-dark-mode-toggle.md |
 | M077 | Hold update files that leave owner sites | done | — | normal | milestones/archive/M077-update-files-leaving-sites.md |
-| M076 | Show the owner on home page rows | done | — | normal | milestones/archive/M076-owner-on-rows.md |
 <!-- rows grouped by status, not by ID; keep the 3 most recent done/dropped rows; older ones: milestones/archive/ + git -->
 
 ## Candidates
