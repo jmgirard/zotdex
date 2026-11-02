@@ -1,5 +1,6 @@
 ---
 import { knownRelease, ZOTERO_MAJORS } from "../../../src/site/version.ts";
+import { DESCRIPTION_MAX, DESCRIPTION_MIN_WORDS, NAME_MAX, NAME_MIN } from "../../../src/text-request/rules.ts";
 import Base from "../layouts/Base.astro";
 import { BASE, CATEGORIES, categoryOptions, loadData, SUPPORT_MARKS as MARKS } from "../data.ts";
 
@@ -138,6 +139,12 @@ const offered = new Set(categoryOptions(plugins).map(({ value }) => value));
       version or to every version. A description override can also give English text for a plugin with no English
       description upstream. That covers a description that is not in English, that only repeats the name, or that is
       half or more Chinese, Japanese, or Korean. It can also replace an English description of fewer than six words.
+    </p>
+    <p data-owner-text>
+      A repository's owner can also ask for a name or description override, through the link in the plugin's Details,
+      after trying an upstream edit first. The text is in English. A name has {NAME_MIN} to {NAME_MAX} characters, and a
+      description has at least {DESCRIPTION_MIN_WORDS} words and at most {DESCRIPTION_MAX} characters. A maintainer reads
+      each request. The text stays through new releases until the owner asks to remove it.
     </p>
     <p>
       The Overrides table in a plugin's Details lists each override beside the upstream value. Its Used column says

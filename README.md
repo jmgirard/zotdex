@@ -456,8 +456,9 @@ only registry fields. Its `id` must equal the directory name.
   word is a run of letters, marks, and digits. This case reads the
   description that the site shows without the override. The site's
   categories read the shown description, so a `description` override can
-  change them. After you write one, check the plugin's categories. Each
-  item has these fields:
+  change them. After you write one, check the plugin's categories. A
+  repository's owner can also ask for a `name` or `description` override, as
+  "Changing a plugin's name or description" says. Each item has these fields:
   - `field`: the fact to correct or fill in. The value is one of `name`,
     `description`, `homepage`, `strict_min_version`, `strict_max_version`,
     or `languages`.
@@ -1120,6 +1121,66 @@ holds also for an issue whose `report` label was added after it opened. An
 issue with a
 bot comment stays for a maintainer, as does a report issue opened more than
 7 days before the sweep.
+
+## Changing a plugin's name or description
+
+A plugin's manifest and GitHub About text are the first place to change its
+text, and an edit there needs no request. A repository's owner can also ask
+the index for another name or description, through the link in the plugin
+page's Details card. It opens the form
+`.github/ISSUE_TEMPLATE/text-change.yml`, which adds the label `text-change`.
+
+The new text follows these rules, which `src/text-request/rules.ts` holds:
+
+- The text is in English. The command refuses only text of which half or more
+  is Chinese, Japanese, or Korean, so a maintainer reads for other languages.
+- A name has 2 to 40 characters and starts with a letter or digit.
+- A description has at least 6 words and at most 200 characters, and it does
+  more than repeat the name. A home page row shows about the first 120
+  characters.
+- The text has no link, no `<`, and no control or format characters, line
+  breaks included.
+
+The rules bind requests only, so existing text can break them.
+
+No bot answers the form. To check a request, download the deployed data file
+and run the command with the issue's number:
+
+```sh
+curl -sSLo plugins.json https://jmgirard.github.io/zotero-plugin-index/v1/plugins.json
+pnpm text-request <issue> --data plugins.json
+```
+
+The command reads the issue and the owner of the entry's repository from the
+GitHub API. It prints the plugin, the field, the text, the issue's author, the
+owner, and whether the two match, ignoring letter case. It also prints:
+
+- each rule that the text breaks,
+- each other plugin that shows the same name, which the command does not
+  refuse,
+- the categories that the text adds,
+- an override with a `version` that still wins over the text,
+- for a blank text, the description gap that removing the override leaves, in
+  the words of `pnpm description-gaps`.
+
+For an owner that is an organization, it says to check the author by hand.
+
+The command has three exit statuses:
+
+- 0: `--apply` can write.
+- 1: the text breaks a rule, the author and owner differ, or the owner is an
+  organization.
+- 2: a named failure, such as a plugin that the data file does not have.
+
+With `--apply`, the command writes the entry's `index.json`. A text adds an
+override with no `version`, or replaces the override that has none. So the
+text stays through new releases and hides later upstream edits. A blank text
+removes that override.
+
+The command writes nothing past a broken rule. If the author and owner differ,
+or the owner is an organization, check the author by hand, then add
+`--owner-checked`. Then read the text, answer the issue, and open a pull
+request with the change.
 
 ## Checking entries
 

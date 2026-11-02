@@ -24,6 +24,7 @@ import { shownDescription } from "../src/site/description.ts";
 import { PAGE_SIZE, prePaintStyle } from "../src/site/home-filter.ts";
 import { appliedLanguages, languageName } from "../src/site/languages.ts";
 import { START_LIMIT_MS } from "../src/start-test/start-test.ts";
+import { DESCRIPTION_MAX, DESCRIPTION_MIN_WORDS, NAME_MAX, NAME_MIN } from "../src/text-request/rules.ts";
 import { compareVersions, declaredRange, majorSupport, ZOTERO_MAJORS } from "../src/site/version.ts";
 import { PRE_PAINT_CASES } from "./support/pre-paint.ts";
 import { themePage } from "./support/theme-page.ts";
@@ -731,6 +732,13 @@ describe("the About page", () => {
     ]) {
       expect(text).toContain(line);
     }
+  });
+
+  test("says that a repository's owner can ask for a name or description override, with the limits of the rules", () => {
+    const text = mainText(about());
+    expect(text).toContain("A repository's owner can also ask for a name or description override");
+    expect(text).toContain(`A name has ${NAME_MIN} to ${NAME_MAX} characters`);
+    expect(text).toContain(`at least ${DESCRIPTION_MIN_WORDS} words and at most ${DESCRIPTION_MAX} characters`);
   });
 
   test("describes the start test on Linux in a new profile with a 3-second wait, and says that a start is not a report that it works", () => {
@@ -1655,6 +1663,23 @@ describe("the built site", () => {
         /<\/a><button type="button" data-theme-toggle hidden><span data-theme-icon="moon"><svg [^]*?<\/svg><\/span><span data-theme-icon="sun"><svg [^]*?<\/svg><\/span><\/button><script>[^]*?<\/script><\/nav>/,
       );
     }
+  });
+
+  test("links each plugin page's Details card to the text-change form, and no other page", () => {
+    const files = htmlFiles(out);
+    expect(files).toHaveLength(ids.length + 2);
+    for (const id of ids) {
+      const html = page(id);
+      const links = [...html.matchAll(/<a href="([^"]*)" data-text-change>/g)];
+      expect(links, id).toHaveLength(1);
+      expect(links[0]![1]!.replace(/&amp;/g, "&").replace(/&#38;/g, "&"), id).toBe(
+        `https://github.com/jmgirard/zotero-plugin-index/issues/new?template=text-change.yml&plugin=${encodeURIComponent(id)}`,
+      );
+      expect(links[0]!.index, id).toBeGreaterThan(html.indexOf('data-section="details"'));
+      expect(mainText(html), id).toContain("Is this your plugin? Ask to change its name or description.");
+    }
+    expect(home()).not.toContain("data-text-change");
+    expect(readFileSync(join(out, "about/index.html"), "utf8")).not.toContain("data-text-change");
   });
 
   test("runs the built theme scripts", () => {

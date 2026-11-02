@@ -49,8 +49,8 @@ A plugin's repository owner can ask, through a form linked from the plugin page,
 - [x] T2: Add the form and `parseTextRequest`, with the labels in one exported constant as `src/reports/report.ts` keeps them, reading every line under a heading and reading `_No response_` as blank. Test the form file and the parser.
 - [x] T3: Add `src/text-request/` and the `pnpm text-request` script for the read and the printed report, through `githubClient`, with recorded responses in tests. Reuse `nameKey`, `categories`, `displayName`, and `gapOf`, reading the checkout's overrides as `src/site/description-gaps.ts` does.
 - [x] T4: Add `--apply` and `--owner-checked`, with each write run through `pnpm check` in a test.
-- [ ] T5: Add `textChangeHref` beside `reportHref` in `site/src/data.ts`, the Details card link, and the About text from the constants, with site tests. Look at a plugin page at 375 px in the browser pane on the real site (lessons M035, M015, and M021).
-- [ ] T6: Update README, DESIGN, CHANGELOG, and the two schemas' text; a schema copy test may name the same text. Create the `text-change` label with `gh label create`, and run `pnpm test` and `pnpm check`.
+- [x] T5: Add `textChangeHref` beside `reportHref` in `site/src/data.ts`, the Details card link, and the About text from the constants, with site tests. Look at a plugin page at 375 px in the browser pane on the real site (lessons M035, M015, and M021).
+- [x] T6: Update README, DESIGN, CHANGELOG, and the two schemas' text; a schema copy test may name the same text. Create the `text-change` label with `gh label create`, and run `pnpm test` and `pnpm check`.
 
 ## Work log
 
@@ -67,6 +67,8 @@ A plugin's repository owner can ask, through a form linked from the plugin page,
 - 2026-11-02: plan chose the owner from `GET /repos` over the entry's `repoUrl`, because a transfer leaves the stored owner stale; falsified by a read limit that makes this read fail for hand-run use.
 - 2026-11-02: T1: added `src/text-request/rules.ts` with `DESCRIPTION_SHOWN` beside the four limits, and `onlyRepeatsName` in `src/site/description.ts`; the rule tests pass.
 - 2026-11-02: T2, T3, T4: added the form, `parseTextRequest`, `textRequest`, and `pnpm text-request`; `readData` and `checkoutOverrides` are now exported from `description-gaps.ts`, and `parseRepoUrl` from the reader; a read data or entry failure keeps its own name, such as `data-unreadable` and `entry-not-json`; after `--apply` writes, the exit is 0, also past `--owner-checked`; the name-match reads the data file's shown names; the tests passed before the commit.
+- 2026-11-02: T5: added `textChangeHref`, the link at the end of the Details card, and the About paragraph; the pane on the real site at 375 px shows the link inside the Details card, the `href` with the plugin id, no sideways scroll, and no console errors.
+- 2026-11-02: T6: updated README, DESIGN, CHANGELOG, and both schemas' text; created the `text-change` label on the repository; `pnpm test` 2085 passed, 6 skipped; `pnpm check` 0 problems; left the simple-english hook hits on older lines of README and CHANGELOG, and fixed those on new lines.
 
 ## Decisions
 
