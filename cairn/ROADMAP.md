@@ -7,7 +7,7 @@ _Last hygiene check: 2026-11-02 (M080 archived; M077 row pruned; 21 lessons, 8 m
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M081 | Show when a repo holds no source code | planned | — | normal | milestones/M081-no-source-mark.md |
+| M081 | Show when a repo holds no source code | in-progress | — | normal | milestones/M081-no-source-mark.md |
 | M080 | Say the index is unofficial and cannot vet plugins | done | — | normal | milestones/archive/M080-unofficial-disclaimer.md |
 | M079 | Let owners request name and description changes | done | — | normal | milestones/archive/M079-owner-text-requests.md |
 <!-- rows grouped by status, not by ID; keep the 3 most recent done/dropped rows; older ones: milestones/archive/ + git -->

@@ -1,13 +1,13 @@
 # M081: Show when a repo holds no source code
 
-- **Status:** planned
+- **Status:** in-progress
 - **Priority:** normal
 - **Depends on:** —
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — the data file and the site show a new fact to visitors and data consumers
-- **Branch/PR:** —
+- **Branch/PR:** m081-no-source-mark
 
 ## Goal
 
@@ -41,7 +41,7 @@ Show on the site when a plugin's GitHub repo has no source code at its top level
 
 ## Tasks
 
-- [ ] T1: Write `src/build/source.ts` and `test/source.test.ts`.
+- [x] T1: Write `src/build/source.ts` and `test/source.test.ts`.
 - [ ] T2: Add a bounded, batched GraphQL read after the plugin reads in `buildData` (`src/build/build.ts`; `src/discover/discover.ts:640` shows the post), with `sourceProblem`, the warning in `src/build/cli.ts`, the schema field, and the build tests.
 - [ ] T3: Add the `lock` icon to `site/src/components/Icon.astro`, the home mark and link label (`site/src/pages/index.astro:147`, `:192`), the plugin page mark and fact (`site/src/pages/plugins/[id]/index.astro:56`, `:245`), any plugin page link that says source code, and the site tests.
 - [ ] T4: Write the About section, `README.md`, `CHANGELOG.md`, and `cairn/DESIGN.md`.
@@ -59,6 +59,7 @@ Show on the site when a plugin's GitHub repo has no source code at its top level
 - 2026-11-02: plan gate chose a shown fact over a no-source hold, a refusal, and a license requirement because the user chose it after the count of 8 of 695 and 158 of 695; falsified by plugins commonly hiding source in ways that top-level names do not show.
 - 2026-11-02: plan chose one batched GraphQL read after the plugin reads over one REST read per plugin because 691 more REST requests add to the build's 18-minute read limit and rate limit; falsified by a GraphQL limit or failure that leaves the field out on most builds.
 - 2026-11-02: criteria audit (full mode) returned findings on every criterion but the last. Fixed: AC1's garbled clause, its unlisted patterns and case rule, and its probes; AC2's unreachable domain for failure records, its build-level conflict (now D-052), its one-example probe, and a new warning; AC3's absolute label, its contradicting source link, and its unnamed icon and mechanism; AC4's mark position; AC5's "No" disclosure, the D-007 schema notice, and a test of each claim. Added AC6 for no change to who is listed.
+- 2026-11-02: T1 done: `holdsSource` and its table test (20 rows); the stem is the name before its last dot.
 
 ## Decisions
 
