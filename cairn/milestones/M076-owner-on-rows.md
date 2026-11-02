@@ -80,3 +80,22 @@ Evidence read 2026-11-02 at de66952; origin/main is an ancestor of the branch, s
 - AC6: README line 16 and DESIGN line 150 state "By <owner>"; CHANGELOG's Unreleased section has the entry.
 - AC7: `pnpm test`: 1934 passed, 6 skipped, type check clean. `pnpm check`: 671 entries, 0 problems.
 - Gate: `cairn_validate.py` all checks passed; the generic profile adds no toolchain checks; no principle changed, so `cairn_impact` is skipped.
+- spawned: diff-bug, blame-history, prior-review, ripple
+- diff-bug #1: README's "with or without a trailing slash" for home rows has no test — fix now
+- diff-bug #2: a cut owner can hide the difference between two long owners on rows of one name at phone width — reject, planned change: AC5 allows the ellipsis, and the plugin page shows the full owner.
+- diff-bug #3: AC5 rests on `contain: inline-size`, seen only in Chromium, and no test covers the CSS — follow-up, new parked row "Close gaps in the home owner line", since no documented or common use is known to reach it.
+- diff-bug #4: AC5's evidence was measured at 371 px, since the iframe's border took 4 px — fix now: measure again with no border.
+- diff-bug #5: a DESIGN sentence says `contain` cuts the owner, but `overflow`, `text-overflow`, and `white-space` do — fix now
+- diff-bug #6: a DESIGN clause omits that other URLs show no owner — fix now
+- diff-bug #7: the AC3 test's name assertion reads the fixture, not the page — reject, style: the exact name-cell test reads the rendered name of both rows.
+- diff-bug #8: the row header's text grows by "By <owner>" for screen readers — reject, planned change: AC1 puts the owner in the name cell, which already holds the description.
+- diff-bug #9: an owner search still matches a row whose description names that owner — reject, false: AC4 and the README say the search reads the description.
+- diff-bug #10: one generated test title reads "as undefined" — reject, style.
+- blame-history #1: the `githubRepo` gaps of "Close small gaps on the site pages" item (8) now reach home rows, so owner `..` shows as "By .." — follow-up, new parked row "Close gaps in the home owner line"; all 671 deployed URLs read 2026-11-02 have the plain form.
+- blame-history #2: the README presents the case-sensitive host as the rule — reject, false: it states current behavior, as README's repo line text already does, and the candidate row records the possible change.
+- blame-history #3: a short README line and the order of the owner and Archived sentences — reject, style.
+- prior-review #1: the owner test leans on next-plugin's upstream URL, which GitHub never yields, against the M061 lesson — fix now: drop that case, since same-name-plugin already shows that the upstream URL comes first.
+- prior-review #2: the new search test runs only in `node:vm` — reject, planned change: AC4 names the home script test, and a browser search was also read by hand.
+- prior-review #3: the owner sits inside the row header — reject, planned change: as diff-bug #8.
+- ripple #1: README and CHANGELOG do not say which URL supplies the owner — reject, false: the row and its source link read one variable, so they cannot differ.
+- ripple #2: the fixture's new record could change the 4-category assertion — reject, false: the record matches no category, and that test passes.
