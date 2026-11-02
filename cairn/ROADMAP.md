@@ -1,17 +1,16 @@
 # Roadmap
 
 _The only authority on milestone status. Grouped by status, not ID._
-_Last hygiene check: 2026-11-02 (M074 review: M074 archived; candidate "Allow owner GitHub Pages update hosts" graduated; new row "Hold update files that leave owner sites"; M071 row pruned; 3 lessons marked used M074, 1 captured, 1 evicted by rank; validate green)_
+_Last hygiene check: 2026-11-02 (M075 review: M075 archived; 3 new rows; 29 pull requests released, 7 stay held; M072 row pruned; 5 lessons marked used M075, 1 captured, 1 evicted by rank; validate green)_
 
 ## Milestones
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M075 | Hold name matches only on evidence of copying | review | — | normal | milestones/M075-name-holds.md |
 | M076 | Show the owner on home page rows | planned | — | normal | milestones/M076-owner-on-rows.md |
+| M075 | Hold name matches only on evidence of copying | done | — | normal | milestones/archive/M075-name-holds.md |
 | M074 | Allow owner GitHub Pages update hosts | done | — | normal | milestones/archive/M074-owner-pages-hosts.md |
 | M073 | Show hold details in bot pull requests | done | — | normal | milestones/archive/M073-hold-details.md |
-| M072 | Wait for GitHub's code search reset | done | — | high | milestones/archive/M072-code-search-reset.md |
 <!-- rows grouped by status, not by ID; keep the 3 most recent done/dropped rows; older ones: milestones/archive/ + git -->
 
 ## Candidates
