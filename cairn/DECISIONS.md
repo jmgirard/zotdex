@@ -755,3 +755,19 @@ cannot vet, which goes past "does not". The holds and the start tests screen in
 part, and neither is a review of plugin code. About gives the reason: one person
 maintains the index, and each plugin can change with any release. This choice is
 wrong if the index comes to review plugin code.
+
+### D-052: A repo with no source is listed with a shown fact, and a failed read of it never withholds a deploy, annotating D-006 and D-011
+
+2026-11-02, M081 plan. Held PR 371 led the maintainer to consider a rule that
+listed code must be open source. A count on 2026-11-02 found 8 of 695 repos
+with no source at the top level, and 158 with no source or no license that
+GitHub recognizes. The maintainer wanted PR 161 merged and PR 371 closed, but
+the two repos have the same shape. So no source rule can separate them. The
+user chose a shown fact over a new hold, a refusal of repos with no source, and
+a license requirement. D-006 lists archived repos the same way, and inclusion
+stays no judgment of quality (D-033, D-042). The mark says "at the top level",
+since the index reads names and no code. D-011, D-015, and D-022 make a failed
+GitHub read build-level. This read is an exception: a failure leaves the field
+out and warns, as D-036 does for the Zotero release, because the fact is not
+needed to list a plugin. This choice is wrong if plugins commonly hide their
+source in ways that the top-level names do not show.
