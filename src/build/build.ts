@@ -9,6 +9,7 @@ import type { StartResultName } from "../start-test/start-test.ts";
 import { boundFetch, type Fetch, githubClient, ReadFailure, readUpstream, type UpstreamFacts, type XpiRead } from "../upstream/reader.ts";
 import { duration, READ_LIMIT_MS, withinLimit } from "../upstream/time-limit.ts";
 import { LAST_RELEASES } from "../site/version.ts";
+import { readSourceFacts, SOURCE_READ_LIMIT_MS } from "./source.ts";
 import { readChangelogRelease, readZoteroRelease, releaseListWarnings, ZOTERO_RELEASE_LIMIT_MS } from "./zotero-release.ts";
 
 export interface Override {
@@ -24,7 +25,9 @@ export interface PluginRecord {
   repoUrl: string;
   // `xpiUrl` addresses the XPI file that the reader read, and `xpiSha256` is the SHA-256 of its
   // bytes, the one the start plan names; data written before the build wrote them has none.
-  upstream?: UpstreamFacts & { xpiUrl?: string; xpiSha256?: string };
+  // `sourceInRepo` says whether the top level of the repo's default branch holds a name that can
+  // be source code; a failed read of those names leaves it out.
+  upstream?: UpstreamFacts & { xpiUrl?: string; xpiSha256?: string; sourceInRepo?: boolean };
   // The counted user reports on the version in upstream, by Zotero major. Every record with
   // upstream that the build writes has it; data written before reports existed has none.
   reports?: ReportCount[];
@@ -78,7 +81,8 @@ export interface StartPlan {
 // `buildLevel` lists the ids of the records whose failure usually points at the build, such as a
 // rate limit or a network error, in record order. It and the plan stay out of the data. The
 // plan has one item for each record with upstream, in record order. `releaseProblem` names why
-// the read of the current Zotero release failed, when it did. `releaseWarnings` says where the
+// the read of the current Zotero release failed, when it did, and `sourceProblem` why the build
+// has no source fact for some records. `releaseWarnings` says where the
 // Zotero release lists in src/site/version.ts fall behind and which changelog reads failed, and
 // stays out of the data.
 export type BuildResult =
@@ -89,6 +93,7 @@ export type BuildResult =
       buildLevel: string[];
       plan: StartPlan;
       releaseProblem?: string;
+      sourceProblem?: string;
       releaseWarnings: string[];
     }
   | { ok: false; problems: string[] };
@@ -112,12 +117,14 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 export const REPORTS_LIMIT_MS = 3 * 60 * 1000;
 
 // `startedAt` is a performance.now() time. Its default, 0, is when the process started.
-// `reportsMs` bounds the label read and every page of the report issues together, and
-// `releaseMs` the read of the current Zotero release and each changelog read.
+// `reportsMs` bounds the label read and every page of the report issues together, `releaseMs`
+// the read of the current Zotero release and each changelog read, and `sourceMs` every request
+// of the source read.
 export interface TimeLimits {
   readMs?: number;
   reportsMs?: number;
   releaseMs?: number;
+  sourceMs?: number;
   buildMs?: number;
   startedAt?: number;
 }
@@ -130,9 +137,10 @@ export interface TimeLimits {
 // `reportsMs`, also stops it, before any upstream read (D-013). A plugin read that passes
 // `readMs` fails as request-failed. Once `buildMs` has passed since `startedAt`, the build
 // reads no more plugins, and each entry left gets the failure not-read. Both count as
-// build-level. The UTC day of `now` sets the read order. Last, it reads the current Zotero
-// release and the changelog page of each LAST_RELEASES major from zotero.org. A failed read of
-// the release leaves zoteroRelease out, and no read of these stops the build.
+// build-level. The UTC day of `now` sets the read order. Then it reads the top-level names of
+// each repo it read, and a failed read leaves that record's sourceInRepo out. Last, it reads the
+// current Zotero release and the changelog page of each LAST_RELEASES major from zotero.org. A
+// failed read of the release leaves zoteroRelease out, and no read of these stops the build.
 export async function buildData(
   root: string,
   fetch: Fetch,
@@ -142,6 +150,7 @@ export async function buildData(
     readMs = READ_LIMIT_MS,
     reportsMs = REPORTS_LIMIT_MS,
     releaseMs = ZOTERO_RELEASE_LIMIT_MS,
+    sourceMs = SOURCE_READ_LIMIT_MS,
     buildMs = BUILD_LIMIT_MS,
     startedAt = 0,
   }: TimeLimits = {},
@@ -222,6 +231,11 @@ export async function buildData(
       records[i] = record;
     }
   }
+  const source = await readSourceFacts(fetch, records.flatMap(({ repoUrl, upstream }) => (upstream ? [repoUrl] : [])), sourceMs);
+  for (const { repoUrl, upstream } of records) {
+    const sourceInRepo = source.facts.get(repoUrl);
+    if (upstream && sourceInRepo !== undefined) upstream.sourceInRepo = sourceInRepo;
+  }
   const buildLevel = entries.flatMap(({ id }, i) => (buildLevelAt.has(i) ? [id] : []));
   const reports = countReports(issues, records);
   const plugins = records.map(({ id, repoUrl, upstream, failure, overrides }) =>
@@ -249,7 +263,16 @@ export async function buildData(
     }),
   };
   const releaseWarnings = releaseListWarnings(zoteroRelease, majors.map((major, i) => [major, changelogs[i]]));
-  return { ok: true, data, text, buildLevel, plan, releaseWarnings, ...(release.ok ? {} : { releaseProblem: release.message }) };
+  return {
+    ok: true,
+    data,
+    text,
+    buildLevel,
+    plan,
+    releaseWarnings,
+    ...(release.ok ? {} : { releaseProblem: release.message }),
+    ...(source.problem ? { sourceProblem: source.problem } : {}),
+  };
 }
 
 // The problems schemas/plugins.v1.schema.json finds in value, or none.

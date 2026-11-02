@@ -47,6 +47,9 @@ async function main(): Promise<number> {
   // the writes, so a failed write still leaves it in the log. GitHub Actions shows it as a
   // warning on the run.
   if (built.releaseProblem) console.log(`::warning::cannot read the Zotero release: ${oneLine(built.releaseProblem)}`);
+  // Without sourceInRepo, a record shows no source fact until a later build reads it, so this
+  // read does not change the exit code either.
+  if (built.sourceProblem) console.log(`::warning::cannot read every repo's top-level names: ${oneLine(built.sourceProblem)}`);
   // A list in src/site/version.ts that a Zotero release left behind keeps its marks as they
   // were until someone edits it, so these lines do not change the exit code either.
   for (const warning of built.releaseWarnings) console.log(`::warning::${oneLine(warning)}`);

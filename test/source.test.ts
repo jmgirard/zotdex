@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
-import { holdsSource } from "../src/build/source.ts";
+import { holdsSource, readSourceFacts } from "../src/build/source.ts";
+import { fixtureFetch } from "./support/fixture-fetch.ts";
 
 describe("holdsSource", () => {
   test.each<[string, string[]]>([
@@ -30,5 +31,32 @@ describe("holdsSource", () => {
     ["a repo with source", [".eslintrc.json", ".github", ".gitignore", "README.md", "bootstrap.ts", "client", "esbuild.js", "gen", "images", "lib.ts", "package-lock.json", "package.json", "schema", "tsconfig.json"]],
   ])("source: %s", (_, names) => {
     expect(holdsSource(names)).toBe(true);
+  });
+});
+
+describe("readSourceFacts", () => {
+  const GRAPHQL = "POST https://api.github.com/graphql";
+  const urls = Array.from({ length: 41 }, (_, i) => `https://github.com/alice/repo-${i}`);
+  const page = (count: number) => ({ json: { data: Object.fromEntries(Array.from({ length: count }, (_, i) => [`r${i}`, { object: { entries: [{ name: "src" }] } }])) } });
+
+  test("reads 41 repos in two requests", async () => {
+    const { fetch, requests } = fixtureFetch({ [`${GRAPHQL} #1`]: page(40), [`${GRAPHQL} #2`]: page(1) });
+    const { facts, problem } = await readSourceFacts(fetch, urls);
+    expect(requests).toHaveLength(2);
+    expect(facts.size).toBe(41);
+    expect(problem).toBeUndefined();
+  });
+
+  test("keeps the first batch when the second request fails", async () => {
+    const { fetch } = fixtureFetch({ [`${GRAPHQL} #1`]: page(40), [`${GRAPHQL} #2`]: { status: 502, text: "Bad Gateway" } });
+    const { facts, problem } = await readSourceFacts(fetch, urls);
+    expect(facts.size).toBe(40);
+    expect(problem).toBe("1 of 41 repos stay unread: POST https://api.github.com/graphql returned HTTP 502");
+  });
+
+  test("sends no request for no repos", async () => {
+    const { fetch, requests } = fixtureFetch({});
+    expect(await readSourceFacts(fetch, [])).toEqual({ facts: new Map() });
+    expect(requests).toHaveLength(0);
   });
 });
