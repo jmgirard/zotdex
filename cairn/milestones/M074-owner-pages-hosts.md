@@ -28,9 +28,9 @@ The bot no longer holds a pull request whose `update.json` is on the repo owner'
 
 ## Acceptance criteria
 
-- [ ] AC1: `holdReasons` gives no `update-host` for a repo whose update host is `<owner>.github.io`, where `<owner>` is the repo's owner. Tests in `test/holds.test.ts` show no holds at all from `draftEntry` for `bob/zotero-tagger` with `bob.github.io`, `Juris-M/zotero-odf-scan-plugin` with `juris-m.github.io`, and `forrtproject/flora-zotero` with `forrtproject.github.io`, and no `update-host` from a direct `holdReasons` call with `repo` `Bob/zotero-tagger` and `updateHost` `BOB.github.io`.
-- [ ] AC2: `holdReasons` still gives `update-host` in tests for `bob/zotero-tagger` with `alice.github.io`, `bob.github.io:8443`, `sub.bob.github.io`, `bob.evil.github.io`, `bobx.github.io`, `bob-x.github.io`, `bob.github.io.example.org`, `bob.gitlab.io`, and `github.io`. The existing github.com with a port case stays.
-- [ ] AC3: `HOLD_TEXT["update-host"]`, the README's `update-host` bullet, and DESIGN's hold sentence name the owner's `<owner>.github.io` site among the allowed hosts. `CHANGELOG.md` gains one entry under `## Unreleased`. `pnpm test` and `pnpm check` exit 0.
+- [x] AC1: `holdReasons` gives no `update-host` for a repo whose update host is `<owner>.github.io`, where `<owner>` is the repo's owner. Tests in `test/holds.test.ts` show no holds at all from `draftEntry` for `bob/zotero-tagger` with `bob.github.io`, `Juris-M/zotero-odf-scan-plugin` with `juris-m.github.io`, and `forrtproject/flora-zotero` with `forrtproject.github.io`, and no `update-host` from a direct `holdReasons` call with `repo` `Bob/zotero-tagger` and `updateHost` `BOB.github.io`.
+- [x] AC2: `holdReasons` still gives `update-host` in tests for `bob/zotero-tagger` with `alice.github.io`, `bob.github.io:8443`, `sub.bob.github.io`, `bob.evil.github.io`, `bobx.github.io`, `bob-x.github.io`, `bob.github.io.example.org`, `bob.gitlab.io`, and `github.io`. The existing github.com with a port case stays.
+- [x] AC3: `HOLD_TEXT["update-host"]`, the README's `update-host` bullet, and DESIGN's hold sentence name the owner's `<owner>.github.io` site among the allowed hosts. `CHANGELOG.md` gains one entry under `## Unreleased`. `pnpm test` and `pnpm check` exit 0.
 
 ## Coverage
 
@@ -68,3 +68,8 @@ The bot no longer holds a pull request whose `update.json` is on the repo owner'
 ## Decisions
 
 ## Review
+
+- AC1 evidence (2026-11-02, branch at ed661e7, main unmoved): `vitest run test/holds.test.ts` passed 38 of 38. The `draftEntry` cases give `[]` for `bob/zotero-tagger` on `bob.github.io`, `Juris-M/zotero-odf-scan-plugin` on `juris-m.github.io`, and `forrtproject/flora-zotero` on `forrtproject.github.io`; the direct `holdReasons` call with `Bob/zotero-tagger` and `BOB.github.io` gives `[]`. Before the rule, these 4 cases failed with `update-host` (T1).
+- AC2 evidence (same run): each of `alice.github.io`, `bob.github.io:8443`, `sub.bob.github.io`, `bob.evil.github.io`, `bobx.github.io`, `bob-x.github.io`, `bob.github.io.example.org`, `bob.gitlab.io`, and `github.io` gives exactly `["update-host"]` for `bob/zotero-tagger`, and "update-host for github.com with a port" still passes.
+- AC3 evidence (same head): read `HOLD_TEXT["update-host"]` (`src/discover/propose.ts:495`), README's `update-host` bullet (lines 756-759), and DESIGN's hold sentence (lines 232-235); each names the owner's `<owner>.github.io` site. `git diff` shows one new CHANGELOG entry under `## Unreleased`. `pnpm test` exit 0 (1815 passed, 6 skipped); `pnpm check` exit 0 (671 entries, 0 problems).
+- Consistency gate: `cairn_validate.py` exit 0, all checks passed; no DESIGN principle changed, so `cairn_impact.py` is skipped; the `generic` profile names no toolchain checks.
