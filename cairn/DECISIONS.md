@@ -771,3 +771,28 @@ GitHub read build-level. This read is an exception: a failure leaves the field
 out and warns, as D-036 does for the Zotero release, because the fact is not
 needed to list a plugin. This choice is wrong if plugins commonly hide their
 source in ways that the top-level names do not show.
+
+### D-053: The maintainer merges a held bot pull request by default and closes one only for a misleading entry, annotating D-033
+
+2026-11-02, held pull request review. D-033 holds a bot pull request for the
+maintainer and does not say how to decide. Inclusion is not a judgment of
+quality (D-033, D-042), and the index cannot vet plugins (D-051), so the default
+is to merge. The maintainer closes a pull request only when its entry would
+mislead people about what the plugin is, who makes it, or who controls its
+updates. A pull request that the maintainer cannot settle stays open, because
+closing keeps the bot from proposing that repo again and waiting costs nothing.
+
+Each hold reason has one question. For `update-host`: does the host belong to
+the same party as the repo? A matching account, or a domain that the plugin id,
+homepage, or README also uses, shows that. A file there that is identical to the
+GitHub release's XPI supports it. For `name-match`: would a visitor mistake this
+plugin for the other one? A copy passes with its own name and id and credit to
+its source. A shared descriptive name with different code also passes. A credited
+copy that keeps its source's name or id takes the maintainer's judgment. For
+`new-account`: is this a real plugin repo with a release? Account age alone closes
+nothing. A repo with no source is not closed for that reason, since D-052 shows it
+as a fact.
+
+The first pass closed one pull request, for a plugin that kept Zotero's sample
+plugin's id and update address. This choice is wrong if a held plugin that passes
+these questions misleads users.

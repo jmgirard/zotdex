@@ -255,7 +255,8 @@ shows each one separately. A combined verdict is out of scope.
    bot's read takes an update file on that site to another host, a URL of
    that read uses `http:` (D-047), or an issue proposed a
    repo with neither topic. A catalog or code-search repo with neither
-   topic gets no hold (D-042). A held pull request gets the `hold` label. A
+   topic gets no hold (D-042). A held pull request gets the `hold` label, and
+   D-053 states how the maintainer decides it. A
    daily job merges a pull request that says `Hold: none` and has no `hold`
    label at its first daily run at least 48 hours after it opens, once its
    entry passes `pnpm check` beside the current entries. A run started by
