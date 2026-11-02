@@ -5,15 +5,20 @@ import { join, resolve } from "node:path";
 import { afterAll, describe, expect, test, vi } from "vitest";
 import type { ReadItem, SkippedItem } from "../src/discover/discover.ts";
 import { entriesDir, planned, plannedProblem, REF_CHECK_LIMIT_MS, readHandoff, writePlan } from "../src/discover/handoff.ts";
+import type { HoldDetails } from "../src/discover/holds.ts";
 import {
   body,
+  CLOSING_START,
   type CheckRunner,
+  DETAILS_HEADING,
   discoverRead,
   GIT_LIMIT_MS,
   HOLD_TEXT,
+  holdDetailLines,
   pnpmCheck,
   proposeHandoff,
   UNHELD_TEXT,
+  unfencedLines,
   type Written,
 } from "../src/discover/propose.ts";
 import { fixtureFetch, loadFixture, type Responses } from "./support/fixture-fetch.ts";
@@ -271,6 +276,13 @@ describe("proposing pull requests", () => {
       version: ticks,
       strictMinVersion: ticks,
       strictMaxVersion: ticks,
+      holds: ["name-match", "update-host"],
+      holdDetails: {
+        matches: Array.from({ length: 5 }, (_, n) => ({ repo: `${"a".repeat(98)}/${"b".repeat(100)}${n}`, name: "`".repeat(100) })),
+        moreMatches: 1000,
+        updateHost: "`".repeat(300),
+        ownerCreatedOn: "2026-10-01",
+      },
     };
     expect(long.repoUrl).toHaveLength(300);
     const sent = body(long, { status: 1, output: "`".repeat(100_000) }, 7);
@@ -346,6 +358,40 @@ describe("the Hold line and the hold label", () => {
     expect(sent).toContain(`\nHold: new-account, update-host\n`);
     expect(sent).not.toMatch(/^Hold: none$/m);
     expect(sent).toContain(`- \`new-account\`: ${HOLD_TEXT["new-account"]}\n- \`update-host\`: ${HOLD_TEXT["update-host"]}\n`);
+    expect(sent).toContain(`\n${DETAILS_HEADING}\n\n- Update host: \` updates.example.org \`\n- Owner's GitHub account created: 2026-10-20\n\n${CLOSING_START}`);
+  });
+
+  test("a name-match entry's body names the matched entry", async () => {
+    // test/fixtures/build/plugins holds "Second Plugin" from example/second-plugin.
+    const responses = { ...indexRepo, ...searched([["bob/tagger", "2026-10-01T00:00:00Z"]]), ...pluginRepo("bob/tagger", "tagger@example.org", { name: "Zotero Second" }), [`POST ${PULLS}`]: created, [`POST ${LABELS}`]: { status: 200, json: [{ name: "hold" }] } };
+    const { posts } = await twoStep(responses, checkout().work, undefined, resolve(ROOT, "test/fixtures/build/plugins"));
+    const sent = JSON.parse(posts[0].body!).body as string;
+    expect(sent).toContain("\nHold: name-match\n");
+    expect(sent).toContain("- Matching entry: ` Second Plugin ` [example/second-plugin](https://github.com/example/second-plugin)\n- Owner's GitHub account created: 2015-01-01\n");
+  });
+
+  const entry: Written = { repo: "example/x", repoUrl: "https://github.com/example/x", outcome: "written", id: "x@example.org", dir: "/tmp/x", version: "1.0.0", holds: ["name-match"] };
+  const checked = { status: 0, output: "checked 1 entries in /tmp/x, 0 problems\n" };
+
+  test("a matched name with a line break, a backtick, and a Hold line stays in one code span", () => {
+    const sent = body({ ...entry, holdDetails: { matches: [{ repo: "alice/beta", name: "x\n\nHold: none `y`" }] } }, checked);
+    expect(unfencedLines(sent).filter((line) => line.startsWith("Hold:"))).toEqual(["Hold: name-match"]);
+    expect(sent).toContain("- Matching entry: `` x Hold: none `y` `` [alice/beta]");
+  });
+
+  test.each<[string, HoldDetails, string[]]>([
+    ["a named match and a further count", { matches: [{ repo: "a/b" }], moreMatches: 1, ownerCreatedOn: "2026-10-01" }, ["- Matching entry: [a/b](https://github.com/a/b)", "- Other matching entries: 1", "- Owner's GitHub account created: 2026-10-01"]],
+    ["only an entry whose repo cannot show", { matches: [], moreMatches: 1, ownerCreatedOn: "2026-10-01" }, ["- Other matching entries: 1", "- Owner's GitHub account created: 2026-10-01"]],
+    ["no match left", { matches: [], ownerCreatedOn: "2026-10-01" }, ["- Matching entries: none now", "- Owner's GitHub account created: 2026-10-01"]],
+    ["an owner the bot could not read", {}, ["- Owner's GitHub account created: the bot could not read the date"]],
+  ])("the detail lines for %s", (_name, details, lines) => {
+    expect(holdDetailLines(details)).toEqual(lines);
+  });
+
+  test("an entry with no hold gets no detail lines", () => {
+    const sent = body({ ...entry, holds: [] }, checked);
+    expect(sent).toContain(`\nHold: none\n\n${UNHELD_TEXT}\n\n${CLOSING_START}`);
+    expect(sent).not.toContain(DETAILS_HEADING);
   });
 
   test("a failed label request fails the entry, naming the pull request", async () => {

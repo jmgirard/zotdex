@@ -8,7 +8,7 @@ import type { Lookup } from "../upstream/host-guard.ts";
 import { type Fetch, githubClient, ReadFailure } from "../upstream/reader.ts";
 import { duration } from "../upstream/time-limit.ts";
 import { type DiscoverResult, type DiscoveryState, discover, type indexed, type ReadItem, repoName } from "./discover.ts";
-import type { HoldReason } from "./holds.ts";
+import type { HoldDetails, HoldReason } from "./holds.ts";
 
 const API = "https://api.github.com";
 // The bot's branches are `discover/<owner>/<repo>`, lowercase.
@@ -496,6 +496,10 @@ export const HOLD_TEXT: Record<HoldReason, string> = {
   "issue-no-topic": "An issue proposed this repo, and the repo has neither the zotero-plugin nor the zotero-addon topic.",
 };
 
+// The line above a held body's facts, and the start of the sentence that ends a bot body.
+export const DETAILS_HEADING = "Details for the maintainer:";
+export const CLOSING_START = "If this pull request is closed without a merge,";
+
 // The sentence after `Hold: none`.
 export const UNHELD_TEXT =
   "The bot can merge this pull request at its first daily run at least 48 hours after it opens, or sooner in a run that the maintainer starts by hand, unless it has the `hold` label or is closed.";
@@ -539,10 +543,29 @@ export function body(entry: Written, checked: { status: number; output: string }
     "",
     ...(entry.holds.length === 0
       ? ["Hold: none", "", UNHELD_TEXT]
-      : [`Hold: ${entry.holds.join(", ")}`, "", "The bot does not merge this pull request itself.", "", ...entry.holds.map((reason) => `- \`${reason}\`: ${HOLD_TEXT[reason]}`)]),
+      : [
+          `Hold: ${entry.holds.join(", ")}`,
+          "",
+          "The bot does not merge this pull request itself.",
+          "",
+          ...entry.holds.map((reason) => `- \`${reason}\`: ${HOLD_TEXT[reason]}`),
+          ...(entry.holdDetails ? ["", DETAILS_HEADING, "", ...holdDetailLines(entry.holdDetails)] : []),
+        ]),
     "",
-    "If this pull request is closed without a merge, the bot does not propose this repo again, from discovery or from an issue.",
+    `${CLOSING_START} the bot does not propose this repo again, from discovery or from an issue.`,
   ].join("\n");
+}
+
+// The lines under DETAILS_HEADING. A name goes in a code span, so it cannot add a line or
+// a mention; the schema's repo pattern keeps a repo safe in a link.
+export function holdDetailLines(details: HoldDetails): string[] {
+  return [
+    ...(details.matches?.length === 0 && !details.moreMatches ? ["- Matching entries: none now"] : []),
+    ...(details.matches ?? []).map(({ repo, name }) => `- Matching entry: ${name === undefined ? "" : `${code(name)} `}[${repo}](https://github.com/${repo})`),
+    ...(details.moreMatches ? [`- Other matching entries: ${details.moreMatches}`] : []),
+    ...(details.updateHost === undefined ? [] : [`- Update host: ${code(details.updateHost)}`]),
+    `- Owner's GitHub account created: ${details.ownerCreatedOn ?? "the bot could not read the date"}`,
+  ];
 }
 
 // Each run of whitespace becomes one space, since a blank line would end the code span.
