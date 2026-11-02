@@ -45,7 +45,7 @@ Show on the site when a plugin's main use needs a paid service from its maker, a
 - [x] T2: Add the field to `PluginRecord`, `readEntry`, and every record path in `src/build/build.ts` (lines 215, 222, 229, and the map at 241), and to `schemas/plugins.v1.schema.json`. Confirm that `pnpm add-start-results` keeps it, with tests.
 - [x] T3: Add a credit card icon to `Icon.astro` and a `PaidServiceMark.astro` beside `NoSourceMark.astro`. Show it on the home row and in the h1, add the legend line and the Details fact (linked through `safeHref`), and add the field to two fixture records by text edit.
 - [x] T4: Read the entries at a named commit by AC6's procedure, using login and account words as well as payment words. Write `cairn/references/paid-service-sweep.md` with its Provenance block and `INDEX.md` line, and write `paidService` on each entry that the read marks, with an English `note` that says what is paid. An entry in `plugins/` that the named `plugins.json` lacks is listed as not read for that text. Check 375 and 1280 px in the browser pane, with a site built from the deployed data and the new marks. At review, a reader re-reads 20 random verdicts of no mark, and a wrong one is a finding.
-- [ ] T5: Write the About section and the intro sentences with site tests, then the README, the changelog entry, and DESIGN's Contract boundary, Data sources, Inclusion bar, and Function Families text. Run `pnpm test` and `pnpm check`.
+- [x] T5: Write the About section and the intro sentences with site tests, then the README, the changelog entry, and DESIGN's Contract boundary, Data sources, Inclusion bar, and Function Families text. Run `pnpm test` and `pnpm check`.
 
 ## Work log
 
@@ -68,6 +68,7 @@ Show on the site when a plugin's main use needs a paid service from its maker, a
 - 2026-11-02: T3 done: the mark, legend line, and Details fact show with tests, and `pnpm test` exits 0 with 2166 tests. Minor amendment: the browser check moved to T4 so that it sees real marks, and two existing fixture records carry the field, so no hand list of fixture ids changes.
 - 2026-11-02: T4 done: 695 entries read at `c8f2b65`, 357 with a word hit, 7 marked and 350 not; three fresh Opus readers read the hits, and the session re-read the 7 marks, the 4 unclear cases (all no mark), and the closest no verdicts. `paid-service-sweep-shas.tsv` is the one file a script wrote, since it holds 695 SHAs. A browser check of the home page and two marked pages at 375 and 1280 px found scrollWidth equal to clientWidth on each.
 - 2026-11-02: T4 choice: `source` is the README at `blob/HEAD`, over a SHA permalink, so a reader sees the current text; falsified by a maker whose README moves. A `note` states what the page says; where a README names no payment, the entry gets no mark.
+- 2026-11-02: T5 done: the About section, both intros, README, changelog, and DESIGN state the fact, with site tests for the About sentences and the intros. The style hook names older text in README and CHANGELOG; this change leaves that text alone, as outside the milestone.
 
 ## Decisions
 

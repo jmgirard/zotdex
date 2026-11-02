@@ -40,7 +40,9 @@ manifest's range covers, shown as a start and never as "works" (D-023,
 M047). For each start it runs, a CI job downloads the XPI from the URL the
 build read and checks its SHA-256, and no artifact holds an XPI, so the
 index still re-serves no plugin file. Since M059 the build reuses a
-deployed `started` result for an unchanged XPI (D-035).
+deployed `started` result for an unchanged XPI (D-035). A page can also show
+that a plugin's main use needs a paid service from its maker, with a note, a
+source link, and a read date. A maintainer reads this one by hand (M082, D-054).
 The data also carries the interface languages that the read XPI's locale
 folders name (M023), keeping a tag only when its files hold at least one
 message, judged by file type (M027), and at least half as many messages as
@@ -132,12 +134,15 @@ corrects under an h3 (M007, M015, M054). The About page
 (`site/src/pages/about.astro`) holds the method notes: the declared range
 and its marks, the start test, which reports count, and how overrides and
 the Used column work (M054), the categories, each with its `about`
-text (M066), and what the source fact means (M081). The home table marks an archived plugin with
+text (M066), what the source fact means (M081), and what the paid service
+mark means (M082). The home table marks an archived plugin with
 "Archived" after its name (M053), and the data carries the same `archived`
 fact (M013). A home row and a plugin page show a lock for a record with
 `sourceInRepo: false`, the fact that the top level of the repo's default branch
 holds no name that can be source code, and the Details card states it (M081,
-D-052). Each page's footer and the home page's intro say: "This index
+D-052). A home row and a plugin page show a card icon for a record with
+`paidService`, on a read record or a failure record, and the Details card gives
+its note, source link, and read date (M082, D-054). Each page's footer and the home page's intro say: "This index
 is unofficial and not affiliated with or endorsed by Zotero, and it cannot vet
 the plugins it lists." (`DISCLAIMER`, M080, D-051). The holds and the start
 tests screen in part, and neither is a review of plugin code.
@@ -326,11 +331,18 @@ the newest release of its major (M062, D-036). It also reads the zotero.org
 changelog page of each earlier major, which never enters the data and only
 warns when the hand-kept release lists fall behind (M068, D-040).
 
+A maintainer keeps one fact by hand: an optional `paidService` in `index.json`,
+with `note`, `source`, and `read`, for a plugin whose main use stops without
+paying its maker or stops after a trial. Payment words cannot show this, so no
+bot sets it (D-054). `cairn/references/paid-service-sweep.md` records the read of
+the entries at one commit, and later plugins stay unread until someone repeats it.
+
 Inclusion bar: a public repository, a Zotero 7+ manifest, and at least one
 release with a readable `update.json`. The bot checks all three, and it
 refuses forks (corrected M002). An archived repository passes the bar, and
 the index shows that it is archived (D-006, M013). A repo with no source at its
-top level passes the bar too, and the index shows that fact (D-052, M081). The
+top level passes the bar too, and the index shows that fact (D-052, M081). So
+does a plugin that needs its maker's paid service (D-054, M082). The
 maintainer removes spam. Inclusion is not a judgment of
 quality. The index does not list plugins for Zotero 5 or 6.
 
@@ -486,7 +498,7 @@ exception is a report that is abuse.
   `majorStart`, `shortLanguages`, and `monthYear` for the home table, and
   `compatMajors`, `majorReport`, and `startWords` for the plugin page's
   table (M054). `site/src/components/Icon.astro` draws the line icons, the lock
-  (M081), and the star, which `Base.astro` fills only inside `[data-repo-stars]` (M064).
+  (M081), the card (M082), and the star, which `Base.astro` fills only inside `[data-repo-stars]` (M064).
   `site/src/layouts/Base.astro` holds the color and size tokens for both
   color schemes, the shared rules, the top bar, and the footer. Added M007;
   pills and descriptions M015; languages M024; version buttons M037; status

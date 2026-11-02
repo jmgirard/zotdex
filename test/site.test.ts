@@ -752,6 +752,28 @@ describe("the About page", () => {
     expect(unescaped(section).replace(/\s+/g, " ")).toContain(claim);
   });
 
+  test.each([
+    ["what the mark means", "the plugin's main use stops without paying its maker, or stops after a trial, whether the payment is for credits, a membership, an activation code, or a paid plan"],
+    ["that a free plan gets no mark", "A lasting free plan with a paid upgrade gets no mark"],
+    ["that a third party's key gets no mark", "A plugin that also works with a third party's key gets no mark"],
+    ["that a donation gets no mark", "A donation gets no mark"],
+    ["that a maintainer reads it by hand", "A maintainer reads this by hand"],
+    ["that no mark can still cost money", "A plugin with no mark can still cost money"],
+    ["that the plugin stays listed", "A marked plugin stays listed"],
+    ["that an author can correct it", "An author can open an issue to correct it"],
+  ])("says %s", (_, claim) => {
+    const section = /<section class="card" id="paid-service"[\s\S]*?<\/section>/.exec(about())![0];
+    expect(unescaped(section).replace(/\s+/g, " ")).toContain(claim);
+  });
+
+  test("the About and home intros say who reads the paid service fact", () => {
+    const claim = "A maintainer reads the paid service fact by hand, and the build reads the others";
+    for (const html of [about(), home()]) {
+      const intro = /<p class="intro">([\s\S]*?)<\/p>/.exec(html)![1]!;
+      expect(unescaped(intro).replace(/\s+/g, " ")).toContain(claim);
+    }
+  });
+
   test("has one section for each part of the method, each under its h2", () => {
     expect([...about().matchAll(/<section class="card" id="([^"]+)" data-about="\1">\s*<h2>([^<]*)<\/h2>/g)].map(([, id, h2]) => [id, h2])).toEqual([
       ["declared", "Declared range"],
@@ -761,6 +783,7 @@ describe("the About page", () => {
       ["overrides", "Overrides"],
       ["categories", "Categories"],
       ["source", "Source code"],
+      ["paid-service", "Paid service"],
       ["not-vetted", "What the index does not do"],
     ]);
   });
