@@ -6,7 +6,7 @@ import type { Lookup } from "../upstream/host-guard.ts";
 import { type Failure, type Fetch, githubClient, type RateLimit, ReadFailure, readUpstream } from "../upstream/reader.ts";
 import { duration, READ_LIMIT_MS, withinLimit } from "../upstream/time-limit.ts";
 import { plannedProblem } from "./handoff.ts";
-import { type HoldDetails, type HoldReason, holdDetails, holdReasons, type IndexedName, ownerCreatedAt, type Source, TOPICS } from "./holds.ts";
+import { createdAtOf, type HoldDetails, type HoldReason, holdDetails, holdReasons, type IndexedName, matchEvidence, ownerCreatedAt, type Source, starsOf, TOPICS } from "./holds.ts";
 
 const API = "https://api.github.com";
 // GitHub's repository search returns at most this many results for one query.
@@ -312,6 +312,8 @@ export interface DraftOptions {
   // The longest the read of the repo, and the branch-name check of its entry, may take.
   readMs?: number;
   refCheckMs?: number;
+  // The longest the reads of a name match's evidence may take.
+  evidenceMs?: number;
   // The time the owner's account age is measured to, and whether an issue run drafts the
   // entry, for the hold reasons.
   now?: Date;
@@ -352,6 +354,7 @@ export async function draftEntry(repoUrl: string, options: DraftOptions): Promis
     return refuse(entry.failure, entry.message, unsafe, !unsafe);
   }
   const repo = repoName(read.facts.repoUrl);
+  const ownMeta = { createdAt: createdAtOf(read.facts.repoCreatedAt), stars: starsOf(read.facts.stars) };
   const holdFacts = repo && {
     repo,
     name: read.facts.name,
@@ -361,6 +364,7 @@ export async function draftEntry(repoUrl: string, options: DraftOptions): Promis
     ownerCreatedAt: await ownerCreatedAt(fetch, repo.split("/")[0]),
     now: options.now ?? new Date(),
     indexed: options.names,
+    evidence: await matchEvidence(fetch, { repo, name: read.facts.name, indexed: options.names }, ownMeta, options.evidenceMs),
   };
   const holds = holdFacts ? holdReasons(holdFacts) : [];
   const details = holdFacts ? holdDetails(holdFacts, holds) : undefined;
@@ -684,7 +688,7 @@ export async function indexed(root: string): Promise<{ repos: Map<string, string
       if (!repo) continue;
       repos.set(repo, name);
       const [owner, repoPart] = repo.split("/");
-      names.push({ owner, repoPart, ...(typeof meta.name === "string" && { name: meta.name }) });
+      names.push({ owner, repoPart, ...(typeof meta.name === "string" && { name: meta.name }), github: ["github.com", "www.github.com"].includes(new URL(meta.repoUrl).host) });
     } catch {
       // Not readable, so only the id counts.
     }

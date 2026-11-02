@@ -1,11 +1,12 @@
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { afterAll, describe, expect, test } from "vitest";
 import { type Written, body, DETAILS_HEADING } from "../src/discover/propose.ts";
 import { refreshHolds, withDetailLines } from "../src/discover/refresh-holds.ts";
 import { fixtureFetch, type Responses } from "./support/fixture-fetch.ts";
+import { repoGit, sha as gitSha } from "./support/plugin-repo.ts";
 
 const ROOT = resolve(import.meta.dirname, "..");
 const PRELOAD = resolve(ROOT, "test/support/preload-fixture.ts");
@@ -64,6 +65,21 @@ async function run(responses: Responses, apply = true) {
 
 const HOST_LINES = ["- Update host: ` updates.example.org:8443 `", "- Owner's GitHub account created: 2026-10-20"];
 
+// bob/p1 and the entry it matches, "Second Plugin" from example/second-plugin.
+const API = "https://api.github.com/repos";
+const evidence: Responses = {
+  [`${API}/bob/p1`]: { json: { created_at: "2026-03-04T00:00:00Z", stargazers_count: 2 } },
+  ...repoGit("bob/p1", { head: gitSha("1"), first: gitSha("2"), files: { "a.ts": gitSha("a") } }),
+  [`${API}/example/second-plugin`]: { json: { created_at: "2020-05-06T00:00:00Z", stargazers_count: 40 } },
+  ...repoGit("example/second-plugin", { head: gitSha("3"), first: gitSha("4"), files: { "b.ts": gitSha("b") } }),
+};
+const MATCH_START = "- Matching entry: ` Second Plugin ` [example/second-plugin](https://github.com/example/second-plugin)";
+const MATCH_LINES = [
+  "- This repo: created 2026-03-04, 2 stars",
+  `${MATCH_START}: created 2020-05-06, 40 stars, another first commit, 0% identical files`,
+  "- Owner's GitHub account created: 2026-10-20",
+];
+
 describe("pnpm refresh-holds", () => {
   test("without --apply it reports the new lines and sends no write request", async () => {
     const { result, requests } = await run({ [LIST]: { json: [pull(1)] }, ...entry(1) }, false);
@@ -119,8 +135,43 @@ describe("pnpm refresh-holds", () => {
 
   test("a name-match names what matches now, and says so when nothing does", async () => {
     const held = (n: number) => pull(n, { body: source(n, ["name-match"]) });
-    const { result } = await run({ [LIST]: { json: [held(1), held(2)] }, ...entry(1, { name: "Zotero Second" }), ...entry(2) }, false);
-    expect(result.changed.map(({ lines }) => lines[0])).toEqual(["- Matching entry: ` Second Plugin ` [example/second-plugin](https://github.com/example/second-plugin)", "- Matching entries: none now"]);
+    const { result } = await run({ [LIST]: { json: [held(1), held(2)] }, ...entry(1, { name: "Zotero Second" }), ...entry(2), ...evidence }, false);
+    expect(result.changed.map(({ lines }) => lines)).toEqual([MATCH_LINES, ["- Matching entries: none now", "- Owner's GitHub account created: 2026-10-20"]]);
+    expect(result.failed).toEqual([]);
+  });
+
+  test("a name-match's facts reach the body, with no change to its Hold line or label", async () => {
+    const held = pull(1, { body: source(1, ["name-match"]) });
+    const { patches, requests } = await run({ [LIST]: { json: [held] }, ...entry(1, { name: "Zotero Second" }), [`${INDEX}/pulls/1`]: { json: held }, ...evidence });
+    expect(patches[0].sent).toEqual({ body: withDetailLines(source(1, ["name-match"]), MATCH_LINES) });
+    expect(patches[0].sent.body).toContain("\nHold: name-match\n");
+    expect(requests.some(({ url }) => url.includes("/labels"))).toBe(false);
+  });
+
+  test.each<[string, string, string[]]>([
+    ["its own meta", `${API}/bob/p1`, ["- This repo: created not read, stars not read", MATCH_LINES[1]]],
+    ["the entry's meta", `${API}/example/second-plugin`, [MATCH_LINES[0], `${MATCH_START}: created not read, stars not read, another first commit, 0% identical files`]],
+    ["the entry's newest commit", `${API}/example/second-plugin/commits?per_page=1`, [MATCH_LINES[0], `${MATCH_START}: created 2020-05-06, 40 stars, first commit not read, identical files not read`]],
+    ["the entry's tree", `${API}/example/second-plugin/git/trees/${gitSha("3")}?recursive=1`, [MATCH_LINES[0], `${MATCH_START}: created 2020-05-06, 40 stars, another first commit, identical files not read`]],
+  ])("a failed read of %s prints as not read and fails nothing", async (_name, url, lines) => {
+    const { result } = await run({ [LIST]: { json: [pull(1, { body: source(1, ["name-match"]) })] }, ...entry(1, { name: "Zotero Second" }), ...evidence, [url]: { status: 500, json: {} } }, false);
+    expect(result.failed).toEqual([]);
+    expect(result.changed).toEqual([{ number: 1, lines: [...lines, "- Owner's GitHub account created: 2026-10-20"] }]);
+  });
+
+  test("a match with no entry on github.com reads and prints the new repo's facts", async () => {
+    const root = mkdtempSync(join(tmpdir(), "zpi-refresh-root-"));
+    temps.push(root);
+    mkdirSync(join(root, "a@x"));
+    writeFileSync(join(root, "a@x", "meta.json"), JSON.stringify({ name: "Zotero Second", repoUrl: "https://gitlab.com/carol/second" }));
+    const { fetch } = fixtureFetch({ [LIST]: { json: [pull(1, { body: source(1, ["name-match"]) })] }, ...entry(1, { name: "Zotero Second" }), ...evidence });
+    const result = await refreshHolds({ fetch, indexRepo: "example/index", root, apply: false });
+    expect(result.changed[0].lines[0]).toBe("- This repo: created 2026-03-04, 2 stars");
+  });
+
+  test("a pull request held without name-match sends no request for these facts", async () => {
+    const { requests } = await run({ [LIST]: { json: [pull(1)] }, ...entry(1, { name: "Zotero Second" }), ...evidence }, false);
+    expect(requests.filter(({ url }) => url.startsWith(`${API}/bob/`) || url.startsWith(`${API}/example/second-plugin`))).toEqual([]);
   });
 
   test.each<[string, Record<string, unknown>, string]>([

@@ -1,6 +1,6 @@
 import { type Fetch, githubClient } from "../upstream/reader.ts";
 import { indexed, repoName } from "./discover.ts";
-import { HOLD_REASONS, type HoldReason, holdDetails, ownerCreatedAt } from "./holds.ts";
+import { HOLD_REASONS, type HoldReason, holdDetails, matchEvidence, ownerCreatedAt } from "./holds.ts";
 import { botPullProblem, contents, type FileJson, newEntry, type PullJson } from "./merge.ts";
 import { CLOSING_START, DETAILS_HEADING, HOLD_LABEL, holdDetailLines, unfencedLines } from "./propose.ts";
 
@@ -53,7 +53,8 @@ export function withDetailLines(body: string, lines: string[]): string | undefin
 // Hold line that names reasons, and writes them to its body. It never changes a Hold line
 // or a label. A failed read of a pull request, or of an owner's account that its Hold line
 // does not call unread, leaves that body as it is, and the run goes on to the next. A
-// failed read of the list of pull requests or of `root` throws.
+// failed read of a name match's evidence prints that fact as not read. A failed read of the
+// list of pull requests or of `root` throws.
 export async function refreshHolds({ fetch, indexRepo, root, apply }: RefreshOptions): Promise<RefreshResult> {
   const github = githubClient(fetch);
   const result: RefreshResult = { changed: [], unchanged: [], skipped: [], failed: [] };
@@ -94,10 +95,9 @@ export async function refreshHolds({ fetch, indexRepo, root, apply }: RefreshOpt
       if (held.reasons.includes("update-host") && !updateHost) throw new Error("its meta.json has no update URL");
       const createdAt = await ownerCreatedAt(fetch, repo.split("/")[0]);
       if (!createdAt && !held.reasons.includes("owner-unread")) throw new Error("the read of its owner's account gave no date");
-      const details = holdDetails(
-        { repo, name: typeof meta.name === "string" ? meta.name : undefined, updateHost: updateHost ?? "", ownerCreatedAt: createdAt, indexed: names },
-        held.reasons,
-      );
+      const name = typeof meta.name === "string" ? meta.name : undefined;
+      const evidence = held.reasons.includes("name-match") ? await matchEvidence(fetch, { repo, name, indexed: names }) : undefined;
+      const details = holdDetails({ repo, name, updateHost: updateHost ?? "", ownerCreatedAt: createdAt, indexed: names, evidence }, held.reasons);
       const lines = holdDetailLines(details ?? {});
       const next = withDetailLines(pull.body as string, lines);
       if (next === undefined) {

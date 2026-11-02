@@ -8,14 +8,14 @@ import type { Responses } from "./fixture-fetch.ts";
 export function pluginRepo(
   fullName: string,
   id: string,
-  { noRelease = false, name = fullName, topics = ["zotero-plugin"], ownerCreatedAt = "2015-01-01T00:00:00Z", updateHost = "raw.githubusercontent.com" } = {},
+  { noRelease = false, name = fullName, topics = ["zotero-plugin"], ownerCreatedAt = "2015-01-01T00:00:00Z", updateHost = "raw.githubusercontent.com", stars = undefined as number | undefined } = {},
 ): Responses {
   const repoUrl = `https://github.com/${fullName}`;
   const xpiUrl = `${repoUrl}/releases/download/v1.0.0/plugin.xpi`;
   const updateUrl = `https://${updateHost}/${fullName}/main/update.json`;
   const responses: Responses = {
     [`https://api.github.com/repos/${fullName}`]: {
-      json: { full_name: fullName, html_url: repoUrl, fork: false, created_at: "2025-01-10T09:00:00Z", open_issues_count: 0, topics },
+      json: { full_name: fullName, html_url: repoUrl, fork: false, created_at: "2025-01-10T09:00:00Z", open_issues_count: 0, topics, ...(stars !== undefined && { stargazers_count: stars }) },
     },
     [`https://api.github.com/users/${fullName.split("/")[0].toLowerCase()}`]: { json: { created_at: ownerCreatedAt } },
     [`https://api.github.com/repos/${fullName}/releases?per_page=100`]: {
@@ -45,6 +45,21 @@ export function pluginRepo(
   };
   responses[updateUrl] = { json: { addons: { [id]: { updates: [{ version: "1.0.0" }] } } } };
   return responses;
+}
+
+// A commit or blob SHA of one repeated hex digit.
+export const sha = (digit: string) => digit.repeat(40);
+
+// The first-commit and file answers of a repo, whose head is one commit and whose first
+// commit is another, reached by a last-page link.
+export function repoGit(fullName: string, { head, first, files }: { head: string; first: string; files: Record<string, string> }): Responses {
+  const base = `https://api.github.com/repos/${fullName}`;
+  const last = `${base}/commits?per_page=1&page=7`;
+  return {
+    [`${base}/commits?per_page=1`]: { json: [{ sha: head }], headers: { link: `<${last}>; rel="last"` } },
+    [last]: { json: [{ sha: first }] },
+    [`${base}/git/trees/${head}?recursive=1`]: { json: { truncated: false, tree: Object.entries(files).map(([path, blob]) => ({ path, type: "blob", sha: blob })) } },
+  };
 }
 
 // One page of repository search results, as GitHub returns it, for repos given as
