@@ -69,9 +69,10 @@ export type Failure =
 // request with no whole response, a GitHub API body that is not JSON, or an answer that
 // buildLevelStatus counts. The build counts such failures to decide whether to deploy. It
 // is not part of the published data. Nor are `topics`, the repo's GitHub topics that are
-// strings, which the discovery bot reads.
+// strings, and `updateRoute`, each URL that the update.json read requested, in order, which
+// the discovery bot reads.
 export type UpstreamResult =
-  | { ok: true; facts: UpstreamFacts; xpi: XpiRead; topics: string[] }
+  | { ok: true; facts: UpstreamFacts; xpi: XpiRead; topics: string[]; updateRoute: string[] }
   | { ok: false; failure: Failure; message: string; buildLevel?: true };
 
 // The XPI whose manifest the reader read: the release asset's download URL, before any
@@ -205,7 +206,7 @@ function boundLookup(lookup: Lookup, signal: AbortSignal): Lookup {
   };
 }
 
-async function read(repoUrl: string, fetch: Fetch, download: Download): Promise<{ facts: UpstreamFacts; xpi: XpiRead; topics: string[] }> {
+async function read(repoUrl: string, fetch: Fetch, download: Download): Promise<{ facts: UpstreamFacts; xpi: XpiRead; topics: string[]; updateRoute: string[] }> {
   const { owner, repo } = parseRepoUrl(repoUrl);
   const github = githubClient(fetch);
 
@@ -241,7 +242,7 @@ async function read(repoUrl: string, fetch: Fetch, download: Download): Promise<
     if (!notZotero7 || !(Date.parse(newest.release.published_at) > Date.parse(stable.release.published_at))) throw error;
     facts = await readRelease(download, newest.release, newest.xpi!);
   }
-  const { release, xpi, ...manifestFacts } = facts;
+  const { release, xpi, updateRoute, ...manifestFacts } = facts;
 
   return {
     facts: {
@@ -258,6 +259,7 @@ async function read(repoUrl: string, fetch: Fetch, download: Download): Promise<
     },
     xpi,
     topics: Array.isArray(meta.topics) ? meta.topics.filter((topic): topic is string => typeof topic === "string") : [],
+    updateRoute,
   };
 }
 
@@ -276,7 +278,7 @@ type ReleaseFacts = Pick<
   | "updateUrl"
   | "updateHost"
   | "languages"
-> & { release: ReleaseJson; xpi: XpiRead };
+> & { release: ReleaseJson; xpi: XpiRead; updateRoute: string[] };
 
 // Reads the manifest and the language tags of the locale folders (see localeLanguages) in one
 // release's XPI, and checks the update.json the manifest names.
@@ -294,7 +296,7 @@ async function readRelease(download: Download, release: ReleaseJson, xpi: { brow
   if (!updateUrl) fail("no-update-url", `the manifest of ${release.tag_name} has no applications.zotero.update_url`);
   const updateHost = httpHost(updateUrl);
   if (!updateHost) fail("no-update-url", `update_url ${updateUrl} is not an http or https URL`);
-  await checkUpdateJson(download, updateUrl, id);
+  const updateRoute = await checkUpdateJson(download, updateUrl, id);
 
   return {
     id,
@@ -309,6 +311,7 @@ async function readRelease(download: Download, release: ReleaseJson, xpi: { brow
     languages,
     release,
     xpi: { url, sha256 },
+    updateRoute,
   };
 }
 
@@ -552,10 +555,11 @@ async function readCapped(response: Response, url: string, max: number, tooLarge
 // Requests a plugin file that is not on the GitHub API: the XPI or the update.json. `from`
 // is github-release when a URL that the download requested, the first or a redirect, is a
 // GitHub release URL, for buildLevelStatus.
-type Download = (url: string) => Promise<{ response: Response; from: "github-release" | "download" }>;
+// `route` is each URL it requested, in order.
+type Download = (url: string) => Promise<{ response: Response; from: "github-release" | "download"; route: string[] }>;
 
 const REDIRECTS = [301, 302, 303, 307, 308];
-const MAX_REDIRECTS = 5;
+export const MAX_REDIRECTS = 5;
 
 // Follows redirects itself, at most MAX_REDIRECTS, and checks the host of each URL
 // before it requests it. A `signal` that aborts while a redirect's body is canceled
@@ -567,12 +571,14 @@ function downloader(fetch: Fetch, lookup: Lookup, signal?: AbortSignal): Downloa
     }
     let current = new URL(url);
     let release = false;
+    const route: string[] = [];
     for (let redirects = 0; ; redirects++) {
       const refused = await refusal(current, lookup);
       if (refused) fail(refused.failure, refused.message, refused.buildLevel);
       release ||= isReleaseUrl(current);
+      route.push(current.href);
       const response = await request(fetch, current.href, { redirect: "manual" });
-      if (!REDIRECTS.includes(response.status)) return { response, from: release ? "github-release" : "download" };
+      if (!REDIRECTS.includes(response.status)) return { response, from: release ? "github-release" : "download", route };
       await response.body?.cancel().catch(() => {});
       if (signal?.aborted) {
         const reason = signal.reason instanceof Error ? signal.reason.message : String(signal.reason);
@@ -609,6 +615,17 @@ export async function downloadXpi(
   const { response } = await downloader(fetch, lookup, signal)(url);
   if (!response.ok) fail("xpi-unreadable", `the XPI at ${url} returned HTTP ${response.status}`);
   return readCapped(response, url, XPI_MAX_BYTES, () => fail("xpi-too-large", `the XPI at ${url} is larger than ${XPI_MAX_BYTES} bytes`));
+}
+
+// Each URL that a read of one update.json requests, in order, with the reads' host check and
+// redirect rules. It reads no body. It throws a ReadFailure: update-json-http-error for an
+// HTTP error answer, and the reads' failures for a refused host or a failed request.
+// `pnpm refresh-holds` reads a held pull request's address with it.
+export async function readUpdateRoute(url: string, fetch: Fetch, { lookup = systemLookup }: { lookup?: Lookup } = {}): Promise<string[]> {
+  const { response, route } = await downloader(fetch, lookup)(url);
+  await response.body?.cancel().catch(() => {});
+  if (!response.ok) fail("update-json-http-error", `the update.json at ${url} returned HTTP ${response.status}`);
+  return route;
 }
 
 // The bytes of the XPI's manifest.json, or undefined when it holds none. It fails when the
@@ -946,8 +963,9 @@ function inflateEntry(
   return out.subarray(0, length);
 }
 
-async function checkUpdateJson(download: Download, url: string, id: string): Promise<void> {
-  const { response, from } = await download(url);
+// Fails unless the update.json at `url` has an entry for `id`, and gives each URL the read requested.
+async function checkUpdateJson(download: Download, url: string, id: string): Promise<string[]> {
+  const { response, from, route } = await download(url);
   if (!response.ok) {
     const buildLevel = buildLevelStatus(response.status, from);
     fail("update-json-http-error", `the update.json at ${url} returned HTTP ${response.status}`, buildLevel);
@@ -966,6 +984,7 @@ async function checkUpdateJson(download: Download, url: string, id: string): Pro
   if (typeof addons !== "object" || addons === null || !Object.hasOwn(addons, id)) {
     fail("update-json-missing-id", `the update.json at ${url} has no entry for ${id}`);
   }
+  return route;
 }
 
 function httpHost(url: string): string | undefined {

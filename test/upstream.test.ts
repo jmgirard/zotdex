@@ -72,7 +72,24 @@ describe("readUpstream", () => {
         sha256: expect.stringMatching(/^[0-9a-f]{64}$/),
       },
       topics: [],
+      updateRoute: [UPDATE],
     });
+  });
+
+  test("a redirected update.json read gives each URL in updateRoute and the same facts", async () => {
+    const hops = ["https://hop.example/0", "http://hop.example/1", "https://other.example/2"];
+    const { result } = await read((r) => {
+      manifest(r).applications.zotero.update_url = hops[0];
+      hops.forEach((url, i) => (r[url] = { status: 302, headers: { location: hops[i + 1] ?? UPDATE } }));
+    });
+    expect(result.ok && result.updateRoute).toEqual([...hops, UPDATE]);
+    const direct = await read((r) => {
+      manifest(r).applications.zotero.update_url = hops[0];
+      r[hops[0]] = r[UPDATE];
+    });
+    expect(direct.result.ok && direct.result.updateRoute).toEqual([hops[0]]);
+    if (!result.ok || !direct.result.ok) throw new Error("a read failed");
+    expect(result.facts).toEqual(direct.result.facts);
   });
 
   test.each<[string, (repo: Json) => void, boolean | undefined]>([

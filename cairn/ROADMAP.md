@@ -7,7 +7,7 @@ _Last hygiene check: 2026-11-02 (triage: dropped as not worth keeping "Close sma
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M077 | Hold update files that leave owner sites | planned | — | normal | milestones/M077-update-files-leaving-sites.md |
+| M077 | Hold update files that leave owner sites | in-progress | — | normal | milestones/M077-update-files-leaving-sites.md |
 | M076 | Show the owner on home page rows | done | — | normal | milestones/archive/M076-owner-on-rows.md |
 | M075 | Hold name matches only on evidence of copying | done | — | normal | milestones/archive/M075-name-holds.md |
 | M074 | Allow owner GitHub Pages update hosts | done | — | normal | milestones/archive/M074-owner-pages-hosts.md |
