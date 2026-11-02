@@ -793,9 +793,9 @@ To write these lines to held pull requests that are already open, run
 `pnpm refresh-holds` by hand. No workflow runs it. It needs
 `GITHUB_REPOSITORY`. It works out the facts again from the pull request's
 `meta.json`, the `plugins/` folder in your checkout, and the owner's
-account. For a `name-match`, it also reads the named entries on GitHub and,
-if there are any, the new repository. A failed read of these says "not read"
-in the line and does not fail the pull request. First update your
+account. For a `name-match`, it also reads the named entries on GitHub. With
+such an entry, it also reads the new repository. A failed read of these says
+"not read" in the line and does not fail the pull request. First update your
 checkout to the default branch, or the match
 lines can be wrong. The command acts on an open pull request that meets all
 of these conditions:
