@@ -48,6 +48,24 @@ export function gapLine({ id, gap, shown }: Gap): string {
 // have a gap. A data file that cannot be read, is not JSON, or fails the v1 schema, and an
 // index.json that cannot be read, is not JSON, or fails its schema, give a message instead.
 export async function findGaps(dataPath: string, root: string): Promise<GapsResult> {
+  const data = await readData(dataPath);
+  if (!data.ok) return data;
+
+  const gaps: Gap[] = [];
+  for (const record of data.data.plugins) {
+    if (!record.upstream) continue;
+    const overrides = await checkoutOverrides(join(root, record.id, "index.json"));
+    if (!Array.isArray(overrides)) return { ok: false, message: overrides.message };
+    const checked = { ...record, overrides };
+    const gap = gapOf(checked);
+    if (gap) gaps.push({ id: record.id, gap, shown: shownDescription(checked) });
+  }
+  return { ok: true, gaps };
+}
+
+// The data file at dataPath, or a message when it cannot be read, is not JSON, or fails the
+// v1 schema.
+export async function readData(dataPath: string): Promise<{ ok: true; data: PluginsFile } | { ok: false; message: string }> {
   let text: string;
   try {
     text = await readFile(dataPath, "utf8");
@@ -63,20 +81,12 @@ export async function findGaps(dataPath: string, root: string): Promise<GapsResu
   if (!validatePlugins(data)) {
     return { ok: false, message: `data-invalid: ${dataPath}: ${ajv.errorsText(validatePlugins.errors)}` };
   }
-
-  const gaps: Gap[] = [];
-  for (const record of (data as unknown as PluginsFile).plugins) {
-    if (!record.upstream) continue;
-    const overrides = await checkoutOverrides(join(root, record.id, "index.json"));
-    if (!Array.isArray(overrides)) return { ok: false, message: overrides.message };
-    const checked = { ...record, overrides };
-    const gap = gapOf(checked);
-    if (gap) gaps.push({ id: record.id, gap, shown: shownDescription(checked) });
-  }
-  return { ok: true, gaps };
+  return { ok: true, data: data as unknown as PluginsFile };
 }
 
-async function checkoutOverrides(path: string): Promise<Override[] | { message: string }> {
+// The overrides of one entry's index.json, none when the file does not exist, or a message
+// when it cannot be read, is not JSON, or fails its schema.
+export async function checkoutOverrides(path: string): Promise<Override[] | { message: string }> {
   let text: string;
   try {
     text = await readFile(path, "utf8");
