@@ -36,9 +36,10 @@ const SHARED_PERCENT = 30;
 // the new repo's.
 const NAMESAKE_STARS = 20;
 const NAMESAKE_TIMES = 10;
-// Paths that say nothing about a plugin's code, so their files are not counted.
-const BOILERPLATE = /(^|\/)(licen[cs]e|\.gitignore|\.gitattributes|\.editorconfig|\.prettier|\.vscode|\.github|\.husky|\.npmrc|tsconfig|package-lock|pnpm-lock|yarn\.lock|eslint|typings\/|zotero-plugin\.config)/i;
-// The longest wait for the reads of one entry's evidence.
+// Paths that many unrelated repos share, so their files are not counted.
+const BOILERPLATE =
+  /(^|\/)((licen[cs]e|copying)(\.[^/]*)?|\.gitignore|\.gitattributes|\.editorconfig|\.prettier[^/]*|\.npmrc|tsconfig[^/]*|package-lock\.json|pnpm-lock\.yaml|yarn\.lock|bun\.lockb?|\.?eslint(rc|ignore)?(\.[^/]*)?|zotero-plugin\.config\.[^/]*|\.travis\.yml|\.gitlab-ci\.yml)$|(^|\/)(\.github|\.husky|\.vscode|typings)\//i;
+// The longest wait for all the reads of one `matchEvidence` call.
 const EVIDENCE_LIMIT_MS = 60 * 1000;
 
 // One entry of the index: its repo's lowercase owner and repo part, its meta.json name, and
@@ -241,7 +242,8 @@ function countedBlobs(tree: unknown): string[] | undefined {
 type Github = ReturnType<typeof githubClient>;
 
 // A repo's first commit and counted files. The commits come one to a page, so the last page
-// holds the oldest. A repo with one commit has no last-page link.
+// holds the commit that GitHub lists last, taken as the first commit. A repo with one commit
+// has no last-page link. With no newest commit, there is no tree to read.
 async function gitFacts(github: Github, base: string): Promise<Pick<RepoFacts, "firstCommit" | "blobs">> {
   const newest = await attempt(() => github.get(`${base}/commits?per_page=1`));
   const head = lastSha(newest?.body);
@@ -261,18 +263,18 @@ async function metaFacts(github: Github, base: string): Promise<Pick<RepoFacts, 
   return { ...(createdAt && { createdAt }), ...(stars !== undefined && { stars }) };
 }
 
-// The evidence for the entries that `facts` matches and names on github.com, or undefined
-// when there are none, so a repo with no such match sends no request. `ownMeta` gives the new
-// repo's date and stars when the caller read them already. A read that fails or that `ms`
-// cuts leaves its fact out, and it never throws.
+// The evidence for the entries that `facts` matches and names on github.com. With none, it
+// sends no request and gives only `ownMeta`, the new repo's date and stars when the caller
+// read them already. A read that fails or that `ms` cuts leaves its fact out, and it never
+// throws.
 export async function matchEvidence(
   fetch: Fetch,
   facts: Pick<HoldFacts, "repo" | "name" | "indexed">,
   ownMeta?: Pick<RepoFacts, "createdAt" | "stars">,
   ms = EVIDENCE_LIMIT_MS,
-): Promise<MatchEvidence | undefined> {
+): Promise<MatchEvidence> {
   const named = namedEntries(matchedEntries(facts)).filter((entry) => entry.github === true);
-  if (named.length === 0) return undefined;
+  if (named.length === 0) return { own: ownMeta ?? {}, entries: new Map() };
   const github = githubClient(boundFetch(fetch, AbortSignal.timeout(ms)));
   const ownBase = repoBase(facts.repo);
   const own = { ...(ownMeta ?? (await metaFacts(github, ownBase))), ...(await gitFacts(github, ownBase)) };

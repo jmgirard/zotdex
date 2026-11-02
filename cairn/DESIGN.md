@@ -773,7 +773,8 @@ reused._
   publish, and fills each planned entry's `holds`, which the handoff schema
   requires. For a name match, `matchEvidence` (M075) reads the commits and tree
   of the new repo, and the meta, commits, and tree of each named entry on
-  github.com, within 60 seconds; a read that fails only leaves its fact out.
+  github.com, within 60 seconds for all of them. A read that fails leaves its
+  fact out, and a failed read of the newest commit also leaves out the files.
   `body()` in `propose.ts` writes `Hold: none` or the reasons with a
   `HOLD_TEXT` sentence each, and `proposeHandoff` posts the `hold` label to a
   held pull request. `holdDetails` (M073) gives the facts behind the reasons,

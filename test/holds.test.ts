@@ -277,6 +277,30 @@ describe("the name-match reads through draftEntry", () => {
     expect((await draft(copied)).drafted.holds).toEqual(["name-match"]);
   });
 
+  // The new repo and the entry each have one other file, and this file is identical in both.
+  const withFile = (path: string): Responses => ({
+    ...clean(),
+    ...repoGit(OWN, { head: sha("1"), first: sha("2"), files: { "a.ts": sha("a"), [path]: sha("9") } }),
+    ...repoGit(FIRST, { head: sha("3"), first: sha("4"), files: { "b.ts": sha("b"), [path]: sha("9") } }),
+  });
+
+  test.each(["LICENSE", "LICENSE.md", "sub/licence.txt", "COPYING", ".gitignore", ".github/workflows/ci.yml", ".husky/pre-commit", ".vscode/x.json", "tsconfig.json", "package-lock.json", "pnpm-lock.yaml", "yarn.lock", "bun.lockb", ".eslintrc.json", "eslint.config.mjs", "typings/global.d.ts", "zotero-plugin.config.ts", ".travis.yml", ".gitlab-ci.yml"])(
+    "%s is boilerplate",
+    async (path) => {
+      expect((await draft(withFile(path))).drafted.holds).toEqual([]);
+    },
+  );
+
+  test.each(["src/license-check.ts", "eslint-rules.ts", "src/typings.ts", "licenses/data.json", "package-lock-tool.js"])("%s is counted", async (path) => {
+    expect((await draft(withFile(path))).drafted.holds).toEqual(["name-match"]);
+  });
+
+  test("the details of a match with no named entry on github.com still give the new repo's date and stars", async () => {
+    const names = [{ owner: "alice", repoPart: "zotero-paper-sidebar", name: "Paper Sidebar", github: false }];
+    const { drafted } = await draft(clean(), { names });
+    expect(drafted.holdDetails).toMatchObject({ repoCreatedOn: "2025-01-10", repoStars: 2 });
+  });
+
   const READS: [string, string][] = [
     ["the entry's meta", api(FIRST)],
     ["the entry's newest commit", `${api(FIRST)}/commits?per_page=1`],

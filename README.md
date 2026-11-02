@@ -753,7 +753,7 @@ reasons, in this order:
   no hold. The bot holds for a matched entry in one of these cases:
   - The two default branches have the same first commit.
   - Identical files are at least 30% of either repository's files, not
-    counting boilerplate such as licenses, lock files, and CI files.
+    counting boilerplate such as licenses, lock files, and `.github` folders.
   - The entry's repository is older, has at least 20 stars, and has at least
     10 times the new repository's stars.
   - The bot did not get one of these facts. This includes an entry that is
@@ -793,8 +793,9 @@ To write these lines to held pull requests that are already open, run
 `pnpm refresh-holds` by hand. No workflow runs it. It needs
 `GITHUB_REPOSITORY`. It works out the facts again from the pull request's
 `meta.json`, the `plugins/` folder in your checkout, and the owner's
-account. For a `name-match`, it also reads the repositories on GitHub, and a
-failed read says "not read" in the line and fails nothing. First update your
+account. For a `name-match` on GitHub, it also reads the new repository and
+the matched entries that the body names. A failed read says "not read" in
+the line and does not fail the pull request. First update your
 checkout to the default branch, or the match
 lines can be wrong. The command acts on an open pull request that meets all
 of these conditions:

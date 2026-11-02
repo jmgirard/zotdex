@@ -79,6 +79,7 @@ An entry is unread if any fact that its tests need is not read. A failed request
 - 2026-11-02: T1, T2: `matchEvidence` in `holds.ts` does the reads, since `ownerCreatedAt` already reads there; `draftEntry` calls it. An identical-file share rounds down to a whole percent, so the bound compares what the body prints.
 - 2026-11-02: T3 to T5: `pluginRepo` sends no `stargazers_count` unless a test sets it, since `test/build.test.ts` compares build output with a fixed file; such a test's name match reads as unread. `pnpm test` 1891 passed, `pnpm check` 0 problems. The other README and CHANGELOG lines that the writing hook flags were there before this milestone and stay.
 - 2026-11-02: read-only run of `pnpm refresh-holds` on the 36 open name-match pull requests: no fact unread; the rule keeps 7 held (#238, #289, #485, #545, #552, #555, #592) and leaves 29, as the plan measured.
+- 2026-11-02: claim audit: 71 claims read, 6 corrected — README.md, cairn/DESIGN.md, src/discover/holds.ts, src/discover/propose.ts. The audit also showed that the boilerplate pattern dropped code paths such as `src/license-check.ts`, so it now matches whole file names; a repeat read-only run gave the same 7 held, and the highest share without a shared first commit is 13%. A match with no named github.com entry now keeps the new repo's facts in its details.
 
 ## Decisions
 
