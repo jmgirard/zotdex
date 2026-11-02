@@ -6,6 +6,7 @@ import Base from "../layouts/Base.astro";
 import {
   categoryOptions,
   displayName,
+  githubRepo,
   homeOrder,
   languageName,
   languageOptions,
@@ -124,7 +125,9 @@ const prePaint = `if ("noModule" in HTMLScriptElement.prototype) {
             const name = displayName(record);
             const description = shownDescription(record);
             const upstream = record.upstream;
-            const sourceHref = safeHref(upstream?.repoUrl ?? record.repoUrl);
+            const repoUrl = upstream?.repoUrl ?? record.repoUrl;
+            const sourceHref = safeHref(repoUrl);
+            const owner = githubRepo(repoUrl)?.owner;
             const xpiHref = upstream?.xpiUrl === undefined ? undefined : safeHref(upstream.xpiUrl);
             const { shown, rest } = shortLanguages(record);
             const codes = [
@@ -141,6 +144,7 @@ const prePaint = `if ("noModule" in HTMLScriptElement.prototype) {
                 <th scope="row" class="name">
                   <a href={pluginHref(record.id)} data-name>{name}</a>
                   {upstream?.archived === true && <span class="badge" data-archived>Archived</span>}
+                  {owner && <div class="owner" data-owner>By {owner}</div>}
                   {description && <div class="desc" data-description>{description}</div>}
                 </th>
                 {record.failure ? (

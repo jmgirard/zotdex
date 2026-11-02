@@ -1,13 +1,13 @@
 # M076: Show the owner on home page rows
 
-- **Status:** planned
+- **Status:** in-progress
 - **Priority:** normal
 - **Depends on:** —
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — readers see the owner on the public home page
-- **Branch/PR:** —
+- **Branch/PR:** m076-owner-on-rows
 
 ## Goal
 
@@ -44,8 +44,8 @@ Each home page row with a GitHub repo shows that repo's owner, so plugins of one
 
 ## Tasks
 
-- [ ] T1: Add the owner element to the name cell in `index.astro`, with `githubRepo` as its source, and style it in `Base.astro`. Write `{" "}` where a line break must stay a space.
-- [ ] T2: Add the site tests. Update the exact name-cell check in `test/site.test.ts`.
+- [x] T1: Add the owner element to the name cell in `index.astro`, with `githubRepo` as its source, and style it in `Base.astro`. Write `{" "}` where a line break must stay a space.
+- [x] T2: Add the site tests. Update the exact name-cell check in `test/site.test.ts`.
 - [ ] T3: Build the site from the deployed data and read the page in the browser pane at 375 and 1280 px, in both color schemes.
 - [ ] T4: Update README, DESIGN, and CHANGELOG. Run the `verify` slot.
 
@@ -57,6 +57,9 @@ Each home page row with a GitHub repo shows that repo's owner, so plugins of one
 - 2026-11-02: question set: show the owner — no preference; the agent took the recommendation to show it.
 - 2026-11-02: lessons used: 2026-10-27 (M021), 2026-10-28 (M035), 2026-10-29 (M048), 2026-10-29 (M054), 2026-10-30 (M061).
 - 2026-11-02: criteria audit (full): 3 findings, on AC1's source, AC4's test stand-in, and AC5's scroll element and long owners; all taken in this amendment after e38c8aa. The first pass found the same source and search facts.
+- 2026-11-02: T1, T2 done in one commit, tests first: 16 site tests failed without the code, and `pnpm test` and `pnpm check` pass with it.
+- 2026-11-02: choices: the owner is its own line under the name, "By <owner>" as on the plugin page, plain text with no link so each row keeps its tab stops, and no `title`; a block element needs no `{" "}`.
+- 2026-11-02: new fixture `same-name-plugin@example.org` shares First Plugin's name, and its upstream URL has a 39-letter owner that differs from its `repoUrl`.
 
 ## Decisions
 
