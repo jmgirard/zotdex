@@ -1,13 +1,13 @@
 # Roadmap
 
 _The only authority on milestone status. Grouped by status, not ID._
-_Last hygiene check: 2026-11-02 (M080 archived; M077 row pruned; 21 lessons, 8 marked used; validate green)_
+_Last hygiene check: 2026-11-02 (M081 archived; M079 row pruned; 22 lessons, 1 marked used; validate green)_
 
 ## Milestones
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M081 | Show when a repo holds no source code | review | — | normal | milestones/M081-no-source-mark.md |
+| M081 | Show when a repo holds no source code | done | — | normal | milestones/archive/M081-no-source-mark.md |
 | M080 | Say the index is unofficial and cannot vet plugins | done | — | normal | milestones/archive/M080-unofficial-disclaimer.md |
 <!-- rows grouped by status, not by ID; keep the 3 most recent done/dropped rows; older ones: milestones/archive/ + git -->
 
