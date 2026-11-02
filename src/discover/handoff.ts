@@ -3,6 +3,7 @@ import { lstat, mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { promisify } from "node:util";
 import { Ajv } from "ajv";
+import { MAX_REDIRECTS } from "../upstream/reader.ts";
 import { duration } from "../upstream/time-limit.ts";
 import { DAY, HOLD_REASONS, type HoldDetails, type HoldReason, HOST_MAX, MATCHES_MAX, NAME_MAX, REPO, REPO_MAX, SOURCES, type Source } from "./holds.ts";
 
@@ -94,6 +95,8 @@ const entrySchema = {
         repoCreatedOn: { type: "string", pattern: DAY.source },
         repoStars: { type: "integer", minimum: 0 },
         updateHost: text(HOST_MAX),
+        updateHosts: { type: "array", minItems: 1, maxItems: MAX_REDIRECTS, items: text(HOST_MAX) },
+        updateHttp: { const: true },
         ownerCreatedOn: { type: "string", pattern: DAY.source },
       },
     },

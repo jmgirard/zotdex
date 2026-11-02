@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- If a redirect of the bot's read of an update file goes from the repository
+  owner's own `<owner>.github.io` site to any other host, the bot pull request
+  now gets the `update-host` hold. On every host, a URL of that read that uses
+  `http:` also gives this hold. The hold's details name the other hosts and
+  the `http:` use, and `pnpm refresh-holds` requests the `update_url` and
+  follows its redirects to work them out.
 - Each home page row whose repository address has the form
   `https://github.com/<owner>/<repo>` now shows the owner as `By <owner>`
   under the plugin's name, so plugins that share a name can be told apart.
@@ -17,8 +23,9 @@
   requests.
 - If the host of a plugin's `update_url` is the repository owner's own
   `<owner>.github.io` site, the bot no longer gives its pull request the
-  `update-host` hold. Another owner's `.github.io` site and hosts outside
-  GitHub still get this hold.
+  `update-host` hold, unless the newer rule above for redirects and `http:`
+  applies. Another owner's `.github.io` site and hosts outside GitHub still
+  get this hold.
 - A held bot pull request's body now gives the facts behind its hold: the
   entries that a `name-match` matched, the host of an `update-host`, and the
   day that the owner's GitHub account was made. The new `pnpm refresh-holds`

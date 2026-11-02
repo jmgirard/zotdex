@@ -240,7 +240,9 @@ shows each one separately. A combined verdict is out of scope.
    any of these facts cannot be read (M075, D-045). It also holds when its
    owner's account is under 30 days old or cannot be read, the host of its
    `update_url` is not github.com, raw.githubusercontent.com, or the repo
-   owner's own `<owner>.github.io` site (D-043, D-044), or an issue proposed a
+   owner's own `<owner>.github.io` site (D-043, D-044), a redirect of the
+   bot's read takes an update file on that site to another host, a URL of
+   that read uses `http:` (D-047), or an issue proposed a
    repo with neither topic. A catalog or code-search repo with neither
    topic gets no hold (D-042). A held pull request gets the `hold` label. A
    daily job merges a pull request that says `Hold: none` and has no `hold`
@@ -335,8 +337,10 @@ exception is a report that is abuse.
   a UTF-8 byte-order mark at the start of an entry file (M032).
 - Upstream reader (`src/upstream/`): `readUpstream(repoUrl, fetch, {
   lookup, signal })` returns the facts of one GitHub repo with the URL and
-  SHA-256 of the XPI it read (M047) and the repo's topics (M056), or one
-  named inclusion-bar failure.
+  SHA-256 of the XPI it read (M047), the repo's topics (M056), and each URL
+  of its `update.json` read as `updateRoute` (M077), or one named
+  inclusion-bar failure. `readUpdateRoute` gives that route for one address
+  and reads no body (M077).
   `downloadXpi` downloads one XPI with the same host check (M047). The
   optional `lookup` resolves download hosts for the host check (M004).
   When the optional `signal` aborts, the read fails as a build-level
@@ -776,7 +780,8 @@ reused._
   checks these facts (M022).
 - `src/discover/holds.ts` (M056) holds `TOPICS`, `SOURCES` (M070),
   `HOLD_REASONS`, and `holdReasons`. `draftEntry` reads `GET /users/<owner>` and the repo's
-  `topics`, which `readUpstream` returns beside `facts` and the build does not
+  `topics` and `updateRoute`, which `readUpstream` returns beside `facts` and
+  the build does not
   publish, and fills each planned entry's `holds`, which the handoff schema
   requires. For a name match, `matchEvidence` (M075) reads the commits and tree
   of the new repo, and the meta, commits, and tree of each named entry on
@@ -789,7 +794,9 @@ reused._
   which the handoff carries and `holdDetailLines` writes under
   `DETAILS_HEADING`. `pnpm refresh-holds` (`src/discover/refresh-holds.ts`),
   run by hand, works them out again for open held pull requests and replaces
-  those lines. It sends no label request and keeps each Hold line.
+  those lines. It sends no label request and keeps each Hold line. For an
+  `update-host` hold it also requests the update address from the outside
+  host, within 60 seconds, and a failed read fails that pull request (M077).
   `pnpm merge-discover` (`src/discover/merge.ts`) reads
   every page of open pull requests, skips each that fails a condition (the
   Hold line read outside fences with `unfencedLines`, the label in any case,

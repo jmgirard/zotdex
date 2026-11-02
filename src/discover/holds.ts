@@ -79,6 +79,8 @@ export interface HoldFacts {
   // The manifest name, when the manifest has one.
   name?: string;
   updateHost: string;
+  // Each URL that the update.json read requested, in order.
+  updateRoute: string[];
   topics: string[];
   // Whether the entry comes from an issue run.
   issueRun: boolean;
@@ -126,13 +128,18 @@ function entryHolds(own: RepoFacts | undefined, entry: RepoFacts | undefined): b
 }
 
 export function holdReasons(facts: HoldFacts): HoldReason[] {
-  // Only the owner, and those it gives write access to its repos, can publish to its GitHub Pages site.
+  // Only the owner, and those it gives write access to its repos, can publish to its GitHub
+  // Pages site. A host that the read passes on the way can send it anywhere, so every URL must
+  // stay there. GitHub's release addresses redirect to its own file hosts, so the fixed hosts
+  // are not tested for redirects.
   const ownerSite = `${facts.repo.split("/")[0].toLowerCase()}.github.io`;
+  const route = facts.updateRoute.map((url) => new URL(url));
+  const onOwnerSite = facts.updateHost.toLowerCase() === ownerSite && route.every(({ host }) => host === ownerSite);
   const held: Record<HoldReason, boolean> = {
     "name-match": matchedEntries(facts).some((entry) => entryHolds(facts.evidence?.own, entryFacts(facts.evidence, entry))),
     "owner-unread": facts.ownerCreatedAt === undefined,
     "new-account": facts.ownerCreatedAt !== undefined && facts.now.getTime() - facts.ownerCreatedAt.getTime() < NEW_ACCOUNT_MS,
-    "update-host": !GITHUB_HOSTS.includes(facts.updateHost) && facts.updateHost.toLowerCase() !== ownerSite,
+    "update-host": route.some(({ protocol }) => protocol === "http:") || (!GITHUB_HOSTS.includes(facts.updateHost) && !onOwnerSite),
     "issue-no-topic": facts.issueRun && !facts.topics.some((topic) => TOPICS.includes(topic)),
   };
   return HOLD_REASONS.filter((reason) => held[reason]);
@@ -150,7 +157,9 @@ export function namedEntries(matched: IndexedName[]): IndexedName[] {
 }
 
 // The facts behind a pull request's hold reasons, for the maintainer. `matches` is there
-// for `name-match` and `updateHost` for `update-host`. `ownerCreatedOn` is the owner's
+// for `name-match` and `updateHost`, `updateHosts`, and `updateHttp` for `update-host`.
+// `updateHosts` is each other host of the update.json read, in request order, left out when
+// there is none. `updateHttp` says that a URL of that read used http. `ownerCreatedOn` is the owner's
 // account creation day, there for any reason, since it also helps to judge a name match.
 // A fact of `name-match` that the bot could not read is left out.
 export interface HoldDetails {
@@ -160,6 +169,8 @@ export interface HoldDetails {
   repoCreatedOn?: string;
   repoStars?: number;
   updateHost?: string;
+  updateHosts?: string[];
+  updateHttp?: true;
   ownerCreatedOn?: string;
 }
 
@@ -184,7 +195,7 @@ function entryDetails(own: RepoFacts | undefined, entry: RepoFacts | undefined):
 // The details of `reasons`, within the limits of the handoff schema, or undefined for no
 // reason. A matched entry whose repo the schema refuses counts in `moreMatches`, so one odd
 // entry in the index cannot refuse a whole handoff.
-export function holdDetails(facts: Pick<HoldFacts, "repo" | "name" | "updateHost" | "ownerCreatedAt" | "indexed" | "evidence">, reasons: readonly HoldReason[]): HoldDetails | undefined {
+export function holdDetails(facts: Pick<HoldFacts, "repo" | "name" | "updateHost" | "updateRoute" | "ownerCreatedAt" | "indexed" | "evidence">, reasons: readonly HoldReason[]): HoldDetails | undefined {
   if (reasons.length === 0) return undefined;
   const details: HoldDetails = {};
   if (reasons.includes("name-match")) {
@@ -200,7 +211,13 @@ export function holdDetails(facts: Pick<HoldFacts, "repo" | "name" | "updateHost
     if (repoCreatedOn) details.repoCreatedOn = repoCreatedOn;
     if (own?.stars !== undefined) details.repoStars = own.stars;
   }
-  if (reasons.includes("update-host")) details.updateHost = cut(facts.updateHost, HOST_MAX);
+  if (reasons.includes("update-host")) {
+    details.updateHost = cut(facts.updateHost, HOST_MAX);
+    const route = facts.updateRoute.map((url) => new URL(url));
+    const others = [...new Set(route.map(({ host }) => host))].filter((host) => host !== facts.updateHost.toLowerCase());
+    if (others.length > 0) details.updateHosts = others.map((host) => cut(host, HOST_MAX));
+    if (route.some(({ protocol }) => protocol === "http:")) details.updateHttp = true;
+  }
   const createdOn = dayOf(facts.ownerCreatedAt);
   if (createdOn !== undefined) details.ownerCreatedOn = createdOn;
   return details;

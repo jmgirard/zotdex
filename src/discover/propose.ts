@@ -492,7 +492,8 @@ export const HOLD_TEXT: Record<HoldReason, string> = {
     "The plugin's name matches the name of an entry from another owner, or its repo name matches that entry's repo name, ignoring case, characters other than a to z and 0 to 9, and the separate words zotero, plugin, addon, and for. The bot holds such a match if the two repos have the same first commit, or if identical files are at least 30% of either repo's files other than empty files and boilerplate. It also holds if the entry's repo is older, has at least 20 stars, and has at least 10 times this repo's stars, or if the bot did not get one of these facts.",
   "owner-unread": "The bot could not read when the repo owner's GitHub account was made.",
   "new-account": "The repo owner's GitHub account is less than 30 days old.",
-  "update-host": "The plugin's update.json is not on github.com, raw.githubusercontent.com, or the repo owner's own `<owner>.github.io` site, so its updates come from another host.",
+  "update-host":
+    "The plugin's update.json is not on github.com, raw.githubusercontent.com, or the repo owner's own `<owner>.github.io` site, a redirect takes the read of it off the owner's site, or a URL of that read uses `http:`, so its updates come from another host or over an unencrypted connection.",
   "issue-no-topic": "An issue proposed this repo, and the repo has neither the zotero-plugin nor the zotero-addon topic.",
 };
 
@@ -573,6 +574,8 @@ export function holdDetailLines(details: HoldDetails): string[] {
     ),
     ...(details.moreMatches ? [`- Other matching entries: ${details.moreMatches}`] : []),
     ...(details.updateHost === undefined ? [] : [`- Update host: ${code(details.updateHost)}`]),
+    ...(details.updateHosts ? [`- Update file redirects to: ${details.updateHosts.map(code).join(", ")}`] : []),
+    ...(details.updateHttp ? ["- Update file read used http: yes"] : []),
     `- Owner's GitHub account created: ${details.ownerCreatedOn ?? "the bot could not read the date"}`,
   ];
 }

@@ -69,7 +69,7 @@ describe("the hold reasons", () => {
   });
 
   test("the owner's own site is compared in lowercase on both sides", () => {
-    const facts = { repo: "Bob/zotero-tagger", updateHost: "BOB.github.io", topics: ["zotero-plugin"], issueRun: false, ownerCreatedAt: new Date(ago(1000)), now: NOW, indexed: [] };
+    const facts = { repo: "Bob/zotero-tagger", updateHost: "BOB.github.io", updateRoute: ["https://BOB.github.io/update.json"], topics: ["zotero-plugin"], issueRun: false, ownerCreatedAt: new Date(ago(1000)), now: NOW, indexed: [] };
     expect(holdReasons(facts)).toEqual([]);
   });
 
@@ -79,6 +79,57 @@ describe("the hold reasons", () => {
       expect(await holds("bob/zotero-tagger", pluginRepo("bob/zotero-tagger", "x@example.org", { name: "Tagger", updateHost }))).toEqual(["update-host"]);
     },
   );
+
+  describe("the update file read", () => {
+    const BOB = "bob/zotero-tagger";
+    const SITE = "https://bob.github.io/tagger/update.json";
+    const held = (updateRoute: string[]) => holds(BOB, pluginRepo(BOB, "x@example.org", { name: "Tagger", updateRoute }));
+
+    test.each<[string, string[]]>([
+      ["a custom domain as the last host", [SITE, "https://updates.example.org/update.json"]],
+      ["a custom domain as an earlier host, then a return to the owner's site", [SITE, "https://updates.example.org/a", "https://bob.github.io/tagger/b.json"]],
+      ["another owner's site", [SITE, "https://alice.github.io/tagger/update.json"]],
+      ["raw.githubusercontent.com", [SITE, "https://raw.githubusercontent.com/bob/zotero-tagger/main/update.json"]],
+      ["the owner's site with a non-default port", [SITE, "https://bob.github.io:8443/update.json"]],
+    ])("update-host when the owner's site redirects to %s", async (_name, route) => {
+      expect(await held(route)).toEqual(["update-host"]);
+    });
+
+    test.each<[string, string[]]>([
+      ["no redirect", [SITE]],
+      ["a redirect to another path on the same host", [SITE, "https://bob.github.io/other/update.json"]],
+    ])("no update-host for the owner's site with %s", async (_name, route) => {
+      expect(await held(route)).toEqual([]);
+    });
+
+    test.each<[string, string[]]>([
+      ["github.com to release-assets.githubusercontent.com", ["https://github.com/bob/zotero-tagger/releases/download/release/update.json", "https://release-assets.githubusercontent.com/asset"]],
+      ["raw.githubusercontent.com to another host", ["https://raw.githubusercontent.com/bob/zotero-tagger/main/update.json", "https://cdn.example.org/update.json"]],
+    ])("no update-host for %s", async (_name, route) => {
+      expect(await held(route)).toEqual([]);
+    });
+
+    test.each<[string, string[]]>([
+      ["raw.githubusercontent.com", ["https://updates.example.org/update.json", "https://raw.githubusercontent.com/bob/zotero-tagger/main/update.json"]],
+      ["the owner's site", ["https://updates.example.org/update.json", SITE]],
+    ])("update-host for another named host that redirects to %s", async (_name, route) => {
+      expect(await held(route)).toEqual(["update-host"]);
+    });
+
+    test.each<[string, string[]]>([
+      ["github.com, no redirect", ["http://github.com/bob/zotero-tagger/raw/main/update.json"]],
+      ["raw.githubusercontent.com, no redirect", ["http://raw.githubusercontent.com/bob/zotero-tagger/main/update.json"]],
+      ["the owner's site, no redirect", ["http://bob.github.io/tagger/update.json"]],
+      ["github.com, to https on its host", ["http://github.com/bob/zotero-tagger/raw/main/update.json", "https://github.com/bob/zotero-tagger/raw/main/update.json"]],
+      ["raw.githubusercontent.com, to https on its host", ["http://raw.githubusercontent.com/bob/zotero-tagger/main/update.json", "https://raw.githubusercontent.com/bob/zotero-tagger/main/update.json"]],
+      ["the owner's site, to https on its host", ["http://bob.github.io/tagger/update.json", SITE]],
+      ["https on the owner's site, to http on its host", [SITE, "http://bob.github.io/tagger/update.json"]],
+      ["https on github.com, to http on another host", ["https://github.com/bob/zotero-tagger/raw/main/update.json", "http://release-assets.githubusercontent.com/asset"]],
+      ["http between https URLs", ["https://raw.githubusercontent.com/bob/zotero-tagger/main/a.json", "http://raw.githubusercontent.com/bob/zotero-tagger/main/b.json", "https://raw.githubusercontent.com/bob/zotero-tagger/main/c.json"]],
+    ])("update-host for http: %s", async (_name, route) => {
+      expect(await held(route)).toEqual(["update-host"]);
+    });
+  });
 
   test("an account exactly 30 days old does not hold", async () => {
     expect(await holds("bob/zotero-tagger", pluginRepo("bob/zotero-tagger", "x@example.org", { name: "Tagger", ownerCreatedAt: ago(30) }))).toEqual([]);
@@ -134,6 +185,7 @@ describe("the name-match tests", () => {
       repo: "bob/paper-tool",
       name: "Paper Sidebar",
       updateHost: "github.com",
+      updateRoute: ["https://github.com/update.json"],
       topics: [],
       issueRun: false,
       ownerCreatedAt: new Date("2015-01-01T00:00:00Z"),
@@ -214,7 +266,7 @@ describe("the name-match tests", () => {
   });
 
   test("a matched entry with no evidence holds", () => {
-    const facts = { repo: "bob/paper-tool", name: "Paper Sidebar", updateHost: "github.com", topics: [], issueRun: false, ownerCreatedAt: new Date("2015-01-01T00:00:00Z"), now: NOW, indexed: [MATCH] };
+    const facts = { repo: "bob/paper-tool", name: "Paper Sidebar", updateHost: "github.com", updateRoute: ["https://github.com/update.json"], topics: [], issueRun: false, ownerCreatedAt: new Date("2015-01-01T00:00:00Z"), now: NOW, indexed: [MATCH] };
     expect(holdReasons(facts)).toEqual(["name-match"]);
     expect(holdReasons({ ...facts, evidence: { own, entries: new Map() } })).toEqual(["name-match"]);
   });
@@ -434,7 +486,24 @@ describe("the name-match reads through draftEntry", () => {
 });
 
 describe("the hold details", () => {
-  const facts = { repo: "bob/zotero-tagger", name: "Paper Sidebar", updateHost: "updates.example.org:8443", ownerCreatedAt: new Date(ago(10)), indexed: INDEXED };
+  const facts = {
+    repo: "bob/zotero-tagger",
+    name: "Paper Sidebar",
+    updateHost: "updates.example.org:8443",
+    updateRoute: ["https://updates.example.org:8443/update.json"],
+    ownerCreatedAt: new Date(ago(10)),
+    indexed: INDEXED,
+  };
+
+  test("update-host gives each other host of the read once, in request order, and its http use", () => {
+    const updateRoute = ["https://bob.github.io/a", "https://b.example.org/b", "http://a.example.org/c", "https://b.example.org/d", "https://bob.github.io/e"];
+    expect(holdDetails({ ...facts, updateHost: "bob.github.io", updateRoute }, ["update-host"])).toEqual({
+      updateHost: "bob.github.io",
+      updateHosts: ["b.example.org", "a.example.org"],
+      updateHttp: true,
+      ownerCreatedOn: expect.any(String),
+    });
+  });
 
   test("name-match names 5 of 6 matches and counts the other", () => {
     const indexed = Array.from({ length: 6 }, (_, n) => ({ owner: `owner${n}`, repoPart: `part${n}`, name: "Paper Sidebar" }));

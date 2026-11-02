@@ -771,7 +771,15 @@ reasons, in this order:
 - `update-host`: the host of the manifest's `update_url`, with any port other
   than the default one, is not `github.com`, `raw.githubusercontent.com`, or
   `<owner>.github.io`, where `<owner>` is the repository's owner in any letter
-  case. Another owner's `.github.io` site gets this hold.
+  case. Another owner's `.github.io` site gets this hold. If a redirect of
+  the bot's read takes a file on `<owner>.github.io` to any other host, the
+  pull request gets this hold. A later redirect back does not change that.
+  This hold does not test the redirects of `github.com` and
+  `raw.githubusercontent.com` addresses, since GitHub's release addresses
+  redirect to its own file hosts. On every host, a URL of that read that uses
+  `http:` gives this hold. When the bot drafts the pull request, it decides
+  this hold. `pnpm refresh-holds` changes no Hold line, so a pull request
+  drafted earlier keeps its Hold line.
 - `issue-no-topic`: an issue proposed the repository, and it has neither the
   topic `zotero-plugin` nor `zotero-addon`. A repository that
   `pnpm discover` finds in the catalog or by code search never gets this
@@ -792,7 +800,9 @@ the maintainer". They give the facts behind the hold:
   and stars, whether the first commit is the same, and the larger share of
   identical files. The body names at most 5 and counts the others. A fact
   that the bot did not get says "not read".
-- For `update-host`, the host of the manifest's `update_url`.
+- For `update-host`, the host of the manifest's `update_url`, each other host
+  that a redirect of the read went to, and whether a URL of the read used
+  `http:`.
 - For every hold, the day that the owner's GitHub account was made, or a
   note that the bot did not get that day.
 
@@ -802,7 +812,12 @@ To write these lines to held pull requests that are already open, run
 `meta.json`, the `plugins/` folder in your checkout, and the owner's
 account. For a `name-match`, it also reads the new repository and the named
 entries on GitHub. A failed read of these says "not read" in the line and
-does not fail the pull request. First update your
+does not fail the pull request. For an `update-host`, it also reads the
+update file's route: it requests the `update_url` and follows its redirects,
+without reading the file's contents. A failed read of the route fails the
+pull request and leaves its body as it is. An HTTP error, a refused host, a
+failed request, and a read past 60 seconds are each a failed read. First
+update your
 checkout to the default branch, or the match
 lines can be wrong. The command acts on an open pull request that meets all
 of these conditions:
