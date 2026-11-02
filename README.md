@@ -20,11 +20,14 @@ shows the plugin's name, the owner of its repository as `By <owner>`, and
 its description. If the repository address is not of the form
 `https://github.com/<owner>/<repo>`, with or without a trailing slash, the
 row shows no owner. If the plugin's GitHub
-repository is archived, the row shows "Archived" after the name. Then come
+repository is archived, the row shows "Archived" after the name. If the index
+found no source code at the top level of the repository, the row shows a lock
+after the name. Then come
 one cell for each Zotero major version from 7 to 10 and a "Menus and
 settings" cell. Next comes the month of
 the release that the index read, as the year and month in UTC, such as
-`2026-09`. Last come links to the source code and to the `.xpi` file.
+`2026-09`. Last come links to the source code, or to the repository for a row
+with a lock, and to the `.xpi` file.
 
 A version cell shows how much of that version the plugin's declared range
 covers. A check mark (✓) means all of it, a half circle (◐) means part of
@@ -194,7 +197,8 @@ the page has no repository line. If the plugin has categories, a line
 after the description lists them after the words "Index categories". Each
 category links to the home page filtered by it. Then come up to
 three links, each with an icon and text: "Download <version> (.xpi)" to the `.xpi`
-file that the index read, "Source" to the repository, and "Releases" to
+file that the index read, "Source" to the repository, or "Repository" for a
+plugin with a lock, and "Releases" to
 the repository's releases page. If the download address does not start
 with `http://` or `https://`, the page has no download link. If the
 repository address does not, the page shows that address, and the releases
@@ -252,6 +256,23 @@ home page and the name on its page show "Archived". The Details card of its
 page shows the fact "Archived on GitHub" with the value "Yes". GitHub makes
 an archived repository read-only until someone with admin access to it
 unarchives it.
+
+The index also lists a plugin whose repository shows no source code at its top
+level. Each day the build reads the top-level file and folder names of the
+repository's default branch, for each plugin that it could read, in
+`src/build/source.ts`. It reads no code. These names do not count as source
+code, in any letter case: a name that starts with a dot; README, LICENSE,
+LICENCE, COPYING, NOTICE, CHANGELOG, or CHANGES, with or without one extension;
+a name that ends in `.xpi`, `.md`, `.txt`, `.rdf`, `.png`, `.jpg`, `.jpeg`,
+`.gif`, `.svg`, or `.webp`; `update*.json`; and docs, doc, images, image, img,
+assets, screenshots, dist, build, releases, update, and updates. Any other name
+does. If no name counts, the row on the home page and the name on the plugin page
+show a lock, and the link to the repository reads "Repository" in place of
+"Source code" or "Source". When the read succeeds, the Details card of the plugin
+page shows "Source code at the repository's top level" with "Yes" or "No". "Yes"
+does not mean an open-source license or an XPI built from that code. "Yes" can be
+wrong, because a name such as `LICENSE-MIT` counts. "No" can be wrong, because the
+index does not look inside folders.
 
 ## Using the data
 
@@ -518,8 +539,8 @@ newest such release instead. Then it writes `plugins/<id>/meta.json` and
 If the plugin does not meet the inclusion bar, or the command cannot read one
 of these files, the command writes no file. It prints the name of the failure
 and a message, then exits with status 1. Two failure names are `fork` and
-`no-xpi-release`. An archived repository passes the inclusion bar, so the
-command writes its entry. The `Failure` type in `src/upstream/reader.ts`
+`no-xpi-release`. An archived repository, and one with no source code at its
+top level, passes the inclusion bar, so the command writes its entry. The `Failure` type in `src/upstream/reader.ts`
 lists each failure name for reading a plugin. The `WriteResult` type in
 `src/add-plugin/add-plugin.ts` adds `entry-exists`, `unsafe-id`, and
 `write-failed`. If the rule `entry-name` of "Checking entries" refuses the
@@ -1264,7 +1285,11 @@ one record for each entry. Each record keeps the upstream facts in an
 `overrides` block. The schema for the file is
 [`schemas/plugins.v1.schema.json`](schemas/plugins.v1.schema.json). If the
 GitHub response for the repository says whether it is archived, the
-`upstream` block has an `archived` field, `true` or `false`. The `upstream`
+`upstream` block has an `archived` field, `true` or `false`. If the build read
+the repository's top-level names, the block has a `sourceInRepo` field, `true`
+or `false`. A failed read leaves the field out, prints a warning, and does not
+fail the build. If you validate against a saved copy of the schema, fetch the
+schema again. The `upstream`
 block also has a `prerelease` field, `true` or `false`. It says whether
 GitHub marks the release that the reader read as a prerelease. It also has
 a `languages` list and an `xpiUrl` field, which "Using the data"
@@ -1291,8 +1316,10 @@ number is odd, it reads them in reverse id order. So the entries that get
 file lists its records in id order on every day. A plugin with either
 failure shows no facts until a later build reads it. The read of the
 `report` label and the report issues, which comes before the plugin reads,
-also counts toward the 18 minutes. The reads of the Zotero release and of
-the Zotero changelog pages below come after the plugin reads. They run at
+also counts toward the 18 minutes. After the plugin reads, the build reads each
+repository's top-level names with GraphQL requests of 40 repositories each, for
+at most 3 minutes in all. The reads of the Zotero release and of
+the Zotero changelog pages below come next. They run at
 the same time and take at most 30 seconds in all. These limits leave time
 for the other steps of the daily build, whose job GitHub stops at 30
 minutes.
@@ -1354,9 +1381,12 @@ are build-level:
   `https://github.com/<owner>/<repo>/releases/download/<tag>/<file>`,
 - an HTTP 429 or 5xx answer from any host.
 
-Every other failure of a record, a 404 included, belongs to the plugin.
-If the Zotero release read failed, the command first prints its line.
-Next, it prints the `::warning::` lines for the release lists above. Then
+Every other failure of a record, a 404 included, belongs to the plugin. A failed
+read of the top-level names is not a failure of a record, so it is never
+build-level, whatever its cause (D-052).
+If the Zotero release read failed, the command first prints its line. If the
+read of the top-level names failed for any repository, it prints that
+`::warning::` line next. Next, it prints the `::warning::` lines for the release lists above. Then
 it prints one line for each failed record. Next, it prints one line
 for each failure name, with the number of records that carry it. Then it
 prints the number of records with a build-level failure. If a record

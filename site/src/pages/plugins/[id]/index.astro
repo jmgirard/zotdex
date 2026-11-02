@@ -1,6 +1,7 @@
 ---
 import { majorSupport } from "../../../../../src/site/version.ts";
 import Icon from "../../../components/Icon.astro";
+import NoSourceMark from "../../../components/NoSourceMark.astro";
 import Base from "../../../layouts/Base.astro";
 import {
   BASE,
@@ -60,6 +61,14 @@ const { min, max } = declaredRange(record);
           </>
         )
       }
+      {
+        upstream?.sourceInRepo === false && (
+          <>
+            {" "}
+            <NoSourceMark />
+          </>
+        )
+      }
     </h1>
     {
       github && repoHref && (
@@ -107,7 +116,7 @@ const { min, max } = declaredRange(record);
         repoHref ? (
           <a class="btn" href={repoHref} data-link="source">
             <Icon name="source" />
-            Source
+            {upstream?.sourceInRepo === false ? "Repository" : "Source"}
           </a>
         ) : (
           <span class="link-text" data-link="source">{repoUrl}</span>
@@ -246,6 +255,12 @@ const { min, max } = declaredRange(record);
               <div>
                 <dt>Archived on GitHub</dt>
                 <dd data-fact="archived">{upstream.archived ? "Yes" : "No"}</dd>
+              </div>
+            )}
+            {typeof upstream.sourceInRepo === "boolean" && (
+              <div>
+                <dt>Source code at the repository's top level</dt>
+                <dd data-fact="source-in-repo">{upstream.sourceInRepo ? "Yes" : "No"}</dd>
               </div>
             )}
             <div>

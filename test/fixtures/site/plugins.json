@@ -32,6 +32,7 @@
         "latestReleaseDate": "2026-09-30T18:04:11Z",
         "prerelease": false,
         "archived": false,
+        "sourceInRepo": true,
         "languages": ["en-US", "es", "zh-CN"]
       },
       "reports": [
@@ -271,6 +272,7 @@
         "xpiUrl": "ftp://example.org/cafe-log-0.3.0.xpi",
         "prerelease": false,
         "archived": false,
+        "sourceInRepo": false,
         "languages": ["en-GB", "en-US"]
       },
       "overrides": []

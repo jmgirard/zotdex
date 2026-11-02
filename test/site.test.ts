@@ -132,6 +132,10 @@ function fact(html: string, name: string): string | undefined {
 const page = (id: string) => readFileSync(join(out, "plugins", id, "index.html"), "utf8");
 const home = () => readFileSync(join(out, "index.html"), "utf8");
 const records = (fixture as unknown as PluginsFile).plugins;
+const NO_SOURCE_TEXT = "No source code at the top level of the repository";
+const LOCK_SVG =
+  '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 11h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2z"></path><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
+const noSourceMark = (icon: string) => `<span class="no-source" data-no-source><span aria-hidden="true" title="${NO_SOURCE_TEXT}">${icon}</span><span class="visually-hidden">${NO_SOURCE_TEXT}</span></span>`;
 // GitHub's longest owner length, with no hyphen to break at.
 const LONG_OWNER = "abcdefghijklmnopqrstuvwxyzabcdefghijklm";
 // The failure records whose repo URL each break one part of the repo line's URL form, in
@@ -421,6 +425,7 @@ describe("the plugin page", () => {
     const description = shownDescription(record);
     // A space keeps the name and the badge apart in the heading's text.
     const archived = record.upstream?.archived === true ? ' <span class="badge" data-archived>Archived</span>' : "";
+    const noSource = record.upstream?.sourceInRepo === false ? ` ${noSourceMark("<svg>")}` : "";
     const main = html.slice(html.indexOf("<main>") + "<main>".length, html.indexOf("</main>"));
     const head = new RegExp(
       `^<a class="back" href="/zotero-plugin-index/" data-back>${ICON}All plugins</a>` +
@@ -444,7 +449,7 @@ describe("the plugin page", () => {
           `${upstream.stars.toLocaleString("en")}</span><span class="visually-hidden">${starsText(upstream.stars)}</span></span>`
         : "";
     expect(head?.[1]?.replace(new RegExp(ICON, "g"), "<svg>")).toBe(
-      `<h1>${escaped(displayName(record))}${archived}</h1>` +
+      `<h1>${escaped(displayName(record))}${archived}${noSource}</h1>` +
         (github
           ? `<p class="repo-line" data-repo-line>By <a href="https://github.com/${escaped(github.owner)}" data-repo-owner>${escaped(github.owner)}</a>` +
             `<span aria-hidden="true">·</span><a href="${escaped(repoUrl)}" data-repo-name>${escaped(github.repo)}</a>${stars}</p>`
@@ -457,7 +462,7 @@ describe("the plugin page", () => {
       ...(upstream?.xpiUrl && safeHref(upstream.xpiUrl)
         ? [{ kind: "download", href: upstream.xpiUrl, text: `Download ${upstream.version} (.xpi)` }]
         : []),
-      repo ? { kind: "source", href: repoUrl, text: "Source" } : { kind: "source", text: repoUrl },
+      repo ? { kind: "source", href: repoUrl, text: upstream?.sourceInRepo === false ? "Repository" : "Source" } : { kind: "source", text: repoUrl },
       ...(upstream
         ? [repo ? { kind: "releases", href: `${repoUrl}/releases`, text: "Releases" } : { kind: "releases", text: `${repoUrl}/releases` }]
         : []),
@@ -567,6 +572,7 @@ describe("the plugin page", () => {
             ...(upstream.description !== undefined ? [["Manifest description", "manifest-description"]] : []),
             ...(upstream.repoDescription !== undefined ? [["GitHub description", "github-description"]] : []),
             ...(typeof upstream.archived === "boolean" ? [["Archived on GitHub", "archived"]] : []),
+            ...(typeof upstream.sourceInRepo === "boolean" ? [["Source code at the repository's top level", "source-in-repo"]] : []),
             ["Repository created", "repo-created"],
             ["Release read by the index", "latest-release"],
             ["Releases with an .xpi", "release-count"],
@@ -660,6 +666,28 @@ describe("the plugin page", () => {
     expect(fact(page(id), "github-description")).toBe(github);
   });
 
+  test.each([
+    ["first-plugin@example.org", "Yes"],
+    ["b-cafe@example.org", "No"],
+  ])("shows whether the repo of %s holds source", (id, text) => {
+    expect(page(id)).toMatch(/<dt>Source code at the repository(?:'|&#39;)s top level<\/dt>\s*<dd data-fact="source-in-repo">/);
+    expect(fact(page(id), "source-in-repo")).toBe(text);
+  });
+
+  test("shows no source fact when the record has no such value", () => {
+    expect(page("no-range-plugin@example.org")).not.toMatch(/\sdata-fact="source-in-repo"/);
+  });
+
+  test("shows the mark and calls the link the repository only for false", () => {
+    const link = (id: string) => /data-link="source">\s*<svg[\s\S]*?<\/svg>\s*([A-Za-z]+)/.exec(page(id))?.[1];
+    expect(page("b-cafe@example.org")).toContain(noSourceMark(LOCK_SVG));
+    expect(link("b-cafe@example.org")).toBe("Repository");
+    for (const id of ["first-plugin@example.org", "no-range-plugin@example.org"]) {
+      expect(page(id)).not.toContain("data-no-source");
+      expect(link(id)).toBe("Source");
+    }
+  });
+
   test("shows no archived fact when the record has no archived value", () => {
     expect(page("{c2a6e4c8-1b7d-4f3a-9e2b-5d8f0a1c3e7b}")).not.toMatch(/\sdata-fact="archived"/);
   });
@@ -687,6 +715,19 @@ function mainText(html: string): string {
 describe("the About page", () => {
   const about = () => readFileSync(join(out, "about/index.html"), "utf8");
 
+  test.each([
+    ["where the fact comes from", "the build reads the top-level file and folder names of the repository's default branch"],
+    ["that it reads no code", "The index reads no code to decide this"],
+    ["what yes does not mean", '"Yes" does not mean an open-source license, and it does not mean that the XPI was built from that code'],
+    ["that no can be wrong", '"No" can be wrong, because the index does not look inside folders'],
+    ["what does not count", "README, LICENSE, LICENCE, COPYING, NOTICE, CHANGELOG, or CHANGES"],
+    ["that yes can be wrong", '"Yes" can be wrong'],
+    ["that the plugin stays listed", "the lock stays listed"],
+  ])("says %s", (_, claim) => {
+    const section = /<section class="card" id="source"[\s\S]*?<\/section>/.exec(about())![0];
+    expect(unescaped(section).replace(/\s+/g, " ")).toContain(claim);
+  });
+
   test("has one section for each part of the method, each under its h2", () => {
     expect([...about().matchAll(/<section class="card" id="([^"]+)" data-about="\1">\s*<h2>([^<]*)<\/h2>/g)].map(([, id, h2]) => [id, h2])).toEqual([
       ["declared", "Declared range"],
@@ -695,6 +736,7 @@ describe("the About page", () => {
       ["descriptions", "Descriptions"],
       ["overrides", "Overrides"],
       ["categories", "Categories"],
+      ["source", "Source code"],
       ["not-vetted", "What the index does not do"],
     ]);
   });
@@ -883,6 +925,7 @@ describe("the home page", () => {
     expect(row(id).cells[0]!.html).toBe(
       `<a href="${escaped(pluginHref(id))}" data-name>${escaped(displayName(record))}</a>` +
         (record.upstream?.archived === true ? '<span class="badge" data-archived>Archived</span>' : "") +
+        (record.upstream?.sourceInRepo === false ? ` ${noSourceMark(LOCK_SVG)}` : "") +
         (owner ? `<div class="owner" data-owner>By ${escaped(owner)}</div>` : "") +
         (description ? `<div class="desc" data-description>${escaped(description)}</div>` : ""),
     );
@@ -914,6 +957,28 @@ describe("the home page", () => {
 
   test("marks only the archived plugin", () => {
     expect(home().match(/\sdata-archived/g)).toHaveLength(1);
+  });
+
+  describe("marks a repo with no source", () => {
+    const sourceLink = (id: string) => /<a href="[^"]*" data-link="source" title="([^"]*)" aria-label="([^"]*)">/.exec(row(id).cells.at(-1)!.html)?.slice(1);
+
+    // A false record stays listed: its row is there, with its links.
+    test("shows the mark and calls the link the repository for false", () => {
+      expect(row("b-cafe@example.org").cells[0]!.html).toContain(noSourceMark(LOCK_SVG));
+      expect(sourceLink("b-cafe@example.org")).toEqual(["Repository", expect.stringMatching(/^Repository of /)]);
+    });
+
+    test.each([
+      ["true", "first-plugin@example.org"],
+      ["no field", "no-range-plugin@example.org"],
+    ])("shows no mark and keeps the source code link for %s", (_, id) => {
+      expect(row(id).cells[0]!.html).not.toContain("data-no-source");
+      expect(sourceLink(id)).toEqual(["Source code", expect.stringMatching(/^Source code of /)]);
+    });
+
+    test("marks only the one false record", () => {
+      expect(home().match(/\sdata-no-source/g)).toHaveLength(1);
+    });
   });
 
   // The declared mark and the start mark of one version cell.
@@ -1035,6 +1100,7 @@ describe("the home page", () => {
       '<span class="mark" data-support="some" aria-hidden="true">◐</span> Declares part of it',
       '<span class="mark" data-support="none" aria-hidden="true">–</span> Declares none of it',
       "No mark: the plugin declares no range",
+      `${LOCK_SVG} ${NO_SOURCE_TEXT}`,
       '<span class="start" data-start="started" aria-hidden="true">●</span> Started in the start test',
       '<span class="start" data-start="start-error" aria-hidden="true">✕</span> Failed to install, start, or answer in the start test',
       "A declared range comes from the plugin's manifest and the index's overrides, not from a test. A start test does not show that a plugin works.",

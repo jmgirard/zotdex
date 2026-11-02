@@ -7,7 +7,7 @@ import { Ajv } from "ajv";
 import dns from "node:dns";
 import { afterAll, beforeAll, describe, expect, test, vi } from "vitest";
 import pluginsSchema from "../schemas/plugins.v1.schema.json" with { type: "json" };
-import { buildData, checkOutput, INDEX_REPO, writeData } from "../src/build/build.ts";
+import { buildData, checkOutput, INDEX_REPO, type PluginsFile, writeData } from "../src/build/build.ts";
 import { changelogUrl, ZOTERO_RELEASE_URL } from "../src/build/zotero-release.ts";
 import { fixtureFetch, loadFixture, type Recorded, type Responses } from "./support/fixture-fetch.ts";
 import { DNS_FAIL_HOST, mixedFailures } from "./support/mixed-failures.ts";
@@ -57,6 +57,9 @@ const NEWER_9_PAGE = [intro("9"), heading("9.0.7", "November 2, 2026"), heading(
 const NEW_MAJOR_WARNING =
   "Zotero 11.0.0 is the current release, but the last Zotero version in ZOTERO_MAJORS in src/site/version.ts is 10; add 11 to ZOTERO_MAJORS and the last release of 10 to LAST_RELEASES";
 
+const SOURCE_READ = "POST https://api.github.com/graphql";
+const topLevel = (...names: string[]) => ({ object: { entries: names.map((name) => ({ name })) } });
+
 // The recorded responses for every repo in TREE.
 function responses(): Responses {
   return {
@@ -64,6 +67,7 @@ function responses(): Responses {
     ...loadFixture(resolve(ROOT, "test/fixtures/upstream/better-notes.json")).responses,
     [LABEL]: { json: { name: "report" } },
     [ZOTERO_RELEASE_URL]: { json: { mac: "10.0.7", "linux-x86_64": "10.0.7" } },
+    [SOURCE_READ]: { json: { data: { r0: topLevel("src"), r1: topLevel("src") } } },
     ...Object.fromEntries(Object.entries(CHANGELOG_PAGES).map(([major, text]) => [changelogUrl(major), { text }])),
   };
 }
@@ -343,6 +347,16 @@ describe("pnpm build and the report issues", () => {
 });
 
 describe("pnpm build", () => {
+  test("prints one line that names a failed read of the top-level names, writes the data, and exits 0", () => {
+    const { result, out } = loggedBuild({ ...responses(), [SOURCE_READ]: { status: 500, text: "Internal Server Error" } });
+    expect(result.status).toBe(0);
+    expect(result.stdout.split("\n").filter((line) => line.includes("top-level names"))).toEqual([
+      "::warning::cannot read every repo's top-level names: 2 of 2 repos stay unread: POST https://api.github.com/graphql returned HTTP 500",
+    ]);
+    expect(existsSync(join(out, "v1", "plugins.json"))).toBe(true);
+    expect(summary(result.stdout).at(-1)).toBe("build-level failures: 0 of 3 records");
+  });
+
   test("prints one line that names a failed read of the Zotero release, writes the data, and exits 0", () => {
     const { result, out } = loggedBuild({ ...responses(), [ZOTERO_RELEASE_URL]: { status: 500, text: "Internal Server Error" } });
     expect(result.status).toBe(0);
@@ -1055,6 +1069,52 @@ describe("buildData", () => {
     });
   });
 
+  describe("and each repo's top-level names", () => {
+    const failing = ["forked-plugin@example.org"];
+    const records = (text: string) => (JSON.parse(text) as PluginsFile).plugins;
+    const failed = (text: string) => records(text).flatMap((record) => (record.failure ? [record.id] : []));
+
+    test("writes whether the repo holds source, from the head of its default branch", async () => {
+      const recorded = { ...responses(), [SOURCE_READ]: { json: { data: { r0: topLevel("README.md", "bootstrap.js"), r1: topLevel(".github", "README.md", "plugin.xpi") } } } };
+      const { fetch, requests } = fixtureFetch(recorded);
+      const result = await buildData(TREE, fetch);
+      if (!result.ok) throw new Error(result.problems.join("\n"));
+      expect(records(result.text).flatMap((record) => (record.upstream ? [record.upstream.sourceInRepo] : []))).toEqual([true, false]);
+      expect(result.sourceProblem).toBeUndefined();
+      const { query, variables } = JSON.parse(requests.find((request) => request.method === "POST")!.body!);
+      expect(query).toContain('object(expression: "HEAD:")');
+      expect(variables).toEqual({ o0: "windingwind", n0: "zotero-better-notes", o1: "example", n1: "second-plugin" });
+    });
+
+    test("leaves the field out only for a repo with no answer, and names it", async () => {
+      const recorded = { ...responses(), [SOURCE_READ]: { json: { data: { r0: topLevel("src"), r1: null } } } };
+      const result = await buildData(TREE, fixtureFetch(recorded).fetch);
+      if (!result.ok) throw new Error(result.problems.join("\n"));
+      expect(records(result.text).flatMap((record) => (record.upstream ? [record.upstream.sourceInRepo] : []))).toEqual([true, undefined]);
+      expect(result.sourceProblem).toBe("GitHub gave no top-level names for 1 of 2 repos");
+    });
+
+    test.each<[string, Recorded, string]>([
+      ["a rejected fetch", { error: "connect ECONNRESET" }, "connect ECONNRESET"],
+      ["a 403", { status: 403, json: { message: "rate limit" } }, "returned HTTP 403: rate limit"],
+      ["a 500", { status: 500, text: "Internal Server Error" }, "returned HTTP 500"],
+      ["a body that is not JSON", { text: "<html>" }, "returned a body that is not JSON"],
+      ["null data", { json: { data: null } }, "the answer has no data"],
+      ["a rate limit that GraphQL reports with status 200", { json: { data: null, errors: [{ message: "API rate limit exceeded" }] } }, "the answer has no data: API rate limit exceeded"],
+      ["a null tree", { json: { data: { r0: { object: null }, r1: { object: null } } } }, "GitHub gave no top-level names for 2 of 2 repos"],
+      ["an answer that passes the limit", { stall: "headers" }, "the read passed its time limit of 1000 ms"],
+      ["a body that passes the limit", { stall: "body" }, "the read passed its time limit of 1000 ms"],
+      ["an error the read does not expect", { unexpected: "planted" }, "planted"],
+    ])("leaves the field out, adds no failure, and names the cause for %s", async (_, answer, cause) => {
+      const result = await buildData(TREE, fixtureFetch({ ...responses(), [SOURCE_READ]: answer }).fetch, undefined, undefined, { sourceMs: 1000 });
+      if (!result.ok) throw new Error(result.problems.join("\n"));
+      for (const record of records(result.text)) expect(record.upstream ?? {}).not.toHaveProperty("sourceInRepo");
+      expect(failed(result.text)).toEqual(failing);
+      expect(result.buildLevel).toEqual([]);
+      expect(result.sourceProblem).toContain(cause);
+    });
+  });
+
   describe("and the Zotero changelog pages", () => {
     const now = new Date("2026-10-31T06:17:00Z");
     const build = async (recorded: Responses) => {
@@ -1172,6 +1232,11 @@ describe("checkOutput", () => {
   test("reports a record whose prerelease value is not a boolean", () => {
     const problems = checkOutput(file({ ...base, upstream: { ...facts, prerelease: "true" } }));
     expect(problems.some((problem) => problem.startsWith("/plugins/0/upstream/prerelease "))).toBe(true);
+  });
+
+  test("reports a record whose sourceInRepo value is not a boolean", () => {
+    const problems = checkOutput(file({ ...base, upstream: { ...facts, sourceInRepo: "false" } }));
+    expect(problems.some((problem) => problem.startsWith("/plugins/0/upstream/sourceInRepo "))).toBe(true);
   });
 });
 

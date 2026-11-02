@@ -172,6 +172,25 @@ const offered = new Set(categoryOptions(plugins).map(({ value }) => value));
       }
     </ul>
   </section>
+  <section class="card" id="source" data-about="source">
+    <h2>Source code</h2>
+    <p>
+      A lock beside a plugin's name means that the index found no source code at the top level of its repository. Each
+      day the build reads the top-level file and folder names of the repository's default branch, for each plugin that it
+      could read. The index reads no code to decide this. These names do not count as source code, in any letter case: a
+      name that starts with a dot; README, LICENSE, LICENCE, COPYING, NOTICE, CHANGELOG, or CHANGES, with or without one
+      extension; a name that ends in <code>.xpi</code>, <code>.md</code>, <code>.txt</code>, <code>.rdf</code>,
+      <code>.png</code>, <code>.jpg</code>, <code>.jpeg</code>, <code>.gif</code>, <code>.svg</code>, or <code>.webp</code>;
+      <code>update*.json</code>; and docs, doc, images, image, img, assets, screenshots, dist, build, releases, update, and
+      updates. Any other name does.
+    </p>
+    <p>
+      The plugin page shows the result as "Source code at the repository's top level". "Yes" does not mean an open-source
+      license, and it does not mean that the XPI was built from that code. "Yes" can be wrong, because a name such as
+      <code>LICENSE-MIT</code> counts. "No" can be wrong, because the index does not look inside folders. A plugin with
+      the lock stays listed, because the index states this as a fact and does not judge plugins by it.
+    </p>
+  </section>
   <section class="card" id="not-vetted" data-about="not-vetted">
     <h2>What the index does not do</h2>
     <p>

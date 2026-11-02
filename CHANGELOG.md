@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- The home page and plugin pages now show a lock on a plugin when the index finds
+  no source code at the top level of its repository, and the Details card states
+  "Source code at the repository's top level" as "Yes" or "No". The index decides
+  this from the top-level names of the default branch and reads no code. "Yes"
+  does not mean an open-source license or an XPI built from that code, and either
+  answer can be wrong. Such a plugin stays listed. The data gains an optional
+  `upstream.sourceInRepo` field, so fetch any saved copy of
+  `schemas/plugins.v1.schema.json` again.
 - Each page's footer and the home page's intro now say: "This index is
   unofficial and not affiliated with or endorsed by Zotero, and it cannot vet
   the plugins it lists." This replaces the footer's line that the index does
