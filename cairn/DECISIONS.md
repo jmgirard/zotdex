@@ -712,3 +712,27 @@ holds, or if an update file reached through `github.com` or
 means the read that decides the hold. `pnpm refresh-holds` reads the update
 address again for a held pull request's detail lines, and it changes no Hold
 line. The rest of D-047 stands.
+
+### D-049: A repository's owner can ask for a name or description override, widening DESIGN's override rule and annotating D-031, D-038, and D-045
+
+2026-11-02, M079 plan. DESIGN says that an override corrects a fact that the
+author cannot or will not fix upstream, and D-030 to D-038 add cases where
+upstream has no usable English text. None covers an owner who wants other
+wording. At the question set the user chose to let a repository's owner ask
+for a stated name or description through an issue form, with a command the
+maintainer runs by hand to check and apply it. The user rejected a bot that
+answers and opens pull requests, guidance alone, and no work, since no owner
+has asked yet. An upstream edit stays the first choice, as the form says.
+
+Such an override has no `version`, as D-031 states, so it lasts until the owner
+asks to remove it and hides later upstream edits until then. The owner's
+removal wins over D-038's "Every such plugin gets an override": the command
+prints the gap that a removal leaves, and the site then shows the upstream
+text. English is asked for, and the command refuses only text that is half or
+more CJK, so the maintainer judges other languages by reading. A requested name
+that matches another plugin's is printed and not refused, as D-045 says that
+"A name is not a claim". The limits live in `src/text-request/rules.ts`, and
+they bind requests only.
+
+This choice is wrong if owners use the form for advertising that the maintainer
+cannot keep up with, or if owner text goes stale behind better upstream text.

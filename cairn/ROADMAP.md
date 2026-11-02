@@ -7,6 +7,7 @@ _Last hygiene check: 2026-11-02 (lessons pass: dropped 2026-10-26 M010 and 2026-
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
+| M079 | Let owners request name and description changes | planned | — | normal | milestones/M079-owner-text-requests.md |
 | M078 | Add a dark mode toggle to the site | done | — | normal | milestones/archive/M078-dark-mode-toggle.md |
 | M077 | Hold update files that leave owner sites | done | — | normal | milestones/archive/M077-update-files-leaving-sites.md |
 | M076 | Show the owner on home page rows | done | — | normal | milestones/archive/M076-owner-on-rows.md |
@@ -44,6 +45,7 @@ _Last hygiene check: 2026-11-02 (lessons pass: dropped 2026-10-26 M010 and 2026-
 - [parked] Stop rereading hosts that keep failing: `pnpm discover` records no refusal from a 429 or 5xx download answer, nor since M045 from a 403 to a GitHub release URL, so a repo whose download host keeps failing takes one of the run's 100 reads every day, newest pushed first; M030 bounds a run's time, not these rereads; promote when discover reports show the same repo refused with a 429 or 5xx answer on several runs in a row (M026 review) — added 2026-10-27 — M026
 - [parked] Drop locale folders that copy another: after M027 a folder whose files copy another folder's text, such as English text under `locale/de/`, still counts as a language; none of the 23 listed multi-language plugins read on 2026-10-27 does this, and `en-GB` copied from `en-US` can be the author's choice; promote when a listed plugin ships such a folder (M027 plan) — added 2026-10-27 — M023, M027
 - [parked] Publish plugin categories in the data: M066's categories live in the site build only (D-037), so `v1/plugins.json` carries none; an optional v1 field (D-006) could also let GitHub topics feed the rules; promote when a data user asks for them — added 2026-10-31 — M066, D-037
+- [parked] Answer text change requests with a bot: M079 leaves each owner's name or description request for the maintainer to run `pnpm text-request` on; a bot could check it at once, comment, and open a pull request; promote when requests wait over a week for the maintainer — added 2026-11-02 — M079, D-049
 - [parked] Check the theme button's double label: the button sets `aria-label` and `title` to the same words, as M078's AC4 asks, so a screen reader can read them twice, the point M064's review made about another control; dropping `title` loses the tooltip (M078 review); promote when a user reports it — added 2026-11-02 — M064, M078
 <!-- unnumbered ideas; one line each, ordered high → normal → low → parked:
      - [high] short title: detail — added YYYY-MM-DD — links   (no token: normal)
