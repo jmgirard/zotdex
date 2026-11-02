@@ -72,3 +72,36 @@ Evidence read 2026-11-02 at bdedf54, the branch level with `origin/main`.
 - AC4 evidence: a joined read of `README.md` finds the opening's statement and the quoted sentence in "The site"; a joined read of `cairn/DESIGN.md` finds the quoted sentence in Contract boundary; `CHANGELOG.md` Unreleased opens with it.
 - AC5 evidence: pane, site built from the downloaded deployed data at bdedf54: home, About, and BetterRSS plugin page at 375 and 1280 px in iframes with `border: 0`: the line has width and `scrollWidth` equals `clientWidth` in all 6; a planted 900 px block read 900 at T3; screenshots at T3 and now show words breaking only at spaces.
 - AC6 evidence: `pnpm test` 2088 passed, 6 skipped; `pnpm check` 671 entries, 0 problems; tracking checks pass; no snapshot files changed.
+- Evidence after the review fixes, at a3f7391: `pnpm test` 2089 passed, 6 skipped; `pnpm check` 0 problems; tracking checks pass. AC3's test now reads the section itself. The pane on the rebuilt site repeated AC5's 6 width cases. The criteria did not change.
+
+spawned: diff-bug, blame-history, prior-review, ripple
+
+- diff-bug #1: the About title and two plugin page links say "How the index checks plugins" beside "cannot vet" — fix now: "How the index reads plugins", fixed a3f7391.
+- diff-bug #2: About gives no reason, though Scope says it does — fix now, fixed a3f7391.
+- diff-bug #3: "does not review" and "cannot vet" sit side by side with nothing to reconcile them — fix now: DESIGN and D-051 say that the holds and start tests screen in part and are no review, fixed a3f7391.
+- diff-bug #4: the About test read the whole page, not the section — fix now, fixed a3f7391.
+- diff-bug #5: the changelog's "say the same" was loose, and no test covers the README half — fix now: the entry names what About does, fixed a3f7391.
+- diff-bug #6: "these facts" can point back at the disclaimer — fix now: "the facts below", fixed a3f7391.
+- diff-bug #7: two About sentences repeated "review of plugin code" — fix now, fixed a3f7391.
+- diff-bug #8: the heading "What the index does not do" now opens with a status — reject, style: the section's other sentences fit it, and a test names it.
+- diff-bug #9: the per-file check repeated `data-fact="not-vetted"` after the exact footer match — fix now, removed, fixed a3f7391.
+- diff-bug #10: the intro check hid the actual text on failure — fix now, fixed a3f7391.
+- diff-bug #11: the intro test names literal tags — reject, style: nearby tests do the same.
+- diff-bug #12: one test bundled AC1 and AC2 — fix now: two tests, fixed a3f7391.
+- diff-bug #13: README's "also" no longer connected — fix now, fixed a3f7391.
+- diff-bug #14: two prose lines were left over 120 columns — fix now on the home intro, fixed a3f7391.
+- diff-bug #15: `DISCLAIMER` was out of order in an import list — fix now, fixed a3f7391.
+- diff-bug #16: a period inside and after a quote in DESIGN — reject, style.
+- blame-history #1: "cannot vet" is broader than the index's screening record — reject, planned change: the user asked for "unable to vet", and D-051 records the holds.
+- blame-history #2: replacing M054's footer line has no decision entry — fix now: D-051, fixed a3f7391.
+- blame-history #3: the home intro is longer than M053 planned — reject, planned change: the plan puts the sentence there, and the merge question names it.
+- blame-history #4: the About section keeps the id `not-vetted` — reject, planned change: AC3 names it, and nothing links to it.
+- prior-review #1: the sentence shows twice on the home page — reject, planned change: top and footer are the plan's placement.
+- prior-review #2: two mockups keep the old words — reject, false: they are frozen records that do not feed the site.
+- prior-review #3: the section's old id remains — reject, planned change, the same as blame-history #4.
+- prior-review #4: a merge deploys nothing — reject, false: the question set allows the hand run.
+- ripple #1: an older Unreleased changelog line says "does not vet" — fix now, fixed a3f7391.
+- ripple #2: the title "How the index checks plugins" — fix now, the same as diff-bug #1, fixed a3f7391.
+- ripple #3: the section's old id remains — reject, planned change, the same as blame-history #4.
+- ripple #4: DESIGN's Contract boundary does not quote the sentence — reject, false: that section runs from line 23 to 206, and the quote is inside it.
+- ripple #5: hand-typed copies of the sentence can drift — reject, style: the test's own copy checks the wording, and the docs quote it.
