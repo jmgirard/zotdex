@@ -129,6 +129,9 @@ export function overrideUsed(record: PluginRecord, override: Override): boolean 
   return usedOverride(record, override.field) === override;
 }
 
+// What every page's footer and the home page's intro say about the index itself.
+export const DISCLAIMER = "This index is unofficial and not affiliated with or endorsed by Zotero, and it cannot vet the plugins it lists.";
+
 // The index repo's page for a new issue, where the report forms live.
 const NEW_ISSUE = "https://github.com/jmgirard/zotero-plugin-index/issues/new";
 

@@ -31,6 +31,7 @@ import { themePage } from "./support/theme-page.ts";
 
 const ROOT = resolve(import.meta.dirname, "..");
 const FIXTURE = resolve(ROOT, "test/fixtures/site/plugins.json");
+const DISCLAIMER_TEXT = "This index is unofficial and not affiliated with or endorsed by Zotero, and it cannot vet the plugins it lists.";
 const DATA_FILES = ["v1/plugins.json", "schemas/plugins.v1.schema.json", "schemas/index.v1.schema.json"];
 const fixture = JSON.parse(readFileSync(FIXTURE, "utf8")) as { plugins: { id: string }[] };
 const ids = fixture.plugins.map((plugin) => plugin.id);
@@ -582,7 +583,7 @@ describe("the plugin page", () => {
       expect(details).not.toMatch(/\sdata-overrides[\s>]|<h3[\s>]/);
     }
     expect(html).not.toMatch(/<h2>Overrides<\/h2>/);
-    expect(html.indexOf('data-fact="not-vetted"')).toBeGreaterThan(html.indexOf('data-section="details"'));
+    expect(html.indexOf('data-fact="disclaimer"')).toBeGreaterThan(html.indexOf('data-section="details"'));
   });
 
   test("shows the declared range with the override that applies", () => {
@@ -596,7 +597,7 @@ describe("the plugin page", () => {
     expect(fact(html, "release-count")).toBe("27");
     expect(fact(html, "open-issues")).toBe("12");
     expect(fact(html, "update-host")).toBe("example.org");
-    expect(fact(html, "not-vetted")).toBe("This index does not vet the plugins it lists.");
+    expect(fact(html, "disclaimer")).toBe(DISCLAIMER_TEXT);
   });
 
   test("shows each override beside the upstream value", () => {
@@ -771,7 +772,7 @@ describe("the About page", () => {
     }
   });
 
-  test("says which user reports count, how overrides and the Used column work, and that the index does not vet plugins", () => {
+  test("says which user reports count, how overrides and the Used column work, and that the index cannot vet plugins", () => {
     const text = mainText(about());
     for (const line of [
       "The index counts a report only when the bot closed it as completed and the report names the plugin version that the index read.",
@@ -779,7 +780,9 @@ describe("the About page", () => {
       "Of one GitHub account's reports on one plugin and Zotero major, only the newest counts.",
       'Its Used column says "yes" for the override that applies to the plugin version that the index read.',
       'The declared range uses the strict_min_version and strict_max_version overrides marked "yes".',
-      "This index does not vet the plugins it lists.",
+      "The index is unofficial: it is not affiliated with or endorsed by Zotero.",
+      "It cannot vet the plugins it lists.",
+      "The start test is not a review of plugin code.",
     ]) {
       expect(text).toContain(line);
     }
@@ -1623,12 +1626,23 @@ describe("the built site", () => {
       );
       const foot = /<\/main><footer class="foot"><div class="foot-inner foot-rule">(.*?)<\/div><\/footer><\/body>/s.exec(html)?.[1];
       expect(foot, path).toBe(
-        '<p data-fact="not-vetted">This index does not vet the plugins it lists.</p>' +
+        `<p data-fact="disclaimer">${DISCLAIMER_TEXT}</p>` +
           "<p>The build read each plugin's repository and releases on 2026-10-25.</p>" +
           '<p>Data file: <a href="/zotero-plugin-index/v1/plugins.json">v1/plugins.json</a></p>',
       );
     }
     expect(existsSync(join(ROOT, ".github/ISSUE_TEMPLATE/add-plugin.yml"))).toBe(true);
+  });
+
+  test("drops the old footer line from every page, and opens the home intro with the disclaimer", () => {
+    for (const file of htmlFiles(out)) {
+      const html = readFileSync(join(out, file), "utf8");
+      expect(html, file).not.toContain("does not vet");
+      expect(html, file).not.toContain('data-fact="not-vetted"');
+    }
+    const intro = /<p class="intro">\s*(.*?)<\/p>/s.exec(home())?.[1];
+    expect(intro?.startsWith(`${DISCLAIMER_TEXT} A daily build`)).toBe(true);
+    expect(home().indexOf('<p class="intro">')).toBeLessThan(home().indexOf('<table class="plugins">'));
   });
 
   test("carries its styles in each page and links no stylesheet", () => {

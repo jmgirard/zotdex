@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Each page's footer and the home page's intro now say: "This index is
+  unofficial and not affiliated with or endorsed by Zotero, and it cannot vet
+  the plugins it lists." This replaces the footer's line that the index does
+  not vet the plugins it lists. The About page and the README say the same.
 - Each plugin page's Details card now links to a new issue form where the
   repository's owner can ask for another name or description. The form and the
   About page state the rules: English, a name of 2 to 40 characters, and a

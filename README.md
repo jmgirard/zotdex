@@ -2,7 +2,8 @@
 
 A community index of plugins for Zotero 7 and later. The index lists plugins
 and links to the releases of each author. It does not host plugin files, and
-it does not review or endorse plugins.
+it does not review or endorse plugins. The index is unofficial, is not
+affiliated with or endorsed by Zotero, and cannot vet the plugins it lists.
 
 ## The site
 
@@ -240,8 +241,10 @@ lists them.
 
 The About page says how the index shows the declared range and how the
 start test runs. It says which user reports count. It also says how
-overrides and the Used column of the Overrides table work, and that the
-index does not vet the plugins it lists.
+overrides and the Used column of the Overrides table work. Each page's footer
+and the home page's intro say: "This index is unofficial and not affiliated
+with or endorsed by Zotero, and it cannot vet the plugins it lists." The About
+page also says that the start test is not a review of plugin code.
 
 The index lists a plugin whose GitHub repository is archived. Its row on the
 home page and the name on its page show "Archived". The Details card of its

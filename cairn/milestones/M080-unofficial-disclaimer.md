@@ -1,13 +1,13 @@
 # M080: Say the index is unofficial and cannot vet plugins
 
-- **Status:** planned
+- **Status:** in-progress
 - **Priority:** normal
 - **Depends on:** —
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — every page of the public site and the README state it
-- **Branch/PR:** —
+- **Branch/PR:** m080-unofficial-disclaimer
 
 ## Goal
 
@@ -41,9 +41,9 @@ Each page of the site and the README say that the index is unofficial, not affil
 
 ## Tasks
 
-- [ ] T1: Add `DISCLAIMER` to `site/src/data.ts`. Use it in the footer of `site/src/layouts/Base.astro` with `data-fact="disclaimer"` on one source line, and at the start of the home intro in `site/src/pages/index.astro`. Rewrite the first sentences of the About section. Update `test/site.test.ts` near lines 585, 599, 774, 782, and 1626, and add tests for AC1, AC2, and AC3 over the built pages.
-- [ ] T2: Update the README opening and "The site" near line 244, DESIGN's Contract boundary near line 136, and the CHANGELOG, then run `pnpm test` and `pnpm check` as the verify slot names them.
-- [ ] T3: Build the real site and run the AC5 checks in the browser pane, and look at the home intro at 375 and 1280 px (lessons M015, M035, M048, M054, and M079).
+- [x] T1: Add `DISCLAIMER` to `site/src/data.ts`. Use it in the footer of `site/src/layouts/Base.astro` with `data-fact="disclaimer"` on one source line, and at the start of the home intro in `site/src/pages/index.astro`. Rewrite the first sentences of the About section. Update `test/site.test.ts` near lines 585, 599, 774, 782, and 1626, and add tests for AC1, AC2, and AC3 over the built pages.
+- [x] T2: Update the README opening and "The site" near line 244, DESIGN's Contract boundary near line 136, and the CHANGELOG, then run `pnpm test` and `pnpm check` as the verify slot names them.
+- [x] T3: Build the real site and run the AC5 checks in the browser pane, and look at the home intro at 375 and 1280 px (lessons M015, M035, M048, M054, and M079).
 
 ## Work log
 
@@ -57,6 +57,7 @@ Each page of the site and the README say that the index is unofficial, not affil
 - 2026-11-02: criteria re-audit after the user's answer changed the sentence: full mode, a fresh Opus reader; it returned five findings, all taken: no built page holds the old words, About gives the reason and does not repeat the footer sentence, "cannot" is recorded in the idea vet, "quote" for the two lists, and the `npx` command with a 1280 px look.
 - 2026-11-02: question set: start one Build data run by hand after the merge — yes, allowed once, as `gh workflow run build.yml --ref main`.
 - 2026-11-02: plan chose one sentence in one constant over separate lines for the two facts, because the user asked for one disclaimer; falsified by the sentence reading too long at 375 px.
+- 2026-11-02: T1, T2, T3: added `DISCLAIMER`, the footer line, the home intro, the About text, tests, and docs; `pnpm test` 2088 passed, 6 skipped; `pnpm check` 0 problems; the pane on the real site at 375 and 1280 px showed the line on three pages with `scrollWidth` equal to `clientWidth` in 6 cases, a planted block read 900, words broke only at spaces, and no console errors. Left the simple-english hook's sentence-length hits on the quoted disclaimer in README and CHANGELOG, since a quote stays as it is.
 
 ## Decisions
 

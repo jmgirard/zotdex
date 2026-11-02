@@ -2,7 +2,7 @@
 import { applySavedTheme, wireThemeButton } from "../../../src/site/theme.ts";
 import { BASE } from "../base.ts";
 import Icon from "../components/Icon.astro";
-import { ADD_PLUGIN_HREF, day, loadData } from "../data.ts";
+import { ADD_PLUGIN_HREF, day, DISCLAIMER, loadData } from "../data.ts";
 
 interface Props {
   title: string;
@@ -960,7 +960,7 @@ const themeButton = `(${wireThemeButton})();`;
     </main>
     <footer class="foot">
       <div class="foot-inner foot-rule">
-        <p data-fact="not-vetted">This index does not vet the plugins it lists.</p>
+        <p data-fact="disclaimer">{DISCLAIMER}</p>
         <p>The build read each plugin's repository and releases on {day(generatedAt)}.</p>
         <p>Data file: <a href={`${BASE}v1/plugins.json`}>v1/plugins.json</a></p>
       </div>
