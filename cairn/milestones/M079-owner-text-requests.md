@@ -70,6 +70,7 @@ A plugin's repository owner can ask, through a form linked from the plugin page,
 - 2026-11-02: T5: added `textChangeHref`, the link at the end of the Details card, and the About paragraph; the pane on the real site at 375 px shows the link inside the Details card, the `href` with the plugin id, no sideways scroll, and no console errors.
 - 2026-11-02: T6: updated README, DESIGN, CHANGELOG, and both schemas' text; created the `text-change` label on the repository; `pnpm test` 2085 passed, 6 skipped; `pnpm check` 0 problems; left the simple-english hook hits on older lines of README and CHANGELOG, and fixed those on new lines.
 - 2026-11-02: claim audit: 125 claims read, 5 corrected — .github/ISSUE_TEMPLATE/text-change.yml, README.md, cairn/DESIGN.md, src/text-request/rules.ts, src/text-request/request.ts. The count is the reader's hand count. The one re-read found the name-match line still false and two small gaps, and each was fixed; by the stopping rule no second pass ran.
+- 2026-11-02: D-050 written at review: an owner's text can replace a maintainer's description override, annotating D-049. New parked row "Tighten the text request rules".
 
 ## Decisions
 
@@ -84,3 +85,48 @@ Evidence read 2026-11-02 at 8d5ea81, the branch level with `origin/main`.
 - AC5 evidence: `test/text-request.test.ts` "textRequest with apply" passes: add, replace, remove, nothing to remove, the refusals, `ownerChecked`, and a failed write, with `pnpm check` exit 0 on the entries that it wrote.
 - AC6 evidence: the About site test reads the four values from the built page; D-049 is in `cairn/DECISIONS.md`; README has "Changing a plugin's name or description"; DESIGN Data sources item 3, `CHANGELOG.md` Unreleased, and the `overrides` and `reason` text of both schemas state the rule (`git diff main...HEAD`); `gh label list` shows `text-change`.
 - AC7 evidence: `pnpm test` 2085 passed, 6 skipped; `pnpm check` 671 entries, 0 problems; tracking checks pass; no snapshot files changed.
+- Evidence after the review fixes, at 725d542: `pnpm test` 2087 passed, 6 skipped on the same code; tracking checks pass. AC3's tests now also fire `Zp`. AC4's tests add the named failures `duplicate-heading` and `issue-not-open`, and the lines `data-generated`, `not-read`, `replaces-override`, and `removes-override`; the gap line is now `description-gap`, and it also prints for a new name that leaves a gap. AC2's test now requires the link before the Details section ends. The criteria did not change. `pnpm check` 0 problems.
+
+spawned: diff-bug, blame-history, prior-review, ripple
+
+- diff-bug #1: the check run and the `--apply` run each read the issue, so its text can change between them — fix now: README says to read the report of the `--apply` run, which prints what it wrote, fixed 725d542.
+- diff-bug #2: the parser takes the first heading, also one inside a hidden HTML comment — fix now: a repeated heading is refused, fixed 725d542.
+- diff-bug #3: the issue's state is not read, so a closed request still applies — fix now: `issue-not-open`, fixed 725d542.
+- diff-bug #4: with `--owner-checked`, the `reason` says that the owner asked when the author is not the owner — reject, false: that flag is the maintainer's word that the author speaks for the owner, and AC5 sets the wording.
+- diff-bug #5: a new name can hide the shown description with no word in the report — fix now: the gap line prints when a gap exists, fixed 725d542.
+- diff-bug #6: nothing records an owner's removal, so `pnpm description-gaps` lists the plugin again — follow-up, parked row "Tighten the text request rules".
+- diff-bug #7: AC3 names `Zp`, but no test fired it — fix now, fixed 725d542.
+- diff-bug #8: a record with no read takes an override that does not show, with no note — fix now: `not-read`, fixed 725d542.
+- diff-bug #9: the write used overrides from the first read — fix now: it edits what it reads just before writing, fixed 725d542.
+- diff-bug #10: the data file's age is not printed — fix now: `data-generated`, fixed 725d542.
+- diff-bug #11: some invisible characters pass the rules — follow-up, parked row "Tighten the text request rules".
+- diff-bug #12: a bare `example.com` and look-alike letters pass — follow-up, the same parked row.
+- diff-bug #13: README's `reason` bullet omits the owner case — fix now, fixed 725d542.
+- diff-bug #14: a failure test does not assert the status — fix now, fixed 725d542.
+- diff-bug #15: a failed write drops the report lines, and its test needs a non-root user — reject, edge: a read-only `index.json` is outside the documented use, and the effect is a named error.
+- diff-bug #16: an entry with no `index.json` passes the check run and fails at `--apply` — reject, edge: `pnpm check` already refuses such an entry, and the effect is a named error.
+- diff-bug #17: a heading with a space before it did not end a section — fix now, fixed 725d542.
+- diff-bug #18: someone who re-registers a deleted owner name matches the owner check — follow-up, the same parked row.
+- diff-bug #19: `shownName` and the 6-word limit repeat other code — reject, style: `categories.ts` and `description.ts` spell the name the same way, and the two limits can differ.
+- diff-bug #20: `TEXT_CHANGE_LABEL` and `editedOverrides` were exported with no outside use — fix now, fixed 725d542.
+- diff-bug #21: `AAA Plugin` passes the first-character rule — follow-up, the same parked row.
+- diff-bug #22: a repo URL off GitHub has no `--owner-checked` route — reject, edge: no current entry has one, and the effect is a named error.
+- diff-bug #23: the link test did not show the link inside the card — fix now, fixed 725d542.
+- diff-bug #24: `www.` matches inside `Awww.`, and a script and an import sit out of order — reject, style: the maintainer reads a refused text.
+- diff-bug #25: tests that the test rule excludes: a weaker check after an exact one, repeats on one code path, and a comment that restates the code — fix now, fixed 725d542.
+- diff-bug #26: the plugin page test asserts the link's words, and the form test reads YAML with patterns — reject, planned change: the words guard the dropped-space trap of lesson 2026-10-27 (M021), and the report tests read forms the same way.
+- blame-history #1: an owner's text replaces a maintainer's text with no word in the report — fix now: `replaces-override` and `removes-override`, and D-050, fixed 725d542.
+- blame-history #2: About says that authors do not choose categories, though a requested text can change them — fix now, fixed 725d542.
+- blame-history #3: a blank request can show short or non-English upstream text, which the form did not say — fix now, fixed 725d542.
+- prior-review #1: `nameKey` gives no match for names with no a-z or 0-9, and the guard prints no note — follow-up, parked row "Tighten the text request rules".
+- prior-review #2: a kana-heavy text can score under half CJK — follow-up, already in row "Close gaps in the description pick", item (1).
+- prior-review #3: the entry path has no name guard — reject, false: the id equals a data file record's, so the issue's text cannot choose a path.
+- prior-review #4: `INIT_CWD` resolves `--data` — reject, false: `description-gaps-cli.ts` does the same, and the M067 review accepted it.
+- ripple #1: README says to use an override "only" when the author cannot fix the fact — fix now, fixed 725d542.
+- ripple #2: DESIGN item 3 opens with the older rule — reject, false: the item goes on with "can also" for each widened case, as for D-030.
+- ripple #3: About's Overrides section opens with the older rule — reject, false: the next paragraph says "can also".
+- ripple #4: the `reason` text in README and DESIGN omits the owner case — fix now, fixed 725d542.
+- ripple #5: DESIGN says "both requests" for delisting and corrections — reject, false: the sentence is still true of those two.
+- ripple #6: README's `field` bullet says "correct or fill in" — fix now, fixed 725d542.
+- ripple #7: the plugin page says "corrects, fills in, or replaces" — reject, false: that covers owner text.
+- ripple #8: the schema's `overrides` text opens with the older rule — reject, false: the added sentence says "also".
