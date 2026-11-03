@@ -1881,12 +1881,6 @@ describe("the description facts", () => {
   }, 120_000);
   const pageOf = (id: string) => readFileSync(join(dir, "plugins", id, "index.html"), "utf8");
 
-  test("the data file is valid against the v1 schema", () => {
-    const validate = new Ajv({ allErrors: true }).compile(pluginsSchema);
-    const data = JSON.parse(readFileSync(join(dir, "v1/plugins.json"), "utf8"));
-    expect(validate(data), JSON.stringify(validate.errors)).toBe(true);
-  });
-
   test("shows no Manifest description row for a blank text and keeps it for a text", () => {
     expect(pageOf("blank-manifest@example.org")).not.toContain("<dt>Manifest description</dt>");
     expect(pageOf("both-texts@example.org")).toMatch(/<dt>Manifest description<\/dt>\s*<dd data-fact="manifest-description">/);

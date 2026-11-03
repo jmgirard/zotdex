@@ -190,8 +190,8 @@ it is left; the share reads the text's NFC form and counts each Han,
 kana, or Hangul character, each letter whose `Script_Extensions` names one
 of those scripts, and each run of other letters as one unit
 (M055, M088). A `description` override that applies to the version the index
-read always shows (M015). The plugin page's Details card shows both
-descriptions (M055).
+read always shows (M015). The plugin page's Details card shows each
+description that is not blank (M055, M088).
 
 The index runs on GitHub only: GitHub Actions, GitHub Pages, and GitHub
 issues. It has no server, no database, and no paid service. Thus every

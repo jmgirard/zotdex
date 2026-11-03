@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 import type { PluginRecord } from "../src/build/build.ts";
-import { displayName, loadData, overrideUsed, rangeText, safeHref, upstreamValue } from "../site/src/data.ts";
+import { displayName, loadData, overrideUsed, rangeText, safeHref, upstreamLines, upstreamValue } from "../site/src/data.ts";
 
 function record(facts: Partial<NonNullable<PluginRecord["upstream"]>>, overrides: PluginRecord["overrides"] = []): PluginRecord {
   return {
@@ -40,6 +40,12 @@ describe("upstreamValue", () => {
     [undefined, undefined],
   ])("gives the languages %j as %j", (languages, value) => {
     expect(upstreamValue(record({ languages }), "languages")).toBe(value);
+  });
+});
+
+describe("upstreamLines", () => {
+  test("leaves out a blank GitHub text", () => {
+    expect(upstreamLines(record({ description: "Keeps notes tidy.", repoDescription: " " }), "description")).toEqual(["Manifest: Keeps notes tidy."]);
   });
 });
 

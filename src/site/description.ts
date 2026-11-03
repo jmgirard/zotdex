@@ -38,8 +38,8 @@ const OTHER_LETTERS = /[\p{L}--[\p{scx=Han}\p{scx=Hiragana}\p{scx=Katakana}\p{sc
 
 // The share of a text written in Chinese, Japanese, or Korean: its CJK characters over those
 // characters plus its runs of other letters, since one CJK character is closer to a word than
-// one Latin letter is. 0 for a text with neither. NFC first, so a decomposed Latin word stays
-// one run and a decomposed Hangul syllable stays one character.
+// one Latin letter is. 0 for a text with neither. NFC first, so a decomposed letter that has a
+// composed form stays in its run and a decomposed Hangul syllable stays one character.
 export function cjkShare(text: string): number {
   const composed = text.normalize("NFC");
   const cjk = composed.match(CJK)?.length ?? 0;
