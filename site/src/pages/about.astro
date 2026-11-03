@@ -148,11 +148,11 @@ const offered = new Set(categoryOptions(plugins).map(({ value }) => value));
       each request. The text stays through new releases until the owner asks to remove it.
     </p>
     <p>
-      The Overrides table in a plugin's Details lists each override beside the upstream value. A description override
-      lists both upstream texts, the manifest description and the GitHub description, when the plugin has them. Its
-      Used column says "yes" for the override that applies to the plugin version that the index read. An override for that version wins
+      The Overrides table in a plugin's Details lists each override beside the upstream value. Its Used column says
+      "yes" for the override that applies to the plugin version that the index read. An override for that version wins
       over one for every version. The declared range uses the <code>strict_min_version</code> and{" "}
-      <code>strict_max_version</code> overrides marked "yes".
+      <code>strict_max_version</code> overrides marked "yes". A description override lists both upstream texts, the
+      manifest description and the GitHub description, when the plugin has them.
     </p>
   </section>
   <section class="card" id="categories" data-about="categories">

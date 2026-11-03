@@ -1,6 +1,6 @@
 # M088: Fix the small description fact gaps
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** normal
 - **Depends on:** —
 - **Driving RR:** —
@@ -87,6 +87,8 @@ text stays as the manifest has it.
 - 2026-11-03: T3: the Manifest description row needs a non-blank text; the new test failed on the old page. Its own small build keeps these records out of the shared fixture's hand lists.
 - 2026-11-03: T4: `upstreamLines` in `site/src/data.ts` gives the cell's lines, and a `<br>` splits two lines, so one value and `none` keep their plain cell; `upstreamValue` no longer reads `description`, and its test stays.
 - 2026-11-03: T5: README, DESIGN, About, and CHANGELOG state the new count and table; DESIGN also says where a `description` override's texts sit.
+- 2026-11-03: hand check on the real data of 2026-11-03 in the browser pane: Jasminum's cell shows both labeled texts, and the page has no sideways scroll at 1024 or 375 px. The table's narrow columns break "Field" mid-word, and the same CSS rule is on the default branch, so this milestone leaves it.
+- 2026-11-03: claim audit: 36 claims read, 1 corrected — site/src/pages/about.astro ("Its Used column" followed the new sentence, so the sentence moved to the paragraph's end). A blank `repoDescription` still shows a Details row, but the schema's `\S` pattern refuses one, so the data never holds it.
 
 ## Decisions
 
