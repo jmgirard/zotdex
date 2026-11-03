@@ -56,7 +56,7 @@ When a repo older and far larger than the repo that lists its add-on id appears,
      top-to-bottom). Review reads to fence evidence — tracking-rules "AC fencing". -->
 
 - AC1 → T1
-- AC2 → T2
+- AC2 → T2, T8
 - AC3 → T3
 - AC4 → T2
 - AC5 → T4
@@ -78,6 +78,7 @@ When a repo older and far larger than the repo that lists its add-on id appears,
 - [x] T5: Write the ledger from the logs of the discover runs that GitHub holds, and add its `INDEX.md` line.
 - [x] T6: Update `README.md` (hold reasons near lines 801 to 846), `cairn/DESIGN.md` (hold reasons, and the refusal statements near lines 705 and 758), and `CHANGELOG.md`, and append the decision entry.
 - [x] T7: Run `pnpm test` and `pnpm check` through `npx -y pnpm@12.15.0`, sending the test output to a file and reading its exit code (LESSONS M082).
+- [x] T8: Fix the fix-now findings of the first review pass, listed in the Review section, starting with AC2's `paidService` values in the pull request body.
 
 ## Work log
 <!-- owner: any skill · append-only; one line per entry; absolute dates.
@@ -112,6 +113,7 @@ When a repo older and far larger than the repo that lists its add-on id appears,
 - 2026-11-03: claim audit: 106 claims read, 12 corrected — README.md, CHANGELOG.md, src/discover/holds.ts, src/discover/discover.ts, src/discover/propose.ts
 - 2026-11-03: kept "newest stable release" in the pull request body, as AC2 words it, over "GitHub latest release" as the re-read suggested; README says that it is GitHub's latest release of the repo.
 - 2026-11-03: review return 1: AC2 fails as written, since the pull request body names only `paidService.note` and not each value of the kept mark; the same pass settled the other fix-now findings listed in the Review section.
+- 2026-11-03: T8 fixed AC2's values and the other fix-now findings; the title is now `Replace a listed repo with <repo>`, with no id; the write step skips with `listed-changed` when the id no longer lists the compared repo; the follow-ups went to the row "Tighten the reads behind replaces-entry".
 
 ## Decisions
 <!-- owner: implement / review · append-only; milestone-local; promote
@@ -166,7 +168,7 @@ spawned: diff-bug, blame-history, prior-review, ripple
 - ripple #1: README line 763 — fix now, same as diff-bug #7.
 - ripple #2: `CHANGELOG.md` says the README lists five reasons — fix now.
 - ripple #3: the roadmap row says M056 holds for five reasons — reject, false, since that is what M056 did.
-- ripple #4: `CHANGELOG.md` says `pnpm discover` refuses the same ids — fix now.
+- ripple #4: `CHANGELOG.md` says `pnpm discover` refuses the same ids — reject, false, since that sentence is about case-variant and unsafe ids, which stay refused.
 - ripple #5: DESIGN says discovery refuses an id that an open pull request adds — reject, false, since a modifying pull request's id is in the index and takes the first refusal.
 - ripple #6: README line 783 — fix now, same as diff-bug #7.
 - ripple #7: the message "already adds" — reject, false, for the same reason as ripple #5.

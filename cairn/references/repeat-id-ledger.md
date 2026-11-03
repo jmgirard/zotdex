@@ -38,8 +38,8 @@ The test has three parts. The refused repo is older than the listed repo. It has
 
 The maintainer chose these at the M085 question set, on 2026-11-03.
 
-- `pdf2zh@guaguastandup.com`: moved to `guaguastandup/zotero-pdf2zh`. On 2026-11-03, the repo's head was `5dd2eaf019f71266764c269bbd2104b559ae95cf`, and `pnpm add-plugin --out` wrote the `meta.json` from that read. Its newest release is `v4.1.8`, of 2026-10-30, and the listed repo's README calls itself a release to go with its own fork.
-- `beaver@jlegewie.com`: moved to `jlegewie/beaver-zotero`. On 2026-11-03, the repo's head was `8b7fa5b4fc7a16769de95001f7fb0d4ccdf46342`, and `pnpm add-plugin --out` wrote the `meta.json` from that read. Its newest release is `v0.26.2`, of 2026-10-29, and the listed repo's README calls itself a fork of it.
+- `pdf2zh@guaguastandup.com`: moved to `guaguastandup/zotero-pdf2zh`. On 2026-11-03, the repo's head was `5dd2eaf019f71266764c269bbd2104b559ae95cf`, and `pnpm add-plugin --out` wrote the `meta.json` from that read. Its newest release is `v4.1.8`, of 2026-10-30, against `v1.1.0`, of 2026-10-28, for the listed repo. The listed repo's README says that it goes with its maker's own fork of PDFMathTranslate.
+- `beaver@jlegewie.com`: moved to `jlegewie/beaver-zotero`. On 2026-11-03, the repo's head was `8b7fa5b4fc7a16769de95001f7fb0d4ccdf46342`, and `pnpm add-plugin --out` wrote the `meta.json` from that read. Its newest release is `v0.26.2`, of 2026-10-29, against `v0.25.4`, of 2026-10-25, for the listed repo. The listed repo's README calls itself a fork of it.
 - `zoteroshortdoi@wiernik.org`: stays with `reginalluna/zotero-doi-manager`, whose README says that it continues `bwiernik/zotero-shortdoi`. Its newest release is `v2.2.0`, of 2026-08-20, against `v1.5.0`, of 2024-08-09.
 - `zoteropreview@carter-tod.com`: stays with `groele/ZoteroPreview`, whose README calls itself a fork for compatibility. Its newest release is `v2.0`, of 2025-10-21, against `0.7.8`, of 2024-09-29.
 

@@ -15,6 +15,7 @@ import {
   GIT_LIMIT_MS,
   HOLD_TEXT,
   holdDetailLines,
+  keptLines,
   pnpmCheck,
   proposeHandoff,
   UNHELD_TEXT,
@@ -815,13 +816,13 @@ describe("the write step checks the bot pull requests again and the index at the
       expect(checkedIndex).toEqual(keptIndex);
       expect(git(remote, "diff", "--name-status", "main", "discover/example/alpha")).toBe(`M\tplugins/${ID}/meta.json`);
       const sent = JSON.parse(requests.find(({ method, url }) => method === "POST" && url === PULLS)!.body!);
-      expect(sent.title).toBe(`Move ${ID} to example/alpha`);
+      expect(sent.title).toBe("Replace a listed repo with example/alpha");
       expect(sent.body).toContain("exited with status 0:");
       expect(sent.body).toContain("Hold: replaces-entry");
       expect(sent.body).toContain("- This repo: created 2025-01-10, 300 stars, newest stable release 2026-03-01");
       expect(sent.body).toContain("- Listed repo: [bob/copy](https://github.com/bob/copy): created not read, 1 star, newest stable release none");
       expect(sent.body).toContain('- Kept override of ` description `: ` "An English description of the plugin here." `');
-      expect(sent.body).toContain("- Kept paid-service mark: ` Needs the maker's plan. `");
+      expect(sent.body).toContain("- Kept paid-service mark: ` Needs the maker's plan. `, source ` https://github.com/bob/copy/blob/HEAD/README.md `, read ` 2026-11-02 `");
       expect(requests.some(({ url }) => url === `${INDEX}/issues/1/labels`)).toBe(true);
     });
 
@@ -833,8 +834,32 @@ describe("the write step checks the bot pull requests again and the index at the
       expect(JSON.parse(requests.find(({ method, url }) => method === "POST" && url === PULLS)!.body!).body).toContain("- Kept from `index.json`: no override and no paid-service mark");
     });
 
+    test("names a kept override's version, and says not read for a release it could not read", () => {
+      expect(keptLines({ overrides: [{ field: "description", version: "1.0", value: "Text." }] })).toEqual(['- Kept override of ` description ` for version ` 1.0 `: ` "Text." `']);
+      expect(holdDetailLines({ listed: { repo: "bob/copy" } })).toContain("- Listed repo: [bob/copy](https://github.com/bob/copy): created not read, stars not read, newest stable release not read");
+    });
+
+    test("a plan with a replacing entry's details passes the handoff check", async () => {
+      const handoff = tempDir();
+      const dir = join(entriesDir(handoff), ID);
+      mkdirSync(dir, { recursive: true });
+      for (const file of ["meta.json", "index.json"]) writeFileSync(join(dir, file), "{}\n");
+      await writePlan(handoff, { kind: "discover", entries: [planned(replacing())] });
+      expect(await readHandoff(handoff, "discover", 5)).toMatchObject({ ok: true, plan: { entries: [{ holds: ["replaces-entry"], holdDetails: { listed: { repo: "bob/copy", releasedOn: "none" } } }] } });
+    });
+
+    test("skips the entry when the id no longer lists the repo that the read step compared", async () => {
+      const { remote, work } = checkout();
+      pushFromClone(remote, tempDir(), { [`plugins/${ID}/meta.json`]: meta("carol/other"), [`plugins/${ID}/index.json`]: `${JSON.stringify({ schemaVersion: 1 })}\n` });
+      const { fetch, requests } = fixtureFetch(opened);
+      const result = await proposeHandoff({ fetch, indexRepo: "example/index", gitDir: work, check: async () => ({ status: 0, output: "" }), entries: [replacing()] });
+      expect(result).toEqual({ ok: true, proposed: [], failed: [], skipped: [{ repo: "example/alpha", id: ID, reason: "listed-changed" }] });
+      expect(requests.filter(({ method }) => method === "POST")).toEqual([]);
+    });
+
     test("fails the entry when the default branch has no index.json for the id", async () => {
-      const { work } = checkout();
+      const { remote, work } = checkout();
+      pushFromClone(remote, tempDir(), { [`plugins/${ID}/meta.json`]: meta("bob/copy") });
       const { fetch } = fixtureFetch(opened);
       const result = await proposeHandoff({ fetch, indexRepo: "example/index", gitDir: work, check: async () => ({ status: 0, output: "" }), entries: [replacing()] });
       expect(result).toMatchObject({ ok: true, proposed: [], failed: [{ repo: "example/alpha", id: ID, message: expect.stringContaining("git cat-file failed") }] });

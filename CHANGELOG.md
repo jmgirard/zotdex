@@ -574,7 +574,7 @@
   more Chinese, Japanese, or Korean, or under six words.
 - The bot now merges its own pull requests. Each new bot pull request body
   has a Hold line, which names the entry's hold reasons or says
-  `Hold: none`. The README lists the five reasons. A held pull request gets
+  `Hold: none`. The README lists the reasons. A held pull request gets
   the `hold` label.
   The new `Merge bot pull requests` workflow runs `pnpm merge-discover`
   daily. The command merges a bot pull request that says `Hold: none`, has

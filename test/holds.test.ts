@@ -565,9 +565,4 @@ describe("the hold details", () => {
       listed: { repo: "carol/copy", stars: 2, releasedOn: "none" },
       ownerCreatedOn: expect.any(String),
     });
-  });
-
-  test("replaces-entry says when no entry lists the id now", () => {
-    expect(holdDetails(facts, ["replaces-entry"])?.noListed).toBe(true);
-  });
-});
+  });});

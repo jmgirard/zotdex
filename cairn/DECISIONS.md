@@ -856,7 +856,8 @@ with newer releases. So the bot never replaces an entry itself, and D-053's
 default to merge has an exception. For `replaces-entry`, the question is whether
 the listed repo credits the new one and has a newer release. If it does, the
 listed repo stays and the maintainer closes the pull request. Otherwise the pull
-request merges. At this plan the user moved two entries by this question and kept
+request merges. A pull request also held for `name-match` takes this question
+alone, since the entry already holds the id. At this plan the user moved two entries by this question and kept
 two. The rest of D-033, D-045, and D-053 stands. This choice is wrong if the
 maintainer closes nearly every such pull request, or if a listed repo hides a far
 larger original below these numbers.

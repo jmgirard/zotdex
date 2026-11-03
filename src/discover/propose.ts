@@ -134,7 +134,7 @@ export interface ProposeHandoffOptions {
 export interface SkippedEntry {
   repo: string;
   id: string;
-  reason: "in-index" | "in-bot-pull";
+  reason: "in-index" | "in-bot-pull" | "listed-changed";
 }
 
 export type ProposeHandoffResult =
@@ -173,9 +173,12 @@ export async function proposeHandoff(options: ProposeHandoffOptions): Promise<Pr
   for (const entry of entries) {
     const { repo, id } = entry;
     // An entry that replaces another needs that entry's id in the index.
-    const idIsTaken = index.ids.has(id.toLowerCase()) && !entry.holds.includes("replaces-entry");
+    const replacing = entry.holds.includes("replaces-entry");
+    const idIsTaken = index.ids.has(id.toLowerCase()) && !replacing;
     if (index.repos.has(repo) || idIsTaken) skipped.push({ repo, id, reason: "in-index" });
     else if (pulls.skip.has(repo) || pulls.ids.has(id.toLowerCase())) skipped.push({ repo, id, reason: "in-bot-pull" });
+    // The entry must still list the repo that the read step compared this one with.
+    else if (replacing && index.repos.get(entry.holdDetails?.listed?.repo ?? "") !== id) skipped.push({ repo, id, reason: "listed-changed" });
     else written.push(entry);
   }
   const { proposed, failed } = await propose({ ...options, pushBase, written });
@@ -435,6 +438,7 @@ export async function propose(options: ProposeOptions): Promise<{ proposed: Prop
         const replacing = entry.holds.includes("replaces-entry");
         const keptIndex = replacing ? await git(["cat-file", "blob", `${baseCommit}:plugins/${id}/index.json`]) : undefined;
         if (keptIndex !== undefined) await writeFile(join(checkDir, id, "index.json"), `${keptIndex}\n`);
+        const kept = keptIndex === undefined ? [] : keptLines(JSON.parse(keptIndex));
         const checked = await check(checkDir);
 
         const index = { GIT_INDEX_FILE: join(work, `index-${n}`) };
@@ -444,7 +448,8 @@ export async function propose(options: ProposeOptions): Promise<{ proposed: Prop
           await git(["update-index", "--add", "--cacheinfo", `100644,${blob},plugins/${id}/${file}`], index);
         }
         const tree = await git(["write-tree"], index);
-        const title = replacing ? `Move ${id} to ${repo}` : `Add ${repo}`;
+        // No id here: an id can hold `@name`, and a title has no code span to keep it from a mention.
+        const title = replacing ? `Replace a listed repo with ${repo}` : `Add ${repo}`;
         const commit = await git(["commit-tree", "--no-gpg-sign", tree, "-p", baseCommit, "-m", title], {
           GIT_AUTHOR_NAME: BOT.name,
           GIT_AUTHOR_EMAIL: BOT.email,
@@ -458,7 +463,7 @@ export async function propose(options: ProposeOptions): Promise<{ proposed: Prop
           title,
           head: branch,
           base,
-          body: body(entry, checked, issue, keptIndex === undefined ? [] : keptLines(JSON.parse(keptIndex))),
+          body: body(entry, checked, issue, kept),
         })) as { html_url?: unknown; number?: unknown };
         const url = typeof pull?.html_url === "string" ? pull.html_url : "";
         if (entry.holds.length > 0) {
@@ -573,10 +578,10 @@ export function body(entry: Written, checked: { status: number; output: string }
 // meta.json: each override and the paid-service mark, since they were written for the
 // listed repo. Each value goes in a code span.
 export function keptLines(index: unknown): string[] {
-  const { overrides, paidService } = (index ?? {}) as { overrides?: { field?: unknown; value?: unknown; version?: unknown }[]; paidService?: { note?: unknown } };
+  const { overrides, paidService } = (index ?? {}) as { overrides?: { field?: unknown; value?: unknown; version?: unknown }[]; paidService?: { note?: unknown; source?: unknown; read?: unknown } };
   const lines = [
     ...(overrides ?? []).map(({ field, value, version }) => `- Kept override of ${code(String(field))}${version === undefined ? "" : ` for version ${code(String(version))}`}: ${code(JSON.stringify(value))}`),
-    ...(paidService ? [`- Kept paid-service mark: ${code(String(paidService.note))}`] : []),
+    ...(paidService ? [`- Kept paid-service mark: ${code(String(paidService.note))}, source ${code(String(paidService.source))}, read ${code(String(paidService.read))}`] : []),
   ];
   return lines.length > 0 ? lines : ["- Kept from `index.json`: no override and no paid-service mark"];
 }

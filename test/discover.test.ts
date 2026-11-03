@@ -1308,7 +1308,6 @@ describe("a repo that repeats a listed add-on id", () => {
     ["an unread value of the read repo's stars", pluginRepo(OWN, ID), {}],
     ["an unread value of the listed repo's stars", { [api(LISTED)]: { json: { created_at: listedMeta.created_at } } }, {}],
     ["an unread value of the listed repo's date", { [api(LISTED)]: { json: { stargazers_count: 2 } } }, {}],
-    ["a failed read of the listed repo", { [api(LISTED)]: { status: 500, json: {} } }, {}],
   ])("keeps the entry-exists refusal for %s", async (_name, responses, options) => {
     expect(await draft({ ...passing(), ...responses }, options)).toEqual({
       ok: false,
@@ -1326,8 +1325,15 @@ describe("a repo that repeats a listed add-on id", () => {
   test("reads no release for a repo it refuses", async () => {
     const { fetch, requests } = fixtureFetch({ ...passing(), ...pluginRepo(OWN, ID, { stars: 19 }), [api(LISTED)]: { json: { ...listedMeta, stargazers_count: 1 } } });
     const drafted = await draftEntry(`https://github.com/${OWN}`, { fetch, lookup: publicLookup, outDir: tempDir(), ids: new Set([ID]), names: NAMES, now: NOW });
-    expect(drafted.ok).toBe(false);
+    expect(drafted).toMatchObject({ ok: false, failure: "entry-exists" });
     expect(requests.map(({ url }) => url).filter((url) => url.endsWith("/releases/latest"))).toEqual([]);
+  });
+
+  test("leaves out a release that it could not read, and still drafts", async () => {
+    const drafted = await draft({ ...passing(), [`${api(OWN)}/releases/latest`]: { status: 500, json: {} } });
+    if (!drafted.ok) throw new Error(drafted.message);
+    expect(drafted.holdDetails?.repoReleasedOn).toBeUndefined();
+    expect(drafted.holdDetails?.listed?.releasedOn).toBe("none");
   });
 
   test("lets only the first repo of a run replace an entry", async () => {

@@ -225,13 +225,6 @@ describe("pnpm refresh-holds", () => {
       for (const line of LINES) expect(patches[0].sent.body).toContain(line);
     });
 
-    test("names what the kept index.json holds", async () => {
-      const held = pull(1, { body: source(1, ["replaces-entry"]) });
-      const kept = { schemaVersion: 1, overrides: [{ field: "name", value: "Listed Name", reason: "Asked for by its owner." }] };
-      const { result } = await run({ [LIST]: { json: [held] }, ...replacing(kept), [`${INDEX}/pulls/1`]: { json: held } });
-      expect(result.changed[0].lines).toContain('- Kept override of ` name `: ` "Listed Name" `');
-    });
-
     test("says when no entry lists the id from another repo now", async () => {
       const held = pull(1, { body: source(1, ["replaces-entry"]) });
       const other = "not-listed@example.org";
@@ -246,9 +239,13 @@ describe("pnpm refresh-holds", () => {
       expect(result.changed[0].lines).toContain("- Listed repo: no entry lists this id from another github.com repo now");
     });
 
-    test("skips such a pull request whose files are the two added files of a new entry", async () => {
+    test.each<[string, Responses]>([
+      ["the two added files of a new entry", entry(1)],
+      ["a modified index.json", { [`${INDEX}/pulls/1/files?per_page=100`]: { json: [{ filename: `plugins/${LISTED_ID}/index.json`, status: "modified" }] } }],
+      ["a meta.json in a dot folder", { [`${INDEX}/pulls/1/files?per_page=100`]: { json: [{ filename: "plugins/.hidden/meta.json", status: "modified" }] } }],
+    ])("skips such a pull request whose files are %s", async (_name, responses) => {
       const held = pull(1, { body: source(1, ["replaces-entry"]) });
-      const { result } = await run({ [LIST]: { json: [held] }, ...entry(1) });
+      const { result } = await run({ [LIST]: { json: [held] }, ...responses });
       expect(result.skipped).toEqual([{ number: 1, reason: "its one file is not a modified plugins/<id>/meta.json" }]);
     });
   });
