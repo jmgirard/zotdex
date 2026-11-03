@@ -69,7 +69,7 @@ text stays as the manifest has it.
 - [x] T4: Build the description cell's lines in `site/src/data.ts` beside `upstreamValue`, and render them in the table
       at `site/src/pages/plugins/[id]/index.astro:340`, with the tests of AC4. A new fixture record goes into each hand
       list of fixture ids in `test/site.test.ts`.
-- [ ] T5: Update README near line 108, DESIGN near line 186, the About page near line 151, and `CHANGELOG.md`.
+- [x] T5: Update README near line 108, DESIGN near line 186, the About page near line 151, and `CHANGELOG.md`.
 
 ## Work log
 
@@ -86,6 +86,7 @@ text stays as the manifest has it.
 - 2026-11-03: T2: a one-off comparison of the default branch's and the branch's `shownDescription` over `plugins-data-2026-11-03.json` with the checkout's overrides: 736 records, 682 with a shown text, 0 differ.
 - 2026-11-03: T3: the Manifest description row needs a non-blank text; the new test failed on the old page. Its own small build keeps these records out of the shared fixture's hand lists.
 - 2026-11-03: T4: `upstreamLines` in `site/src/data.ts` gives the cell's lines, and a `<br>` splits two lines, so one value and `none` keep their plain cell; `upstreamValue` no longer reads `description`, and its test stays.
+- 2026-11-03: T5: README, DESIGN, About, and CHANGELOG state the new count and table; DESIGN also says where a `description` override's texts sit.
 
 ## Decisions
 

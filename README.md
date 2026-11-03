@@ -105,10 +105,12 @@ only repeats the name. For example, "Zotero Plugin for OCR" only repeats the
 name "Zotero OCR".
 
 Last, the site compares the share of Chinese, Japanese, and Korean text in
-the descriptions that are left. It counts each Han, Hiragana, Katakana, or
-Hangul character as one unit and each run of other letters as one unit. If
-less than half of the manifest description is such text, the site shows
-the manifest description. If not, the site shows the GitHub description in
+the descriptions that are left. It reads each text in its NFC form, Unicode's
+composed form. It counts each Han, Hiragana, Katakana, or Hangul character as
+one unit. Each letter whose `Script_Extensions` property names one of these
+scripts, such as ー or 〆, is also one unit. Each run of other letters is one
+unit. If less than half of the manifest description is such text, the site
+shows the manifest description. If not, the site shows the GitHub description in
 two cases: the site dropped the manifest description, or the GitHub
 description has a lower share. In all other cases the site shows the
 manifest description, or no description.
