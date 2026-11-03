@@ -25,13 +25,13 @@ A normal daily build reads every plugin before its time limit, with room for the
 
 ## Acceptance criteria
 
-- [ ] AC1: `pnpm build` holds at most 4 plugin reads open at once and reaches 4 when more than 4 plugins wait: a test over 6 plugins, which holds the answers and counts open reads at every start and end, sees a peak of exactly 4, sees no fifth repo read after two further gaps of 80 ms, and ends with all 6 records written.
-- [ ] AC2: A stalled plugin read holds up only its own place: one test with the stall on an API request and one with it on an XPI request each see the plugins after it written with facts, and the stalled plugin fail as `request-failed` at the read limit that the test sets.
-- [ ] AC3: Each fetch call that a plugin read makes to an `api.github.com` URL starts at least 80 ms after the one before it, whichever read sends it, and a request to another host does not wait: a test over several plugins compares the API start times, includes an `update_url` on the API host, and sees an XPI request start while an API request waits. A redirect that fetch follows inside one call counts as that one call.
-- [ ] AC4: Reads start in the day's order from D-028, and the records, the build-level list, and the start plan keep id order when reads end out of order, on an even and on an odd UTC day: tests with at least 2 build-level entries and 2 plan items whose reads end in another order than they start.
-- [ ] AC5: After `BUILD_LIMIT_MS` the build starts no read, the reads open at that time run on to their end, and each entry not started gets `not-read`; those entries are the last in the day's read order: a test over more than 4 plugins, on an even and on an odd UTC day, with a read open at the limit that ends with facts.
-- [ ] AC6: Two `build.yml` runs on the milestone branch, over all the plugins in `plugins/` (at least 736), each leave no record `not-read`, show no HTTP 403 or 429 from `api.github.com` in the log of their `pnpm build` step, the top-level name warning included, and finish that step in under 10 minutes.
-- [ ] AC7: README's "Building the data" text and `cairn/DESIGN.md`'s build text say that the build reads up to 4 plugins at once and paces its API requests, and `CHANGELOG.md` has an entry under Unreleased; a search of joined copies of README and DESIGN, and of `src/build/build.ts`, for "one at a time", "one by one", and "in turn" finds no remaining claim about the plugin reads.
+- [x] AC1: `pnpm build` holds at most 4 plugin reads open at once and reaches 4 when more than 4 plugins wait: a test over 6 plugins, which holds the answers and counts open reads at every start and end, sees a peak of exactly 4, sees no fifth repo read after two further gaps of 80 ms, and ends with all 6 records written.
+- [x] AC2: A stalled plugin read holds up only its own place: one test with the stall on an API request and one with it on an XPI request each see the plugins after it written with facts, and the stalled plugin fail as `request-failed` at the read limit that the test sets.
+- [x] AC3: Each fetch call that a plugin read makes to an `api.github.com` URL starts at least 80 ms after the one before it, whichever read sends it, and a request to another host does not wait: a test over several plugins compares the API start times, includes an `update_url` on the API host, and sees an XPI request start while an API request waits. A redirect that fetch follows inside one call counts as that one call.
+- [x] AC4: Reads start in the day's order from D-028, and the records, the build-level list, and the start plan keep id order when reads end out of order, on an even and on an odd UTC day: tests with at least 2 build-level entries and 2 plan items whose reads end in another order than they start.
+- [x] AC5: After `BUILD_LIMIT_MS` the build starts no read, the reads open at that time run on to their end, and each entry not started gets `not-read`; those entries are the last in the day's read order: a test over more than 4 plugins, on an even and on an odd UTC day, with a read open at the limit that ends with facts.
+- [x] AC6: Two `build.yml` runs on the milestone branch, over all the plugins in `plugins/` (at least 736), each leave no record `not-read`, show no HTTP 403 or 429 from `api.github.com` in the log of their `pnpm build` step, the top-level name warning included, and finish that step in under 10 minutes.
+- [x] AC7: README's "Building the data" text and `cairn/DESIGN.md`'s build text say that the build reads up to 4 plugins at once and paces its API requests, and `CHANGELOG.md` has an entry under Unreleased; a search of joined copies of README and DESIGN, and of `src/build/build.ts`, for "one at a time", "one by one", and "in turn" finds no remaining claim about the plugin reads.
 - [ ] AC8: The `verify` slot is clean: `pnpm test` and `pnpm check`.
 
 ## Coverage
@@ -81,3 +81,13 @@ A normal daily build reads every plugin before its time limit, with room for the
 ## Decisions
 
 ## Review
+
+Fresh runs on 2026-11-03 at the branch head, with `vitest run test/build.test.ts -t "reading plugins at once"`: 9 passed. Before review, 8 planted defects each failed these tests: serial reads, 5 at once, no pacing, pacing every host, waiting for the prior answer, no limit check, and no order reverse (`scratchpad`, not kept).
+
+- AC1: "holds 4 reads open at most, and starts a fifth only when one ends" passes; a planted 5 at once and a planted 1 at once both fail it.
+- AC2: "reads on past a read stalled on an API request" and "on an XPI request" pass, each with a read limit of 1500 ms; a planted wait for the prior answer fails the API one.
+- AC3: "starts the plugin reads' API requests 80 ms apart, an API update file included" and "lets a request to another host start while an API request waits" pass; planted no pacing and planted pacing of every host each fail one.
+- AC4: "starts reads in the day's order and keeps id order when they end in another" passes on an even and an odd day, with 2 build-level entries and 4 plan items; a planted loss of the reverse fails the odd day.
+- AC5: "lets open reads end at the build limit and starts no other" passes on an even and an odd day over 6 plugins, with 4 reads open at the limit that end with facts; a planted loss of the limit check fails both.
+- AC6: runs 41689697258 and 41690770665 on the branch at 6750b3a (code equal to the head, comments apart), 736 plugins: steps 5:08 and 5:32, "build-level failures: 0 of 736 records", and a search of each job log found 0 `not-read` and 0 `api.github.com` lines with HTTP 403 or 429; no top-level name warning in either.
+- AC7: README, DESIGN, and CHANGELOG hold the text; the search of joined README and DESIGN finds only the `discover` group's runs and two issue sweeps, none about plugin reads, and `src/build/build.ts` has no hit.
