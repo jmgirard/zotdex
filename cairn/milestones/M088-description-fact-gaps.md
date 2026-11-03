@@ -90,6 +90,7 @@ text stays as the manifest has it.
 - 2026-11-03: hand check on the real data of 2026-11-03 in the browser pane: Jasminum's cell shows both labeled texts, and the page has no sideways scroll at 1024 or 375 px. The table's narrow columns break "Field" mid-word, and the same CSS rule is on the default branch, so this milestone leaves it.
 - 2026-11-03: claim audit: 36 claims read, 1 corrected — site/src/pages/about.astro ("Its Used column" followed the new sentence, so the sentence moved to the paragraph's end). A blank `repoDescription` still shows a Details row, but the schema's `\S` pattern refuses one, so the data never holds it.
 - 2026-11-03: review fix-now commit: comment, tests, three docs' "both descriptions", and the Overrides table's word breaks, which the hand-check line above had left, because the longer cell made them more visible.
+- 2026-11-03: step-7 approval: m088-description-fact-gaps approved for merge
 
 ## Decisions
 
