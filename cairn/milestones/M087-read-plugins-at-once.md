@@ -1,6 +1,6 @@
 # M087: Read plugins a few at a time
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
@@ -39,7 +39,7 @@ A normal daily build reads every plugin before its time limit, with room for the
 - AC1 → T1, T2
 - AC2 → T2
 - AC3 → T1, T2
-- AC4 → T1, T2
+- AC4 → T1, T2, T5
 - AC5 → T1, T2
 - AC6 → T4
 - AC7 → T3
@@ -51,6 +51,7 @@ A normal daily build reads every plugin before its time limit, with room for the
 - [x] T2: In `test/build.test.ts`, set `readsAtOnce: 1` and `apiGapMs: 0` where a test rests on serial reads or fake timers. Add the tests that AC1 to AC5 name. See each new test fail once against a serial loop and against a fetch with no pacing.
 - [x] T3: Update README, DESIGN, the comment above `buildData`, and CHANGELOG; run the AC7 search. Run `pnpm test` and `pnpm check`.
 - [x] T4: Add a temporary step to `build.yml` that prints `/rate_limit` before and after `pnpm build`. Run `build.yml` on the branch twice, record the time, the request count, and the limit, search each log, then remove the step.
+- [x] T5: From review return 1: give AC4's test build-level entries and plan items that end in another order than they start on both days; add a test for a fetch that throws at once; use `toHaveLength(7)` in the pacing test.
 
 ## Work log
 
@@ -79,6 +80,8 @@ A normal daily build reads every plugin before its time limit, with room for the
 - 2026-11-03: claim audit: 44 claims read, 1 corrected — README.md, src/build/build.ts (a redirect that fetch follows is not paced; the CHANGELOG summary stands). The `not-read` message "reads no plugin" predates this work and stays.
 
 - 2026-11-03: review return 1: AC4's test on the odd day has a build-level pair that ends in the order it starts, so it misses "end in another order than they start"; also owed: a test for a fetch that throws at once, and `toHaveLength(7)` in the pacing test.
+
+- 2026-11-03: T5 done: AC4's test now has 3 build-level entries and 3 plan items whose ends differ from both start order and id order on each day; planted end-order lists fail it; a planted queue that keeps a failure fails the new throw test; `pnpm test` 2223 passed, 6 skipped; `pnpm check` 0 problems.
 
 ## Decisions
 

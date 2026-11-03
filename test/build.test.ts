@@ -1032,7 +1032,7 @@ describe("buildData", () => {
         expect(failures(result.text)).toEqual(NAMES.map((name) => [`${name}@example.org`, "facts"]));
         const api = starts.filter(({ url }) => url.startsWith("https://api.github.com/") && url.includes("/example/"));
         expect(api.map(({ url }) => url)).toContain(updateUrl);
-        expect(api.length).toBeGreaterThanOrEqual(7);
+        expect(api).toHaveLength(7);
         for (const [i, { at }] of api.slice(1).entries()) expect(at - api[i].at).toBeGreaterThanOrEqual(80);
       });
 
@@ -1049,11 +1049,12 @@ describe("buildData", () => {
       });
 
       test.each([
-        ["an even", EVEN, SIX, ["a-first", "b-second"]],
-        ["an odd", ODD, [...SIX].reverse(), ["f-sixth", "e-fifth"]],
-      ])("starts reads in the day's order and keeps id order when they end in another, on %s UTC day", async (_, now, order, slow) => {
+        ["an even", EVEN, SIX, ["a-first", "b-second"], ["d-fourth", "f-sixth", "b-second"], ["c-third", "e-fifth", "a-first"]],
+        ["an odd", ODD, [...SIX].reverse(), ["f-sixth", "e-fifth"], ["d-fourth", "b-second", "f-sixth"], ["c-third", "a-first", "e-fifth"]],
+      ])("starts reads in the day's order and keeps id order when they end in another, on %s UTC day", async (_, now, order, slow, failedEnds, readEnds) => {
         const { tree, recorded } = pluginTree(SIX);
-        for (const name of ["b-second", "d-fourth"]) recorded[`https://api.github.com/repos/example/${name}`] = { status: 500, json: {} };
+        const failing = ["b-second", "d-fourth", "f-sixth"];
+        for (const name of failing) recorded[`https://api.github.com/repos/example/${name}`] = { status: 500, json: {} };
         const answer = fixtureFetch(recorded).fetch;
         const started: string[] = [];
         const ended: string[] = [];
@@ -1074,12 +1075,28 @@ describe("buildData", () => {
         const result = await buildData(tree, fetch, now);
         if (!result.ok) throw new Error(result.problems.join("\n"));
         expect(started).toEqual(order);
-        expect(ended.slice(4).sort()).toEqual([...slow].sort());
-        expect(ended.indexOf("d-fourth")).toBeLessThan(ended.indexOf("b-second"));
-        expect(ended.indexOf("c-third")).toBeLessThan(ended.indexOf("a-first"));
+        expect(ended.filter((name) => failing.includes(name))).toEqual(failedEnds);
+        expect(ended.filter((name) => !failing.includes(name))).toEqual(readEnds);
         expect((JSON.parse(result.text) as Output).plugins.map(({ id }) => id)).toEqual(SIX.map((name) => `${name}@example.org`));
-        expect(result.buildLevel).toEqual(["b-second@example.org", "d-fourth@example.org"]);
-        expect(result.plan.plugins.map((item) => item.entry)).toEqual(["a-first", "c-third", "e-fifth", "f-sixth"].map((name) => `${name}@example.org`));
+        expect(result.buildLevel).toEqual(failing.map((name) => `${name}@example.org`));
+        expect(result.plan.plugins.map((item) => item.entry)).toEqual(["a-first", "c-third", "e-fifth"].map((name) => `${name}@example.org`));
+      });
+
+      test("keeps pacing after a fetch that throws at once", async () => {
+        const { tree, recorded } = pluginTree(NAMES);
+        const answer = fixtureFetch(recorded).fetch;
+        const fetch: Fetch = (url, init) => {
+          if (repoName(url) === "a-first") throw new Error("thrown at once");
+          return answer(url, init);
+        };
+        const result = await buildData(tree, fetch, EVEN);
+        if (!result.ok) throw new Error(result.problems.join("\n"));
+        expect(failures(result.text)).toEqual([
+          ["a-first@example.org", "request-failed"],
+          ["b-stalled@example.org", "facts"],
+          ["c-third@example.org", "facts"],
+        ]);
+        expect(record(JSON.parse(result.text), "a-first@example.org")?.failure?.message).toContain("thrown at once");
       });
 
       test.each([
