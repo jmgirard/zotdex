@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Brings the Online Dictionary Helper (ODH) browser extension to Zotero, connecting to Anki through AnkiConnect, with ODH system scripts supported and the Anki Web Service and user-defined scripts not yet implemented.",
+      "reason": "Condensed from the opening text and the \"Key Features\" section of README.md. The manifest description, \"a odh wrapper for Zotero\", is in English and has fewer than six words, and the GitHub About text, \"a ODH wrapper for Zotero\", is in English and not shown."
+    }
+  ]
 }

@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Gets citation counts from Semantic Scholar, for arXiv papers only.",
+      "reason": "Condensed from the opening lines of README.md. The manifest description, \"Zotero Scholar\", only repeats the name, and the GitHub About text is missing."
+    }
+  ]
 }

@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Re-fetches an item's metadata from its URL or DOI, lists new and existing values side by side, and updates only what you tick, one item in the side pane or up to 50 by right-click, with undo where possible.",
+      "reason": "Translated from the opening and the \"功能\" section of README.md, which is in Chinese. The manifest description and the GitHub About text are half or more Chinese."
+    }
+  ]
 }

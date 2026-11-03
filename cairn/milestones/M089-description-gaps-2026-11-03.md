@@ -53,14 +53,14 @@ row "Refine the Latin part and short picks".
 - [x] T1: Run the command on the data file after M088, and save the list. Read the plugin READMEs by the blob read of
       the 2026-11-02 M082 lesson. Check that no `text-change` issue records an owner's removal for a listed plugin (none
       exists on 2026-11-03).
-- [ ] T2: Write the overrides for the 15 `missing` gaps, or mark a row `kept`.
-- [ ] T3: Write the overrides for the 18 `short` gaps, or mark a row `kept`.
-- [ ] T4: Write the overrides for the 47 `cjk` gaps, or mark a row `kept`. These can take more than one sitting, so
+- [x] T2: Write the overrides for the 15 `missing` gaps, or mark a row `kept`.
+- [x] T3: Write the overrides for the 18 `short` gaps, or mark a row `kept`.
+- [x] T4: Write the overrides for the 47 `cjk` gaps, or mark a row `kept`. These can take more than one sitting, so
       commit each batch.
-- [ ] T5: Run the category comparison of AC3, read each added category, and add the excludes for the wrong ones.
+- [x] T5: Run the category comparison of AC3, read each added category, and add the excludes for the wrong ones.
 - [ ] T6: Write `cairn/references/description-ledger-2026-11-03.md` in the shape of `description-ledger.md`, with its
       `INDEX.md` line: each gap's case, shown text, disposition, source, and each added category's mark.
-- [ ] T7: Add the `CHANGELOG.md` entry.
+- [x] T7: Add the `CHANGELOG.md` entry.
 
 ## Work log
 
@@ -74,6 +74,11 @@ row "Refine the Latin part and short picks".
 - 2026-11-03: plan chose one milestone for all 80 over a split by case, because the overrides change one kind of file and review reads them one way; falsified by a branch whose review cannot read them in one pass.
 - 2026-11-03: T1: the command on the data file (`generatedAt` 2026-11-03T14:25:58.649Z, sha256 `b66c7ab3…`) printed 80 gaps at `a2066a9` (47 cjk, 18 short, 15 missing); a GraphQL tree-then-blob read got all READMEs of the 80 repos, none lost; `gh issue list --label text-change --state all` lists none.
 - 2026-11-03: delegation: four Opus subagents draft the overrides from README reads, one for the missing gaps, one for the short gaps, two for the cjk gaps; their brief is a scratch file, and the session checks each result before commit.
+- 2026-11-03: T2 to T4: 80 overrides, 0 kept; the session read every value and reason; `pnpm description-gaps` on the data file prints 0 gaps. Sources other than a root README, named in each reason: `ZoteroExcerpt` (code, README is template text), `readai` and `translateAnt` (locale files), `zemble` (`docs/index.html`), `docboxtrans` and `paperplanex` (subfolder READMEs), `cychen.stats` (`bootstrap.js` menu label).
+- 2026-11-03: session changed two drafts: `zoteromagic` no longer says "requires purchase", since `paid-service-sweep.md` records that its text states a trial and a purchase link and not what stops after the trial; `zotero-reading-room` no longer names features "still marked unreleased", which would go stale behind an override with no `version`.
+- 2026-11-03: T5: the comparison on the default branch's lists gives 53 added categories; the read marks 26 right and 27 wrong, and each wrong one is now on its category's `exclude` list; on the branch's lists the comparison gives the 26. A text that names a model only as the translation engine counts as wrong under `ai`, since that category's `about` names chat, summaries, explanations, and agents.
+- 2026-11-03: T7: `CHANGELOG.md` entry added; `pnpm test` (2238 passed, 6 skipped) and `pnpm check` (736 entries, 0 problems) pass. T2 to T5 and T7 share this commit, since the drafts came back together.
+- 2026-11-03: the simple-english lint hook flagged old lines of `CHANGELOG.md` on the T7 edit, none of them in the new entry; those entries stay as they are, as this milestone does not reword them.
 
 ## Decisions
 

@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Sends debug logs to Zotero community developers.",
+      "reason": "Condensed from the one line of README.md. The manifest description, \"Debug Log for Zotero\", only repeats the name, and the GitHub About text is missing."
+    }
+  ]
 }

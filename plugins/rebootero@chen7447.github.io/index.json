@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Adds a restart command below Quit at the bottom of Zotero's File menu, which closes and restarts Zotero; the menu label follows the interface language.",
+      "reason": "Translated from the opening of README.md, which is in Chinese. The manifest description and the GitHub About text are half or more Chinese."
+    }
+  ]
 }

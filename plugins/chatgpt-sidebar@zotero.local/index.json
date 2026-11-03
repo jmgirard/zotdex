@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Opens the ChatGPT website in a sidebar of the PDF reader to explain selected text and prepare full-paper summaries, using your own ChatGPT account with no API key, and can reuse a Chrome login through an optional extension.",
+      "reason": "Translated from the introduction and the \"功能\" section of README.md, which is in Chinese. The manifest description and the GitHub About text are half or more Chinese."
+    }
+  ]
 }

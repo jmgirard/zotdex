@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Pushes PDFs of selected items to a reMarkable from the Tools menu, into its root folder or a set parent folder; setup needs a one-time code from My reMarkable, and the author calls it a fragile work in progress.",
+      "reason": "Condensed from the opening, Setup, and \"Setting a Parent Folder\" sections of README.md. The manifest description, \"reMarkable Integration for Zotero\", only repeats the name, and the GitHub About text is missing."
+    }
+  ]
 }

@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Copies item attachments to the clipboard, several at once and in several formats, for pasting with Ctrl+V, with a shortcut you can set; needs a helper binary downloaded from the internet, and attachments must be synced locally.",
+      "reason": "Condensed from the \"How to use?\" and Features sections of README.md. The manifest description, \"Zotero Copy Anything\", only repeats the name, and the GitHub About text is missing."
+    }
+  ]
 }

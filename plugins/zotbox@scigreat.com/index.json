@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Updates article metadata when items are added and shows impact factors, journal and university rankings, and citation counts, checks for academic misconduct through PubPeer, Amend, and Retraction Watch, translates titles and abstracts, and writes AI summaries for some papers.",
+      "reason": "Translated from the \"简介\" section of README.md, which is in Chinese. The manifest description, \"Make Zotero Better and Better\", is in English and has fewer than six words, and the GitHub About text is missing."
+    }
+  ]
 }

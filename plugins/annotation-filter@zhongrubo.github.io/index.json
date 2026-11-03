@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Adds a toolbar at the bottom of the reader's annotation list that filters annotations by type (highlight, underline, note, text, area selection, handwriting), with several types selectable at once and the rest hidden, not deleted.",
+      "reason": "Translated from the \"简介\" and \"功能特性\" sections of README.md, which is in Chinese. The manifest description is half or more Chinese, and the site shows only its last sentence, \"Filter reader annotations by type.\", which has fewer than six words. The GitHub About text is half or more Chinese."
+    }
+  ]
 }

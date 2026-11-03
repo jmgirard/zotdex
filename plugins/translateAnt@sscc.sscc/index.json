@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Translates selected notes and PDFs in batches through services such as Google, DeepL, and Baidu, some of which need a key, turns PDFs into notes, and makes image and table annotations automatically.",
+      "reason": "Condensed from addon/locale/en-US/addon.ftl, since README.md, which is in Chinese, gives only install and menu steps. The manifest description, \"zotero-translate-ant\", is in English and has fewer than six words, and the GitHub About text is missing."
+    }
+  ]
 }

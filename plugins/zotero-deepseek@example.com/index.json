@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Uses the DeepSeek API to summarize papers, answer questions on a paper's full text, compare papers in a table, rewrite notes and annotations into structured notes, and translate or explain selected PDF text; needs a DeepSeek API key.",
+      "reason": "Translated from the \"功能一览\" and \"环境要求\" sections of README.md, which is in Chinese. The manifest description and the GitHub About text are half or more Chinese."
+    }
+  ]
 }

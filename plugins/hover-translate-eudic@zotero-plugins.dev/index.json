@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Translates a word in the PDF reader on hover or click through the Translate for Zotero plugin, and adds words to Eudic, Shanbay, Maimemo, a local word list, or a Zotero note, with a word list side panel.",
+      "reason": "Translated from the introduction and the \"功能特性\" section of README.md, which is in Chinese. The manifest description and the GitHub About text are half or more Chinese."
+    }
+  ]
 }

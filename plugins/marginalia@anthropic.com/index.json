@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Adds an AI chat panel to the PDF reader for asking about the open paper with its full text as context, translates selected text into Chinese, and lets the AI search a linked collection; needs an OpenAI-compatible API URL and key.",
+      "reason": "Translated from the introduction and the \"功能详情\" and \"配置\" sections of README.md, which is in Chinese. The manifest description and the GitHub About text are half or more Chinese."
+    }
+  ]
 }

@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Adds a PDF reader sidebar that sends the current page, selection, or full text to a logged-in web AI via a Tampermonkey script, or to an OpenAI- or Anthropic-compatible API, and shows answers in Zotero with page links.",
+      "reason": "Translated from the opening and the \"它能做什么\" and \"工作方式\" sections of README.md, which is in Chinese. The manifest description and the GitHub About text are half or more Chinese."
+    }
+  ]
 }

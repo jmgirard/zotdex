@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Adds a Save Sentence button to the reader's text selection popup, which sends the selected text and the document's title to a server that must be running at 127.0.0.1:5000.",
+      "reason": "Condensed from the code of src/modules/popup.ts, since README.md is the unchanged plugin template text. The manifest description, \"Zotero Excerpt\", only repeats the name, and the GitHub About text is missing."
+    }
+  ]
 }

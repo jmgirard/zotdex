@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Syncs selected journal articles from the right-click menu into Knode, a personal knowledge center whose AI features analyze and help read them, which needs a login, its domain, and an API key.",
+      "reason": "Translated from the opening text and the \"使用方式\" section of README.md, which is in Chinese. The manifest description, \"Sync Zotero item into Knode\", is in English and has fewer than six words, and the GitHub About text is half or more Chinese."
+    }
+  ]
 }

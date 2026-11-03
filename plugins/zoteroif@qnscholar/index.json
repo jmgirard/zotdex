@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Updates the JCR impact factor and Chinese Academy of Sciences journal rank of selected items from the right-click menu, and of new items automatically, showing them in the Library Catalog and Call Number fields.",
+      "reason": "Translated from the \"使用说明\" section of README.md, which is in Chinese. The manifest description, \"Update IF for Zotero Items.\", is in English and has fewer than six words, and the GitHub About text, the same words, is in English and not shown."
+    }
+  ]
 }

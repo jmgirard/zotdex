@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Tags items with their class in the Wenzhou Medical University journal list (T and Q series), automatically or in bulk, and adds a colored badge column to the item list, using built-in data with no network access or API key.",
+      "reason": "Translated from the opening of README.md, which is in Chinese. The manifest description is half or more Chinese, and the GitHub About text is missing."
+    }
+  ]
 }

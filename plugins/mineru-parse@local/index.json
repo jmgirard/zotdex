@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Uploads PDF attachments to the MinerU cloud service and turns the parsed text, formulas, tables, and images into structured Zotero notes, by right-click, automatically, or in batch; needs a MinerU API token and the Better Notes plugin.",
+      "reason": "Condensed from the \"What is Mineru Parse?\", \"Features\", and \"Prerequisites\" sections of README.md. The manifest description is half or more Chinese, and the GitHub About text is missing."
+    }
+  ]
 }

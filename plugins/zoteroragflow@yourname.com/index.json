@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Uploads a collection's attachments to a RAGFlow service to build a knowledge base, then answers questions on it with source references and saved history; needs a RAGFlow API key and URL, local or hosted.",
+      "reason": "Translated from the opening and the \"功能特点\" and \"配置设置\" sections of README.md, which is in Chinese. The manifest description is half or more Chinese, and the GitHub About text only repeats the name."
+    }
+  ]
 }

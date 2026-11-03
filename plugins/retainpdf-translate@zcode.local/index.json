@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Sends new PDFs, or right-clicked items, to the local RetainPDF desktop app for full-text translation and attaches a Chinese overlay PDF and a side-by-side bilingual PDF to the item; RetainPDF needs its own OCR token and model API key.",
+      "reason": "Translated from the opening and the \"功能\" section of README.md, which is in Chinese. The manifest description and the GitHub About text are half or more Chinese."
+    }
+  ]
 }

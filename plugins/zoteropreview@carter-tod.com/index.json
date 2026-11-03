@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Adds a citation preview pane to Zotero, as a fork of dcartertod's ZoteroPreview7 that focuses on compatibility with newer Zotero versions, layout rendering, and stability.",
+      "reason": "Condensed from the \"Overview\" and \"Key features\" sections of README.md and the manifest description. The manifest description, \"Citation preview pane for Zotero.\", is in English and has fewer than six words, and the GitHub About text, which names the original repository, is in English and not shown."
+    }
+  ]
 }

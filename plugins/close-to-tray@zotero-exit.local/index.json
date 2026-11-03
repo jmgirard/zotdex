@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Hides Zotero to the system tray when the main window's close button is clicked, keeps it running in the background, and restores the window from the tray icon; works only on Windows.",
+      "reason": "Translated from the introduction and the \"使用\" and \"系统要求\" sections of README.md, which is in Chinese. The manifest description is half or more Chinese, and the GitHub About text is missing."
+    }
+  ]
 }

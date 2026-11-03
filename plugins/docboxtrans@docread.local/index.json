@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Translates selected text in the PDF reader with a choice of six services, including any OpenAI-compatible model, keeps a searchable translation history in a side pane, and can feed earlier translations to the model for consistent terms.",
+      "reason": "Translated from the introduction and the \"功能特性\" section of DocBoxTrans-Zotero/README.md, which is in Chinese. The manifest description is half or more Chinese, and the GitHub About text is missing."
+    }
+  ]
 }

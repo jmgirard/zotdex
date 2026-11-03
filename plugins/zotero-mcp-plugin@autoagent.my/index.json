@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Runs an MCP server inside Zotero so AI clients such as Claude Desktop, Cherry Studio, or Cursor can search your library, read PDF text and annotations, create notes, manage tags, update metadata, and add items.",
+      "reason": "Condensed from the \"Project Overview\" and \"Project Structure\" sections of README.md. The manifest description only repeats the name, and the GitHub About text is half or more Chinese."
+    }
+  ]
 }

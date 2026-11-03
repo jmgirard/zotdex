@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Underlines unfamiliar words in English PDFs and shows a Chinese gloss on hover, chosen from the word's sentence by a Chat Completions model you configure, and marks words as known with Backspace, Delete, or a mouse side button.",
+      "reason": "Translated from the opening and the \"释义来源：上下文翻译\" section of README.md, which is in Chinese. The manifest description and the GitHub About text are half or more Chinese."
+    }
+  ]
 }

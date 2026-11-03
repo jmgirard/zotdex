@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Adds citation metadata to Zotero items: gets citations from Wikidata, Crossref, Semantic Scholar, and OpenAlex, syncs them with Wikidata using an OAuth 2.0 token, and draws local citation and co-authorship networks.",
+      "reason": "Condensed from the feature list and the \"Wikidata communication\" section of README.md. The manifest description, \"Citations metadata support for Zotero\", is in English and has fewer than six words, and the GitHub About text, \"Cita: a Wikidata addon for Zotero with citations metadata support\", is in English and not shown."
+    }
+  ]
 }

@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Translates text selected in the PDF or EPUB reader into a floating card from a popup button, sending words to Google and sentences to an OpenAI-compatible API you configure, with MyMemory as another service, and can save translations as annotations.",
+      "reason": "Translated from the \"1. 功能\" section of README.md, which is in Chinese. The manifest description and the GitHub About text are half or more Chinese."
+    }
+  ]
 }

@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Records page numbers and times while reading and charts them per item, per selection, and in an overview tab, with a reading progress column, a recently read menu, a reader minimap, and a sidebar of a document's images.",
+      "reason": "Condensed from the \"Introduction\" table of README.md. The manifest description, \"Charts for Zotero\", is in English and has fewer than six words, and the GitHub About text, \"Chart in Zotero\", is in English and not shown."
+    }
+  ]
 }
