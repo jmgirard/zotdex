@@ -261,7 +261,7 @@ const { min, max } = declaredRange(record);
       {
         upstream && (
           <>
-            {upstream.description !== undefined && (
+            {upstream.description !== undefined && upstream.description.trim() !== "" && (
               <div>
                 <dt>Manifest description</dt>
                 <dd data-fact="manifest-description">{upstream.description}</dd>

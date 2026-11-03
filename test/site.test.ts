@@ -575,7 +575,7 @@ describe("the plugin page", () => {
       ...(record.paidService ? [[PAID_TEXT, "paid-service"]] : []),
       ...(upstream
         ? [
-            ...(upstream.description !== undefined ? [["Manifest description", "manifest-description"]] : []),
+            ...(upstream.description?.trim() ? [["Manifest description", "manifest-description"]] : []),
             ...(upstream.repoDescription !== undefined ? [["GitHub description", "github-description"]] : []),
             ...(typeof upstream.archived === "boolean" ? [["Archived on GitHub", "archived"]] : []),
             ...(typeof upstream.sourceInRepo === "boolean" ? [["Source code at the repository's top level", "source-in-repo"]] : []),
@@ -1843,6 +1843,42 @@ describe("the built site", () => {
       const text = readFileSync(join(out, file), "utf8");
       for (const trace of traces) expect(text.includes(trace), `${file}: ${trace}`).toBe(false);
     }
+  });
+});
+
+describe("the description facts", () => {
+  // The shared fixture has no blank text, so these records get their own build.
+  const base = records.find((record) => record.id === "first-plugin@example.org")!;
+  const { description: _manifest, repoDescription: _github, ...upstream } = base.upstream!;
+  const withTexts = (id: string, texts: { description?: string; repoDescription?: string }): PluginRecord => ({
+    ...base,
+    id,
+    upstream: { ...upstream, id, ...texts },
+    reports: [],
+    overrides: [],
+  });
+  const plugins = [
+    withTexts("both-texts@example.org", { description: "Keeps notes tidy.", repoDescription: "Sorts notes by date." }),
+    withTexts("blank-manifest@example.org", { description: " \n" }),
+  ];
+  let dir = "";
+  beforeAll(() => {
+    dir = outWith(JSON.stringify({ schemaVersion: 1, generatedAt: "2026-11-03T06:17:00.000Z", plugins }));
+    const run = pnpmSite(["--out", dir]);
+    if (run.status !== 0) throw new Error(run.stderr);
+  }, 120_000);
+  const pageOf = (id: string) => readFileSync(join(dir, "plugins", id, "index.html"), "utf8");
+
+  test("the data file is valid against the v1 schema", () => {
+    const validate = new Ajv({ allErrors: true }).compile(pluginsSchema);
+    const data = JSON.parse(readFileSync(join(dir, "v1/plugins.json"), "utf8"));
+    expect(validate(data), JSON.stringify(validate.errors)).toBe(true);
+  });
+
+  test("shows no Manifest description row for a blank text and keeps it for a text", () => {
+    expect(pageOf("blank-manifest@example.org")).not.toContain("<dt>Manifest description</dt>");
+    expect(pageOf("both-texts@example.org")).toMatch(/<dt>Manifest description<\/dt>\s*<dd data-fact="manifest-description">/);
+    expect(fact(pageOf("both-texts@example.org"), "manifest-description")).toBe("Keeps notes tidy.");
   });
 });
 

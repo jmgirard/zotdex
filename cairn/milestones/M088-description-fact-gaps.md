@@ -62,9 +62,9 @@ text stays as the manifest has it.
 - [x] T1: Change `CJK` and `OTHER_LETTERS` in `src/site/description.ts:34` and normalize in `cjkShare`, with the tests
       of AC1. Limit the `Script_Extensions` part to letters, since CJK punctuation also names these scripts. Plant the
       letter limit's removal once to see `、。` fail.
-- [ ] T2: Run a one-off comparison, kept out of the repo, of the default branch's and the branch's `shownDescription`
+- [x] T2: Run a one-off comparison, kept out of the repo, of the default branch's and the branch's `shownDescription`
       over every record of the data file. Record the result in the work log.
-- [ ] T3: Show the "Manifest description" row at `site/src/pages/plugins/[id]/index.astro:264` only for a non-blank text,
+- [x] T3: Show the "Manifest description" row at `site/src/pages/plugins/[id]/index.astro:264` only for a non-blank text,
       with the test of AC3. Update the expected row list at `test/site.test.ts:578`.
 - [ ] T4: Build the description cell's lines in `site/src/data.ts` beside `upstreamValue`, and render them in the table
       at `site/src/pages/plugins/[id]/index.astro:340`, with the tests of AC4. A new fixture record goes into each hand
@@ -83,6 +83,8 @@ text stays as the manifest has it.
 - 2026-11-03: plan chose `Script_Extensions` letters over a hand list of the 11 code points, because the property follows Unicode; falsified by a letter it takes that is not used in CJK text.
 - 2026-11-03: split: M088 covers items (1) to (3), which are code; item (4) becomes M089, which is data; plugins added later and other-language texts become the row "Fill description gaps on new plugins". This milestone's hygiene narrows the source row to item (4) and gives it M089's started token.
 - 2026-11-03: T1: `cjkShare` takes the NFC form and counts `Script_Extensions` letters as CJK; 4 new rows failed on the old count. Removing the letter limit made `、。` fail, as planted.
+- 2026-11-03: T2: a one-off comparison of the default branch's and the branch's `shownDescription` over `plugins-data-2026-11-03.json` with the checkout's overrides: 736 records, 682 with a shown text, 0 differ.
+- 2026-11-03: T3: the Manifest description row needs a non-blank text; the new test failed on the old page. Its own small build keeps these records out of the shared fixture's hand lists.
 
 ## Decisions
 
