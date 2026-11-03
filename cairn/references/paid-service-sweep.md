@@ -1,13 +1,14 @@
-# paid-service-sweep: a hand read of which plugins need a paid service from their maker (M082)
+# paid-service-sweep: a hand read of which plugins need a paid service from their maker (M082, M083)
 
-**Provenance.** Ingested 2026-11-02 by M082 from a read of the plugins' own text
-on 2026-11-02. Pagination: none.
+**Provenance.** Ingested 2026-11-02 by M082 and extended the same day by M083,
+from reads of the plugins' own text on 2026-11-02. Pagination: none.
 Extraction: a 2026-11-02 snapshot, and READMEs and descriptions can change after it (observed 2026-11-02).
 
 **Scope.** This page records two reads. The first, which AC6 of M082 rests on,
 covers the 695 entries under `plugins/` at commit `c8f2b65`. The second, which
-M083 adds, covers the 34 entries that `34a02a8` adds after that commit. It builds
-no checker. A plugin added after `34a02a8` has not been read. Status lives in `ROADMAP.md`, decisions in
+M083 adds, covers the 34 entries added between that commit and `34a02a8`. The
+sections before "Second read" hold the first read. This page builds no checker.
+A plugin added after `34a02a8` has not been read. Status lives in `ROADMAP.md`, decisions in
 `DECISIONS.md`, and architecture in `DESIGN.md`.
 
 ## Texts read
@@ -514,7 +515,7 @@ None.
 
 The list found 17 entries with a hit, and 17 with none.
 
-- `bilingual-reader@local`: this release needs no activation code, and users pay for their own DeepSeek key
+- `bilingual-reader@local`: since 0.3.4 it needs no activation code, and users pay for their own DeepSeek key
 - `bluebook-signals-for-zotero@mystery-lab.com`: activated means opening a menu, nothing is sold
 - `chatgpt-sidebar@zotero.local`: uses the user's own ChatGPT account, a third party
 - `codex-pdf-bridge@local.personal`: the hit is a version upgrade, and it uses local Codex
@@ -523,11 +524,11 @@ The list found 17 entries with a hit, and 17 with none.
 - `doi-column@anfang886.github.io`: registration means DOI registrants, nothing is sold
 - `extra-columns@petersharp.org`: cast member is a field name, and credits means acknowledgements
 - `paper-chat@zotero-llm-wiki`: needs a paid Claude plan or API key, from a third party
-- `paper-chat@zotero.plugin`: works with the user's own provider key, and the maker's service is optional
+- `paper-chat@zotero.plugin`: chat works with the user's own provider key, and only slide generation needs the maker's service
 - `paper-lens@februarysea.github.io`: uses the user's own ChatGPT plan, a third party
 - `paperflow@zotero.local`: uses the user's own Codex or Claude plan, a third party
 - `zot2rm@fbkarsdorp.github.io`: works over USB with no cloud account
 - `zotero-ai-notes@example.com`: the hit is the login manager that stores the user's key
-- `zotero-mineru@example.com`: registering an attachment, nothing is sold
+- `zotero-mineru@example.com`: the hit means registering an attachment, and its MinerU token comes from a third party
 - `zotero-remarkable-sync@piwowarski.fr`: reMarkable's cloud is a third party, and credits means acknowledgements
 - `zotero-research@local.invalid`: logs in to third-party AI sites, with no maker's service
