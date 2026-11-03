@@ -82,6 +82,7 @@ row "Refine the Latin part and short picks".
 - 2026-11-03: T6: ledger page and `INDEX.md` line written; its table matches rows generated from the drafts and the command's list. The hook's other hits on the page stay: the `— observed` marks the rulebook asks for, quoted plugin text, and the two long lists of plugin names.
 - 2026-11-03: claim audit: 717 claims read, 12 corrected — plugins/{ninja@fluctus.cc,rule-outline@local.zotero,zotero7-scidb@dev.null}/index.json in `value`; plugins/{ai-batch-reader@example.com,bilingual-reader@zotero.local,lcsc-datasheets@local.example,litmtrans@srt117.github.io,yonghao.zou@epfl.ch,zemble@cosmik.network,zotassets@yunze.dev,zotero-mcp-plugin@autoagent.my,zotero@bibsonomy.org}/index.json in `reason`; CHANGELOG.md read, none wrong. Four fresh Opus readers split the pass by the same four batches, as 625 KB of READMEs does not fit one reader well.
 - 2026-11-03: review corrects the T5 line above: a model named as a translation engine counts as right under `ai`, as `category-ledger.md` marks such plugins, so the read is 32 right and 21 wrong.
+- 2026-11-03: step-7 approval: m089-description-gaps-2026-11-03 approved for merge
 - 2026-11-03: the audit left one claim standing that may be stale: `zoteropaperagent`'s "API key from a QR code login web page" is what the README's step 1 states, though `doc/3_1_Introduction_EN.md` says the Kimi web crawler was removed.
 
 ## Decisions
