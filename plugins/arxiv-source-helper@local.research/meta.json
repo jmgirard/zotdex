@@ -1,0 +1,8 @@
+{
+  "id": "arxiv-source-helper@local.research",
+  "name": "arXiv Source Helper",
+  "description": "Automatically retain arXiv TeX source and expose local section/table queries.",
+  "homepage": "https://github.com/zeya-labs/zotero-arxiv-source-helper",
+  "repoUrl": "https://github.com/zeya-labs/zotero-arxiv-source-helper",
+  "updateUrl": "https://raw.githubusercontent.com/zeya-labs/zotero-arxiv-source-helper/main/updates.json"
+}
