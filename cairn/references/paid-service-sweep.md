@@ -2,14 +2,15 @@
 
 **Provenance.** Ingested 2026-11-02 by M082 and extended by M083 and M084, from
 reads of the plugins' own text on 2026-11-02 and 2026-11-03. Pagination: none.
-Extraction: a 2026-11-02 snapshot, and READMEs and descriptions can change after it (observed 2026-11-02).
+Extraction: snapshots of 2026-11-02 and 2026-11-03, and READMEs and descriptions can change after them (observed 2026-11-03).
 
 **Scope.** This page records three reads. The first, which AC6 of M082 rests on,
 covers the 695 entries under `plugins/` at commit `c8f2b65`. The second, which
 M083 adds, covers the 34 entries added between that commit and `34a02a8`. The
 third, which M084 adds, covers the 7 entries added between `34a02a8` and
 `1b2cebf`. The sections before "Second read" hold the first read. This page
-builds no checker. A plugin added after `1b2cebf` has not been read. Status lives in `ROADMAP.md`, decisions in
+builds no checker. A plugin added after `1b2cebf` has not been read. Status
+lives in `ROADMAP.md`, decisions in
 `DECISIONS.md`, and architecture in `DESIGN.md`.
 
 ## Texts read
@@ -565,6 +566,6 @@ None.
 
 The list found 3 entries with a hit, and 4 with none.
 
-- `zhinfo@zotero.local`: works with free MyMemory or the user's own third-party key
-- `zotero-ai-collection@jiaxin.fan`: the hits are the user's own LLM key and its quota, from a third party
-- `zotero-tray@local`: activate means bringing a window forward, nothing is sold
+- `zhinfo@zotero.local`: works with free MyMemory or the user's own third-party key, and register means code sections
+- `zotero-ai-collection@jiaxin.fan`: the hits are a trial on a test library and the user's own LLM key and quota, from a third party
+- `zotero-tray@local`: activate and register mean window and icon handling, nothing is sold
