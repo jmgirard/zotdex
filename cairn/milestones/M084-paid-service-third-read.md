@@ -49,6 +49,7 @@ Mark each plugin merged since the second paid service read whose main use needs 
 - 2026-11-03: T1 done: 7 entries read, 10 READMEs read at recorded SHAs, 3 with a hit, 0 marked.
 - 2026-11-03: T2 done: the read marks no entry, so no `paidService` is written and the branch changes nothing outside `cairn/`.
 - 2026-11-03: claim audit: not owed — no added lines outside cairn/
+- 2026-11-03: step-7 approval: m084-paid-service-third-read approved for merge
 
 ## Decisions
 
