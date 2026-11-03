@@ -29,7 +29,7 @@ import {
   SUPPORT_MARKS as MARKS,
   SUPPORT_WORDS,
   supportText,
-  upstreamValue,
+  upstreamLines,
   type PluginRecord,
 } from "../../../data.ts";
 
@@ -337,7 +337,7 @@ const { min, max } = declaredRange(record);
                 {overrides.map((override) => (
                   <tr data-override={override.field}>
                     <td><code>{override.field}</code></td>
-                    <td>{upstreamValue(record, override.field) ?? "none"}</td>
+                    <td>{upstreamLines(record, override.field).map((line, index) => <>{index > 0 && <br />}{line}</>)}</td>
                     <td>{override.value}</td>
                     <td>{override.version ?? "every version"}</td>
                     <td>{overrideUsed(record, override) ? "yes" : "no"}</td>

@@ -66,7 +66,7 @@ text stays as the manifest has it.
       over every record of the data file. Record the result in the work log.
 - [x] T3: Show the "Manifest description" row at `site/src/pages/plugins/[id]/index.astro:264` only for a non-blank text,
       with the test of AC3. Update the expected row list at `test/site.test.ts:578`.
-- [ ] T4: Build the description cell's lines in `site/src/data.ts` beside `upstreamValue`, and render them in the table
+- [x] T4: Build the description cell's lines in `site/src/data.ts` beside `upstreamValue`, and render them in the table
       at `site/src/pages/plugins/[id]/index.astro:340`, with the tests of AC4. A new fixture record goes into each hand
       list of fixture ids in `test/site.test.ts`.
 - [ ] T5: Update README near line 108, DESIGN near line 186, the About page near line 151, and `CHANGELOG.md`.
@@ -85,6 +85,7 @@ text stays as the manifest has it.
 - 2026-11-03: T1: `cjkShare` takes the NFC form and counts `Script_Extensions` letters as CJK; 4 new rows failed on the old count. Removing the letter limit made `、。` fail, as planted.
 - 2026-11-03: T2: a one-off comparison of the default branch's and the branch's `shownDescription` over `plugins-data-2026-11-03.json` with the checkout's overrides: 736 records, 682 with a shown text, 0 differ.
 - 2026-11-03: T3: the Manifest description row needs a non-blank text; the new test failed on the old page. Its own small build keeps these records out of the shared fixture's hand lists.
+- 2026-11-03: T4: `upstreamLines` in `site/src/data.ts` gives the cell's lines, and a `<br>` splits two lines, so one value and `none` keep their plain cell; `upstreamValue` no longer reads `description`, and its test stays.
 
 ## Decisions
 
