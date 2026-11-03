@@ -460,10 +460,11 @@ The `note` and `source` of each are in the entry's `index.json`.
 
 The read date is 2026-11-02. This read covers the 34 entries that
 `git diff --name-only --diff-filter=A c8f2b65 34a02a8 -- plugins/` lists as added
-`meta.json` files. It uses the word list and matching rule above. The texts are
-each entry's `meta.json` description at `34a02a8`, its GitHub About text below,
-and each top-level file whose name starts with README, ignoring case, at the SHA
-below. The read found 44 such files, and every text was read.
+`meta.json` files. It uses the word list and matching rule above. It reads three
+kinds of text. The first is each entry's `meta.json` description at `34a02a8`.
+The second is its GitHub About text below. The third is each top-level file whose
+name starts with README, ignoring case, at the SHA below. The read found 44 such
+files, and every text was read.
 
 The session read every hit and gave 0 marks. So no entry of this read has
 `paidService`.
