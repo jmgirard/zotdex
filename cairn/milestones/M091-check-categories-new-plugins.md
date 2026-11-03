@@ -79,8 +79,8 @@ The site's categories rest on a hand read of the 464 plugins added since 2026-10
      Coverage lines together. -->
 
 - [x] T1: Start the ledger with its provenance, the terms, the base commit, and the listing script. Compute the held-out ids by the rule and keep them in a scratch file, and do not read those plugins' ids, texts, or categories until T4.
-- [ ] T2: Read the tuning group under the base rules. Mark each category, search `cairn/references/category-ledger.md` for like plugins before marking one wrong (M089 lesson), and note each clearly missing category. State the tuning-group rate.
-- [ ] T3: Change the patterns in `src/site/categories.ts` for words that can go wrong again, starting with the six phrases of AC3, and add `include` and `exclude` entries for single plugins. Add the AC3 tests to `test/categories.test.ts`, seen red on the base rules first, and add one test for each other pattern narrowed. Stop changing rules, and commit: this is the named commit of AC2.
+- [x] T2: Read the tuning group under the base rules. Mark each category, search `cairn/references/category-ledger.md` for like plugins before marking one wrong (M089 lesson), and note each clearly missing category. State the tuning-group rate.
+- [x] T3: Change the patterns in `src/site/categories.ts` for words that can go wrong again, starting with the six phrases of AC3, and add `include` and `exclude` entries for single plugins. Add the AC3 tests to `test/categories.test.ts`, seen red on the base rules first, and add one test for each other pattern narrowed. Stop changing rules, and commit: this is the named commit of AC2.
 - [ ] T4: Read the held-out group under the named commit and under the base rules, and write its lines. State the held-out rate, the `categories.ts` hash, and the group's limit. If the rate is over 1 in 10, stop with a close block that names the rate and D-059. Write the base-rule marks of these plugins as AC1's lines.
 - [ ] T5: Fix the held-out plugins' wrong marks with `include` or `exclude` entries, since their rate is now recorded. Run the listing script with the branch's file, then the compare script over all 736 records, and read and mark each gain and loss in the ledger, the older 272 plugins included.
 - [ ] T6: Add the `aria-label` to the link in `site/src/pages/plugins/[id]/index.astro:111`, and update the tests near `test/site.test.ts:444` and `:480`, which assume `data-category` is the last attribute. Look at one built plugin page in the browser pane.
@@ -116,6 +116,11 @@ The site's categories rest on a hand read of the 464 plugins added since 2026-10
 - 2026-11-03: deploy: a merge deploys nothing; the review close block offers `gh workflow run build.yml --ref main`, and the daily build at 06:17 UTC deploys otherwise.
 - 2026-11-03: implement: base commit b941616b; the rule gives 100 held-out and 364 tuning plugins; one held-out id was on a line of the plan's phrase search, and no rule change may rest on it.
 - 2026-11-03: T1 done: ledger started with the group rule and listing script; minor amendment, the held-out ids reach the ledger at T4, so the agent that tunes does not read them first.
+- 2026-11-03: T2 done: tuning group 63 wrong of 503 counted assignments under the base rules, 32 missing marks accepted.
+- 2026-11-03: T3 done at 87a6185b: patterns narrowed and widened, id lists added, 24 tests red on the base rules; the compare over non-held records gives 34 gains and 63 losses, and every loss is a wrong mark.
+- 2026-11-03: T3 approach: a guard on any text naming MCP lost 3 right `ai` assignments, so the guard names only "MCP server" and "MCP bridge"; a wider net is the falsifier the plan named.
+- 2026-11-03: T4 result: a fresh Opus reader marked the held-out group; 20 wrong of 148 under 87a6185b (13.5%), 20 wrong of 146 under the base rules (13.7%); over 1 in 10, so the stop of AC2 and D-059 applies; the agent changed no held-out mark.
+- 2026-11-03: T6 label committed at 4c64c658 ahead of T4 and T5, since it touches no rule; the browser look waits.
 - 2026-11-03: delegation: four fresh Opus readers mark the tuning group in batches of 91, so the rule changes are not tuned by the readers of the held-out group; the agent settles every wrong and missing mark.
 
 ## Decisions
