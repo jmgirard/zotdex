@@ -625,13 +625,13 @@ describe("pnpm build with a timer still pending", () => {
 
   test("writes the whole stdout of over 64 KiB before it exits", async () => {
     // Each entry's repo has no recorded answer, so its read fails with HTTP 404 and adds one
-    // stdout line, which the long repo name makes over 1 KiB. Few entries keep the paced API
+    // stdout line, which the long repo name makes over 3 KiB. Few entries keep the paced API
     // requests short.
     const tree = tempDir();
     for (let i = 0; i < 80; i++) {
       const id = `plugin-${String(i).padStart(4, "0")}@example.org`;
       mkdirSync(join(tree, id));
-      writeFileSync(join(tree, id, "meta.json"), JSON.stringify({ id, repoUrl: `https://github.com/example/plugin-${i}-${"x".repeat(1000)}` }));
+      writeFileSync(join(tree, id, "meta.json"), JSON.stringify({ id, repoUrl: `https://github.com/example/plugin-${i}-${"x".repeat(3000)}` }));
       writeFileSync(join(tree, id, "index.json"), JSON.stringify({ schemaVersion: 1 }));
     }
     const fixture = writeFixture({ [LABEL]: { json: { name: "report" } }, [ISSUES]: { json: [] } });
@@ -642,14 +642,14 @@ describe("pnpm build with a timer still pending", () => {
     const plainData = takeData(out);
     expect(plainData?.plugins).toHaveLength(80);
 
-    // This run's stdout is not read for its first 2 seconds, so the pipe fills and the
-    // command still holds unwritten output when it is done.
+    // This run's stdout is not read for its first 12 seconds, past the paced reads, so the pipe
+    // fills and the command still holds unwritten output when it is done.
     const { INIT_CWD: _outer, GITHUB_TOKEN: _token, GITHUB_REPOSITORY: _repo, ...env } = process.env;
     Object.assign(env, { ZPI_FIXTURE: fixture, NODE_OPTIONS: `--import=${PRELOAD} --import=${PENDING}` });
     const started = performance.now();
     const child = spawn(process.env.npm_execpath!, ["--silent", "--dir", ROOT, "build", tree, "--out", out], { env });
     child.stdout.pause();
-    setTimeout(() => child.stdout.resume(), 2000);
+    setTimeout(() => child.stdout.resume(), 12_000);
     let stdout = "";
     child.stdout.setEncoding("utf8").on("data", (text: string) => (stdout += text));
     const timer = setTimeout(() => child.kill("SIGKILL"), 40_000);
@@ -916,7 +916,7 @@ describe("buildData", () => {
       expect(result.buildLevel).toEqual(["b-stalled@example.org"]);
     });
 
-    test("reads no plugin once the build limit has passed, and fails each entry left as not-read", async () => {
+    test("starts no plugin read once the build limit has passed, and fails each entry left as not-read", async () => {
       const { tree, recorded } = stalledTree();
       const { fetch, requests } = fixtureFetch(recorded);
       const limits = { readMs: 1500, buildMs: 1000, startedAt: performance.now(), readsAtOnce: 1, apiGapMs: 0 };
@@ -1010,15 +1010,15 @@ describe("buildData", () => {
         const seen = new Map<string, number>();
         const { fetch } = fixtureFetch(recorded, ({ url }) => seen.set(url, performance.now()));
         const begun = performance.now();
-        const result = await buildData(tree, fetch, EVEN, undefined, { readMs: 1500 });
+        const result = await buildData(tree, fetch, EVEN, undefined, { readMs: 3000 });
         if (!result.ok) throw new Error(result.problems.join("\n"));
         expect(failures(result.text)).toEqual([
           ["a-first@example.org", "facts"],
           ["b-stalled@example.org", "request-failed"],
           ["c-third@example.org", "facts"],
         ]);
-        expect(record(JSON.parse(result.text), "b-stalled@example.org")?.failure?.message).toContain("passed its time limit of 1500 ms");
-        expect(seen.get(xpiOf("c-third"))! - begun).toBeLessThan(1500);
+        expect(record(JSON.parse(result.text), "b-stalled@example.org")?.failure?.message).toContain("passed its time limit of 3000 ms");
+        expect(seen.get(xpiOf("c-third"))! - begun).toBeLessThan(3000);
       });
 
       test("starts the plugin reads' API requests 80 ms apart, an API update file included", async () => {
@@ -1041,10 +1041,10 @@ describe("buildData", () => {
         const { tree, recorded } = pluginTree(names);
         const starts = new Map<string, number>();
         const { fetch } = fixtureFetch(recorded, ({ url }) => starts.set(url, performance.now()));
-        const result = await buildData(tree, fetch, EVEN, undefined, { apiGapMs: 300 });
+        const result = await buildData(tree, fetch, EVEN, undefined, { apiGapMs: 600 });
         if (!result.ok) throw new Error(result.problems.join("\n"));
         const xpiAt = starts.get(xpiOf("a-first"))!;
-        expect(xpiAt - starts.get(releases("a-first"))!).toBeLessThan(150);
+        expect(xpiAt - starts.get(releases("a-first"))!).toBeLessThan(300);
         expect(xpiAt).toBeLessThan(starts.get(releases("b-second"))!);
       });
 
@@ -1090,7 +1090,7 @@ describe("buildData", () => {
         const answer = fixtureFetch(recorded).fetch;
         const started: string[] = [];
         const startedAt = performance.now();
-        const buildMs = 800;
+        const buildMs = 2000;
         const fetch: Fetch = async (url, init) => {
           const name = repoName(url);
           if (name) {

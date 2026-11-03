@@ -383,7 +383,10 @@ function pacedApi(fetch: Fetch, gapMs: number): Fetch {
       // In an array, so that the next request's turn does not wait for this answer.
       return [fetch(url, init)] as const;
     });
-    queue = turn.then(() => {});
+    queue = turn.then(
+      () => {},
+      () => {},
+    );
     const [answer] = await turn;
     return answer;
   };

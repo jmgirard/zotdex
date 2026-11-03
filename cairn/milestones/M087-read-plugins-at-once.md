@@ -1,6 +1,6 @@
 # M087: Read plugins a few at a time
 
-- **Status:** review
+- **Status:** in-progress
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
@@ -28,7 +28,7 @@ A normal daily build reads every plugin before its time limit, with room for the
 - [x] AC1: `pnpm build` holds at most 4 plugin reads open at once and reaches 4 when more than 4 plugins wait: a test over 6 plugins, which holds the answers and counts open reads at every start and end, sees a peak of exactly 4, sees no fifth repo read after two further gaps of 80 ms, and ends with all 6 records written.
 - [x] AC2: A stalled plugin read holds up only its own place: one test with the stall on an API request and one with it on an XPI request each see the plugins after it written with facts, and the stalled plugin fail as `request-failed` at the read limit that the test sets.
 - [x] AC3: Each fetch call that a plugin read makes to an `api.github.com` URL starts at least 80 ms after the one before it, whichever read sends it, and a request to another host does not wait: a test over several plugins compares the API start times, includes an `update_url` on the API host, and sees an XPI request start while an API request waits. A redirect that fetch follows inside one call counts as that one call.
-- [x] AC4: Reads start in the day's order from D-028, and the records, the build-level list, and the start plan keep id order when reads end out of order, on an even and on an odd UTC day: tests with at least 2 build-level entries and 2 plan items whose reads end in another order than they start.
+- [ ] AC4: Reads start in the day's order from D-028, and the records, the build-level list, and the start plan keep id order when reads end out of order, on an even and on an odd UTC day: tests with at least 2 build-level entries and 2 plan items whose reads end in another order than they start.
 - [x] AC5: After `BUILD_LIMIT_MS` the build starts no read, the reads open at that time run on to their end, and each entry not started gets `not-read`; those entries are the last in the day's read order: a test over more than 4 plugins, on an even and on an odd UTC day, with a read open at the limit that ends with facts.
 - [x] AC6: Two `build.yml` runs on the milestone branch, over all the plugins in `plugins/` (at least 736), each leave no record `not-read`, show no HTTP 403 or 429 from `api.github.com` in the log of their `pnpm build` step, the top-level name warning included, and finish that step in under 10 minutes.
 - [x] AC7: README's "Building the data" text and `cairn/DESIGN.md`'s build text say that the build reads up to 4 plugins at once and paces its API requests, and `CHANGELOG.md` has an entry under Unreleased; a search of joined copies of README and DESIGN, and of `src/build/build.ts`, for "one at a time", "one by one", and "in turn" finds no remaining claim about the plugin reads.
@@ -78,6 +78,8 @@ A normal daily build reads every plugin before its time limit, with room for the
 
 - 2026-11-03: claim audit: 44 claims read, 1 corrected — README.md, src/build/build.ts (a redirect that fetch follows is not paced; the CHANGELOG summary stands). The `not-read` message "reads no plugin" predates this work and stays.
 
+- 2026-11-03: review return 1: AC4's test on the odd day has a build-level pair that ends in the order it starts, so it misses "end in another order than they start"; also owed: a test for a fetch that throws at once, and `toHaveLength(7)` in the pacing test.
+
 ## Decisions
 
 ## Review
@@ -91,3 +93,32 @@ Fresh runs on 2026-11-03 at the branch head, with `vitest run test/build.test.ts
 - AC5: "lets open reads end at the build limit and starts no other" passes on an even and an odd day over 6 plugins, with 4 reads open at the limit that end with facts; a planted loss of the limit check fails both.
 - AC6: runs 41689697258 and 41690770665 on the branch at 6750b3a (code equal to the head, comments apart), 736 plugins: steps 5:08 and 5:32, "build-level failures: 0 of 736 records", and a search of each job log found 0 `not-read` and 0 `api.github.com` lines with HTTP 403 or 429; no top-level name warning in either.
 - AC7: README, DESIGN, and CHANGELOG hold the text; the search of joined README and DESIGN finds only the `discover` group's runs and two issue sweeps, none about plugin reads, and `src/build/build.ts` has no hit.
+
+spawned: diff-bug, blame-history, prior-review, ripple
+
+- diff-bug #1: the 64 KiB stdout test no longer fills the pipe, since 80 paced requests outlast its 2 s pause — fix now; with 3000-character repo names and a 12 s pause it fails again with `cli.ts`'s flush removed, as main's test does.
+- diff-bug #2: a fetch that throws at once rejects `queue`, so every later API request fails — fix now; only an injected fetch reaches it, and the queue now ignores the failure; a test is owed.
+- diff-bug #3: `test/build.test.ts` reads each start after `lastStart` is set, so a pause over 1 ms there can show a gap under 80 ms — follow-up: row "Tighten the paced build reads", parked until a test fails in CI or a user reports it.
+- diff-bug #4: the 150 ms bound of the other-host test is tight under load — fix now: 300 ms with a 600 ms gap.
+- diff-bug #5: the build-limit test's 800 ms can pass before reads start under load — fix now: 2000 ms.
+- diff-bug #6: 1500 ms is both the read limit and the XPI start bound in the stall tests — fix now: 3000 ms.
+- diff-bug #7: on the odd day d-fourth ends before b-second, as they start, so that build-level pair misses AC4's wording — floor return: AC4's test does not do what AC4 names; see work log.
+- diff-bug #8: a read aborted in the queue fails about 240 ms late and spends a turn — follow-up: row "Tighten the paced build reads".
+- diff-bug #9: the XPI row of "reads on past" repeats the stall table at line 906 — reject, planned change: AC2 names both stalls.
+- diff-bug #10: `expect(started).toEqual(order)` repeats line 936 — reject, false: line 936 has 3 plugins and never reaches the queue past 4 reads.
+- diff-bug #11: `toBeGreaterThanOrEqual(7)` is loose where the count is exactly 7 — fix now.
+- diff-bug #12: the published "reads no plugin after" message is inexact, since open reads run on — reject, planned change: the failure message stays, and D-058 keeps `not-read`'s meaning.
+- diff-bug #13: DESIGN, D-058, and CHANGELOG lack README's redirect caveat — reject, style: those are summaries, and README and the code comment state it.
+- diff-bug #14: `readsAtOnce: 0` leaves holes in `records` — reject, edge: only tests set it, outside any documented use, and a run gives an error.
+- diff-bug #15: a worker that throws rejects `Promise.all` while others read on — reject, false: `readRecord` catches every read error, and the validation after it does not throw on its JSON copy.
+- diff-bug #16: the host `api.github.com.` skips pacing — follow-up: row "Tighten the paced build reads".
+- diff-bug #17: four XPI reads can hold up to 200 MB — reject, false: no defect, since each XPI is capped at 50 MB and the runner has far more memory.
+- blame-history #1: same as diff-bug #1 — fix now.
+- blame-history #2: same as diff-bug #2 — fix now.
+- blame-history #3: "a redirect that fetch follows" omits the reader's own redirect hops — reject, false: those hops are separate fetch calls, which pacing covers, so the sentence is true.
+- blame-history #4: four reads go against GitHub's serial advice with no monitor — reject, planned change: the question set chose it, D-058 records it, and row "Retry build reads GitHub refuses" holds the falsifier.
+- blame-history #5: same as diff-bug #3 — follow-up: row "Tighten the paced build reads".
+- prior-review #1: real-clock margins repeat the flake class M050 and M051 fixed — fix now: widened as in diff-bug #4 and #6; `wait(2 * 80 + 40)` only checks that nothing starts, so it cannot fail from load.
+- prior-review #2: the 800 ms cut test — fix now: as in diff-bug #5.
+- ripple #1: `CHANGELOG.md:501` says `pnpm build` reads the plugins in id order — fix now: it now says it starts them.
+- ripple #2: test title "reads no plugin once the build limit has passed" — fix now: it now says starts.
