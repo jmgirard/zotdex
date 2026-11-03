@@ -1,0 +1,7 @@
+{
+  "id": "rmzotero@rmproxy-zotero",
+  "name": "reMarkable for Zotero (rmzotero)",
+  "description": "Shows and controls how your library syncs with a reMarkable tablet through the rmzotero service.",
+  "repoUrl": "https://github.com/zsrobinson/rmproxy-zotero",
+  "updateUrl": "https://github.com/zsrobinson/rmproxy-zotero/releases/latest/download/updates.json"
+}
