@@ -108,16 +108,16 @@ Gate: `cairn_validate` passed; the profile's slot names no toolchain checks; no 
 
 spawned: diff-bug, blame-history, prior-review, ripple
 
-- diff-bug #1: the Review line said all 8 tests failed before the change, but 3 pin kept behavior — fix now: the line is corrected from a fresh run on the default branch's page.
-- diff-bug #2: the new "data file is valid against the v1 schema" test passes on main and pins nothing the change could break — fix now: removed.
+- diff-bug #1: the Review line said all 8 tests failed before the change, but 3 pin kept behavior — fix now, fixed 1b8e300: the line is corrected from a fresh run on the default branch's page.
+- diff-bug #2: the new "data file is valid against the v1 schema" test passes on main and pins nothing the change could break — fix now, fixed 1b8e300: removed.
 - diff-bug #3: the other-field cell test repeats a code path that older tests cover — reject, planned change: AC4 names that behavior.
-- diff-bug #4: the blank-GitHub branch of `upstreamLines` was never fired by a test; the Details row for such a text also differs — fix now for the branch: a test in `test/site-data.test.ts`, which fails with `.trim()` removed; reject for the row, edge: only a `repoDescription` that the schema and the reader refuse reaches it, outside any documented use.
+- diff-bug #4: the blank-GitHub branch of `upstreamLines` was never fired by a test; the Details row for such a text also differs — fix now for the branch, fixed 1b8e300: a test in `test/site-data.test.ts`, which fails with `.trim()` removed; reject for the row, edge: only a `repoDescription` that the schema and the reader refuse reaches it, outside any documented use.
 - diff-bug #5: the owner request check's refusal widens with no doc or test saying so, for example `コーヒー notes` from 0.4 to 0.8 — reject, planned change: the surface tier names the check, D-049 says "half or more CJK", and AC1's rows test that one function.
-- diff-bug #6: the comment "a decomposed Latin word stays one run" is false for a letter plus a mark with no composed form — fix now for the comment; known issue for the count, below.
+- diff-bug #6: the comment "a decomposed Latin word stays one run" is false for a letter plus a mark with no composed form — fix now for the comment, fixed 1b8e300; known issue for the count, below.
 - diff-bug #7: NFC does not unify halfwidth katakana or conjoining jamo that do not compose — known issue: the CJK share is a rough count. A letter plus a mark with no composed form splits a run of other letters, and halfwidth katakana with a voiced mark or conjoining Hangul letters that do not compose count as several CJK units, so such a mixed text can land on the other side of 0.5. None of the 1,282 upstream texts read on 2026-11-03 holds such a form beside CJK text. Accepted at the M088 gate
 - diff-bug #8: a manifest description of only a format character passes the blank test — known issue: a manifest description of only format characters, such as U+200B, is not blank to `trim`, so Details shows a row that looks empty and the Overrides cell shows a bare `Manifest:`. None of the 1,282 upstream texts read on 2026-11-03 has no letter or digit. Accepted at the M088 gate
-- diff-bug #9: DESIGN's "shows both descriptions" is stale for a blank manifest — fix now: DESIGN, About, and README now say so.
-- diff-bug #10: longer cells may worsen the table's mid-word breaks — fix now: `.overrides table` sets `overflow-wrap: normal`, as the compat table does. The browser pane shows "Field" and "Used" whole at 1024 px; at 375 px the table scrolls inside its wrapper and the page does not.
+- diff-bug #9: DESIGN's "shows both descriptions" is stale for a blank manifest — fix now, fixed 1b8e300: DESIGN, About, and README now say so.
+- diff-bug #10: longer cells may worsen the table's mid-word breaks — fix now, fixed 1b8e300: `.overrides table` sets `overflow-wrap: normal`, as the compat table does. The browser pane shows "Field" and "Used" whole at 1024 px; at 375 px the table scrolls inside its wrapper and the page does not.
 - diff-bug #11: the source row still lists items (1) to (3) — reject, planned change: this milestone's hygiene narrows it.
 - diff-bug #12: the moved letters follow the runtime's Unicode tables and no test names all 11 — reject, planned change: the work log records this choice and what would falsify it.
 - diff-bug #13: the expected-row expression at `test/site.test.ts:578` repeats the page's condition — reject, planned change: T3 names this edit.
@@ -128,11 +128,11 @@ spawned: diff-bug, blame-history, prior-review, ripple
 - blame-history #3: the comment "Letters only for Script_Extensions" overstates the rule, since the `Script` branch counts other characters — reject, false: the comment speaks of `Script_Extensions` only, and AC1 words the rest.
 - blame-history #4: the manifest row checks for blank and the GitHub row does not — reject, false: `src/upstream/reader.ts` drops a blank GitHub text and the schema refuses one.
 - blame-history #5: D-032 and D-038 quote a share whose count changed — reject, false: D-032 says "as the site's rule measures it", and AC2 found no change on the data.
-- prior-review #1: About, DESIGN, and README still say the card shows both descriptions — fix now: as diff-bug #9.
+- prior-review #1: About, DESIGN, and README still say the card shows both descriptions — fix now, fixed 1b8e300: as diff-bug #9.
 - prior-review #2: a screen reader may run the two lines together — reject, false: a `<br>` splits them into separate text runs with their own labels; M015's case was inline spans with no break.
 - prior-review #3: combining marks still split runs of other scripts — known issue: as diff-bug #7.
-- prior-review #4: README's paragraph kept its old wrap — fix now: rewrapped.
+- prior-review #4: README's paragraph kept its old wrap — fix now, fixed 1b8e300: rewrapped.
 - ripple #1: the source row still lists items (1) to (3) — reject, planned change: as diff-bug #11.
-- ripple #2: About's "shows both descriptions" — fix now: as diff-bug #9.
-- ripple #3: DESIGN's "shows both descriptions" — fix now: as diff-bug #9.
-- ripple #4: README's "as two more facts" — fix now: as diff-bug #9.
+- ripple #2: About's "shows both descriptions" — fix now, fixed 1b8e300: as diff-bug #9.
+- ripple #3: DESIGN's "shows both descriptions" — fix now, fixed 1b8e300: as diff-bug #9.
+- ripple #4: README's "as two more facts" — fix now, fixed 1b8e300: as diff-bug #9.
