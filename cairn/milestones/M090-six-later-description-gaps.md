@@ -88,38 +88,38 @@ Evidence at head `646c41f8`; `origin/main` has not moved since the branch was cu
 
 spawned: diff-bug, blame-history, prior-review, ripple
 
-- diff-bug #1: `zotfetch@edslab.research`'s source list names only open-access sources and a proxy, while its README says it tries its own Sci-Hub mirrors, so the text suggests legal sourcing — fix now.
-- diff-bug #2: `zotxt`'s "through an API, which lets pandoc" states a causal link the README never makes — fix now.
-- diff-bug #3: `zotwanglele`'s text names only selected-text translation, while its README lists whole-PDF translation as a main feature — fix now.
-- diff-bug #4: `zoturead`'s "tied to the uread.today site" covers all its tools, while the README ties only the first group to that site — fix now.
-- diff-bug #5: `zotfetch@nikhilweee.me`'s "so annotations stay usable" repeats a README assurance about user data — fix now; the new text also leaves out what caused its two excludes, so those are removed.
+- diff-bug #1: `zotfetch@edslab.research`'s source list names only open-access sources and a proxy, while its README says it tries its own Sci-Hub mirrors, so the text suggests legal sourcing — fix now, fixed ad9c5b9a.
+- diff-bug #2: `zotxt`'s "through an API, which lets pandoc" states a causal link the README never makes — fix now, fixed ad9c5b9a.
+- diff-bug #3: `zotwanglele`'s text names only selected-text translation, while its README lists whole-PDF translation as a main feature — fix now, fixed ad9c5b9a.
+- diff-bug #4: `zoturead`'s "tied to the uread.today site" covers all its tools, while the README ties only the first group to that site — fix now, fixed ad9c5b9a.
+- diff-bug #5: `zotfetch@nikhilweee.me`'s "so annotations stay usable" repeats a README assurance about user data — fix now, fixed ad9c5b9a; the new text also leaves out what caused its two excludes, so those are removed.
 - diff-bug #6: `zoterotransnator` under `attachments` sits awkwardly beside `mineru-parse`'s exclude — reject, false: this text names OCR-style recognition, which the category's `about` holds, and the reader marks it right too.
 - diff-bug #7: `zoterotransnator`'s `export` exclude has mixed precedent in `llm-for-zotero-sync` — reject, false: the README's data flow ends in a Zotero note, and `paper-companion` and `annotationmanage` match it.
 - diff-bug #8: `zotxt`'s `export` exclude can be argued the other way — reject, false: nothing says zotxt exports or syncs anything.
 - diff-bug #9: `zoturead`'s `metadata` matched "CNKI", not its real ground, and the ledger does not say so — reject, style: the mark is right.
-- diff-bug #10: `zoturead` and `zotwanglele` say "half or more Chinese" where AC2 asks for DESIGN's words — fix now, so the reasons read as AC2 states.
+- diff-bug #10: `zoturead` and `zotwanglele` say "half or more Chinese" where AC2 asks for DESIGN's words — fix now, fixed ad9c5b9a, so the reasons read as AC2 states.
 - diff-bug #11: `zotfetch@edslab.research` and `zotwanglele` omit some credentials that `zoterotransnator` states — reject, style: AC2 binds what a value claims, and no rule asks a text to list every credential.
 - diff-bug #12: `zoterotransnator`'s "needs an API token or key" lacks "your own" — reject, style.
 - diff-bug #13: `paid-service-sweep.md`'s `zoterotransnator` line names no Baidu token — reject, false: Baidu is a third party, so the no-mark verdict stands, and that page is a dated read.
-- diff-bug #14: `zoterotransnator`'s text omits the README's Alpha label, and its tail reads as a fragment — fix now for the fragment, with prior-review #1; reject the label, planned change: D-031 intends texts with no `version`, so a text leaves out a status that goes stale.
+- diff-bug #14: `zoterotransnator`'s text omits the README's Alpha label, and its tail reads as a fragment — fix now for the fragment, with prior-review #1, fixed ad9c5b9a; reject the label, planned change: D-031 intends texts with no `version`, so a text leaves out a status that goes stale.
 - diff-bug #15: 5 of these 6 values are among the longest overrides — reject, style: no rule limits length.
-- diff-bug #16: the ledger's title and Provenance name only M089 — fix now for the title; the new section says who read the READMEs.
-- diff-bug #17: the ledger's "this data file" is ambiguous, and the no-`upstream` line does not apply to the second file — fix now.
+- diff-bug #16: the ledger's title and Provenance name only M089 — fix now for the title, fixed ad9c5b9a; the new section says who read the READMEs.
+- diff-bug #17: the ledger's "this data file" is ambiguous, and the no-`upstream` line does not apply to the second file — fix now, fixed ad9c5b9a.
 - diff-bug #18: `category-ledger.md`'s `zoturead` and `zotxt` rows say "no upstream facts on this file" — reject, false: those rows are a dated read of an earlier file.
-- diff-bug #19: the row "Drop excludes left by removed overrides" omits M090 — fix now.
+- diff-bug #19: the row "Drop excludes left by removed overrides" omits M090 — fix now, fixed ad9c5b9a.
 - diff-bug #20: `zotxt` on the `citations` `include` is redundant while the override stands — reject, false: it still matters if the override goes.
 - diff-bug #21: "and 5 more (...) and 2 more (...)" in the row "Refine the Latin part and short picks" is clumsy — reject, style.
 - diff-bug #22: AC2 was ticked before these reviewers finished — reject, false: its evidence line came first as the rule asks, and the line below gives fresh evidence after the fixes.
 - blame-history #1: `zoturead` keeps a hand `search` assignment that its new text does not match — reject, false: its text says that it searches sites for books, which fits "Search and discovery", and AC3 reads only added categories.
 - blame-history #2: `zotxt`'s `export` exclude has a reason that does not match the category's sense — reject, false: same as diff-bug #8.
 - blame-history #3: the ledger section records no check against the M089 lesson — reject, false: the prior-review and diff-bug lenses checked the six texts and found no privacy assurance or unreleased feature after these fixes.
-- prior-review #1: `zoterotransnator`'s "a cost estimate first" states a README setting as always on — fix now.
+- prior-review #1: `zoterotransnator`'s "a cost estimate first" states a README setting as always on — fix now, fixed ad9c5b9a.
 - prior-review #2: `zotxt`'s `export` exclude rests on a word match alone — reject, false: same as diff-bug #8.
-- ripple #1: same as diff-bug #19 — fix now.
-- ripple #2: `INDEX.md`'s line names one data set and M089 — fix now.
-- ripple #3: same as diff-bug #16 — fix now.
-- ripple #4: the row "Fill description gaps on new plugins" says only M089 filled the gaps of that date — fix now.
-- ripple #5: same as diff-bug #17 — fix now.
+- ripple #1: same as diff-bug #19 — fix now, fixed ad9c5b9a.
+- ripple #2: `INDEX.md`'s line names one data set and M089 — fix now, fixed ad9c5b9a.
+- ripple #3: same as diff-bug #16 — fix now, fixed ad9c5b9a.
+- ripple #4: the row "Fill description gaps on new plugins" says only M089 filled the gaps of that date — fix now, fixed ad9c5b9a.
+- ripple #5: same as diff-bug #17 — fix now, fixed ad9c5b9a.
 
 After the fix-now edits: `pnpm description-gaps` on AC1's file prints 0 gaps. AC2: the six values were reread against their READMEs by the session, each with one override, no `version`, and no CJK. AC3: the comparison gives 9 added categories on `origin/main`'s lists and 7 on the branch's, each of the 7 marked right in the ledger, and the other 2 on the `export` `exclude` list. `pnpm test` passes 2238 with 6 skipped, `pnpm check` reports 0 problems, and `cairn_validate.py` passes.
 
