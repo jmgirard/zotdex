@@ -88,3 +88,5 @@ spawned: diff-bug, blame-history, prior-review, ripple
 - fresh reader #2: same as diff-bug #6 — fix now.
 - fresh reader #3: the reason for `zotero-mineru@example.com` omits its MinerU token — fix now.
 - fresh reader #4: the bluebook root README only summarizes the plugin, and its subfolder README has no pay words — reject, false: the verdict holds.
+- Every fix-now line above: fixed `1734385`, which changes `cairn/` text only; `cairn_validate.py` exits 0 there, and no verdict or row changed, so the evidence stands.
+- Findings: 25, with 11 fixed, 14 rejected, 0 sent to a follow-up. Substantive amendments: 0. Changed snapshot files: 0. No PR is open, so no PR conversation was read.
