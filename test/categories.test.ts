@@ -84,17 +84,15 @@ describe("categories", () => {
     expect(categories(record("Helper", "Ask Claude about the paper.", { id: "zofiles@zofiles.dev" }))).toEqual(["other"]);
   });
 
-  test("gives no Other tools to a record that another category takes", () => {
-    expect(categories(record("Helper", "Translates the abstract."))).toEqual(["translation"]);
-  });
-
   test("gives metadata to the PMCID fetcher from its own words", () => {
-    expect(categories(record("PMCID fetcher for Zotero", "PMCID fetcher"))).toEqual(["metadata"]);
+    const fetcher = record("PMCID fetcher for Zotero", "PMCID fetcher", { id: "zotero-pmcid-fetcher@iris-advies.com" });
+    expect(categories(fetcher)).toEqual(["metadata"]);
   });
 
   test.each([
     ["the User-Agent header for AI assistants", "Sets the User-Agent header.", "ai"],
     ["编译 (compile) for translation", "一键编译文档", "translation"],
+    ["opening a citation in a new tab for the window category", "Opens the citation in a new tab.", "interface"],
   ])("leaves out %s", (_, description, slug) => {
     expect(categories(record("Helper", description))).not.toContain(slug);
   });
@@ -169,9 +167,5 @@ describe("categoryOptions", () => {
       ["export", "Export and sync (1)"],
       ["other", "Other tools (3)"],
     ]);
-  });
-
-  test("offers no Other tools when no record has it", () => {
-    expect(categoryOptions([record("One", "Adds notes.")]).map(({ value }) => value)).toEqual(["notes"]);
   });
 });

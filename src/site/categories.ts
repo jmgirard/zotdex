@@ -47,7 +47,7 @@ export const CATEGORIES: readonly Category[] = [
     name: "Translation and dictionaries",
     about: "translated text and PDFs, bilingual reading, dictionaries, and vocabulary",
     pattern: /translat(?!ors\b)|(?<!编)译|bilingual|双语|dictionar|词典|查词|vocabular|单词|生词/iu,
-    include: ["word-learning@zotero.local", "zodh@fatsource.com", "zotero@wilddata.cn"],
+    include: ["word-learning@zotero.local", "zodh@fatsource.com"],
     exclude: ["gbt7714-2025-helper@wangzfof.github.io", "zotdupe@hostiuc.com"],
   },
   {
@@ -276,7 +276,7 @@ export const CATEGORIES: readonly Category[] = [
     name: "Window, tabs, and shortcuts",
     about: "how the main window behaves, tray icons, tabs, keyboard shortcuts, and small menu and toolbar changes",
     pattern:
-      /(?<!new )\btabs?\b|\btray\b|fullscreen|full-screen|keyboard shortcuts?|hotkeys?|hamburger|close button|quick launch|系统托盘|托盘|最小化/iu,
+      /(?<!new )\btabs?\b|\btray\b|fullscreen|full-screen|keyboard shortcuts?|hotkeys?|hamburger|close button|quick launch|托盘|最小化/iu,
     include: ["rebootero@chen7447.github.io", "vertical-toolbar@dylan.ac", "zotero-deselect@local", "zutilo@www.wesailatdawn.com"],
     exclude: ["keep-reader-ready@local.invalid", "zotero-open-router@luciferer.github.io", "zotero-tts@xujialiu.top"],
   },

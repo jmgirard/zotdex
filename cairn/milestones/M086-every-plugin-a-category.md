@@ -169,6 +169,7 @@ The ledger, About page, README, DESIGN, and CHANGELOG text for these changes.
 - 2026-11-03: T5: the first comparison listed 20 additions; the read marked 9 wrong. Narrowed `tabs?` (not after "new"), dropped `toolbar`, narrowed `crossref` and `local pdf`, and added 4 exclude entries. The script then lists 11 additions, all right, and no removal.
 - 2026-11-03: T7: `pnpm test` exit 0 (2215 passed, 6 skipped), `pnpm check` exit 0 (736 entries, 0 problems). Browser pane on the built site: menu lists Window, tabs, and shortcuts (27) and Other tools (26) last, `?category=other` shows 26 of 736, the PMCID page lists Metadata and cleanup, and the Debug Log page lists Other tools.
 - 2026-11-03: claim audit: 28 claims read, 4 corrected — site/src/pages/about.astro, README.md, CHANGELOG.md, src/site/categories.ts. About and README now say a plugin that the latest build did not read has only hand-added categories; the `interface` about text and the README menu-order sentence were narrowed. The reader re-read the 4, and all hold.
+- 2026-11-03: review: the plan gate's 1-in-10 test reads the rules after tuning, as M066's did: 0 wrong of 130 lines, on data the rules were tuned on. Before tuning, 9 of 20 pattern additions were wrong, so new plugins can expect a higher rate; the row "Check categories on new plugins" keeps that read.
 - 2026-11-03: the simple-english hook reports older text in README.md and CHANGELOG.md, and the `— observed` marks in the ledger; those lines are outside this change, so they stay. The hit on a new CHANGELOG line was fixed.
 
 ## Decisions
@@ -194,3 +195,24 @@ Default branch unmoved since the cut (`origin/main` is `f92dcad`, the merge base
 - AC6: built About text holds the sentence, and `test/site.test.ts` asserts it; joined README holds the sentence and "The menu lists Other tools last"; `CHANGELOG.md` has the entry; joined DESIGN holds "each of the 15 categories" and "the menu lists Other tools last", and no "13 categories".
 - AC7: `pnpm test` exit 0 (2215 passed, 6 skipped), `pnpm check` exit 0 (736 entries, 0 problems). Site built by `pnpm site` with the data file at `dist/v1/plugins.json`, viewed in the browser pane: the menu ends "Window, tabs, and shortcuts (27)", "Appearance (15)", "Other tools (26)"; the PMCID fetcher page reads "Index categories: Metadata and cleanup"; the Debug Log page reads "Index categories: Other tools"; no console errors.
 - Consistency gate: `cairn_validate.py` passes. No principle changed, so `cairn_impact` is skipped. The generic profile names no toolchain checks.
+- spawned: diff-bug, blame-history, prior-review, ripple.
+- diff-bug #1: the first read marked 9 of 20 additions wrong, which on its face passes the plan gate's 1-in-10 test — fix now, a work-log line states that the test reads the rules after tuning, as M066's did, and that new plugins can expect a higher rate than the 0 of 130 here.
+- diff-bug #2: the `(?<!new )` lookbehind has no test — fix now, a "leaves out" case added.
+- diff-bug #3: the PMCID test uses the helper's default id though AC1 names the real id — fix now.
+- diff-bug #4: the `interface` about text names menu and toolbar changes that only include entries cover — reject, false: About says that a category can be missing, and the text says what the category holds.
+- diff-bug #5: the new `zotero@wilddata.cn` include does nothing, since its text already gives `translation` — fix now, removed.
+- diff-bug #6: the script's `import()` fails on a relative path, and the ledger does not say so — fix now.
+- diff-bug #7: `in-text citations?` takes the singular for PDF reading while the citations pattern stays plural — reject, false: a click on an in-text citation in the reader is a reading aid, and the plural pattern is unchanged.
+- diff-bug #8: `系统托盘|托盘` has a redundant alternative — fix now.
+- diff-bug #9: the ledger's "read also covered" claim on the 39 unread records has no results behind it — fix now, the ledger now says what the read did and did not cover.
+- diff-bug test rule: `test/categories.test.ts` "gives no Other tools to a record that another category takes" and "offers no Other tools when no record has it", and `test/site.test.ts` "lists Other tools on the page…" repeat covered paths — fix now, the three tests removed. AC2's no-`other` case now rests on "the name after a name override" and the include test's exact lists; a plugin page's Other tools link rests on AC7's browser check.
+- diff-bug test rule, borderline: the exclude-removal test and the two "Other tools last" checks — reject, planned change: AC2 names the exclude case, and the site list is a required update to an exact list.
+- blame-history #1: the new assignments have no hand read against D-037's limit — reject, false: each ledger line carries the read's mark, and the Open questions sentence is about wrong assignments on plugins that already had a category.
+- blame-history #2: `\btabs?\b` files Quick Switcher by a word match — reject, false: its repo description reads "An quick tab switcher", and it is a keyboard tab switcher.
+- blame-history #3: the `adds-category` line drops `other` silently — fix now, with ripple #1.
+- blame-history #4: DESIGN says "each of the 15 categories whose pattern matches" though Other tools matches nothing — reject, false: the sentence stays true, and the next sentence says so.
+- prior-review: no prior-review evidence; the nine excludes of M067's "Category changes" still stand, and the probe found no review threads.
+- ripple #1: README's text-request list says "the categories that the text adds", and the diff leaves out `other` — fix now.
+- ripple #2: DESIGN's list of what `categories.ts` holds lacks `OTHER` — fix now.
+- ripple #3: the test title "shows no list for a plugin with none" — reject, false: it still holds for an unread plugin.
+- Snapshot files: the list is empty.

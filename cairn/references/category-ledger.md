@@ -357,9 +357,10 @@ milestone.
 `v1/plugins.json`, whose `generatedAt` is 2026-11-03T14:25:58.649Z, with 736
 records. The base commit is `f92dcadfe25c1e881d54532bfc4e2ff7fae14875`. On this
 file, 39 records have no upstream facts: 38 are `not-read`, since that build
-reached its 18-minute limit, and 1 is `request-failed`. The read also covered
-those 39 from the 2026-11-02 data or `meta.json`, for later builds. They have no
-lines here unless an `include` entry adds a category.
+reached its 18-minute limit, and 1 is `request-failed`. For those 39, the read
+used the 2026-11-02 data or `meta.json` to place the ones that the rules would
+leave with no other category. It did not read their other pattern results. They
+have no lines here unless an `include` entry adds a category.
 
 **The rule for this read.** The rule of "How the read marks an assignment" holds.
 For an `include` entry, it also holds for the plugin's GitHub README. A line marked
@@ -374,7 +375,8 @@ loses one.
 
 **The script.** Copy `src/site/categories.ts` of the base commit, with
 `description.ts` and `version.ts` beside it, to a folder outside the repo. Then run
-`node compare.ts <data file> <base categories.ts> <branch categories.ts>`.
+`node compare.ts <data file> <base categories.ts> <branch categories.ts>`. Give both
+`categories.ts` paths as absolute paths, since the script imports them.
 
 ```ts
 import { readFileSync } from "node:fs";

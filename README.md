@@ -1236,7 +1236,7 @@ owner, and whether the two match, ignoring letter case. It also prints:
 - each rule that the text breaks,
 - each other plugin whose shown name has the same non-empty key, as `nameKey`
   in `src/discover/holds.ts` gives it, which the command does not refuse,
-- the categories that the text adds,
+- the categories that the text adds, other than Other tools,
 - an override with a `version` that still wins over the text,
 - the age of the data file, by its `generatedAt`,
 - a note for a plugin that the data file has no read of,

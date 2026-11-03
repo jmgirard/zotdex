@@ -484,12 +484,6 @@ describe("the plugin page", () => {
     expect(page("broken-plugin@example.org")).not.toContain("data-categories");
   });
 
-  test("lists Other tools on the page of a read plugin that no other category takes", () => {
-    expect(/<p class="categories" data-categories>(.*?)<\/p>/s.exec(page("first-plugin@example.org"))?.[1]).toContain(
-      '<a href="/zotero-plugin-index/?category=other" data-category="other">Other tools</a>',
-    );
-  });
-
   test.each<[string, string, string, string, string, string | undefined]>([
     ["first-plugin@example.org", "https://github.com/example", "https://github.com/example/first-plugin", "first-plugin", "By example · first-plugin · 1,234", "1,234 GitHub Stars"],
     ["old-plugin@example.org", "https://github.com/example", "https://github.com/example/old-plugin", "old-plugin", "By example · old-plugin · 1", "1 GitHub Star"],

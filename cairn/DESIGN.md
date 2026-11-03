@@ -484,8 +484,8 @@ exception is a report that is abuse.
   lists the records whose shown description, with the checkout's overrides,
   is missing, has a CJK share of 0.5 or more, or has fewer than six words
   (M067).
-  `src/site/categories.ts` holds `CATEGORIES`, `categories`, and
-  `categoryOptions` (M066).
+  `src/site/categories.ts` holds `CATEGORIES`, `OTHER`, `categories`, and
+  `categoryOptions` (M066, M086).
   `src/site/languages.ts` holds the applied languages, their names, and the
   menu options. `src/site/home-filter.ts` holds `passes`, `rowShows`,
   `chosenValue`, `filterHref`, `filterOn`, `filterStatus`, `PAGE_SIZE`,
