@@ -9,7 +9,6 @@ _Last hygiene check: 2026-11-03 (M084 archived; paid service read row narrowed; 
 |---|---|---|---|---|---|
 | M084 | Read the last merged plugins for paid services | done | — | normal | milestones/archive/M084-paid-service-third-read.md |
 | M083 | Read the merged plugins for paid services | done | — | normal | milestones/archive/M083-paid-service-second-read.md |
-| M082 | Mark plugins that need a paid service | done | — | normal | milestones/archive/M082-paid-service-mark.md |
 <!-- rows grouped by status, not by ID; keep the 3 most recent done/dropped rows; older ones: milestones/archive/ + git -->
 
 ## Candidates
@@ -48,6 +47,7 @@ _Last hygiene check: 2026-11-03 (M084 archived; paid service read row narrowed; 
 - [parked] Tighten the text request rules: `textProblems` passes U+2800, private-use characters, stacked marks, and a bare `example.com`; `nameKey` misses look-alike letters and names with no a-z or 0-9; `AAA Plugin` passes; a re-registered owner name matches the owner check; nothing records an owner's removal, so `pnpm description-gaps` lists the plugin again and D-038 can undo it (M079 review); the maintainer reads each request; promote when a request gets past that reading; a bot could also check each request at once, comment, and open a pull request; promote that when requests wait over a week — added 2026-11-02 — M079, D-049
 - [parked] Check the theme button's double label: the button sets `aria-label` and `title` to the same words, as M078's AC4 asks, so a screen reader can read them twice, the point M064's review made about another control; dropping `title` loses the tooltip (M078 review); promote when a user reports it — added 2026-11-02 — M064, M078
 - [parked] Keep source facts when their read fails: a failed read of top-level names drops sourceInRepo for that day, so locks vanish until a later build; keep the last value or retry once; promote when the warning shows in a build log — added 2026-11-02 — M081, D-052
+- [parked] Read plugins a few at a time: `buildData` reads plugins one by one, and its data step took 0.82 to 1.43 s a plugin across 16 builds to 2026-11-03, so `BUILD_LIMIT_MS` (18 minutes) would cut a slow build near an estimated 810 plugins, against 736 on 2026-11-03; concurrent reads need a test against GitHub's rate limits; promote when a plugin shows `not-read` or the index nears 800 plugins — added 2026-11-03 — D-015, D-028
 <!-- unnumbered ideas; one line each, ordered high → normal → low → parked:
      - [high] short title: detail — added YYYY-MM-DD — links   (no token: normal)
      - [parked] short title: detail; promote when <condition> — added YYYY-MM-DD — links
