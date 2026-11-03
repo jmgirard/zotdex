@@ -2,7 +2,7 @@
 
 **Provenance.** Ingested 2026-11-03 by M091 from a hand read of the results of `categories` in `src/site/categories.ts`. The input is the shelf file `cairn/references/sources/plugins-data-2026-11-03b.json`, the deployed `v1/plugins.json`, whose `generatedAt` is 2026-11-03T22:05:15.306Z, with 736 records. The base commit is `b941616be45162de233a0430682c7bc51bc8316e`. A new plugin is a record of that file whose id is not in `cairn/references/sources/plugins-data-2026-10-31.json`. There are 464.
 Pagination: none.
-Extraction: observed 2026-11-03. This is a snapshot, and the deployed data and the rules can change after it.
+Extraction: verified 2026-11-03 against the listing script's output. This is a snapshot, and the deployed data and the rules can change after it.
 
 **Scope.** This page records the read that M091's criteria rest on. It gives each new plugin's categories on the base commit, with a mark for each. It also gives two wrong rates and each change of category that the branch makes. It is not a source summary, and it builds no checker. It is a reference, not an authority. Status lives in `ROADMAP.md`, decisions in `DECISIONS.md`, and architecture in `DESIGN.md`. `category-ledger.md` holds the earlier reads.
 
@@ -59,7 +59,7 @@ The held-out rate is over 1 in 10, the test of D-059. So the milestone stopped f
 
 A fresh reader marked the held-out group after that commit. It did not read the tuning-group marks. The agent changed none of its wrong marks. The group holds only plugins that no earlier read names. So it holds no `other` assignment and no assignment from an `include` list alone, and the rate covers only plugins that the older patterns matched.
 
-Of the 20 wrong held-out assignments, 7 are `ai` on a plugin that serves outside AI tools, and 6 are `attachments` on a plugin that only mentions attachments. The tuning group shows the same two kinds. The tuning changed 2 of the 100 plugins, and each change adds a right `pdf-reading`. It removed no wrong assignment from this group.
+Of the 20 wrong held-out assignments, 7 are `ai` on a plugin that serves outside AI tools. Another 6 are `attachments` on a plugin that only mentions attachments. The tuning group shows the same two kinds. The tuning changed 2 of the 100 plugins, and each change adds a right `pdf-reading`. It removed no wrong assignment from this group.
 
 ## The tuning group
 
@@ -140,7 +140,7 @@ One line per plugin, in id order, with its categories on the base commit. A mark
 - `exitem@exitem.local`: ai (right)
 - `extra-columns@petersharp.org`: organization (right)
 - `fanyipaiban@fanyipaiban.com`: translation (right), attachments (wrong: PDF attachments are translated, not managed)
-- `feed-riffle@local`: notes (wrong: note is an optional add when filing a feed item), organization (right)
+- `feed-riffle@local`: notes (wrong: note is an optional addition to a filed feed item), organization (right)
 - `filetrans@euclpts.com`: ai (right, borderline), translation (right)
 - `find-duplicates@example.com`: metadata (right), organization (wrong: tags only mark duplicates for cleanup, fullvahti excluded likewise)
 - `fixcaps@korhonenaleksi.github.io`: metadata (right)
