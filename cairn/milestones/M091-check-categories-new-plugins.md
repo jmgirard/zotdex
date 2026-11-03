@@ -4,14 +4,14 @@
      cairn_validate's <150 over the plan-owned body. -->
 # M091: Check categories on new plugins
 
-- **Status:** planned   <!-- owner: transitioning skill · mirror-update; cairn/ROADMAP.md is the authority -->
+- **Status:** in-progress   <!-- owner: transitioning skill · mirror-update; cairn/ROADMAP.md is the authority -->
 - **Priority:** normal   <!-- owner: plan · create/amend-via-gate; high | normal | low -->
 - **Depends on:** —   <!-- owner: plan · create/amend-via-gate; M<xx>, M<yy> or — -->
 - **Driving RR:** —   <!-- owner: plan · create/amend-via-gate; RR<NN> whose Binding criteria bind this milestone's ACs (binding-criteria check), or — -->
 - **Principles touched:** —   <!-- owner: plan · create/amend-via-gate; comma-separated IPn/GPn ids this milestone touches, or — -->
 - **Resolves:** —   <!-- owner: plan · create/amend-via-gate; comma-separated GitHub issues the scope absorbs, each `#N closes` (the PR closes it at merge) or `#N partial` (the remainder gets a candidate row), or — ; skill conduct only — no validate check parses it -->
 - **Surface tier:** user-facing — visitors see the categories on the home menu, plugin pages, and About page   <!-- owner: plan · create/amend-via-gate; user-facing | internal — <one-clause reason>; skill conduct only — no validate check parses it -->
-- **Branch/PR:** —   <!-- owner: implement (branch) / review (PR URL) · create; a companion checkout the milestone also works in is one further entry per checkout, `companion: <abs-path> <branch>` (implement), its PR URL appended by review — /milestone-review merges companions first, in listed order -->
+- **Branch/PR:** m091-check-categories-new-plugins   <!-- owner: implement (branch) / review (PR URL) · create; a companion checkout the milestone also works in is one further entry per checkout, `companion: <abs-path> <branch>` (implement), its PR URL appended by review — /milestone-review merges companions first, in listed order -->
 
 ## Goal
 <!-- owner: plan · create; a wrong goal returns to plan, never edited in place -->
@@ -78,7 +78,7 @@ The site's categories rest on a hand read of the 464 plugins added since 2026-10
      cites; an insertion, removal, or reorder renumbers the labels and the
      Coverage lines together. -->
 
-- [ ] T1: Start the ledger with its provenance, the terms, the base commit, and the listing script. Compute the held-out ids by the rule and write them down, and do not read those plugins' texts or categories until T4.
+- [x] T1: Start the ledger with its provenance, the terms, the base commit, and the listing script. Compute the held-out ids by the rule and keep them in a scratch file, and do not read those plugins' ids, texts, or categories until T4.
 - [ ] T2: Read the tuning group under the base rules. Mark each category, search `cairn/references/category-ledger.md` for like plugins before marking one wrong (M089 lesson), and note each clearly missing category. State the tuning-group rate.
 - [ ] T3: Change the patterns in `src/site/categories.ts` for words that can go wrong again, starting with the six phrases of AC3, and add `include` and `exclude` entries for single plugins. Add the AC3 tests to `test/categories.test.ts`, seen red on the base rules first, and add one test for each other pattern narrowed. Stop changing rules, and commit: this is the named commit of AC2.
 - [ ] T4: Read the held-out group under the named commit and under the base rules, and write its lines. State the held-out rate, the `categories.ts` hash, and the group's limit. If the rate is over 1 in 10, stop with a close block that names the rate and D-059. Write the base-rule marks of these plugins as AC1's lines.
@@ -114,6 +114,9 @@ The site's categories rest on a hand read of the 464 plugins added since 2026-10
 - 2026-11-03: plan-time sample: the first 70 new plugins by SHA-1 of the id, read roughly, about 1 in 8 assignments wrong; a rough read, not a ledger figure, and those 70 stay in the tuning group.
 - 2026-11-03: remainder ledger: read of 464 and tuning → this milestone; six phrases → this milestone; link label → this milestone; plugins after the data file → the row, which stays. The row's text is narrowed at review hygiene.
 - 2026-11-03: deploy: a merge deploys nothing; the review close block offers `gh workflow run build.yml --ref main`, and the daily build at 06:17 UTC deploys otherwise.
+- 2026-11-03: implement: base commit b941616b; the rule gives 100 held-out and 364 tuning plugins; one held-out id was on a line of the plan's phrase search, and no rule change may rest on it.
+- 2026-11-03: T1 done: ledger started with the group rule and listing script; minor amendment, the held-out ids reach the ledger at T4, so the agent that tunes does not read them first.
+- 2026-11-03: delegation: four fresh Opus readers mark the tuning group in batches of 91, so the rule changes are not tuned by the readers of the held-out group; the agent settles every wrong and missing mark.
 
 ## Decisions
 <!-- owner: implement / review · append-only; milestone-local; promote

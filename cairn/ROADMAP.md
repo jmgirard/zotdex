@@ -7,7 +7,7 @@ _Last hygiene check: 2026-11-03 (M090 archived; one row narrowed; 25 lessons, 5 
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M091 | Check categories on new plugins | planned | — | normal | milestones/M091-check-categories-new-plugins.md |
+| M091 | Check categories on new plugins | in-progress | — | normal | milestones/M091-check-categories-new-plugins.md |
 | M090 | Fill the six later description gaps | done | M089 | normal | milestones/archive/M090-six-later-description-gaps.md |
 | M089 | Fill the description gaps of 2026-11-03 | done | M088 | normal | milestones/archive/M089-description-gaps-2026-11-03.md |
 | M088 | Fix the small description fact gaps | done | — | normal | milestones/archive/M088-description-fact-gaps.md |
