@@ -238,6 +238,13 @@ describe("textRequest's report", () => {
     expect(result.lines).toContain('adds-category: "translation"');
   });
 
+  test("prints no Other tools line when the text loses the record's only match", async () => {
+    const tree = checkout();
+    tree.overrides([{ field: "description", value: "Translates the titles of items into French.", reason: "Test." }]);
+    const result = await run(tree, responses({ text: "Keeps a log of item edits for you." }));
+    expect(result.lines.filter((line) => line.startsWith("adds-category: "))).toEqual([]);
+  });
+
   test("leaves out a category that the checkout's override already gives", async () => {
     const tree = checkout();
     tree.overrides([{ field: "description", value: "Translates the titles of items into French.", reason: "Test." }]);

@@ -4,7 +4,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { Override, PluginRecord } from "../build/build.ts";
 import { nameKey } from "../discover/holds.ts";
-import { categories } from "../site/categories.ts";
+import { categories, OTHER } from "../site/categories.ts";
 import { checkoutOverrides, gapOf, readData } from "../site/description-gaps.ts";
 import { appliedValue, usedOverride } from "../site/version.ts";
 import { type Fetch, githubClient, parseRepoUrl } from "../upstream/reader.ts";
@@ -134,7 +134,7 @@ export async function textRequest(options: RequestOptions): Promise<RequestResul
     }
   }
   const had = new Set(categories(before));
-  for (const slug of categories(after)) if (!had.has(slug)) lines.push(`adds-category: ${quoted(slug)}`);
+  for (const slug of categories(after)) if (!had.has(slug) && slug !== OTHER) lines.push(`adds-category: ${quoted(slug)}`);
   const winner = usedOverride(after, request.field);
   if (winner?.version !== undefined) lines.push(`version-override-wins: ${quoted(winner.version)} ${quoted(winner.value)}`);
   // A new name can also leave a gap, since a description that only repeats it is dropped.

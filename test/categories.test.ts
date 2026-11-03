@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { CATEGORIES, categories } from "../src/site/categories.ts";
+import { CATEGORIES, categories, categoryOptions, OTHER } from "../src/site/categories.ts";
 import type { DescriptionRecord } from "../src/site/description.ts";
 
 function record(
@@ -25,10 +25,11 @@ const CASES: Record<string, [string, string]> = {
   organization: ["Pin items to the top of a collection.", "Adds a tagline under the title."],
   appearance: ["A warm color theme for Zotero.", "Keeps the window open."],
   "ai-tools": ["A local MCP endpoint for your library.", "A bridge between two PDF revisions."],
+  interface: ["Closes Zotero to the system tray.", "Keeps a table of contents."],
 };
 
 describe("CATEGORIES", () => {
-  test("holds the 13 categories in the planned order", () => {
+  test("holds the 15 categories in the planned order", () => {
     expect(CATEGORIES.map((category) => category.name)).toEqual([
       "AI assistants",
       "Translation and dictionaries",
@@ -43,6 +44,8 @@ describe("CATEGORIES", () => {
       "Library organization",
       "Appearance",
       "Connections for AI tools",
+      "Window, tabs, and shortcuts",
+      "Other tools",
     ]);
   });
 
@@ -58,8 +61,12 @@ describe("CATEGORIES", () => {
     }
   });
 
-  test("has a case for each category", () => {
-    expect(Object.keys(CASES).toSorted()).toEqual(CATEGORIES.map((category) => category.slug).toSorted());
+  test("has a case for each category but Other tools, which no text matches", () => {
+    expect(Object.keys(CASES).toSorted()).toEqual(
+      CATEGORIES.map((category) => category.slug)
+        .filter((slug) => slug !== OTHER)
+        .toSorted(),
+    );
   });
 });
 
@@ -69,13 +76,23 @@ describe("categories", () => {
     expect(categories(record("Helper", unmatched))).not.toContain(slug);
   });
 
-  test("gives a record that no pattern matches no category", () => {
-    expect(categories(record("Helper", "Keeps the window open."))).toEqual([]);
+  test("gives a read record that no pattern matches Other tools alone", () => {
+    expect(categories(record("Helper", "Keeps the window open."))).toEqual(["other"]);
+  });
+
+  test("gives Other tools to a read record whose only match an exclude entry removes", () => {
+    expect(categories(record("Helper", "Ask Claude about the paper.", { id: "zofiles@zofiles.dev" }))).toEqual(["other"]);
+  });
+
+  test("gives metadata to the PMCID fetcher from its own words", () => {
+    const fetcher = record("PMCID fetcher for Zotero", "PMCID fetcher", { id: "zotero-pmcid-fetcher@iris-advies.com" });
+    expect(categories(fetcher)).toEqual(["metadata"]);
   });
 
   test.each([
     ["the User-Agent header for AI assistants", "Sets the User-Agent header.", "ai"],
     ["编译 (compile) for translation", "一键编译文档", "translation"],
+    ["opening a citation in a new tab for the window category", "Opens the citation in a new tab.", "interface"],
   ])("leaves out %s", (_, description, slug) => {
     expect(categories(record("Helper", description))).not.toContain(slug);
   });
@@ -99,7 +116,7 @@ describe("categories", () => {
     test("the name after a name override", () => {
       const renamed = record("Helper", "Keeps the window open.", { overrides: [{ field: "name", value: "Paper Translator" }] });
       expect(categories(renamed)).toEqual(["translation"]);
-      expect(categories(record("Helper", "Keeps the window open."))).toEqual([]);
+      expect(categories(record("Helper", "Keeps the window open."))).toEqual(["other"]);
     });
 
     test("the shown description from a description override", () => {
@@ -123,7 +140,7 @@ describe("categories", () => {
 
   test("adds a category for an id on its include list", () => {
     const text = "Hides empty fields in the Info panel.";
-    expect(categories(record("Helper", text))).toEqual([]);
+    expect(categories(record("Helper", text))).toEqual(["other"]);
     expect(categories(record("Helper", text, { id: "condense-info-view@example.com" }))).toEqual(["appearance"]);
   });
 
@@ -131,5 +148,24 @@ describe("categories", () => {
     const text = "Ask Claude about the paper, in a glass panel.";
     expect(categories(record("Helper", text))).toEqual(["ai", "appearance"]);
     expect(categories(record("Helper", text, { id: "zusia@firekern.github.io" }))).toEqual(["ai"]);
+  });
+});
+
+describe("categoryOptions", () => {
+  test("lists Other tools last even with the most records, and the others by most records with ties in list order", () => {
+    const records = [
+      record("One", "Keeps the window open."),
+      record("Two", "Keeps the window open."),
+      record("Three", "Keeps the window open."),
+      record("Four", "Renames files by title."),
+      record("Five", "Exports annotations to a file."),
+      record("Six", "Adds notes."),
+    ];
+    expect(categoryOptions(records).map(({ value, text }) => [value, text])).toEqual([
+      ["notes", "Notes and annotations (2)"],
+      ["attachments", "Attachments and full text (1)"],
+      ["export", "Export and sync (1)"],
+      ["other", "Other tools (3)"],
+    ]);
   });
 });

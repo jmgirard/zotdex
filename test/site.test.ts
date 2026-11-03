@@ -480,8 +480,8 @@ describe("the plugin page", () => {
     const names = [...line("locale-plugin@example.org")!.matchAll(/data-category="[^"]*">([^<]*)</g)].map(([, name]) => name);
     expect(names).toEqual(["Translation and dictionaries", "PDF reading"]);
     expect(names.toSorted()).not.toEqual(names);
-    expect(line("first-plugin@example.org")).toBeUndefined();
-    expect(page("first-plugin@example.org")).not.toContain("data-categories");
+    expect(line("broken-plugin@example.org")).toBeUndefined();
+    expect(page("broken-plugin@example.org")).not.toContain("data-categories");
   });
 
   test.each<[string, string, string, string, string, string | undefined]>([
@@ -791,14 +791,16 @@ describe("the About page", () => {
       unescaped(name!),
       unescaped(text!),
     ]);
-    // The fixture's records have 4 of the categories, so the others name no link.
+    // The fixture's records have 5 of the categories, so the others name no link.
     const offered = new Set((fixture.plugins as PluginRecord[]).flatMap((record) => categories(record)));
-    expect(offered.size).toBe(4);
+    expect(offered.size).toBe(5);
     expect(items).toEqual(
       CATEGORIES.map(({ slug, name, about }) => [offered.has(slug) ? `/zotero-plugin-index/?category=${slug}` : undefined, name, about]),
     );
     const text = mainText(about());
     expect(text).toContain("It assigns them from words in a plugin's name and descriptions, and it adds or removes some by hand.");
+    expect(text).toContain("A plugin that fits no other category is under Other tools.");
+    expect(text).toContain("A plugin that the latest build did not read has only the categories added by hand, so it often shows none.");
     expect(text).toContain("A category can be wrong or missing. Plugin authors do not choose them, but a requested name or description can change the words they read.");
   });
 
@@ -1231,7 +1233,7 @@ describe("the home page", () => {
     expect(expected.filter(([, slugs]) => slugs === "").length).toBeGreaterThan(1);
   });
 
-  test("holds a hidden category menu with one option for each category a row has, most rows first and ties in list order", () => {
+  test("holds a hidden category menu with one option for each category a row has, most rows first, ties in list order, and Other tools last", () => {
     const menu = /<p class="category-filter" hidden><label for="category">Category<\/label> <select id="category" data-category-filter autocomplete="off">(.*?)<\/select><\/p>/.exec(home());
     expect(menu).not.toBeNull();
     const options = [...menu![1]!.matchAll(/<option value="([^"]*)">([^<]*)<\/option>/g)].map(([, value, text]) => [value, text]);
@@ -1243,6 +1245,7 @@ describe("the home page", () => {
       ["translation", "Translation and dictionaries (1)"],
       ["pdf-reading", "PDF reading (1)"],
       ["organization", "Library organization (1)"],
+      ["other", "Other tools (7)"],
     ]);
   });
 

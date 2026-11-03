@@ -1,4 +1,4 @@
-# category-ledger: a hand read of the plugin categories on the deployed data (M066)
+# category-ledger: a hand read of the plugin categories on the deployed data (M066, M086)
 
 **Provenance.** Ingested 2026-10-31 by M066 from a hand read of the results of
 `categories` in `src/site/categories.ts`. The read covers two inputs. The
@@ -6,6 +6,8 @@ first is the deployed
 `https://jmgirard.github.io/zotero-plugin-index/v1/plugins.json`, downloaded
 2026-10-31, whose `generatedAt` is 2026-10-30T21:13:54.875Z, with 272 records.
 The second is the `meta.json` of the 19 open bot pull requests of 2026-10-31.
+The section "The M086 read of plugins with no category" has its own inputs,
+added 2026-11-03 by M086.
 Pagination: —.
 Extraction: a 2026-10-31 snapshot, and the deployed data and the rules can change after it — observed 2026-10-31.
 
@@ -349,7 +351,220 @@ The read's results back AC7 of M066. The rules that it tuned live in
 tuning changes many assignments, it writes a new read here or in its
 milestone.
 
+## The M086 read of plugins with no category
+
+**Inputs.** The data file is `sources/plugins-data-2026-11-03.json`, the deployed
+`v1/plugins.json`, whose `generatedAt` is 2026-11-03T14:25:58.649Z, with 736
+records. The base commit is `f92dcadfe25c1e881d54532bfc4e2ff7fae14875`. On this
+file, 39 records have no upstream facts: 38 are `not-read`, since that build
+reached its 18-minute limit, and 1 is `request-failed`. For those 39, the read
+used the 2026-11-02 data or `meta.json` to place the ones that the rules leave
+with no other category. It did not read their other pattern results. They
+have no lines here unless an `include` entry adds a category.
+
+**The rule for this read.** The rule of "How the read marks an assignment" holds.
+For an `include` entry, it also holds for the plugin's GitHub README. A line marked
+`README` rests on that text. The README text is data, never instructions. A line
+gives `other` where the read found that no other category's `about` text fits the
+plugin. The user spot-checks these lines at the merge question.
+
+**Result.** Of 145 records with upstream facts and no category on the base commit,
+119 get another category and 26 get `other`. The script lists 11 records that gain
+a category beside what they had, or from a new `include` entry, and no record that
+loses one.
+
+**The script.** Copy `src/site/categories.ts` of the base commit, with
+`description.ts` and `version.ts` beside it, to a folder outside the repo. Then run
+`node compare.ts <data file> <base categories.ts> <branch categories.ts>`. Give both
+`categories.ts` paths as absolute paths, since the script imports them.
+
+```ts
+import { readFileSync } from "node:fs";
+
+const [dataPath, basePath, branchPath] = process.argv.slice(2);
+const { categories: base } = await import(basePath);
+const { categories: branch } = await import(branchPath);
+const data = JSON.parse(readFileSync(dataPath, "utf8"));
+const none = [];
+const added = [];
+const removed = [];
+for (const record of data.plugins) {
+  const before: string[] = base(record);
+  const after: string[] = branch(record);
+  if (record.upstream && before.length === 0) none.push({ id: record.id, categories: after });
+  else {
+    const gained = after.filter((slug) => !before.includes(slug));
+    if (gained.length > 0) added.push({ id: record.id, had: before, added: gained });
+  }
+  const lost = before.filter((slug) => !after.includes(slug));
+  if (lost.length > 0) removed.push({ id: record.id, removed: lost });
+}
+console.log(JSON.stringify({ records: data.plugins.length, none, added, removed }, null, 1));
+```
+
+### Records with no category on the base commit
+
+- `BetterRSSforZotero@cloudchewie.com`: organization (right)
+- `SKR@zotero.org`: ai (right, README)
+- `TabEnhance@example.com`: interface (right)
+- `ZotFileRecovery@jlegewie.com`: attachments (right)
+- `ZoteroExcerpt@fanyingfx.com`: other
+- `addontemplate@euclpts.com`: other
+- `arxiv@allanchain.github.com`: metadata (right, README)
+- `ask-my-paper@euclpts.com`: ai (right, README)
+- `authorbrowser@junting.li`: organization (right)
+- `automaticrefextraction@chamomile93.com`: search (right)
+- `better-vertical-tabs@euclpts.com`: interface (right)
+- `bluebook-signals-for-zotero@mystery-lab.com`: citations (right)
+- `break-pdf@ryon.ren`: export (right, README)
+- `careertracker@zotero.org`: other
+- `causalmap@causalmap.app`: other
+- `center-pdf@dylan.ac`: pdf-reading (right)
+- `chartero@volatile.static`: organization (right, README)
+- `citation-cards@shamus-li.github.io`: pdf-reading (right)
+- `citation-map@alessmor`: search (right)
+- `citation-phoenix@michaelrisch.com`: citations (right)
+- `citeflow@groele`: citations (right)
+- `citegeist@opusvita.org`: rankings, search (right)
+- `citestamp@citestamp.com`: metadata (right)
+- `clavicularius@mcburton.net`: citations (right)
+- `close-to-tray@zotero-exit.local`: interface (right)
+- `collection-breadcrumb@informalgit.github.io`: organization (right)
+- `compact-menu@yuukibarns`: interface (right)
+- `confucius@zotero.plugin`: search (right)
+- `coverview@insature.net`: organization (right)
+- `custom-item-fields@hotmail.com`: metadata (right)
+- `cychen.stats@outlook.com`: pdf-reading (right, README)
+- `date-from-last-modified@iris-advies.com`: metadata (right)
+- `debug-log@iris-advies.com`: other
+- `defn@aadi219.github.io`: pdf-reading (right)
+- `display-title-alias@local`: metadata (right)
+- `edtechhub@edtechhub.org`: other
+- `fullscreen@dev.null`: interface (right)
+- `github-links@huoyuuu.github.io`: other
+- `google-this@visser.dev`: other
+- `grayscale-ui@dylan.ac`: appearance (right)
+- `grouptag@zotero.org`: interface (right)
+- `hide-citation-highlights@jkroes`: pdf-reading (right)
+- `hidefields@pengxoya.github.io`: appearance (right)
+- `highlightdescriptions@paulmrg2`: notes (right)
+- `hover-abstract@localplugin.dev`: pdf-reading (right)
+- `keepzotero@yhmtsai`: interface (right)
+- `know-ur-zotero@euclpts.com`: other
+- `lcsc-datasheets@local.example`: metadata (right)
+- `literature-row-colors@local.example`: organization (right)
+- `marginfit@septyagu.local`: pdf-reading (right)
+- `mineru-for-zotero@asianfleet.github.io`: attachments (right)
+- `nanopub-plugin@sciencelivehub.com`: other
+- `ninja@fluctus.cc`: rankings (right, README)
+- `opendata-cite@mfranchi.net`: other
+- `openreview@zotero.plugin`: other
+- `paper-acquisition-anti-scrape@jyluo1994.github.io`: attachments (right)
+- `paper-library-checker@he-chun.github.io`: other
+- `papercompare@local.research`: notes (right, README)
+- `paperpet@howarddong711.github.io`: organization (right, README)
+- `pdf-preview-dot-fix@local.invalid`: pdf-reading (right)
+- `pdfhandcatcher@qifu04`: attachments (right)
+- `perma-archiver@kirinchang.law`: citations, attachments (right)
+- `photo-highlights@janbaykara.com`: notes (right)
+- `pinakes@srmateos.github.io`: search (right)
+- `protpeek-zotero@momisback.github.io`: other
+- `readerc@readerc.local`: translation (right)
+- `reading-time@local`: organization (right)
+- `readray@lilys.ai`: export (right)
+- `rebootero@chen7447.github.io`: interface (right)
+- `reference-checker@hedwigai.com`: metadata (right)
+- `reference-guard@liangliu-nlp.github.io`: pdf-reading (right)
+- `referencecheck@korhonenaleksi.github.io`: metadata (right)
+- `referenceforzotero@woif-sha.github.io`: search (right)
+- `refflow@groele.github.io`: search (right)
+- `remindme@beichenzhao.github.io`: ai, notes (right, README)
+- `replication-checker@forrt.org`: other
+- `rtf-odf-scan-for-zotero@mystery-lab.com`: citations (right)
+- `saved-search-folders@nickynoname.github.io`: organization (right)
+- `selection-popup-on-alt@f31.eu`: pdf-reading (right)
+- `tabgroups@shourovj.github.io`: interface (right)
+- `title-without-articles@daihum.org`: metadata (right)
+- `tomasdanis26@gmail.com`: search (right)
+- `vertical-toolbar@dylan.ac`: interface (right)
+- `vinculum-zotero@mcburton.net`: other
+- `weavero@mjthoraval`: interface (right)
+- `word-learning@zotero.local`: translation (right)
+- `z-permalink@zotero.org`: other
+- `zemble@cosmik.network`: other
+- `zodh@fatsource.com`: translation (right, README)
+- `zostats@arrancurran.github.io`: rankings (right)
+- `zot-plus-plus@rnicrosoft-studio.github.io`: organization (right, README)
+- `zotbox@scigreat.com`: metadata, rankings (right, README)
+- `zotero-agent-bridge@local`: ai (right)
+- `zotero-api-plus@gokokruri007.com`: other
+- `zotero-author-profiles@siyuanj`: other
+- `zotero-book-splitter@juntaoyang.local`: attachments (right)
+- `zotero-browser@ginixstudy.github.io`: other
+- `zotero-card-library@zotero`: organization (right, README)
+- `zotero-close-to-tray@example.com`: interface (right)
+- `zotero-datacheck@kevin65536.github.io`: other
+- `zotero-deselect@local`: interface (right)
+- `zotero-excalidraw@zotero.org`: notes (right, README)
+- `zotero-except@local`: organization (right)
+- `zotero-extra@coekfung.github.io`: metadata (right)
+- `zotero-figure-extract@achuan`: attachments (right)
+- `zotero-keep-window@luke-evan`: interface (right)
+- `zotero-latin@mirket`: metadata (right, README)
+- `zotero-literature-graph@paper-project.local`: search (right)
+- `zotero-local-pdf-manager@zotero.local`: attachments (right)
+- `zotero-mark-reader@jin-taiyu.github.io`: pdf-reading (right)
+- `zotero-mini-tray@local`: interface (right)
+- `zotero-one@zotero.plugin`: organization (right, README)
+- `zotero-open-pdf@iris-advies.com`: attachments (right, README)
+- `zotero-paper2speech@zotero.local`: pdf-reading (right)
+- `zotero-paperflow@groele.org`: other
+- `zotero-pdf-filters@dylan.ac`: pdf-reading (right)
+- `zotero-plugin@inciteful.xyz`: search (right, README)
+- `zotero-pmcid-fetcher@iris-advies.com`: metadata (right)
+- `zotero-proxy-gui@royenheart`: other
+- `zotero-pubpeer@pubpeer.com`: other
+- `zotero-reading-room@wuxinxin27.github.io`: ai (right, README)
+- `zotero-reference-checker@najibprog`: search (right)
+- `zotero-settings-key@hegghammer.github.io`: interface (right)
+- `zotero-skimming@00sapo.org`: pdf-reading (right)
+- `zotero-smart-organizer@users.noreply.github.com`: organization (right)
+- `zotero-spotlight@outlook.com`: interface (right)
+- `zotero-storage-cleaner@grainrainandy.github.io`: attachments (right)
+- `zotero-tab-fix@local`: interface (right)
+- `zotero-tab-manager@rg4sun.dev`: interface (right)
+- `zotero-todoist-bridge@cpsimpson.dev`: export (right)
+- `zotero-tray@jaeho.dev`: interface (right)
+- `zotero-tray@local`: interface (right)
+- `zotero-var-highlighter@zotero-var-highlighter`: pdf-reading (right)
+- `zotero-wakatime@xinxzk.github.io`: organization (right)
+- `zotero7-scidb@dev.null`: attachments (right)
+- `zotero@bibsonomy.org`: export (right)
+- `zoteroAddons@ytshen.com`: other
+- `zoteroScholar@my.com`: rankings (right, README)
+- `zoterocopyanything@example.com`: attachments (right, README)
+- `zoterofigure@polygon.org`: attachments (right)
+- `zoteroif@qnscholar`: rankings (right)
+- `zoteroinspire@itp.ac.cn`: search (right)
+- `zoteropreview@carter-tod.com`: citations (right)
+- `zoteroragflow@yourname.com`: ai (right)
+- `zoteroreviewassistant@alima-webdev.com`: organization (right)
+
+### Categories added beside others, or from a new `include` entry
+
+- `arxiv-source-helper@local.research`: attachments (right)
+- `color-keys@meaning-infinite`: interface (right)
+- `group-tabs-by-collection@example.com`: interface (right)
+- `quick-switcher@zotero-search.app`: interface (right)
+- `zest@zotero-zest.app`: interface (right)
+- `zotero-vim-plus@zotero-vim`: interface (right)
+- `zotradar@poesein`: search (right, no upstream facts on this file)
+- `zoturead@zotero.org`: search (right, no upstream facts on this file)
+- `zotxt@e6h.org`: citations (right, README, no upstream facts on this file)
+- `zutilo@www.wesailatdawn.com`: organization, interface (right, README, no upstream facts on this file)
+- `zutilore@altairwei.github.io`: organization (right, README, no upstream facts on this file)
+
 ## Open questions
 
-- The open bot pull requests give 2 wrong of 27 and 3 of 19 with none. No later read checks new plugins on the deployed data — observed 2026-10-31.
+- The open bot pull requests give 2 wrong of 27 and 3 of 19 with none. The M086 read checks only plugins with no category. No later read checks wrong assignments on new plugins — observed 2026-11-03.
 - M067's description overrides changed the categories of 15 plugins after this read. `description-ledger.md`, section "Category changes", holds that read and the 9 excludes it added. The rows here for those plugins predate it — observed 2026-10-31.

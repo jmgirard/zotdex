@@ -159,8 +159,9 @@ const offered = new Set(categoryOptions(plugins).map(({ value }) => value));
     <p>
       The index sorts plugins into categories of its own, so that you can find plugins of one kind. It assigns them from
       words in a plugin's name and descriptions, and it adds or removes some by hand. A plugin can have several
-      categories. A category can be wrong or missing. Plugin authors do not choose them, but a requested name or
-      description can change the words they read.
+      categories. A plugin that fits no other category is under Other tools. A plugin that the latest build did not read
+      has only the categories added by hand, so it often shows none. A category can be wrong or missing. Plugin authors
+      do not choose them, but a requested name or description can change the words they read.
     </p>
     <ul class="about-list" role="list" data-category-list>
       {
