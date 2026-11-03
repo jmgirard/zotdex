@@ -1,0 +1,8 @@
+{
+  "id": "zotero-tray@local",
+  "name": "Zotero Tray",
+  "description": "关闭到 Windows 托盘，支持显示窗口和正常退出；不附带可执行程序。",
+  "homepage": "https://github.com/lisontowind/zotero-tray",
+  "repoUrl": "https://github.com/lisontowind/zotero-tray",
+  "updateUrl": "https://github.com/lisontowind/zotero-tray/releases/latest/download/updates.json"
+}
