@@ -1356,16 +1356,19 @@ read stops with an error that the reader does not name, the failure name is
 `unexpected-error`. If the read gives facts that the schema rejects, the
 failure name is `facts-invalid`. The command still writes the file.
 
-The command gives each plugin read 3 minutes. If a read takes longer, the
-command stops it, and the record fails with `request-failed`. The command
-starts no plugin read after 18 minutes from its start. Each entry that it
-did not read gets a record that fails with `not-read`. If the number of
-whole days from 1970-01-01T00:00Z to `generatedAt` is even, the command
-reads the plugins in id order. Id order sorts the entry directory names by
-character code, so capital letters come before small letters. If that
-number is odd, it reads them in reverse id order. So the entries that get
-`not-read` are the last ids on even days and the first ids on odd days. The
-file lists its records in id order on every day. A plugin with either
+The command reads up to 4 plugins at once. It starts each GitHub API request
+of these reads at least 80 ms after the one before it, and a request to
+another host does not wait. The command gives each plugin read 3 minutes. If
+a read takes longer, the command stops it, and the record fails with
+`request-failed`. The command starts no plugin read after 18 minutes from
+its start, and a read that is open at that time runs on to its end. Each
+entry whose read it did not start gets a record that fails with `not-read`.
+If the number of whole days from 1970-01-01T00:00Z to `generatedAt` is even,
+the command starts the reads in id order. Id order sorts the entry directory
+names by character code, so capital letters come before small letters. If
+that number is odd, it starts them in reverse id order. So the entries that
+get `not-read` are the last ids on even days and the first ids on odd days.
+The file lists its records in id order on every day. A plugin with either
 failure shows no facts until a later build reads it. The read of the
 `report` label and the report issues, which comes before the plugin reads,
 also counts toward the 18 minutes. After the plugin reads, the build reads each

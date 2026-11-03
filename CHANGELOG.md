@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- `pnpm build` now reads up to 4 plugins at once, and it starts each GitHub API
+  request of these reads at least 80 ms after the one before it. Before, it read
+  one plugin at a time, so a slow daily build could reach its 18-minute limit,
+  and the plugins that it had not read showed "Not read" until a later build. The
+  limit stays, and a plugin that a build does not reach still fails as `not-read`.
 - Every plugin that the latest build read now shows at least one category. A
   new category, "Window, tabs, and shortcuts", holds plugins for how the main
   window behaves, tray icons, tabs, keyboard shortcuts, and small menu and

@@ -1,13 +1,13 @@
 # M087: Read plugins a few at a time
 
-- **Status:** planned
+- **Status:** in-progress
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — an unread plugin loses its facts and word-rule categories on the live site
-- **Branch/PR:** —
+- **Branch/PR:** m087-read-plugins-at-once
 
 ## Goal
 
@@ -66,6 +66,9 @@ A normal daily build reads every plugin before its time limit, with room for the
 - 2026-11-03: question set: keep an unread plugin's last good record here or apart — apart, as a candidate row.
 - 2026-11-03: collision check: D-015 and D-028 stand and D-058 annotates them; candidate row absorbed; no open issue or outside pull request overlaps. Remainders: 2 new candidate rows, named in Out.
 - 2026-11-03: criteria audit (full mode) by a fresh Opus reader: 8 findings on AC1 to AC7, each fixed in the wording: AC1 open count and gap wait; AC2 stall on two kinds of request, and a test-set read limit since a request's own limit is 60 s; AC3 per fetch call, an API `update_url`, and an XPI starting during a wait; AC4 and AC5 minimum sizes; AC6 rate numbers moved to T4, and the name warning added; AC7 "in turn" added.
+
+- 2026-11-03: checkpoint: T1 to T3 written; 8 planted defects each failed the new tests; the full test run is not yet read, so no box is ticked. Work is in a worktree, since this session must not switch branches in the shared checkout.
+- 2026-11-03: run 41685419485 on main, serial, took 14:45 in its `pnpm build` step at 736 plugins, so the cut does not repeat on every build.
 
 ## Decisions
 

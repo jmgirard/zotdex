@@ -7,7 +7,7 @@ _Last hygiene check: 2026-11-03 (M086 archived; one row narrowed; 25 lessons, 10
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M087 | Read plugins a few at a time | planned | — | high | milestones/M087-read-plugins-at-once.md |
+| M087 | Read plugins a few at a time | in-progress | — | high | milestones/M087-read-plugins-at-once.md |
 | M086 | Give every read plugin a category | done | — | normal | milestones/archive/M086-every-plugin-a-category.md |
 | M085 | Let an older, larger repo ask for a listed add-on id | done | — | high | milestones/archive/M085-repeat-id-replace.md |
 | M084 | Read the last merged plugins for paid services | done | — | normal | milestones/archive/M084-paid-service-third-read.md |
