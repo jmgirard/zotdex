@@ -68,7 +68,7 @@ The case is the one that `pnpm description-gaps` named. If an upstream file says
 | G45 | `vocab-book@custom.zotero.org` | cjk | 多功能单词本 \| Zotero 划词与批量收录、可选翻译、原词定位、闪卡复习、Anki 导出、文献阅读管理与笔记。 | override | README.md, translated |
 | G46 | `wmu-journal-tags@wmu.local` | cjk | 展示温州医科大学科技类共识期刊目录（T系列、Q系列）分类标签的 Zotero 插件 | override | README.md, translated |
 | G47 | `wordtranslator@example.com` | cjk | Zotero 插件：在 PDF 阅读器中划词翻译单词和短语，管理个人单词本，支持可配置的 AI 翻译 API。 | override | README.md, translated |
-| G48 | `yonghao.zou@epfl.ch` | short | Sync files to tablet | override | README.txt, condensed |
+| G48 | `yonghao.zou@epfl.ch` | short | Sync files to tablet | override | README.txt and manifest description, condensed |
 | G49 | `zemble@cosmik.network` | short | Zotero Plugin for Semble | override | docs/index.html, condensed |
 | G50 | `zhinfo@zotero.local` | cjk | Zotero 插件：在条目信息面板加入「中文标题」与「中文摘要」，打开条目时自动翻译填入（MyMemory / OpenAI 兼容大模型 / DeepL / Google） | override | README.md, translated |
 | G51 | `zmta-update-metadata@iiwenwen` | cjk | Zotero 10 元数据更新插件：逐项审核、安全更新与最近批次撤销 | override | README.md, translated |

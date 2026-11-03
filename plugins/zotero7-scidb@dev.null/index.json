@@ -3,7 +3,7 @@
   "overrides": [
     {
       "field": "description",
-      "value": "Downloads PDFs for items with a DOI from Sci-Hub or SciDB and attaches them to the item from the right-click menu, with a setting for the endpoint; aims to be a version of zotero-scihub for newer Zotero releases.",
+      "value": "Downloads PDFs for items with a DOI from Sci-Hub or SciDB and attaches them to the item from the right-click menu, with a setting for the endpoint; aims to be a compatible version of zotero-scihub.",
       "reason": "Condensed from the opening, Usage, and Settings sections of README.md. The manifest description, \"Zotero SciDB Downloader\", only repeats the name, and the GitHub About text is missing."
     }
   ]

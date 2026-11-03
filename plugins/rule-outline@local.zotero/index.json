@@ -3,7 +3,7 @@
   "overrides": [
     {
       "field": "description",
-      "value": "Builds a PDF outline from local font-size and numbering rules, lets you check and edit the headings in a preview, and writes bookmarks into the original PDF, keeping its Zotero attachment and annotations; needs no API key and uploads nothing.",
+      "value": "Builds a PDF outline from local font-size and numbering rules, lets you check and edit the headings in a preview, and writes bookmarks into the original PDF, keeping its Zotero attachment and annotations; needs no API key and does not upload papers.",
       "reason": "Translated from the opening and the \"安装和使用\" section of README.md, which is in Chinese. The manifest description is half or more Chinese, and the GitHub About text is missing."
     }
   ]

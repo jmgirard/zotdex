@@ -4,7 +4,7 @@
     {
       "field": "description",
       "value": "Translates full PDFs, including scans, using MinerU parsing, and attaches translated and side-by-side PDFs to the item, with full-paper AI chat, mind maps, and copyable LaTeX formulas; needs a MinerU token, and AI features need a model API key.",
-      "reason": "Translated from the introduction and the \"配置与成本\" section of README.md, which is in Chinese. The manifest description and the GitHub About text are half or more Chinese."
+      "reason": "Translated from the introduction and the \"排版译文\" and \"配置与成本\" sections of README.md, which is in Chinese. The manifest description and the GitHub About text are half or more Chinese."
     }
   ]
 }
