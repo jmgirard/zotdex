@@ -52,7 +52,7 @@ console.log(lines.join("\n"));
 ## Results
 
 - Tuning group, base rules: 63 wrong of 503 counted assignments (12.5%).
-- Held-out group, rules of commit `87a6185b`: 20 wrong of 148 counted assignments (13.5%). That `categories.ts` has the blob hash `fd12546add47cecb59a722a69874a76e8a0b0cd4`. Merges squash, so this commit does not reach `main`.
+- Held-out group, rules of commit `87a6185b`: 20 wrong of 148 counted assignments (13.5%). That `categories.ts` has the blob hash `fd12546add47cecb59a722a69874a76e8a0b0cd4`. Merges squash, so this commit does not reach `main`. Pull request #826 holds it.
 - Held-out group, base rules: 20 wrong of 146 counted assignments (13.7%).
 
 The held-out rate is over 1 in 10, the test of D-059. So the milestone stopped for the user's decision before the merge question. The user kept word rules, and D-060 records that decision.
