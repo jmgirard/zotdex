@@ -83,6 +83,8 @@ A normal daily build reads every plugin before its time limit, with room for the
 
 - 2026-11-03: T5 done: AC4's test now has 3 build-level entries and 3 plan items whose ends differ from both start order and id order on each day; planted end-order lists fail it; a planted queue that keeps a failure fails the new throw test; `pnpm test` 2223 passed, 6 skipped; `pnpm check` 0 problems.
 
+- 2026-11-03: step-7 approval: m087-read-plugins-at-once approved for merge
+
 ## Decisions
 
 ## Review
