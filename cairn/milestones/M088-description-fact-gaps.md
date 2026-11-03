@@ -1,13 +1,13 @@
 # M088: Fix the small description fact gaps
 
-- **Status:** planned
+- **Status:** in-progress
 - **Priority:** normal
 - **Depends on:** —
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — the plugin pages, the shown description, and the owner request check change
-- **Branch/PR:** —
+- **Branch/PR:** m088-description-fact-gaps
 
 ## Goal
 
@@ -59,7 +59,7 @@ text stays as the manifest has it.
 
 ## Tasks
 
-- [ ] T1: Change `CJK` and `OTHER_LETTERS` in `src/site/description.ts:34` and normalize in `cjkShare`, with the tests
+- [x] T1: Change `CJK` and `OTHER_LETTERS` in `src/site/description.ts:34` and normalize in `cjkShare`, with the tests
       of AC1. Limit the `Script_Extensions` part to letters, since CJK punctuation also names these scripts. Plant the
       letter limit's removal once to see `、。` fail.
 - [ ] T2: Run a one-off comparison, kept out of the repo, of the default branch's and the branch's `shownDescription`
@@ -82,6 +82,7 @@ text stays as the manifest has it.
 - 2026-11-03: plan gate chose both upstream texts, labeled, over the picked text alone, because 33 of 34 plugins with a description override have a GitHub text that the table leaves out; falsified by a user who reads the cell as what the site would show without the override.
 - 2026-11-03: plan chose `Script_Extensions` letters over a hand list of the 11 code points, because the property follows Unicode; falsified by a letter it takes that is not used in CJK text.
 - 2026-11-03: split: M088 covers items (1) to (3), which are code; item (4) becomes M089, which is data; plugins added later and other-language texts become the row "Fill description gaps on new plugins". This milestone's hygiene narrows the source row to item (4) and gives it M089's started token.
+- 2026-11-03: T1: `cjkShare` takes the NFC form and counts `Script_Extensions` letters as CJK; 4 new rows failed on the old count. Removing the letter limit made `、。` fail, as planted.
 
 ## Decisions
 

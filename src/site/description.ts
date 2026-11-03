@@ -31,15 +31,19 @@ export function onlyRepeatsName(text: string, name: string): boolean {
   return informative(text, words(name)) === undefined;
 }
 
-const CJK = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/gv;
-const OTHER_LETTERS = /[\p{L}--[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]]+/gv;
+// Letters only for Script_Extensions, since CJK punctuation such as 、 also names these scripts.
+// The marks ー and 〆 are letters with Script=Common that name them.
+const CJK = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}[\p{L}&&[\p{scx=Han}\p{scx=Hiragana}\p{scx=Katakana}\p{scx=Hangul}]]]/gv;
+const OTHER_LETTERS = /[\p{L}--[\p{scx=Han}\p{scx=Hiragana}\p{scx=Katakana}\p{scx=Hangul}]]+/gv;
 
 // The share of a text written in Chinese, Japanese, or Korean: its CJK characters over those
 // characters plus its runs of other letters, since one CJK character is closer to a word than
-// one Latin letter is. 0 for a text with neither.
+// one Latin letter is. 0 for a text with neither. NFC first, so a decomposed Latin word stays
+// one run and a decomposed Hangul syllable stays one character.
 export function cjkShare(text: string): number {
-  const cjk = text.match(CJK)?.length ?? 0;
-  const other = text.match(OTHER_LETTERS)?.length ?? 0;
+  const composed = text.normalize("NFC");
+  const cjk = composed.match(CJK)?.length ?? 0;
+  const other = composed.match(OTHER_LETTERS)?.length ?? 0;
   return cjk + other === 0 ? 0 : cjk / (cjk + other);
 }
 

@@ -107,6 +107,11 @@ describe("cjkShare", () => {
     ["A Zotero 插件", 0.5],
     ["Zotero 插件 for notes", 0.4],
     ["2026 ✓", 0],
+    ["コーヒー", 1],
+    ["〆切", 1],
+    ["、。", 0],
+    ["Résumé notes 中文".normalize("NFD"), 0.5],
+    ["논문 notes".normalize("NFD"), 2 / 3],
   ])("gives %s a share of %d", (text, share) => {
     expect(cjkShare(text)).toBeCloseTo(share);
   });
