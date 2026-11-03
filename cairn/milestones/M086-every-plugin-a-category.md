@@ -170,6 +170,7 @@ The ledger, About page, README, DESIGN, and CHANGELOG text for these changes.
 - 2026-11-03: T7: `pnpm test` exit 0 (2215 passed, 6 skipped), `pnpm check` exit 0 (736 entries, 0 problems). Browser pane on the built site: menu lists Window, tabs, and shortcuts (27) and Other tools (26) last, `?category=other` shows 26 of 736, the PMCID page lists Metadata and cleanup, and the Debug Log page lists Other tools.
 - 2026-11-03: claim audit: 28 claims read, 4 corrected — site/src/pages/about.astro, README.md, CHANGELOG.md, src/site/categories.ts. About and README now say a plugin that the latest build did not read has only hand-added categories; the `interface` about text and the README menu-order sentence were narrowed. The reader re-read the 4, and all hold.
 - 2026-11-03: review: the plan gate's 1-in-10 test reads the rules after tuning, as M066's did: 0 wrong of 130 lines, on data the rules were tuned on. Before tuning, 9 of 20 pattern additions were wrong, so new plugins can expect a higher rate; the row "Check categories on new plugins" keeps that read.
+- 2026-11-03: step-7 approval: m086-every-plugin-a-category approved for merge
 - 2026-11-03: the simple-english hook reports older text in README.md and CHANGELOG.md, and the `— observed` marks in the ledger; those lines are outside this change, so they stay. The hit on a new CHANGELOG line was fixed.
 
 ## Decisions

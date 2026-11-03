@@ -358,8 +358,8 @@ milestone.
 records. The base commit is `f92dcadfe25c1e881d54532bfc4e2ff7fae14875`. On this
 file, 39 records have no upstream facts: 38 are `not-read`, since that build
 reached its 18-minute limit, and 1 is `request-failed`. For those 39, the read
-used the 2026-11-02 data or `meta.json` to place the ones that the rules would
-leave with no other category. It did not read their other pattern results. They
+used the 2026-11-02 data or `meta.json` to place the ones that the rules leave
+with no other category. It did not read their other pattern results. They
 have no lines here unless an `include` entry adds a category.
 
 **The rule for this read.** The rule of "How the read marks an assignment" holds.
