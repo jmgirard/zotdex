@@ -93,8 +93,9 @@ description, plus each whose `include` list holds the id, less each whose
 `exclude` list holds it. A record with upstream facts that no category takes
 gets Other tools, whose pattern matches nothing (D-057). A record with no
 upstream facts gets only its includes. The data file carries no categories. A
-plugin that no read has marked can expect the wrong rate of the latest held-out
-read, which `cairn/references/category-ledger-2026-11-03.md` holds (D-060). The same script
+category that a pattern gives a plugin that no read has marked can expect the
+wrong rate of the latest held-out read, which
+`cairn/references/category-ledger-2026-11-03.md` holds (D-060). The same script
 writes a plugin count beside the filters: the total, how many plugins the
 filters pass on every page while a filter is on, or that none match (M044,
 M053, M058). Typing writes `?q=`

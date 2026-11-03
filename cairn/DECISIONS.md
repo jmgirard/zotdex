@@ -913,8 +913,8 @@ this decision to the user. The user kept word rules and finished the milestone, 
 finishing with a high-priority row to replace them, and over stopping to re-plan. A
 category stays the index's own grouping, which the About page says can be wrong, and
 the other ways to place a new plugin need work on each bot merge, which D-037
-rejected. So 1 in 10 no longer decides whether word rules stay. A plugin that no read
-has marked can expect the rate of the latest held-out read, until a read fixes it.
-Later reads still state a held-out rate, as D-059 says. This choice is wrong if
+rejected. So 1 in 10 no longer decides whether word rules stay. A category that a
+pattern gives a plugin that no read has marked can expect the rate of the latest
+held-out read, until a read fixes it. Later reads still state a held-out rate, as D-059 says. This choice is wrong if
 visitors report wrong categories as a problem, or if a later held-out read finds a
 rate clearly above this one.

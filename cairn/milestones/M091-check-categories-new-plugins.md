@@ -126,6 +126,7 @@ The site's categories rest on a hand read of the 464 plugins added since 2026-10
 - 2026-11-03: T6 done: the browser pane shows the three labeled links on `paper-loom@local.research` and no console error; the build read the pinned data.
 - 2026-11-03: T7 done: CHANGELOG, DESIGN, INDEX, and the open question in `category-ledger.md` updated; the writing hook's other hits in `CHANGELOG.md` and `category-ledger.md` predate this branch and stay.
 - 2026-11-03: claim audit: 43 claims read, 6 corrected — CHANGELOG.md, src/site/categories.ts, test/categories.test.ts
+- 2026-11-03: review: four lenses, 28 findings; the fixes changed patterns after 87a6185b, removed the `ai` guard, and corrected D-060's unmerged wording to "a category that a pattern gives"; the compare stays 51 gains and 83 losses; `pnpm test` to re-run before the merge question.
 - 2026-11-03: delegation: four fresh Opus readers mark the tuning group in batches of 91, so the rule changes are not tuned by the readers of the held-out group; the agent settles every wrong and missing mark.
 
 ## Decisions
@@ -151,3 +152,36 @@ Evidence gathered 2026-11-03 at head 2e23d62c, with the scripts taken from the l
 - AC6: a site build from the data file has 1067 `data-category` links, and each one's `aria-label` is `<name>: plugins in this category` with the name as its visible text. The exact-markup test near `test/site.test.ts:444` passes. The browser pane read the labels as the links' accessible names (T6).
 - AC7: the `CHANGELOG.md` `## Unreleased` section holds both entries, `cairn/DESIGN.md:123` names the label, `cairn/references/INDEX.md:13` lists the ledger. `pnpm test` exits 0 (2271 passed, 6 skipped), and `pnpm check` exits 0 (736 entries, 0 problems).
 - Consistency gate: `cairn_validate` passes; no principle changed, so `cairn_impact` is skipped; the generic profile names no toolchain checks.
+
+spawned: diff-bug, blame-history, prior-review, ripple
+
+- diff-bug #1: `(?<!\bin )\bsync` drops export for "Keeps your library in sync with Google Drive" and "Built-in sync with WebDAV folders" — fix now.
+- diff-bug #2: the `ai` guard removes `ai` from "AI chat with papers. Also runs a built-in MCP server." — fix now, guard removed and its two plugins listed by id.
+- diff-bug #3: the same guard misses "MCP servers" and "MCP-server" and works per text — fix now, by the same removal.
+- diff-bug #4: `(?<!\b(?:by|via) )\bdois?\b` drops metadata for "Fills item fields by DOI" and "Looks up each item's journal via DOI" — fix now, the narrowing now names only a download or import by DOI.
+- diff-bug #5: the attachments lookbehind drops "Translate and move attachments to a folder", and `(?<!子)附件` drops "管理条目的子附件" — fix now.
+- diff-bug #6: `(?<!import )translat` also drops "Import translations from a CSV of terms" — fix now.
+- diff-bug #7: new `思源` gives export to "思源黑体 reader font" — fix now, the pattern reads `思源笔记`.
+- diff-bug #8: narrowings fit only literal phrases: "two column", "double-column", "2-column", "Easier to read", "Note：", "Note -", "reading guidelines", and "A Zotero translator" still match, and "Notes: a quick capture panel." loses notes — fix now for all but two; "Note -" and "A Zotero translator" follow-up to the row "Check categories on new plugins", normal rung, since a plugin named Zotero Translator needs the word and the plan's audit kept the literal "import translator".
+- diff-bug #9: D-060 and DESIGN say any unmarked plugin can expect the held-out rate, but the group covers only plugins the older patterns matched — fix now, both now say a category that a pattern gives.
+- diff-bug #10: the ledger title and INDEX say "hand read", while AI readers made the first marks — fix now.
+- diff-bug #11: the ledger states "the user spot-checks them at the merge question" before that happens — reject, style: `category-ledger.md` uses the same wording for the same step.
+- diff-bug #12: the ledger says the held-out group holds only plugins no earlier read names, and it omits the one id on a plan search line — fix now, the ledger names `zctr@zotero.plugin`.
+- diff-bug #13: AC1 is ticked though two held-out lines hold `pdf-reading` that the base commit does not give — fix now, those lines name it after `At the named commit:`, so the lines hold the base categories.
+- diff-bug #14: the CHANGELOG's "import translator" and "easy to read" occur in no record — reject, false: the entry states what the rules do, tests show it, and the row asked for these words.
+- diff-bug #15: AC2's PR number is absent — reject, planned change: step 8 writes it right after the PR opens, and the box stays open until then.
+- diff-bug #16: added branches with no test: `MCP bridge`, `via`, `multi-`, `思源` — fix now, the first two are gone and the others have rows.
+- diff-bug #17: `autoattach@adolinjonathan-bot.github.io`'s `ai` exclude is dead under the narrowed pattern — fix now, by the guard's removal.
+- diff-bug #18: removing the M088 row leaves 2 terminal rows — reject, planned change: logged at T5, and this milestone's row is the third at hygiene.
+- diff-bug #19: T6 named `test/site.test.ts:480` for an update that it did not need, and that test now depends on attribute order — reject, false: `data-category` stays last, as the test had it before.
+- diff-bug #20: "Generates PDF bookmarks" and "Generates a PDF outline" may repeat one path — reject, false: each runs its own alternative of the pattern.
+- blame-history #1: the held-out group was tuned after it was measured, and D-060 rests on 13.5% for rules that no longer exist — reject, planned change: T5 calls for those entries, id entries do nothing for an unread plugin, and the ledger states the later changes and that no later group measures them.
+- blame-history #2: the `ai` guard drops `ai` from a real assistant that also offers an MCP server — fix now, same as diff-bug #2.
+- blame-history #3: the attachments lookbehind drops a plugin that translates and also manages attachments — fix now, same as diff-bug #5.
+- prior-review #1: held-out plugins were used for rule edits after their read, so the number is the last clean one, and M066 and M086 raised that a read of tuned data cannot test the rules — reject, planned change: same as blame-history #1, and the rate is on the frozen commit.
+- prior-review #2: the candidate row still names the six phrases and the link gap — fix now, at step 9's hygiene, as the plan's remainder line says.
+- ripple #1: the M089 row's Depends on names M088, whose row left the table — reject, false: the table's comment points older rows to the archive, which holds it.
+- ripple #2: the table comment says to keep 3 terminal rows, and 2 remain — reject, planned change: same as diff-bug #18.
+- ripple #3: the candidate row's text is stale — fix now, same as prior-review #2.
+- ripple #4: `category-ledger.md:32` gives import translators as a wrong mark beside the fixed case — reject, false: the rule it states still holds.
+- snapshot: no path on the branch has a `_snaps` or `__snapshots__` directory.

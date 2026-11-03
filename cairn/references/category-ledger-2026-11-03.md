@@ -1,6 +1,6 @@
-# category-ledger-2026-11-03: a hand read of the categories of the plugins added since 2026-10-31 (M091)
+# category-ledger-2026-11-03: a read by AI readers of the categories of the plugins added since 2026-10-31 (M091)
 
-**Provenance.** Ingested 2026-11-03 by M091 from a hand read of the results of `categories` in `src/site/categories.ts`. The input is the shelf file `cairn/references/sources/plugins-data-2026-11-03b.json`, the deployed `v1/plugins.json`, whose `generatedAt` is 2026-11-03T22:05:15.306Z, with 736 records. The base commit is `b941616be45162de233a0430682c7bc51bc8316e`. A new plugin is a record of that file whose id is not in `cairn/references/sources/plugins-data-2026-10-31.json`. There are 464.
+**Provenance.** Ingested 2026-11-03 by M091 from a read of the results of `categories` in `src/site/categories.ts`. The input is the shelf file `cairn/references/sources/plugins-data-2026-11-03b.json`, the deployed `v1/plugins.json`, whose `generatedAt` is 2026-11-03T22:05:15.306Z, with 736 records. The base commit is `b941616be45162de233a0430682c7bc51bc8316e`. A new plugin is a record of that file whose id is not in `cairn/references/sources/plugins-data-2026-10-31.json`. There are 464.
 Pagination: none.
 Extraction: verified 2026-11-03 against the listing script's output. This is a snapshot, and the deployed data and the rules can change after it.
 
@@ -57,7 +57,9 @@ console.log(lines.join("\n"));
 
 The held-out rate is over 1 in 10, the test of D-059. So the milestone stopped for the user's decision before the merge question. The user kept word rules, and D-060 records that decision.
 
-A fresh AI reader marked the held-out group after that commit. It did not read the tuning-group marks. The agent changed none of its wrong marks. The group holds only plugins that no earlier read names. So it holds no `other` assignment and no assignment from an `include` list alone, and the rate covers only plugins that the older patterns matched.
+A fresh AI reader marked the held-out group after that commit. It did not read the tuning-group marks. The agent changed none of its wrong marks. The group holds only plugins that no earlier read names. So it holds no `other` assignment and no assignment from an `include` list alone, and the rate covers only plugins that the older patterns matched. One held-out id, `zctr@zotero.plugin`, was on a line of the plan's phrase search. No rule change rests on it.
+
+After the held-out read, the branch added hand entries for those plugins. At review it loosened some patterns, since their narrowing cut right uses on other texts. It also removed a guard on texts that name an MCP server. These changes give the same results on the data file as the listed changes below. No later group measures them.
 
 Of the 20 wrong held-out assignments, 7 are `ai` on a plugin that serves outside AI tools. Another 6 are `attachments` on a plugin that only mentions attachments. The tuning group shows the same two kinds. The tuning changed 2 of the 100 plugins, and each change adds a right `pdf-reading`. It removed no wrong assignment from this group.
 
@@ -432,7 +434,7 @@ One line per plugin, in id order, with its categories on the base commit. A mark
 
 ## The held-out group
 
-One line per plugin, in id order, with its categories under commit `87a6185b`. On the base commit each plugin has the same categories, except the two marked `not on the base commit`. The base rules gave those plugins nothing else that these lines leave out.
+One line per plugin, in id order, with its categories on the base commit and a mark for each. Commit `87a6185b` gives each plugin the same categories, except that two lines name one more category after `At the named commit:`.
 
 - `add-items-from-text@zotero.org`: ai (right, borderline)
 - `ainote@zotero.org`: ai (right), notes (right)
@@ -475,7 +477,7 @@ One line per plugin, in id order, with its categories under commit `87a6185b`. O
 - `openalex-pdf@littview.com`: attachments (right)
 - `papertranslate@papertranslate.dev`: ai (right), translation (right)
 - `paperworm@paperworm.dev`: ai (right)
-- `pdf-ai-bookmarks@edwintuan.com`: ai (right), pdf-reading (right, not on the base commit)
+- `pdf-ai-bookmarks@edwintuan.com`: ai (right). At the named commit: pdf-reading (right)
 - `pdf-to-md@local`: ai (wrong: agent: Markdown only eases use by outside agent tools), attachments (right), export (right)
 - `publication-rankings@zotero.org`: rankings (right), organization (right)
 - `quick-highlight@local.kyh`: translation (wrong: translation selections only isolated, plugin does not translate), notes (right)
@@ -507,7 +509,7 @@ One line per plugin, in id order, with its categories under commit `87a6185b`. O
 - `zotero-auto-tagger@dnnunn.github.io`: ai (right), organization (right)
 - `zotero-feishu@wu-uk.github.io`: notes (right), export (right)
 - `zotero-flat-export@kylekahraman`: notes (right, borderline), citations (right, borderline), export (right)
-- `zotero-hjfy-split-reader@infinity4b.github.io`: translation (right), pdf-reading (right, not on the base commit)
+- `zotero-hjfy-split-reader@infinity4b.github.io`: translation (right). At the named commit: pdf-reading (right)
 - `zotero-management-bridge@example.org`: ai (wrong: agents: bridge for outside automation agents)
 - `zotero-markdown-summary@diantao.local`: ai (right), attachments (wrong: attachments: summaries stored as attachments, does not manage them)
 - `zotero-mcp-tags@opencode.local`: organization (right), ai-tools (right)

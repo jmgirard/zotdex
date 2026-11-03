@@ -31,8 +31,10 @@ const BRIDGES = [
   "zotero-declarative-bridge@deep-research.local",
   "zotero-mcp-plugin@autoagent.my",
   "zotero-mcp-plugin@lricher7329.github.io",
+  "zotero-mcp@agentsmith29.github.io",
   "zotero-reading-bridge@volatile.static",
   "zotron@diamondrill",
+  "zoty-bridge@zoty.dev",
 ];
 
 // The slug of the category of a read plugin that no other category takes (see categories).
@@ -44,7 +46,7 @@ export const CATEGORIES: readonly Category[] = [
     name: "AI assistants",
     about: "chat with papers, AI summaries and explanations, and AI agents inside Zotero",
     pattern:
-      /^(?!.*\bmcp (?:server|bridge)\b).*(?:\bai\b|\bai\d|\bllms?\b|\bgpt|chatgpt|claude|codex|deepseek|gemini|openai|ollama|copilot|(?<!user-)\bagents?\b|\brag\b|retrieval-augmented|\bkimi\b|notebooklm|\bhermes\b|opencode|antigravity|\bchat\b|large language|literature assistant|ragflow|\btl;?dr\b|大模型|人工智能|智能对话)/isu,
+      /\bai\b|\bai\d|\bllms?\b|\bgpt|chatgpt|claude|codex|deepseek|gemini|openai|ollama|copilot|(?<!user-)\bagents?\b|\brag\b|retrieval-augmented|\bkimi\b|notebooklm|\bhermes\b|opencode|antigravity|\bchat\b|large language|literature assistant|ragflow|\btl;?dr\b|大模型|人工智能|智能对话/iu,
     include: [
       "SKR@zotero.org",
       "ask-my-paper@euclpts.com",
@@ -76,7 +78,7 @@ export const CATEGORIES: readonly Category[] = [
     slug: "translation",
     name: "Translation and dictionaries",
     about: "translated text and PDFs, bilingual reading, dictionaries, and vocabulary",
-    pattern: /(?<!import )translat(?!ors\b)|(?<!编)译|bilingual|双语|dictionar|词典|查词|vocabular|单词|生词/iu,
+    pattern: /(?<!import )translator\b|translat(?!ors?\b)|(?<!编)译|bilingual|双语|dictionar|词典|查词|vocabular|单词|生词/iu,
     include: ["word-learning@zotero.local", "zodh@fatsource.com"],
     exclude: [
       "gbt7714-2025-helper@wangzfof.github.io",
@@ -92,7 +94,7 @@ export const CATEGORIES: readonly Category[] = [
     name: "PDF reading",
     about: "the PDF reader's view, focus aids, navigation, and text-to-speech",
     pattern:
-      /reading guide(?!s)|reading ruler|split.?view|pdf (?:bookmarks?|outlines?)|reading mode|single-page|page view|line focus|line by line|bionic|text-to-speech|\btts\b|read aloud|white margins|horizontal scroll|reader (location )?history|keybindings|eye-care|护眼|dark-mode image|pagination|theorems|in-text citations?|citation hover|rendered (pdf )?pages|reading bookmarks|citation previews|pdf references|while you read|margin detection|skimming|brightness|papers aloud/iu,
+      /reading guide\b|reading ruler|split.?view|pdf (?:bookmarks?|outlines?)|reading mode|single-page|page view|line focus|line by line|bionic|text-to-speech|\btts\b|read aloud|white margins|horizontal scroll|reader (location )?history|keybindings|eye-care|护眼|dark-mode image|pagination|theorems|in-text citations?|citation hover|rendered (pdf )?pages|reading bookmarks|citation previews|pdf references|while you read|margin detection|skimming|brightness|papers aloud/iu,
     include: [
       "zotero-alt-reader@hyxi.dev",
       "pdfpreview@windingwind.com",
@@ -117,7 +119,7 @@ export const CATEGORIES: readonly Category[] = [
     slug: "notes",
     name: "Notes and annotations",
     about: "notes, annotations, and mind maps",
-    pattern: /\bnotes?\b(?!:)|annotat|笔记|批注|标注|mind ?maps?|思维导图/iu,
+    pattern: /\bnote\b(?![:：])|\bnotes\b|annotat|笔记|批注|标注|mind ?maps?|思维导图/iu,
     include: [
       "zotero-pdf-highlighter@memorushb.com",
       "highlightdescriptions@paulmrg2",
@@ -169,7 +171,7 @@ export const CATEGORIES: readonly Category[] = [
     name: "Metadata and cleanup",
     about: "item metadata, DOIs, titles, author names, and duplicates",
     pattern:
-      /metadata|元数据|题录|(?<!\b(?:by|via) )\bdois?\b|journal abbreviations?|期刊缩写|title case|normali[sz]|linter|duplicat|dedup|isbn|cnki|author names|拼音|language field|italici|book information|search (&|and) replace|\bpmcids?\b|\bpmids?\b|against crossref|details from crossref|extra fields/iu,
+      /metadata|元数据|题录|(?<!(?:download|import)\w*(?: \w+){0,3} by )\bdois?\b|journal abbreviations?|期刊缩写|title case|normali[sz]|linter|duplicat|dedup|isbn|cnki|author names|拼音|language field|italici|book information|search (&|and) replace|\bpmcids?\b|\bpmids?\b|against crossref|details from crossref|extra fields/iu,
     include: [
       "arxiv@allanchain.github.com",
       "citestamp@citestamp.com",
@@ -213,7 +215,7 @@ export const CATEGORIES: readonly Category[] = [
     name: "Attachments and full text",
     about: "finding and downloading PDFs, renaming and moving files, snapshots, and OCR",
     pattern:
-      /(?<!translat\w* (?:\w+ ){0,2})attachments?\b|(?<!子)附件|full.?text pdfs|find(s|ing)? (the )?full.?text|download(s|ing)? (entitled )?(\w+ )?pdfs?|fetch pdfs|pdf files?|snapshots?|renam|\bocr\b|djvu|watch(ed)? folder|sci-hub|open-access|wayback|acquire pdfs|without pdfs|local pdf copies|pdf downloader|scidb|figure and table extraction|paddleocr/iu,
+      /(?<!translat\w* (?:zotero )?(?:pdf )?)attachments?\b|(?<!作为子)附件|full.?text pdfs|find(s|ing)? (the )?full.?text|download(s|ing)? (entitled )?(\w+ )?pdfs?|fetch pdfs|pdf files?|snapshots?|renam|\bocr\b|djvu|watch(ed)? folder|sci-hub|open-access|wayback|acquire pdfs|without pdfs|local pdf copies|pdf downloader|scidb|figure and table extraction|paddleocr/iu,
     include: [
       "ZotFileRecovery@jlegewie.com",
       "arxiv-source-helper@local.research",
@@ -279,7 +281,7 @@ export const CATEGORIES: readonly Category[] = [
     slug: "export",
     name: "Export and sync",
     about: "Markdown files, Obsidian, Notion, reading apps and tablets, and backups",
-    pattern: /notion|obsidian(?!-style)|logseq|readwise|remarkable|siyuan|思源|(to|as|into) (source-linked )?markdown|markdown (files|notes|database)|export|(?<!\bin )\bsync|backup|同步|导出/iu,
+    pattern: /notion|obsidian(?!-style)|logseq|readwise|remarkable|siyuan|思源笔记|(to|as|into) (source-linked )?markdown|markdown (files|notes|database)|export|(?<!(?:stays?|kept) in )\bsync|backup|同步|导出/iu,
     include: [
       "break-pdf@ryon.ren",
       "literature-library@local.zotero",
@@ -293,6 +295,7 @@ export const CATEGORIES: readonly Category[] = [
     ],
     exclude: [
       "annotationmanage@zknu.edu.cn",
+      "attanger-plus@gaiussheh",
       "bilingual-reader@zotero.local",
       "chatgpt-web-sidebar-demo@local",
       "latex-suite@ievlevpn.github.io",
@@ -344,7 +347,7 @@ export const CATEGORIES: readonly Category[] = [
     name: "Library organization",
     about: "tags, collections, item columns, feeds, and reading status",
     pattern:
-      /\btags?\b|tagging|collections? (icons?|colou?rs?)|suggests? (which )?collections|into (zotero )?collections|by collection|references between (zotero )?items|numbers to zotero items|syllabi|(?<!two-|multi-|into )(?<!\bby )columns?\b(?! by\b)|reading list|reading status|reading progress|(?<!easy )to read\b(?! it\b)|unread|pin items|\bfeeds?\b|\brss\b|\btasks\b|timelines?|saved searches|reading time|标签/iu,
+      /\btags?\b|tagging|collections? (icons?|colou?rs?)|suggests? (which )?collections|into (zotero )?collections|by collection|references between (zotero )?items|numbers to zotero items|syllabi|(?<!\b(?:two|double|2|multi)[- ]|into )(?<!\bby )columns?\b(?! by\b)|reading list|reading status|reading progress|(?<!eas(?:y|ier) )to read\b(?! it\b)|unread|pin items|\bfeeds?\b|\brss\b|\btasks\b|timelines?|saved searches|reading time|标签/iu,
     include: [
       "authorbrowser@junting.li",
       "chartero@volatile.static",
