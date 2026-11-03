@@ -26,19 +26,19 @@ row "Refine the Latin part and short picks".
 
 ## Acceptance criteria
 
-- [ ] AC1: `pnpm description-gaps cairn/references/sources/plugins-data-2026-11-03.json` prints no gap line, except for
+- [x] AC1: `pnpm description-gaps cairn/references/sources/plugins-data-2026-11-03.json` prints no gap line, except for
       a plugin that `cairn/references/description-ledger-2026-11-03.md` marks `kept` because neither its manifest, its
       GitHub text, nor its default-branch README says what the plugin does.
-- [ ] AC2: Each `description` override that this milestone adds, as `git diff` of `plugins/*/index.json` against the
+- [x] AC2: Each `description` override that this milestone adds, as `git diff` of `plugins/*/index.json` against the
       default branch lists them, has no `version`, has an English value of at least six words, and has a `reason` that
       names the upstream file it was drawn from and which case each upstream text is, as DESIGN's Overrides item says.
       `pnpm check` passes.
-- [ ] AC3: Comparing `categories` with and without each added override, on the default branch's `exclude` lists, gives
+- [x] AC3: Comparing `categories` with and without each added override, on the default branch's `exclude` lists, gives
       a list of the categories that the overrides add. A hand read marks each one right, or it is on that category's
       `exclude` list in `src/site/categories.ts`, so the plugin does not show it.
-- [ ] AC4: The Unreleased section of `CHANGELOG.md` has an entry that says these plugins now show English text and that
+- [x] AC4: The Unreleased section of `CHANGELOG.md` has an entry that says these plugins now show English text and that
       such text hides later upstream edits until someone removes the override.
-- [ ] AC5: `pnpm test` and `pnpm check` pass.
+- [x] AC5: `pnpm test` and `pnpm check` pass.
 
 ## Coverage
 
@@ -86,3 +86,11 @@ row "Refine the Latin part and short picks".
 ## Decisions
 
 ## Review
+
+Evidence at head `5ac77a42`; `origin/main` has not moved since the branch was cut.
+
+- AC1: `pnpm description-gaps cairn/references/sources/plugins-data-2026-11-03.json` exits 0 and prints `description gaps: 0`, against 80 at `a2066a9`. The ledger marks no row `kept`.
+- AC2: `git diff --name-only origin/main...HEAD -- plugins` lists 80 entries. A script read of each finds one `description` override, no `version`, no CJK in the value, at least 7 words (the rule's floor is 6), and a `reason` that names a file and each upstream text. The English and the cases were read by the session and by four fresh claim-audit readers (717 claims, 12 corrected). `pnpm check`: 736 entries, 0 problems.
+- AC3: the comparison on `origin/main`'s `src/site/categories.ts` gives 53 added categories; on the branch's it gives 26, each marked right in the ledger; the other 27 pairs were checked by script to be on their category's `exclude` list. The hand read and its marks are in `cairn/references/description-ledger-2026-11-03.md`, "Category changes".
+- AC4: `CHANGELOG.md`, first entry under `## Unreleased`, says that "80 more plugins now show an English description" and that "Such a text hides later edits to the upstream description until someone removes the override."
+- AC5: `pnpm test` exits 0 (2238 passed, 6 skipped, 33 files); `pnpm check` exits 0 (736 entries, 0 problems). Consistency gate: `cairn_validate.py` all checks passed; the generic profile names no toolchain checks; no principle changed.
