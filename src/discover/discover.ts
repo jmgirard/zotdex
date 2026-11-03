@@ -6,7 +6,7 @@ import type { Lookup } from "../upstream/host-guard.ts";
 import { type Failure, type Fetch, githubClient, type RateLimit, ReadFailure, readUpstream } from "../upstream/reader.ts";
 import { duration, READ_LIMIT_MS, withinLimit } from "../upstream/time-limit.ts";
 import { plannedProblem } from "./handoff.ts";
-import { createdAtOf, type HoldDetails, type HoldReason, holdDetails, holdReasons, type IndexedName, matchEvidence, ownerCreatedAt, type Source, starsOf, TOPICS } from "./holds.ts";
+import { createdAtOf, type HoldDetails, type HoldReason, holdDetails, holdReasons, type IndexedName, matchEvidence, ownerCreatedAt, type ReplacedEntry, replacedEntry, type Source, starsOf, TOPICS } from "./holds.ts";
 
 const API = "https://api.github.com";
 // GitHub's repository search returns at most this many results for one query.
@@ -225,6 +225,8 @@ export async function discover(options: DiscoverOptions): Promise<DiscoverResult
   }
   const report: Report = { read: [], skipped, unread: 0, warnings };
   let written = 0;
+  // The ids of the handoff count as pending, so only one repo of a run can replace an entry.
+  const pendingIds = new Set(options.pendingIds);
 
   for (const [at, { repo, repoUrl, pushedAt, source }] of candidates.entries()) {
     if (written >= limit || report.read.length >= budget) {
@@ -257,7 +259,7 @@ export async function discover(options: DiscoverOptions): Promise<DiscoverResult
       outDir,
       ids: index.ids,
       names: index.names,
-      pendingIds: options.pendingIds,
+      pendingIds,
       readMs,
       refCheckMs,
       now,
@@ -271,6 +273,7 @@ export async function discover(options: DiscoverOptions): Promise<DiscoverResult
     const { id, dir, version, strictMinVersion, strictMaxVersion, holds, holdDetails: details } = drafted;
     delete state[repo];
     index.ids.add(id.toLowerCase());
+    pendingIds.add(id.toLowerCase());
     written++;
     // The name and URL that draftEntry checked, which can differ from the search
     // result's after a rename.
@@ -312,7 +315,8 @@ export interface DraftOptions {
   // The longest the read of the repo, and the branch-name check of its entry, may take.
   readMs?: number;
   refCheckMs?: number;
-  // The longest the reads of a name match's evidence may take.
+  // The longest the reads of a name match's evidence may take, and each group of reads of a
+  // replaced entry's facts.
   evidenceMs?: number;
   // The time the owner's account age is measured to, and whether an issue run drafts the
   // entry, for the hold reasons.
@@ -321,7 +325,8 @@ export interface DraftOptions {
 }
 
 // Reads one repo and writes its entry to outDir, unless the index or an open pull
-// request already has its plugin id. `repoUrl` in the result is the URL GitHub gives
+// request already has its plugin id. A repo with a `replaces-entry` hold is the exception
+// for an id that the index has. `repoUrl` in the result is the URL GitHub gives
 // for the repo. A read that passes `readMs` fails as request-failed, marked build-level.
 export async function draftEntry(repoUrl: string, options: DraftOptions): Promise<Drafted> {
   const { fetch, lookup, outDir, ids, pendingIds, readMs = READ_LIMIT_MS, refCheckMs } = options;
@@ -341,9 +346,18 @@ export async function draftEntry(repoUrl: string, options: DraftOptions): Promis
   }
   if (!read.ok) return refuse(read.failure, read.message, !read.buildLevel && !NOT_RECORDED.has(read.failure), read.buildLevel);
   const { id, version, strictMinVersion, strictMaxVersion } = read.facts;
+  const repo = repoName(read.facts.repoUrl);
+  const ownMeta = { createdAt: createdAtOf(read.facts.repoCreatedAt), stars: starsOf(read.facts.stars) };
   // Entry directories may be in another place than outDir, so writeEntry cannot see them.
-  if (ids.has(id.toLowerCase())) return refuse("entry-exists", `the index already has an entry for the id ${id}`);
-  if (pendingIds?.has(id.toLowerCase())) {
+  // A discover run still drafts a repo far larger and older than the one that lists its id,
+  // for a pull request that waits for the maintainer.
+  let replaced: ReplacedEntry | undefined;
+  if (ids.has(id.toLowerCase())) {
+    if (repo && !options.issueRun && !pendingIds?.has(id.toLowerCase())) {
+      replaced = await replacedEntry(fetch, { id, repo, indexed: options.names }, { ownMeta, onlyFarLarger: true, ms: options.evidenceMs });
+    }
+    if (!replaced) return refuse("entry-exists", `the index already has an entry for the id ${id}`);
+  } else if (pendingIds?.has(id.toLowerCase())) {
     return refuse("entry-exists", `an open pull request already adds an entry for the id ${id}`, false);
   }
   const entry = await writeEntry(outDir, read.facts);
@@ -353,8 +367,6 @@ export async function draftEntry(repoUrl: string, options: DraftOptions): Promis
     const unsafe = entry.failure === "unsafe-id";
     return refuse(entry.failure, entry.message, unsafe, !unsafe);
   }
-  const repo = repoName(read.facts.repoUrl);
-  const ownMeta = { createdAt: createdAtOf(read.facts.repoCreatedAt), stars: starsOf(read.facts.stars) };
   const holdFacts = repo && {
     repo,
     name: read.facts.name,
@@ -366,6 +378,7 @@ export async function draftEntry(repoUrl: string, options: DraftOptions): Promis
     now: options.now ?? new Date(),
     indexed: options.names,
     evidence: await matchEvidence(fetch, { repo, name: read.facts.name, indexed: options.names }, ownMeta, options.evidenceMs),
+    replaced,
   };
   const holds = holdFacts ? holdReasons(holdFacts) : [];
   const details = holdFacts ? holdDetails(holdFacts, holds) : undefined;
@@ -689,7 +702,7 @@ export async function indexed(root: string): Promise<{ repos: Map<string, string
       if (!repo) continue;
       repos.set(repo, name);
       const [owner, repoPart] = repo.split("/");
-      names.push({ owner, repoPart, ...(typeof meta.name === "string" && { name: meta.name }), github: ["github.com", "www.github.com"].includes(new URL(meta.repoUrl).host) });
+      names.push({ owner, repoPart, ...(typeof meta.name === "string" && { name: meta.name }), github: ["github.com", "www.github.com"].includes(new URL(meta.repoUrl).host), id: name });
     } catch {
       // Not readable, so only the id counts.
     }

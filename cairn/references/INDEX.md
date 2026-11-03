@@ -14,5 +14,6 @@ bullet lines.
 - mdn-nth-child.md: which browsers read the `of <selector>` form of `:nth-child()` (MDN and its compat data)
 - microsoft-naming-a-file.md: which file and directory names Windows refuses (Microsoft's naming rules)
 - mozilla-toolkit-version.md: how Zotero and Firefox order version strings (MDN's legacy version format)
-- paid-service-sweep.md: a hand read of which plugins' main use needs a paid service from their maker, on 2026-11-02 and 2026-11-03 (M082, M083, M084)
+- paid-service-sweep.md: a hand read of which plugins' main use needs a paid service from their maker, on 2026-11-02 and 2026-11-03 (M082, M083, M084, M085)
+- repeat-id-ledger.md: the repos that the bot refused because another repo lists their add-on id, and the maintainer's choice for those that pass the replacement test (M085)
 - zotero-changelogs.md: the newest release of each Zotero major and the release address's answer (zotero.org)

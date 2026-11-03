@@ -1264,3 +1264,92 @@ describe("pnpm discover", () => {
     }
   });
 });
+
+describe("a repo that repeats a listed add-on id", () => {
+  const ID = "copy@example.org";
+  const OWN = "alice/original";
+  const LISTED = "bob/copy";
+  const api = (repo: string) => `https://api.github.com/repos/${repo}`;
+  const NAMES = [{ owner: "bob", repoPart: "copy", name: "Copy", github: true, id: ID }];
+  // alice/original was made on 2025-01-10, before the listed repo.
+  const listedMeta = { created_at: "2026-02-01T00:00:00Z", stargazers_count: 2 };
+  const passing = (): Responses => ({
+    ...pluginRepo(OWN, ID, { stars: 20 }),
+    [api(LISTED)]: { json: listedMeta },
+    [`${api(OWN)}/releases/latest`]: { json: { published_at: "2026-03-01T12:00:00Z" } },
+    [`${api(LISTED)}/releases/latest`]: { status: 404, json: {} },
+  });
+  const draft = async (responses: Responses, options: Partial<Parameters<typeof draftEntry>[1]> = {}) => {
+    const { fetch } = fixtureFetch(responses);
+    return draftEntry(`https://github.com/${OWN}`, { fetch, lookup: publicLookup, outDir: tempDir(), ids: new Set([ID]), names: NAMES, now: NOW, ...options });
+  };
+
+  test("drafts a held entry at exactly 20 stars against 2, with both repos' facts", async () => {
+    const drafted = await draft(passing());
+    if (!drafted.ok) throw new Error(drafted.message);
+    expect(drafted.holds).toEqual(["replaces-entry"]);
+    expect(drafted.holdDetails).toEqual({
+      repoCreatedOn: "2025-01-10",
+      repoStars: 20,
+      repoReleasedOn: "2026-03-01",
+      listed: { repo: LISTED, createdOn: "2026-02-01", stars: 2, releasedOn: "none" },
+      ownerCreatedOn: "2015-01-01",
+    });
+  });
+
+  test.each<[string, Responses, Partial<Parameters<typeof draftEntry>[1]>]>([
+    ["a repo made later", { [api(LISTED)]: { json: { ...listedMeta, created_at: "2024-01-01T00:00:00Z" } } }, {}],
+    ["a repo made on the same day and time", { [api(LISTED)]: { json: { ...listedMeta, created_at: "2025-01-10T09:00:00Z" } } }, {}],
+    ["19 stars at 19 times the listed repo's", { ...pluginRepo(OWN, ID, { stars: 19 }), [api(LISTED)]: { json: { ...listedMeta, stargazers_count: 1 } } }, {}],
+    ["27 stars at 9 times the listed repo's", { ...pluginRepo(OWN, ID, { stars: 27 }), [api(LISTED)]: { json: { ...listedMeta, stargazers_count: 3 } } }, {}],
+    ["an id that an open pull request adds", {}, { pendingIds: new Set([ID]) }],
+    ["an issue run", {}, { issueRun: true }],
+    ["a listed repo off github.com", {}, { names: [{ ...NAMES[0], github: false }] }],
+    ["an unread value of the read repo's stars", pluginRepo(OWN, ID), {}],
+    ["an unread value of the listed repo's stars", { [api(LISTED)]: { json: { created_at: listedMeta.created_at } } }, {}],
+    ["an unread value of the listed repo's date", { [api(LISTED)]: { json: { stargazers_count: 2 } } }, {}],
+  ])("keeps the entry-exists refusal for %s", async (_name, responses, options) => {
+    expect(await draft({ ...passing(), ...responses }, options)).toEqual({
+      ok: false,
+      failure: "entry-exists",
+      message: `the index already has an entry for the id ${ID}`,
+      recorded: true,
+    });
+  });
+
+  test("keeps the refusal for an id that differs from the listed entry's only in letter case", async () => {
+    const drafted = await draft({ ...passing(), ...pluginRepo(OWN, "Copy@Example.org", { stars: 20 }) });
+    expect(drafted).toMatchObject({ ok: false, failure: "entry-exists", message: "the index already has an entry for the id Copy@Example.org" });
+  });
+
+  test("reads no release for a repo it refuses", async () => {
+    const { fetch, requests } = fixtureFetch({ ...passing(), ...pluginRepo(OWN, ID, { stars: 19 }), [api(LISTED)]: { json: { ...listedMeta, stargazers_count: 1 } } });
+    const drafted = await draftEntry(`https://github.com/${OWN}`, { fetch, lookup: publicLookup, outDir: tempDir(), ids: new Set([ID]), names: NAMES, now: NOW });
+    expect(drafted).toMatchObject({ ok: false, failure: "entry-exists" });
+    expect(requests.map(({ url }) => url).filter((url) => url.endsWith("/releases/latest"))).toEqual([]);
+  });
+
+  test("leaves out a release that it could not read, and still drafts", async () => {
+    const drafted = await draft({ ...passing(), [`${api(OWN)}/releases/latest`]: { status: 500, json: {} } });
+    if (!drafted.ok) throw new Error(drafted.message);
+    expect(drafted.holdDetails?.repoReleasedOn).toBeUndefined();
+    expect(drafted.holdDetails?.listed?.releasedOn).toBe("none");
+  });
+
+  test("lets only the first repo of a run replace an entry", async () => {
+    const ID_LISTED = "second-plugin@example.org";
+    const { report } = await run(
+      {
+        ...searched([
+          ["example/big-one", "2026-10-02T00:00:00Z"],
+          ["example/big-two", "2026-10-01T00:00:00Z"],
+        ]),
+        ...pluginRepo("example/big-one", ID_LISTED, { stars: 100 }),
+        ...pluginRepo("example/big-two", ID_LISTED, { stars: 100 }),
+        [api("example/second-plugin")]: { json: { created_at: "2026-02-01T00:00:00Z", stargazers_count: 1 } },
+      },
+      { root: TREE },
+    );
+    expect(report.read.map((item) => (item.outcome === "written" ? item.holds : item.failure))).toEqual([["replaces-entry"], "entry-exists"]);
+  });
+});

@@ -1,9 +1,9 @@
 import type { Lookup } from "../upstream/host-guard.ts";
 import { type Fetch, githubClient, readUpdateRoute } from "../upstream/reader.ts";
 import { indexed, repoName } from "./discover.ts";
-import { HOLD_REASONS, type HoldReason, holdDetails, matchEvidence, ownerCreatedAt } from "./holds.ts";
-import { botPullProblem, contents, type FileJson, newEntry, type PullJson } from "./merge.ts";
-import { CLOSING_START, DETAILS_HEADING, HOLD_LABEL, holdDetailLines, unfencedLines } from "./propose.ts";
+import { HOLD_REASONS, type HoldReason, holdDetails, matchEvidence, ownerCreatedAt, replacedEntry } from "./holds.ts";
+import { botPullProblem, changedMeta, contents, type FileJson, newEntry, type PullJson } from "./merge.ts";
+import { CLOSING_START, DETAILS_HEADING, HOLD_LABEL, holdDetailLines, keptLines, unfencedLines } from "./propose.ts";
 
 const API = "https://api.github.com";
 // The longest wait for the update.json read of one pull request. The update host is not GitHub.
@@ -88,9 +88,10 @@ export async function refreshHolds({ fetch, lookup, updateReadMs = UPDATE_READ_L
     }
     try {
       const files = (await github.pages(`${API}/repos/${indexRepo}/pulls/${number}/files?per_page=100`)) as FileJson[];
-      const id = newEntry(files);
+      const replacing = held.reasons.includes("replaces-entry");
+      const id = replacing ? changedMeta(files) : newEntry(files);
       if (!id) {
-        skip("its files are not exactly plugins/<id>/meta.json and plugins/<id>/index.json, both added");
+        skip(replacing ? "its one file is not a modified plugins/<id>/meta.json" : "its files are not exactly plugins/<id>/meta.json and plugins/<id>/index.json, both added");
         continue;
       }
       const sha = pull.head?.sha;
@@ -105,8 +106,10 @@ export async function refreshHolds({ fetch, lookup, updateReadMs = UPDATE_READ_L
       if (!createdAt && !held.reasons.includes("owner-unread")) throw new Error("the read of its owner's account gave no date");
       const name = typeof meta.name === "string" ? meta.name : undefined;
       const evidence = held.reasons.includes("name-match") ? await matchEvidence(fetch, { repo, name, indexed: names }) : undefined;
-      const details = holdDetails({ repo, name, updateHost: updateHost ?? "", updateRoute, ownerCreatedAt: createdAt, indexed: names, evidence }, held.reasons);
-      const lines = holdDetailLines(details ?? {});
+      const replaced = replacing ? await replacedEntry(fetch, { id, repo, indexed: names }) : undefined;
+      const details = holdDetails({ repo, name, updateHost: updateHost ?? "", updateRoute, ownerCreatedAt: createdAt, indexed: names, evidence, replaced }, held.reasons);
+      const kept = replacing ? keptLines(JSON.parse(await contents(github, `${API}/repos/${indexRepo}/contents/plugins/${encodeURIComponent(id)}/index.json?ref=${sha}`))) : [];
+      const lines = holdDetailLines(details ?? {}, kept);
       const next = withDetailLines(pull.body as string, lines);
       if (next === undefined) {
         skip("its body has no closing sentence after its Hold line");

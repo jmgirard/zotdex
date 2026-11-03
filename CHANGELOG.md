@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- The discovery bot now opens a held pull request for a repository that can
+  replace a listed one. Such a repository is older than the one that lists its
+  add-on id. It also has at least 20 stars and 10 times the listed one's stars.
+  Before, the bot refused it as `entry-exists`. The maintainer decides, and the
+  bot never merges this pull request.
+  `pdf2zh@guaguastandup.com` now lists
+  `guaguastandup/zotero-pdf2zh`, and `beaver@jlegewie.com` now lists
+  `jlegewie/beaver-zotero`, in place of two recent repositories that kept those
+  ids. In the data, each entry's `repoUrl` and the facts read from that
+  repository change.
 - The home page and plugin pages now show a card icon on a plugin whose main use
   stops without paying its maker, or stops after a trial. The Details card gives
   a note on what is paid for, a link to the source, and the date of the read. A
@@ -564,7 +574,7 @@
   more Chinese, Japanese, or Korean, or under six words.
 - The bot now merges its own pull requests. Each new bot pull request body
   has a Hold line, which names the entry's hold reasons or says
-  `Hold: none`. The README lists the five reasons. A held pull request gets
+  `Hold: none`. The README lists the reasons. A held pull request gets
   the `hold` label.
   The new `Merge bot pull requests` workflow runs `pnpm merge-discover`
   daily. The command merges a bot pull request that says `Hold: none`, has

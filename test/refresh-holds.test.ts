@@ -192,6 +192,70 @@ describe("pnpm refresh-holds", () => {
     expect(patches).toEqual([]);
   });
 
+  describe("a pull request held for replaces-entry", () => {
+    const LISTED_ID = "second-plugin@example.org";
+    const encode = (text: string) => ({ json: { encoding: "base64", content: Buffer.from(text).toString("base64") } });
+    const replacing = (kept: Record<string, unknown> = { schemaVersion: 1 }): Responses => ({
+      ...evidence,
+      "https://api.github.com/users/bob": { json: { created_at: "2026-10-20T12:00:00Z" } },
+      [`${INDEX}/pulls/1/files?per_page=100`]: { json: [{ filename: `plugins/${LISTED_ID}/meta.json`, status: "modified" }] },
+      [`${INDEX}/contents/plugins/${encodeURIComponent(LISTED_ID)}/meta.json?ref=${sha(1)}`]: encode(JSON.stringify({ id: LISTED_ID, name: "Second Plugin", repoUrl: "https://github.com/bob/p1", updateUrl: UPDATE })),
+      [`${INDEX}/contents/plugins/${encodeURIComponent(LISTED_ID)}/index.json?ref=${sha(1)}`]: encode(JSON.stringify(kept)),
+      [`${API}/bob/p1/releases/latest`]: { json: { published_at: "2026-03-01T12:00:00Z" } },
+      [`${API}/example/second-plugin/releases/latest`]: { status: 404, json: {} },
+      [`PATCH ${INDEX}/pulls/1`]: { json: { number: 1 } },
+    });
+    const LINES = [
+      "- This repo: created 2026-03-04, 2 stars, newest stable release 2026-03-01",
+      "- Listed repo: [example/second-plugin](https://github.com/example/second-plugin): created 2020-05-06, 40 stars, newest stable release none",
+      "- Kept from `index.json`: no override and no paid-service mark",
+    ];
+
+    test.each<[string, Written["holds"], string]>([
+      ["alone", ["replaces-entry"], "Hold: replaces-entry"],
+      ["beside another reason", ["name-match", "replaces-entry"], "Hold: name-match, replaces-entry"],
+    ])("keeps the reason %s on the Hold line and rewrites its detail lines", async (_name, holds, holdLine) => {
+      const held = pull(1, { body: source(1, holds) });
+      const { result, patches } = await run({ [LIST]: { json: [held] }, ...replacing(), [`${INDEX}/pulls/1`]: { json: held } });
+      expect(result.failed).toEqual([]);
+      expect(result.skipped).toEqual([]);
+      expect(result.changed.map(({ number }) => number)).toEqual([1]);
+      expect(result.changed[0].lines).toEqual(expect.arrayContaining(LINES));
+      expect(patches[0].sent.body).toContain(`\n${holdLine}\n`);
+      for (const line of LINES) expect(patches[0].sent.body).toContain(line);
+    });
+
+    test("says not read, not none, for the release of a listed repo that is gone", async () => {
+      const held = pull(1, { body: source(1, ["replaces-entry"]) });
+      const { result } = await run({ [LIST]: { json: [held] }, ...replacing(), [`${INDEX}/pulls/1`]: { json: held }, [`${API}/example/second-plugin`]: { status: 404, json: {} } });
+      expect(result.changed[0].lines).toContain("- Listed repo: [example/second-plugin](https://github.com/example/second-plugin): created not read, stars not read, newest stable release not read");
+    });
+
+    test("says when no entry lists the id from another repo now", async () => {
+      const held = pull(1, { body: source(1, ["replaces-entry"]) });
+      const other = "not-listed@example.org";
+      const { result } = await run({
+        [LIST]: { json: [held] },
+        ...replacing(),
+        [`${INDEX}/pulls/1`]: { json: held },
+        [`${INDEX}/pulls/1/files?per_page=100`]: { json: [{ filename: `plugins/${other}/meta.json`, status: "modified" }] },
+        [`${INDEX}/contents/plugins/${encodeURIComponent(other)}/meta.json?ref=${sha(1)}`]: encode(JSON.stringify({ id: other, repoUrl: "https://github.com/bob/p1" })),
+        [`${INDEX}/contents/plugins/${encodeURIComponent(other)}/index.json?ref=${sha(1)}`]: encode(JSON.stringify({ schemaVersion: 1 })),
+      });
+      expect(result.changed[0].lines).toContain("- Listed repo: no entry lists this id from another github.com repo now");
+    });
+
+    test.each<[string, Responses]>([
+      ["the two added files of a new entry", entry(1)],
+      ["a modified index.json", { [`${INDEX}/pulls/1/files?per_page=100`]: { json: [{ filename: `plugins/${LISTED_ID}/index.json`, status: "modified" }] } }],
+      ["a meta.json in a dot folder", { [`${INDEX}/pulls/1/files?per_page=100`]: { json: [{ filename: "plugins/.hidden/meta.json", status: "modified" }] } }],
+    ])("skips such a pull request whose files are %s", async (_name, responses) => {
+      const held = pull(1, { body: source(1, ["replaces-entry"]) });
+      const { result } = await run({ [LIST]: { json: [held] }, ...responses });
+      expect(result.skipped).toEqual([{ number: 1, reason: "its one file is not a modified plugins/<id>/meta.json" }]);
+    });
+  });
+
   test("skips a pull request whose files are not exactly one new entry", async () => {
     const { result } = await run({ [LIST]: { json: [pull(1)] }, ...entry(1), [`${INDEX}/pulls/1/files?per_page=100`]: { json: [{ filename: "README.md", status: "modified" }] } });
     expect(result.skipped).toEqual([{ number: 1, reason: "its files are not exactly plugins/<id>/meta.json and plugins/<id>/index.json, both added" }]);

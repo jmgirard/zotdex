@@ -198,6 +198,13 @@ export function newEntry(files: FileJson[]): string | undefined {
   return [...ids][0];
 }
 
+// The id of the one entry whose meta.json is the one file of `files`, modified.
+export function changedMeta(files: FileJson[]): string | undefined {
+  if (files.length !== 1 || files[0].status !== "modified" || typeof files[0].filename !== "string") return undefined;
+  const id = /^plugins\/([^/]+)\/meta\.json$/.exec(files[0].filename)?.[1];
+  return id === undefined || id.startsWith(".") ? undefined : id;
+}
+
 // The text of a file from the contents API, which gives it in base64.
 export async function contents(github: ReturnType<typeof githubClient>, url: string): Promise<string> {
   const file = (await github.json(url)) as { encoding?: unknown; content?: unknown; size?: unknown } | null;
