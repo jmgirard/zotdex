@@ -7,7 +7,7 @@ _Last hygiene check: 2026-11-03 (triage: dropped as not worth keeping Close gaps
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M085 | Let an older, larger repo ask for a listed add-on id | review | — | high | milestones/M085-repeat-id-replace.md |
+| M085 | Let an older, larger repo ask for a listed add-on id | in-progress | — | high | milestones/M085-repeat-id-replace.md |
 | M084 | Read the last merged plugins for paid services | done | — | normal | milestones/archive/M084-paid-service-third-read.md |
 <!-- rows grouped by status, not by ID; keep the 3 most recent done/dropped rows; older ones: milestones/archive/ + git -->
 

@@ -4,7 +4,7 @@
      cairn_validate's <150 over the plan-owned body. -->
 # M085: Let an older, larger repo ask for a listed add-on id
 
-- **Status:** review   <!-- owner: transitioning skill · mirror-update; cairn/ROADMAP.md is the authority -->
+- **Status:** in-progress   <!-- owner: transitioning skill · mirror-update; cairn/ROADMAP.md is the authority -->
 - **Priority:** high   <!-- owner: plan · create/amend-via-gate; high | normal | low -->
 - **Depends on:** —   <!-- owner: plan · create/amend-via-gate; M<xx>, M<yy> or — -->
 - **Driving RR:** —   <!-- owner: plan · create/amend-via-gate; RR<NN> whose Binding criteria bind this milestone's ACs (binding-criteria check), or — -->
@@ -41,14 +41,14 @@ When a repo older and far larger than the repo that lists its add-on id appears,
      coverage-complete counts AC checkboxes positionally (M107); departures:
      a "Deviations from RR<NN>" table ends this section. -->
 
-- [ ] AC1: In a run that is not an issue run, when `draftEntry` reads a repo whose add-on id exactly equals the id of an entry listed from another github.com repo, no open bot pull request adds that id, and the read repo was made before the listed repo, has at least 20 stars, and has at least 10 times the listed repo's stars, `draftEntry` returns a drafted entry whose holds include `replaces-entry`, in place of the `entry-exists` refusal. Tests in `test/discover.test.ts` show this at exactly 20 stars against 2. They show the unchanged `entry-exists` refusal for a repo made later, 19 stars, 9 times the stars, a case-variant id, an id that an open pull request adds, an issue run, a listed repo off github.com, and an unread value of the read repo's stars, the listed repo's stars, or the listed repo's date.
+- [x] AC1: In a run that is not an issue run, when `draftEntry` reads a repo whose add-on id exactly equals the id of an entry listed from another github.com repo, no open bot pull request adds that id, and the read repo was made before the listed repo, has at least 20 stars, and has at least 10 times the listed repo's stars, `draftEntry` returns a drafted entry whose holds include `replaces-entry`, in place of the `entry-exists` refusal. Tests in `test/discover.test.ts` show this at exactly 20 stars against 2. They show the unchanged `entry-exists` refusal for a repo made later, 19 stars, 9 times the stars, a case-variant id, an id that an open pull request adds, an issue run, a listed repo off github.com, and an unread value of the read repo's stars, the listed repo's stars, or the listed repo's date.
 - [ ] AC2: The bot pull request for a drafted entry with the reason `replaces-entry` changes only that entry's `meta.json`, and its head keeps the base branch's `index.json`. `pnpm check` passes on the entry as the pull request's head holds it. The body names the hold reason and the listed repo. For both repos it gives the stars, the date the repo was made, and the date of the newest stable release, with "not read" for a value the bot could not read and "none" for a repo with no stable release. It also names each override and `paidService` value that the kept `index.json` holds. Tests in `test/propose.test.ts` and `test/holds.test.ts` show this.
-- [ ] AC3: `pnpm merge-discover` does not merge a bot pull request held for `replaces-entry`. `pnpm refresh-holds` keeps that reason and rewrites its detail lines on a pull request with the `hold` label whose one changed file is a modified `meta.json`, with `replaces-entry` alone and combined with another reason on the `Hold:` line. Tests in `test/merge.test.ts` and `test/refresh-holds.test.ts` show this.
-- [ ] AC4: The bot proposes no second pull request for a replacing repo that has an open bot pull request or a bot pull request closed without a merge, as for any other repo. A test in `test/propose.test.ts` shows both.
-- [ ] AC5: `plugins/pdf2zh@guaguastandup.com/meta.json` and `plugins/beaver@jlegewie.com/meta.json` name `https://github.com/guaguastandup/zotero-pdf2zh` and `https://github.com/jlegewie/beaver-zotero` as `repoUrl`. Each `meta.json` equals what `pnpm add-plugin --out <empty dir>` writes from a read of that repo on a date and commit that the ledger of AC6 records. `pnpm check` passes. `cairn/references/paid-service-sweep.md` and `paid-service-sweep-shas.tsv` hold a reading of each of the two repos, naming the repo and commit. Each `index.json` has `paidService` exactly when that reading says so by the rule of D-054.
-- [ ] AC6: `cairn/references/repeat-id-ledger.md` lists each distinct pair of refused repo and add-on id found by a search of the `entry-exists` messages in the logs of the discover runs that GitHub holds on the date of the read. For each pair it gives both repos' stars and dates made, with "not read" for a repo that cannot be read, whether the pair passes AC1's test, and the maintainer's choice for each pair that passes. It names the date of the read and the runs searched, and it has a line in `cairn/references/INDEX.md`.
-- [ ] AC7: `README.md` and `cairn/DESIGN.md` state the new hold reason where they state the other hold reasons, and DESIGN's statements that a repeated id is always refused are corrected. `CHANGELOG.md`'s `## Unreleased` has one entry for the change. `cairn/DECISIONS.md` has an entry that records the choice, annotates D-033, D-045, and D-053, and states the maintainer's question for such a pull request: the listed repo stays when it credits the larger repo and has a newer release, and otherwise the pull request merges.
-- [ ] AC8: `pnpm test` and `pnpm check` pass (the `verify` slot of `cairn/PROFILE.md`).
+- [x] AC3: `pnpm merge-discover` does not merge a bot pull request held for `replaces-entry`. `pnpm refresh-holds` keeps that reason and rewrites its detail lines on a pull request with the `hold` label whose one changed file is a modified `meta.json`, with `replaces-entry` alone and combined with another reason on the `Hold:` line. Tests in `test/merge.test.ts` and `test/refresh-holds.test.ts` show this.
+- [x] AC4: The bot proposes no second pull request for a replacing repo that has an open bot pull request or a bot pull request closed without a merge, as for any other repo. A test in `test/propose.test.ts` shows both.
+- [x] AC5: `plugins/pdf2zh@guaguastandup.com/meta.json` and `plugins/beaver@jlegewie.com/meta.json` name `https://github.com/guaguastandup/zotero-pdf2zh` and `https://github.com/jlegewie/beaver-zotero` as `repoUrl`. Each `meta.json` equals what `pnpm add-plugin --out <empty dir>` writes from a read of that repo on a date and commit that the ledger of AC6 records. `pnpm check` passes. `cairn/references/paid-service-sweep.md` and `paid-service-sweep-shas.tsv` hold a reading of each of the two repos, naming the repo and commit. Each `index.json` has `paidService` exactly when that reading says so by the rule of D-054.
+- [x] AC6: `cairn/references/repeat-id-ledger.md` lists each distinct pair of refused repo and add-on id found by a search of the `entry-exists` messages in the logs of the discover runs that GitHub holds on the date of the read. For each pair it gives both repos' stars and dates made, with "not read" for a repo that cannot be read, whether the pair passes AC1's test, and the maintainer's choice for each pair that passes. It names the date of the read and the runs searched, and it has a line in `cairn/references/INDEX.md`.
+- [x] AC7: `README.md` and `cairn/DESIGN.md` state the new hold reason where they state the other hold reasons, and DESIGN's statements that a repeated id is always refused are corrected. `CHANGELOG.md`'s `## Unreleased` has one entry for the change. `cairn/DECISIONS.md` has an entry that records the choice, annotates D-033, D-045, and D-053, and states the maintainer's question for such a pull request: the listed repo stays when it credits the larger repo and has a newer release, and otherwise the pull request merges.
+- [x] AC8: `pnpm test` and `pnpm check` pass (the `verify` slot of `cairn/PROFILE.md`).
 
 ## Coverage
 <!-- owner: plan · create/amend-via-gate; each acceptance criterion → the
@@ -111,6 +111,7 @@ When a repo older and far larger than the repo that lists its add-on id appears,
 - 2026-11-03: T5 and T6 wrote the ledger from all 30 discover runs, the docs, the changelog entry, and D-056; D-056 gives D-053's merge default its exception for `replaces-entry`.
 - 2026-11-03: claim audit: 106 claims read, 12 corrected — README.md, CHANGELOG.md, src/discover/holds.ts, src/discover/discover.ts, src/discover/propose.ts
 - 2026-11-03: kept "newest stable release" in the pull request body, as AC2 words it, over "GitHub latest release" as the re-read suggested; README says that it is GitHub's latest release of the repo.
+- 2026-11-03: review return 1: AC2 fails as written, since the pull request body names only `paidService.note` and not each value of the kept mark; the same pass settled the other fix-now findings listed in the Review section.
 
 ## Decisions
 <!-- owner: implement / review · append-only; milestone-local; promote
@@ -124,3 +125,50 @@ When a repo older and far larger than the repo that lists its add-on id appears,
      results, review findings + triage. EXEMPT from the 150-line cap (M55),
      as are the work log (D-046) and the decisions section (D-074); evidence
      never scrambles plan-owned content. -->
+
+### Evidence, first pass (head baf62de, 2026-11-03)
+
+- AC1: 15 tests under "a repo that repeats a listed add-on id" in `test/discover.test.ts` pass, with each named case. Planted defects each gave 1 red test: the stars floor as `>`, the times test as `>`, the date test as `<=`, a case-insensitive id, and no github.com test.
+- AC3: `test/merge.test.ts` "skips a body held for replaces-entry" passes, and 5 tests under "a pull request held for replaces-entry" in `test/refresh-holds.test.ts` pass, with the reason alone and combined.
+- AC4: `test/propose.test.ts` shows both skips as `in-bot-pull`, with no POST.
+- AC5: a fresh `pnpm add-plugin --out` of each repo is byte-equal to the entry's `meta.json`, `index.json` has no diff against main and no `paidService`, the sweep's "Fourth read" and the tsv name each repo and commit, and `pnpm check` passes on 736 entries.
+- AC6: the ledger has 19 rows, equal to the 19 distinct pairs that the search of all 30 runs found, each refused repo is on the page, and `INDEX.md` has its line.
+- AC7: README and DESIGN state the reason, DESIGN's refusal statement is corrected, `CHANGELOG.md` has one new entry, and D-056 is there.
+- AC8: `pnpm test` gives 2201 passed and 6 skipped, exit 0, and `pnpm check` gives 0 problems.
+- AC2: not ticked. See diff-bug #3.
+- Consistency gate: `cairn_validate` exit 0, with one advisory on the 8 criteria; the profile's slot names no other check; no principle changed.
+
+### Findings, first pass
+
+spawned: diff-bug, blame-history, prior-review, ripple
+
+- diff-bug #1: a failed read of the listed repo, an open pull request, or second place in a run records the refusal, so a passing repo waits for a push or 30 days — follow-up, row "Tighten the reads behind replaces-entry", parked.
+- diff-bug #2: refresh reads `index.json` at the pull request head, while a merge keeps main's, so Kept lines can go stale — follow-up, same row.
+- diff-bug #3: the body shows only `paidService.note`, while AC2 says each value, and `source` points at the old repo — fix now, floor return, since AC2 fails as written.
+- diff-bug #4: "otherwise merge" hands over the id with no shared-code evidence — reject, planned change, the maintainer's choice in D-056.
+- diff-bug #5: no test carries `listed` through `readHandoff`, and a schema mismatch would refuse the whole handoff — fix now.
+- diff-bug #6: with `noListed`, the README misses that the "This repo" line also goes — fix now.
+- diff-bug #7: README lines 763 and 783 are false for `replaces-entry` — fix now, same as ripple #1 and #6.
+- diff-bug #8: the write step does not re-read the listed entry, and a removed entry fails at `cat-file` — fix now, same as blame-history #1.
+- diff-bug #9: the id sits in the title and commit outside a code span, and a long id can pass GitHub's title limit — fix now, by a title with no id.
+- diff-bug #10: `JSON.parse` of the kept file runs after the force-push — fix now.
+- diff-bug #11: a pull request held for both `name-match` and `replaces-entry` gives two maintainer questions — fix now, in D-056.
+- diff-bug #12: a local `pnpm discover` with the default output does the extra reads and then reports a build-level `entry-exists` — follow-up, same row.
+- diff-bug #13: a 404 for a deleted repo reads as "none" — follow-up, same row.
+- diff-bug (c): `test/discover.test.ts` "reads no release" asserts bare `ok` false, and three tests repeat a path; floor gaps are the non-404 release failure, the `keptLines` version branch, and two `changedMeta` branches — fix now.
+- blame-history #1: a stale or forged handoff can open a held pull request over a different entry — fix now, same as diff-bug #8.
+- blame-history #2: the ledger lacks the listed repos' newest releases for the moved pairs, and one phrase is garbled — fix now.
+- blame-history #3: refresh shows listed facts after the test no longer holds — reject, false, since D-048 limits refresh to details and the Hold line stays.
+- blame-history #4: a pending id takes the "index already has" message — reject, planned change, AC1 keeps that refusal.
+- prior-review #1: `releaseDay` ignores the stop after a 403 or 429 — follow-up, same row, since it costs at most two reads per pull request.
+- prior-review #2: a refresh can take about 120 s per pull request — reject, false, since DESIGN's 60 seconds names the update read, and the comment states each group's limit.
+- prior-review #3: the listed repo is read before the write — reject, planned change, since the test needs it and only a repeated id pays.
+- ripple #1: README line 763 — fix now, same as diff-bug #7.
+- ripple #2: `CHANGELOG.md` says the README lists five reasons — fix now.
+- ripple #3: the roadmap row says M056 holds for five reasons — reject, false, since that is what M056 did.
+- ripple #4: `CHANGELOG.md` says `pnpm discover` refuses the same ids — fix now.
+- ripple #5: DESIGN says discovery refuses an id that an open pull request adds — reject, false, since a modifying pull request's id is in the index and takes the first refusal.
+- ripple #6: README line 783 — fix now, same as diff-bug #7.
+- ripple #7: the message "already adds" — reject, false, for the same reason as ripple #5.
+- ripple #8: the row "Review repeats of a listed add-on id" — reject, planned change, since hygiene graduates it.
+- ripple #9: `INDEX.md` omits M085 from the sweep's line — fix now.
