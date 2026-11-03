@@ -1082,7 +1082,7 @@ describe("buildData", () => {
         expect(result.plan.plugins.map((item) => item.entry)).toEqual(["a-first", "c-third", "e-fifth"].map((name) => `${name}@example.org`));
       });
 
-      test("keeps pacing after a fetch that throws at once", async () => {
+      test("sends the other reads' API requests after a fetch that throws at once", async () => {
         const { tree, recorded } = pluginTree(NAMES);
         const answer = fixtureFetch(recorded).fetch;
         const fetch: Fetch = (url, init) => {

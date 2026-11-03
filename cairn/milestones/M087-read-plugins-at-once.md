@@ -132,3 +132,22 @@ First pass findings:
 - prior-review #2: the 800 ms cut test — fix now: as in diff-bug #5.
 - ripple #1: `CHANGELOG.md:501` says `pnpm build` reads the plugins in id order — fix now: it now says it starts them.
 - ripple #2: test title "reads no plugin once the build limit has passed" — fix now: it now says starts.
+
+spawned: diff-bug, blame-history, prior-review, ripple
+
+Second pass findings, at f1a9812 (the fix-now items land in the commit that writes these lines):
+
+- Correction to the first pass: the AC2 tests now set a read limit of 3000 ms, not 1500 ms, and the AC5 test a build limit of 2000 ms.
+- diff-bug #1: the test title "keeps pacing after a fetch that throws at once" names pacing, but the test reads no clock — fix now: renamed to what it checks.
+- diff-bug #2: nothing asserts the build ended before the 12 s resume, so a slow run passes without a full pipe at exit — follow-up: row "Tighten the paced build reads", parked; this run saw the test fail with the flush removed.
+- diff-bug #3: c-third's end before e-fifth or a-first has about 160 ms of margin — follow-up: row "Tighten the paced build reads", parked; 120 of 120 passes at 60 concurrent runs.
+- diff-bug #4: 80 entries of 3000 characters give about 240 KiB where about 25 would pass 64 KiB — reject, false: 88 KiB passed with the flush removed, so the larger output is what makes the test fail without its guard.
+- diff-bug #5: the rejection handler guards only a throw at once, which native fetch does not do — reject, false: no defect, since the guard is two lines with a test and D-011's failure stays on one record.
+- diff-bug #6: the AC4 test hangs to the 60 s timeout if fewer than 4 reads end — reject, style: it still fails.
+- diff-bug #7: "ended" records the last answer, not when the record is written — reject, style: the record follows within the same read, and the order is what the test reads.
+- diff-bug #8: first-pass AC2 evidence says 1500 ms — fix now: see the correction above.
+- blame-history #1: the fixture fails f-sixth, so the D-028 test checks 3 plan items, not 4 — reject, false: that test is new here, and M051's own test "writes the records, the build-level list, and the start plan" is unchanged apart from its limits.
+- blame-history #2: a read's 3-minute limit now includes queue time behind other reads' API starts — reject, planned change: D-058 chose the pacing, and the queue is at most 3 turns of 80 ms.
+- blame-history #3: CHANGELOG says "start" and D-028 says "reads" — reject, planned change: D-058 annotates D-028, and D-entries are not edited.
+- prior-review #1: the stdout pause rises to 12 s, which M029's review warns of as a real-time risk — reject, false: M029's point was a fake-timer test; a slower build cannot turn this test red, as its 30 s bound is far past the 12 s.
+- ripple #1: `src/build/build.ts:238` still says "the build reads no plugin after" — reject, planned change: as first-pass diff-bug #12.
