@@ -889,3 +889,17 @@ limit stays as a safety stop, and `not-read` keeps D-015's meaning and cost. D-0
 still holds, since reads start in the day's order, so a cut leaves the last entries
 in that order. A refused request still fails that plugin's read as build-level.
 This choice is wrong if a build log shows an HTTP 403 or 429 from the API.
+
+### D-059: The 1-in-10 test of the category rules reads plugins that the tuning did not see, annotating D-037
+
+2026-11-03, M091 plan. D-037 says that its choice of word rules is wrong if a hand
+read finds more than 1 in 10 assignments wrong after tuning. M066 and M086 read that
+test on the data the rules were tuned on, where a wrong mark becomes a fix, so the
+test could not fail. At the question set the user chose a held-out group: plugins
+that the read keeps out of the tuning and marks only after the rules are fixed. Over
+1 in 10 wrong on that group stops the milestone before the merge question, and the
+user decides whether word rules stay. The user chose this over reporting the rate
+and going on, and over tuning on every new plugin with no such group, which gives
+every plugin to the rules and no measure of a plugin they have not seen. The rest of
+D-037 and D-057 stands. Later reads of new plugins use the same test. This choice
+is wrong if a held-out rate does not hold on the next new plugins that a read marks.
