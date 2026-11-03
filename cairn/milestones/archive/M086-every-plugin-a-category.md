@@ -1,0 +1,11 @@
+# M086: Give every read plugin a category
+
+**Status:** done (2026-11-03, PR #816 https://github.com/jmgirard/zotero-plugin-index/pull/816)
+
+**Goal:** Every plugin that the index has read shows at least one category on the site.
+
+**Outcome:** `src/site/categories.ts` holds 15 categories. New are "Window, tabs, and shortcuts" (`interface`) and "Other tools" (exported slug `OTHER`), whose pattern matches nothing. `categories` gives `other` to a record with upstream facts that no other category takes, and a record with no upstream facts keeps only its includes. `categoryOptions` lists Other tools last. Wider patterns (for example `pmcid`, `citation keys?`, `\brss\b`, `(?<!new )\btabs?\b`, `\btray\b`) and new `include` and `exclude` entries place plugins, and `pnpm text-request` prints no `adds-category` line for `other`. On the deployed data of 2026-11-03 (736 records, 39 unread), 119 of 145 read plugins with no category got another category and 26 got Other tools. `cairn/references/category-ledger.md`, section "The M086 read of plugins with no category", holds each line, the comparison script, the base hash, and the data's `generatedAt`; the script lists no removal. About, README, DESIGN, and CHANGELOG describe it.
+
+**Decisions:** D-057 (a read plugin that no category takes shows Other tools, annotating D-037). The question set chose a new category and the fallback over leaving unfit plugins with none. The plan chose wider patterns and include entries over only hand entries.
+
+**Review:** Criteria audit (full) 14 notes, all applied. Claim audit 28 claims, 4 corrected. Four-lens fan-out, 18 findings: 11 fixed (a work-log line on the first read's 9 of 20 wrong additions, a new-tab test, the PMCID test's id, a do-nothing include, the script's path note, a redundant alternative, the ledger's claim on unread plugins, three repeated tests, the README's text-request list, DESIGN's list of exports), 7 rejected (6 false, 1 planned change), none to follow-up. No return. No criterion amendment. CI passed. Row "Check categories on new plugins" narrowed. Row "Read plugins a few at a time" records that run 41653526255 left 38 plugins `not-read`, which meets its promotion condition. 10 lessons marked used M086; none captured.

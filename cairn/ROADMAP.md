@@ -1,20 +1,20 @@
 # Roadmap
 
 _The only authority on milestone status. Grouped by status, not ID._
-_Last hygiene check: 2026-11-03 (M085 archived; one row graduated, one narrowed and parked, one follow-up row filed; 25 lessons, 4 marked used, 1 captured; validate green)_
+_Last hygiene check: 2026-11-03 (M086 archived; one row narrowed; 25 lessons, 10 marked used, none captured; validate green)_
 
 ## Milestones
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M086 | Give every read plugin a category | review | — | normal | milestones/M086-every-plugin-a-category.md |
+| M086 | Give every read plugin a category | done | — | normal | milestones/archive/M086-every-plugin-a-category.md |
 | M085 | Let an older, larger repo ask for a listed add-on id | done | — | high | milestones/archive/M085-repeat-id-replace.md |
 | M084 | Read the last merged plugins for paid services | done | — | normal | milestones/archive/M084-paid-service-third-read.md |
 <!-- rows grouped by status, not by ID; keep the 3 most recent done/dropped rows; older ones: milestones/archive/ + git -->
 
 ## Candidates
 - Close gaps in the description pick: (1) `cjkShare` counts by `Script=`, so the Script=Common kana marks ー (U+30FC) and 〆 count as other-letter runs, and a decomposed (NFD) Latin word splits at its combining marks, so kana-heavy or NFD text scores low; `Script_Extensions` and NFC would fix both but change AC3's rule; (2) a whitespace-only manifest description shows an empty "Manifest description" row in Details; (3) the Overrides table's "Upstream value" for a description override shows only the manifest text, not the GitHub text (M055 review); (4) plugins added after 2026-10-31 need `pnpm description-gaps` and overrides (M067 plan) — added 2026-10-29 — M055
-- Check categories on new plugins: M066's 0 wrong of 363 was read on the tuning data, and 2 of 27 were wrong on 19 untuned plugins; patterns still match words out of sense ("Note:", "easy to read", "two-column layout", "magnifying glass", a Zotero "translator", 期刊缩写); read the categories of plugins added since 2026-10-31 and tune; a plugin page's category links name only the category, after "Index categories" (M066 review); low, as About says a category can be wrong — added 2026-10-31 — M066, D-037 — started M086
+- Check categories on new plugins: M066's 0 wrong of 363 was read on the tuning data, and 2 of 27 were wrong on 19 untuned plugins; patterns still match words out of sense ("Note:", "easy to read", "two-column layout", "magnifying glass", a Zotero "translator", 期刊缩写); read the categories of plugins added since 2026-10-31 and tune; a plugin page's category links name only the category, after "Index categories" (M066 review); M086's first read of wider patterns marked 9 of 20 additions wrong, so a new plugin can expect a higher rate than its tuned 0 of 130; narrowed 2026-11-03 by M086, which read the plugins with no category and gave the rest Other tools; low, as About says a category can be wrong — added 2026-10-31 — M066, M086, D-037, D-057
 - Read plugins a few at a time: `buildData` reads plugins one by one, and its data step took 0.82 to 1.43 s a plugin across 16 builds to 2026-11-03, so `BUILD_LIMIT_MS` (18 minutes) would cut a slow build near an estimated 810 plugins, against 736 on 2026-11-03; concurrent reads need a test against GitHub's rate limits; promote when a plugin shows `not-read` or the index nears 800 plugins; this held on 2026-11-03, when run 41653526255 left 38 of 736 plugins `not-read` at the limit, so their facts and word-rule categories are gone until a build reads them — added 2026-11-03 — D-015, D-028
 - [low] Let a run by hand start every plugin: after a change to the start-test code, the reporter, or a Zotero pin, carried results stay up to 7 days, and nothing lets a maintainer skip the carry for one run (M059 review) — added 2026-10-30 — M059, D-035
 - [low] Read new plugins for paid services: M082 to M084 read the entries through `1b2cebf`, and the bot adds up to 5 a run, so later plugins carry no mark until someone reads them; repeat the word list and record in `cairn/references/paid-service-sweep.md`; a listing command waits for marks falling far behind the new plugins (M082 plan); narrowed 2026-11-03 by M083 and M084 — added 2026-11-02 — M082, M083, M084, D-054
