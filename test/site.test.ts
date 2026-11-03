@@ -441,7 +441,8 @@ describe("the plugin page", () => {
     const repoUrl = upstream?.repoUrl ?? record.repoUrl;
     const github = githubRepo(repoUrl);
     const shownCategories = CATEGORIES.filter(({ slug }) => categories(record).includes(slug)).map(
-      ({ slug, name }) => `<a href="/zotero-plugin-index/?category=${slug}" data-category="${slug}">${escaped(name)}</a>`,
+      ({ slug, name }) =>
+        `<a href="/zotero-plugin-index/?category=${slug}" aria-label="${escaped(name)}: plugins in this category" data-category="${slug}">${escaped(name)}</a>`,
     );
     const categoryLine =
       shownCategories.length > 0
