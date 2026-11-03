@@ -1,13 +1,13 @@
 # M084: Read the last merged plugins for paid services
 
-- **Status:** planned
+- **Status:** review
 - **Priority:** normal
 - **Depends on:** —
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — a mark from this read shows to visitors, with no code change
-- **Branch/PR:** —
+- **Branch/PR:** m084-paid-service-third-read
 
 ## Goal
 
@@ -33,8 +33,8 @@ Mark each plugin merged since the second paid service read whose main use needs 
 
 ## Tasks
 
-- [ ] T1: Read the 7 entries by AC1's procedure, with the earlier reads' rule and verdict wording. Write the "Third read" section and the Scope lines.
-- [ ] T2: Write `paidService` on each marked entry, with an English `note` of one sentence, a `source` that states it, and the section's read date. Where a page does not show that payment is needed, the entry gets no mark. Run `pnpm test` and `pnpm check`. At review, a fresh reader re-reads every verdict of no mark, and a wrong one is a finding.
+- [x] T1: Read the 7 entries by AC1's procedure, with the earlier reads' rule and verdict wording. Write the "Third read" section and the Scope lines.
+- [x] T2: Write `paidService` on each marked entry, with an English `note` of one sentence, a `source` that states it, and the section's read date. Where a page does not show that payment is needed, the entry gets no mark. Run `pnpm test` and `pnpm check`. At review, a fresh reader re-reads every verdict of no mark, and a wrong one is a finding.
 
 ## Work log
 
@@ -46,6 +46,9 @@ Mark each plugin merged since the second paid service read whose main use needs 
 - 2026-11-03: collision check: M082 and M083 read other entries, so this extends them; D-054 sets the rule and is not changed.
 - 2026-11-03: criteria audit (full mode, fresh Opus reader): 3 findings, all fixed: the Scope's last-read commit in AC1, the recorded SHAs and About texts checked in AC2, and the no-mark re-read kept in T2 as a review procedure.
 - 2026-11-03: question set: none posed; the user asked for this read, and the rule and scope are settled.
+- 2026-11-03: T1 done: 7 entries read, 10 READMEs read at recorded SHAs, 3 with a hit, 0 marked.
+- 2026-11-03: T2 done: the read marks no entry, so no `paidService` is written and the branch changes nothing outside `cairn/`.
+- 2026-11-03: claim audit: not owed — no added lines outside cairn/
 
 ## Decisions
 
