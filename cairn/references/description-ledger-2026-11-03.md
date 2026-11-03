@@ -1,4 +1,4 @@
-# description-ledger-2026-11-03: the description gaps in the deployed data of 2026-11-03 (M089)
+# description-ledger-2026-11-03: the description gaps in the two deployed data files of 2026-11-03 (M089, M090)
 
 **Provenance.** Ingested 2026-11-03 by M089 from a run of `pnpm description-gaps` at commit `a2066a9`, after M088 and before any new override. Its input was the shelf file `cairn/references/sources/plugins-data-2026-11-03.json`. Four Opus subagents then read each listed plugin's files on GitHub and drafted the overrides, and the session read each draft.
 Pagination: —.
@@ -139,15 +139,14 @@ The first data file holds 39 records with no `upstream` block, and the command s
 | G85 | `zotwanglele@wanglele.com` | cjk | Zotero 10 AI 全能插件 By Wanglele | override | README.md, translated |
 | G86 | `zotxt@e6h.org` | short | Plain text extensions for Zotero | override | README.md, condensed |
 
-A comparison on the second file, with the default branch's `exclude` lists, gave 11 added categories on 5 plugins and took none away. The read found 7 right and 4 wrong, by the rule of `category-ledger.md`.
+The session read these READMEs. A comparison on the second file, with the default branch's `exclude` lists, gave 9 added categories on 4 plugins and took none away. The read found 7 right and 2 wrong, by the rule of `category-ledger.md`.
 
 - Right: zoterotransnator (ai, notes, attachments), zoturead (metadata, rankings), zotwanglele (translation, notes).
 - Wrong, excluded, with the words that matched:
-  - export: zoterotransnator ("Markdown notes", notes inside Zotero), zotfetch@nikhilweee.me ("file sync is off"), zotxt ("such as Markdown", a kind of file its utilities read).
-  - notes: zotfetch@nikhilweee.me ("annotations stay usable").
+  - export: zoterotransnator ("Markdown notes", notes inside Zotero), zotxt ("such as Markdown", a kind of file its utilities read).
 
 ## Open questions
 
-- Plugins added after this data file are not in the ledger, nor are shown texts in other languages, which the command does not see. The candidate row "Fill description gaps on new plugins" holds them — observed 2026-11-03.
+- Plugins added after the second data file are not in the ledger, nor are shown texts in other languages, which the command does not see. The candidate row "Fill description gaps on new plugins" holds them — observed 2026-11-03.
 - Some descriptions hold CJK text but have a CJK share below 0.5. They get no row, since no rule covers them (D-038) — observed 2026-11-03.
-- A record with no `upstream` block gets no row, since the command skips it — observed 2026-11-03.
+- A record with no `upstream` block gets no row, since the command skips it. The second data file has none — observed 2026-11-03.

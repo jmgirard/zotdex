@@ -3,7 +3,7 @@
   "overrides": [
     {
       "field": "description",
-      "value": "Downloads PDFs for selected items in batches from sources such as Unpaywall, Semantic Scholar, OpenAlex, Europe PMC, and a configured institutional proxy, resolves publisher landing pages to the actual PDF, and retries failed or login-blocked items.",
+      "value": "Downloads PDFs for selected items in batches from sources such as Unpaywall, Semantic Scholar, OpenAlex, Europe PMC, Sci-Hub mirrors, and a configured institutional proxy, resolves publisher landing pages to the actual PDF, and retries failed or login-blocked items.",
       "reason": "Condensed from the opening and the \"Features\", \"Usage\", and \"Download Sources\" sections of README.md. The manifest description, \"ZotFetch: Batch PDF downloader\", is in English and has fewer than six words, and the GitHub About text, \"ZotFetch: Batch PDF downloader plugin for Zotero 8\", is in English and not shown."
     }
   ]

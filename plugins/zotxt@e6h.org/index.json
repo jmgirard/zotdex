@@ -3,7 +3,7 @@
   "overrides": [
     {
       "field": "description",
-      "value": "Supports utilities that work with plain text files such as Markdown, reStructuredText, and LaTeX through an API, which lets pandoc with pandoc-zotxt.lua and Better BibTeX citation keys generate citations from a running Zotero, with Emacs integration through zotxt-emacs.",
+      "value": "Supports utilities that work with plain text files such as Markdown, reStructuredText, and LaTeX: connects pandoc, with pandoc-zotxt.lua and Better BibTeX citation keys, to a running Zotero to generate citations, integrates with Emacs through zotxt-emacs, and exposes an API.",
       "reason": "Condensed from the opening and the \"pandoc integration\", \"emacs integration\", and \"Zotxt API\" sections of README.md. The manifest description, \"Plain text extensions for Zotero\", is in English and has fewer than six words, and the GitHub About text, \"zotxt: a Zotero extension for text\", is in English and not shown."
     }
   ]

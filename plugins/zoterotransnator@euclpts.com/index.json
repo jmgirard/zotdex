@@ -3,7 +3,7 @@
   "overrides": [
     {
       "field": "description",
-      "value": "Recognizes PDF content with Baidu PaddleOCR-VL and writes bilingual Markdown notes with the original text and a DeepL or OpenAI translation, with optional LLM formula explanations, a cost estimate first, and batches; needs an API token or key for each service it uses.",
+      "value": "Recognizes PDF content with Baidu PaddleOCR-VL and writes bilingual Markdown notes with the original text and a DeepL or OpenAI translation, for one PDF or a batch, with optional LLM formula explanations and cost estimates; needs an API token or key for each service it uses.",
       "reason": "Condensed from the \"Features\" section and the configuration steps of README.md. The manifest description, \"Zotero PDF Translate Terminator\", is in English and has fewer than six words, and the GitHub About text, \"Zotero translate terminator !\", is in English and not shown."
     }
   ]

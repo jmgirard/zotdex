@@ -3,8 +3,8 @@
   "overrides": [
     {
       "field": "description",
-      "value": "Uses OpenAI-compatible API keys you add to write close-reading notes and quick summaries of PDFs as child notes, previews them in the item pane, translates selected PDF text through AI, Google, DeepL, or Baidu, and adds an agent chat with chosen items as context.",
-      "reason": "Translated from the opening and the \"当前能力\" section of README.md, which is in Chinese. The manifest description and the GitHub About text are half or more Chinese."
+      "value": "Uses OpenAI-compatible API keys you add to write close-reading notes and quick summaries of PDFs as child notes, previews them in the item pane, translates whole PDFs and selected text, and adds an agent chat with chosen items as context.",
+      "reason": "Translated from the opening and the \"当前能力\" section of README.md, which is in Chinese. The manifest description and the GitHub About text each have a CJK share of 0.5 or more."
     }
   ]
 }
