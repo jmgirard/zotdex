@@ -93,8 +93,46 @@ describe("categories", () => {
     ["the User-Agent header for AI assistants", "Sets the User-Agent header.", "ai"],
     ["编译 (compile) for translation", "一键编译文档", "translation"],
     ["opening a citation in a new tab for the window category", "Opens the citation in a new tab.", "interface"],
+    ["a text that opens with Note: for notes", "Note: this plugin needs Zotero 8.", "notes"],
+    ["easy to read for organization", "An easy to read layout for the item pane.", "organization"],
+    ["a two-column layout for organization", "Keeps a two-column layout.", "organization"],
+    ["a magnifying glass for appearance", "Adds a magnifying glass button.", "appearance"],
+    ["an import translator for translation", "Ships an import translator for one website.", "translation"],
+    ["期刊缩写 for rankings", "更新期刊缩写", "rankings"],
+    ["a bridge that names AI tools for AI assistants", "An MCP server for AI agents.", "ai"],
+    ["translating PDF attachments for attachments", "Translate Zotero PDF attachments in place.", "attachments"],
+    ["a translation saved as a child attachment for attachments", "译文作为子附件保存", "attachments"],
+    ["a download by DOI for metadata", "Downloads papers by DOI.", "metadata"],
+    ["keeping something in sync for export", "Keeps the folders in sync with collections.", "export"],
+    ["a manner named after Obsidian for export", "An Obsidian-style quick switcher.", "export"],
+    ["reading guides as pages for PDF reading", "Pushes papers into reading guides.", "pdf-reading"],
+    ["PDF text columns for organization", "Steps through PDF pages column by column.", "organization"],
+    ["splitting pages into columns for organization", "Splits pages into columns for small screens.", "organization"],
+    ["reading a citation for organization", "Click a citation to read it in a new tab.", "organization"],
+    ["a venue with no rank for rankings", "Imports papers from workshops and venues.", "rankings"],
+    ["期刊文章 for rankings", "同步期刊文章", "rankings"],
   ])("leaves out %s", (_, description, slug) => {
     expect(categories(record("Helper", description))).not.toContain(slug);
+  });
+
+  test.each([
+    ["A child note for each item.", "notes"],
+    ["Pin a paper and mark it To Read.", "organization"],
+    ["A sortable column of page counts.", "organization"],
+    ["A liquid glass look.", "appearance"],
+    ["Paper Translator", "translation"],
+    ["显示期刊等级", "rankings"],
+    ["Ask Claude about the paper, with standalone MCP.", "ai"],
+    ["Renames PDF attachments by title.", "attachments"],
+    ["Updates item metadata from DOI.", "metadata"],
+    ["Updates journal abbreviations on items.", "metadata"],
+    ["Sends an annotation to your SiYuan daily note.", "export"],
+    ["A reading ruler for long lines.", "pdf-reading"],
+    ["Adds split-view reading.", "pdf-reading"],
+    ["Generates PDF bookmarks for a paper.", "pdf-reading"],
+    ["Generates a PDF outline for a paper.", "pdf-reading"],
+  ])("keeps a right use: %s gets %s", (description, slug) => {
+    expect(categories(record("Helper", description))).toContain(slug);
   });
 
   test("gives a record with no upstream facts no category from its id", () => {
