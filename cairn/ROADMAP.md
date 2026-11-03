@@ -7,7 +7,7 @@ _Last hygiene check: 2026-11-02 (M082 archived; paid service row graduated; 24 l
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M083 | Read the merged plugins for paid services | planned | — | normal | milestones/M083-paid-service-second-read.md |
+| M083 | Read the merged plugins for paid services | review | — | normal | milestones/M083-paid-service-second-read.md |
 | M082 | Mark plugins that need a paid service | done | — | normal | milestones/archive/M082-paid-service-mark.md |
 | M081 | Show when a repo holds no source code | done | — | normal | milestones/archive/M081-no-source-mark.md |
 <!-- rows grouped by status, not by ID; keep the 3 most recent done/dropped rows; older ones: milestones/archive/ + git -->

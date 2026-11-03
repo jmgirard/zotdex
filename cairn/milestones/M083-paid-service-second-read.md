@@ -1,13 +1,13 @@
 # M083: Read the merged plugins for paid services
 
-- **Status:** planned
+- **Status:** review
 - **Priority:** normal
 - **Depends on:** —
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — it adds marks that visitors see, with no code change
-- **Branch/PR:** —
+- **Branch/PR:** m083-paid-service-second-read
 
 ## Goal
 
@@ -33,8 +33,8 @@ Mark each plugin merged since the first paid service read whose main use needs a
 
 ## Tasks
 
-- [ ] T1: Read the 34 entries by AC1's procedure, with the first read's rule and verdict wording. Write the "Second read" section and the Scope line.
-- [ ] T2: Write `paidService` on each marked entry, with an English `note` of one sentence, a `source` that states it, and the section's read date. Where a page does not show that payment is needed, the entry gets no mark. Run `pnpm test` and `pnpm check`. At review, a fresh reader re-reads every verdict of no mark, and a wrong one is a finding.
+- [x] T1: Read the 34 entries by AC1's procedure, with the first read's rule and verdict wording. Write the "Second read" section and the Scope line.
+- [x] T2: Write `paidService` on each marked entry, with an English `note` of one sentence, a `source` that states it, and the section's read date. Where a page does not show that payment is needed, the entry gets no mark. Run `pnpm test` and `pnpm check`. At review, a fresh reader re-reads every verdict of no mark, and a wrong one is a finding.
 
 ## Work log
 
@@ -47,6 +47,9 @@ Mark each plugin merged since the first paid service read whose main use needs a
 - 2026-11-02: criteria audit (full mode, fresh Opus reader): 8 findings, all fixed: About text recorded with "none" for an empty one, a named read date, the page's Scope, entries in place of lines in AC2, the `read` date compared, the merge base in AC3, and a re-read of every no-mark verdict moved to T2 as a review procedure. The reader confirmed the count of 34.
 - 2026-11-02: question set: none posed; the user asked for this read, and the rule and scope are settled.
 - 2026-11-02: plan chose a second section in the existing page over a new page, so one record holds the word list and both reads; falsified by the page outgrowing a reader's use.
+- 2026-11-02: T1 done: 34 entries read, 44 READMEs read at recorded SHAs, 17 with a hit, 0 marked. The session read the hits itself, since few were left; `paper-chat@zotero.plugin` was the nearest call, and its README offers the user's own provider key beside the maker's service.
+- 2026-11-02: T2 done: the read marks no entry, so no `paidService` is written and the branch changes nothing outside `cairn/`. The site gains no mark from this milestone, which is what the read found.
+- 2026-11-02: claim audit: not owed — no added lines outside cairn/
 
 ## Decisions
 
