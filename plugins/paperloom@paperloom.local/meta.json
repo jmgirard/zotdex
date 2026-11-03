@@ -1,0 +1,7 @@
+{
+  "id": "paperloom@paperloom.local",
+  "name": "论文翻译大师",
+  "description": "Zotero 内启动 OCR、管理识别和翻译状态、自动识别新文献，在 PDF 标签页对照阅读并离线保存。",
+  "repoUrl": "https://github.com/XvHaoR/paper-translation-master",
+  "updateUrl": "https://github.com/XvHaoR/paper-translation-master/releases/latest/download/updates.json"
+}
