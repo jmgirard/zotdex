@@ -8,7 +8,7 @@ Extraction: verified 2026-11-03 against the listing script's output. This is a s
 
 ## How the read marks an assignment
 
-The rule is the one in `category-ledger.md`, section "How the read marks an assignment". For an `include` entry or `other`, it is the rule of that page's section "The M086 read of plugins with no category". If the plugin's name or descriptions say that it does such a thing as the category's `about` text says, the assignment is right. If the plugin only mentions the matched word, the assignment is wrong. A read marks a borderline assignment right. Fresh readers made the first marks, in batches, and the agent settled each wrong and missing mark.
+The rule is the one in `category-ledger.md`, section "How the read marks an assignment". For an `include` entry or `other`, it is the rule of that page's section "The M086 read of plugins with no category". If the plugin's name or descriptions say that it does such a thing as the category's `about` text says, the assignment is right. If the plugin only mentions the matched word, the assignment is wrong. A read marks a borderline assignment right. Fresh AI readers made the first marks, in batches. The agent settled each wrong and missing mark, and the user spot-checks them at the merge question.
 
 A counted assignment is a category that `categories` gives a record and that does not come from an `include` list alone.
 
@@ -57,7 +57,7 @@ console.log(lines.join("\n"));
 
 The held-out rate is over 1 in 10, the test of D-059. So the milestone stopped for the user's decision before the merge question. The user kept word rules, and D-060 records that decision.
 
-A fresh reader marked the held-out group after that commit. It did not read the tuning-group marks. The agent changed none of its wrong marks. The group holds only plugins that no earlier read names. So it holds no `other` assignment and no assignment from an `include` list alone, and the rate covers only plugins that the older patterns matched.
+A fresh AI reader marked the held-out group after that commit. It did not read the tuning-group marks. The agent changed none of its wrong marks. The group holds only plugins that no earlier read names. So it holds no `other` assignment and no assignment from an `include` list alone, and the rate covers only plugins that the older patterns matched.
 
 Of the 20 wrong held-out assignments, 7 are `ai` on a plugin that serves outside AI tools. Another 6 are `attachments` on a plugin that only mentions attachments. The tuning group shows the same two kinds. The tuning changed 2 of the 100 plugins, and each change adds a right `pdf-reading`. It removed no wrong assignment from this group.
 

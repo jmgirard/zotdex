@@ -125,6 +125,7 @@ The site's categories rest on a hand read of the 464 plugins added since 2026-10
 - 2026-11-03: T5 done: 22 list edits for the held-out plugins; the compare over 736 records gives 83 losses, each a wrong mark, and 51 gains, each read right; no older plugin loses a category.
 - 2026-11-03: T6 done: the browser pane shows the three labeled links on `paper-loom@local.research` and no console error; the build read the pinned data.
 - 2026-11-03: T7 done: CHANGELOG, DESIGN, INDEX, and the open question in `category-ledger.md` updated; the writing hook's other hits in `CHANGELOG.md` and `category-ledger.md` predate this branch and stay.
+- 2026-11-03: claim audit: 43 claims read, 6 corrected — CHANGELOG.md, src/site/categories.ts, test/categories.test.ts
 - 2026-11-03: delegation: four fresh Opus readers mark the tuning group in batches of 91, so the rule changes are not tuned by the readers of the held-out group; the agent settles every wrong and missing mark.
 
 ## Decisions
