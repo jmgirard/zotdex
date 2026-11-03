@@ -127,6 +127,7 @@ The site's categories rest on a hand read of the 464 plugins added since 2026-10
 - 2026-11-03: T7 done: CHANGELOG, DESIGN, INDEX, and the open question in `category-ledger.md` updated; the writing hook's other hits in `CHANGELOG.md` and `category-ledger.md` predate this branch and stay.
 - 2026-11-03: claim audit: 43 claims read, 6 corrected — CHANGELOG.md, src/site/categories.ts, test/categories.test.ts
 - 2026-11-03: review: four lenses, 28 findings; the fixes changed patterns after 87a6185b, removed the `ai` guard, and corrected D-060's unmerged wording to "a category that a pattern gives"; the compare stays 51 gains and 83 losses; `pnpm test` to re-run before the merge question.
+- 2026-11-03: step-7 approval: m091-check-categories-new-plugins approved for merge
 - 2026-11-03: delegation: four fresh Opus readers mark the tuning group in batches of 91, so the rule changes are not tuned by the readers of the held-out group; the agent settles every wrong and missing mark.
 
 ## Decisions
