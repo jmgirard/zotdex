@@ -43,15 +43,9 @@ export const CATEGORIES: readonly Category[] = [
     exclude: [
       ...BRIDGES,
       "arxiv-marker@lele.dev",
-      "bilingual-reader@zotero.local",
-      "docboxtrans@docread.local",
-      "readerc@readerc.local",
-      "reading-bilingual@lrz.org",
       "weavero@mjthoraval",
       "zontex-bridge@endoretic.github.io",
       "zotero-figure-extract@achuan",
-      "zotero@wilddata.cn",
-      "zoteroautoccftagplugin@tobyshi.com",
     ],
   },
   {

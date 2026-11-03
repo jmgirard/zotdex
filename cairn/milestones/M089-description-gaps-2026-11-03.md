@@ -81,6 +81,7 @@ row "Refine the Latin part and short picks".
 - 2026-11-03: the simple-english lint hook flagged old lines of `CHANGELOG.md` on the T7 edit, none of them in the new entry; those entries stay as they are, as this milestone does not reword them.
 - 2026-11-03: T6: ledger page and `INDEX.md` line written; its table matches rows generated from the drafts and the command's list. The hook's other hits on the page stay: the `— observed` marks the rulebook asks for, quoted plugin text, and the two long lists of plugin names.
 - 2026-11-03: claim audit: 717 claims read, 12 corrected — plugins/{ninja@fluctus.cc,rule-outline@local.zotero,zotero7-scidb@dev.null}/index.json in `value`; plugins/{ai-batch-reader@example.com,bilingual-reader@zotero.local,lcsc-datasheets@local.example,litmtrans@srt117.github.io,yonghao.zou@epfl.ch,zemble@cosmik.network,zotassets@yunze.dev,zotero-mcp-plugin@autoagent.my,zotero@bibsonomy.org}/index.json in `reason`; CHANGELOG.md read, none wrong. Four fresh Opus readers split the pass by the same four batches, as 625 KB of READMEs does not fit one reader well.
+- 2026-11-03: review corrects the T5 line above: a model named as a translation engine counts as right under `ai`, as `category-ledger.md` marks such plugins, so the read is 32 right and 21 wrong.
 - 2026-11-03: the audit left one claim standing that may be stale: `zoteropaperagent`'s "API key from a QR code login web page" is what the README's step 1 states, though `doc/3_1_Introduction_EN.md` says the Kimi web crawler was removed.
 
 ## Decisions
@@ -94,3 +95,36 @@ Evidence at head `5ac77a42`; `origin/main` has not moved since the branch was cu
 - AC3: the comparison on `origin/main`'s `src/site/categories.ts` gives 53 added categories; on the branch's it gives 26, each marked right in the ledger; the other 27 pairs were checked by script to be on their category's `exclude` list. The hand read and its marks are in `cairn/references/description-ledger-2026-11-03.md`, "Category changes".
 - AC4: `CHANGELOG.md`, first entry under `## Unreleased`, says that "80 more plugins now show an English description" and that "Such a text hides later edits to the upstream description until someone removes the override."
 - AC5: `pnpm test` exits 0 (2238 passed, 6 skipped, 33 files); `pnpm check` exits 0 (736 entries, 0 problems). Consistency gate: `cairn_validate.py` all checks passed; the generic profile names no toolchain checks; no principle changed.
+
+spawned: diff-bug, blame-history, prior-review, ripple
+
+- diff-bug #1: `zoteropaperagent`'s "API key from a QR code login web page" is probably false for version 3.1.1, since `doc/3_1_Introduction_EN.md` says 3.1.0 removed the Kimi web crawler — fix now.
+- diff-bug #2: `zotero@wilddata.cn` has no paid-service verdict that read its GitHub text, which names a free allowance for new users — follow-up: row "Read new plugins for paid services", low, since About says a mark can be missing.
+- diff-bug #3: time-bound claims stay behind overrides with no `version` (`readai`, `break-pdf`, `remarkable`, `zodh`, `ninja`, `zotero-reading-room`) — reject, planned change: D-031 intends a text that stays until removed, and AC4 tells users so.
+- diff-bug #4: privacy and safety claims read in the index's own voice (`rule-outline`, `wmu-journal-tags`, `ccfa`, `zotero-tray`, `pdfocrforzotero`) — fix now; `zotero-reading-room`'s "local-first" cut too.
+- diff-bug #5: the `ai` rule for a model named as a translation engine was applied only to added categories, so parallel plugins differ — fix now, with blame-history #1.
+- diff-bug #6: ledger marks differ for `zotero-lit-ai-matrix`, `zemble` against `zotero-wikicite`, and `zotero-mcp-plugin` — reject, false: the texts differ; the matrix reads notes into its table and only shows metadata, zemble sends items to an outside service while wikicite syncs citation data, and the MCP plugin's own tools do these writes.
+- diff-bug #7: `paperplanex`'s named path is a submodule, not a file of the listed repo, and the changelog says "in its repository" — fix now.
+- diff-bug #8: the new excludes stay if an owner removes or replaces the override that caused them — follow-up: new row "Drop excludes left by removed overrides", parked, promote when a user reports it, since no documented or common use reaches it yet.
+- diff-bug #9: `ROADMAP.md` row "Refine the Latin part and short picks" still counts 8 overrides, and M089 adds 5 such cases — fix now.
+- diff-bug #10: `zotbox`'s maker's site was not read for a paid mark — follow-up: row "Read new plugins for paid services", low.
+- diff-bug #11: `zotero7-scidb`'s text names Sci-Hub, close to the Contract boundary's "does not endorse" — reject, false: the text says what the plugin does as its README does, which is no endorsement, and no rule bars the name.
+- diff-bug #12: reasons call slugs or names "in English" (`translateAnt`, `readai`, `zotero@wilddata.cn`) — reject, style: the case matches what `description.ts` computes.
+- diff-bug #13: the work log's list of non-root sources omits `zoteropaperagent` and `geyi` — reject, style: their reasons and the ledger name those files.
+- diff-bug #14: the longest value is 276 characters against 261 before — reject, style: no rule limits it.
+- blame-history #1: the new `ai` excludes contradict `category-ledger.md`, which marks `paper-translator`, `pdf2zh`, `zotero-better-translate`, and `bilingual-reader@zbr.local` right under `ai` — fix now: six of the seven `ai` excludes are reversed; only `zotero-figure-extract` stays.
+- blame-history #2: D-037's 1 in 10 test is not evidenced, as only added assignments were read — reject, planned change: the plan reads only the categories the overrides add, and the row "Check categories on new plugins" stays.
+- blame-history #3: the ledger's G76 note cites the sweep with the wrong sign — reject, false: `paid-service-sweep.md:434` states the trial and purchase link, as the note says.
+- prior-review #1: the row "Check categories on new plugins" does not record this read — reject, false: that row is about new plugins, which this read did not cover, and its text stays true.
+- prior-review #2: the first-read rate is far above D-037's 1 in 10 — reject, planned change: same as blame-history #2.
+- prior-review #3: M067's "categories follow overrides" lesson is not in `LESSONS.md` — reject, false: the diff does not touch that file, and this milestone's T5 did the comparison.
+- ripple #1: `README.md`'s "an About edit changes the description" is false for a plugin with an override — fix now.
+- ripple #2: `text-change.yml` does not say that an index override hides the About text — fix now.
+- ripple #3: same as prior-review #1 — reject, false.
+- ripple #4: `category-ledger.md:569` says no later read checks new plugins — reject, false: this read covers plugins whose text changed, not new plugins.
+- ripple #5: `README.md`'s definition of upstream names fewer files than these reasons cite — reject, false: it says where an English text can exist, and DESIGN's Overrides item lets the override draw on another upstream file.
+- ripple #6: `README.md:77` and `about.astro:114` name no overrides — reject, false: the override paragraph follows each.
+
+After the fix-now edits: the comparison gives 53 added on `origin/main`'s lists and 32 on the branch's, each of the 32 marked right in the ledger, and the other 21 on their `exclude` lists. `pnpm description-gaps` prints 0 gaps, `pnpm test` passes 2238 with 6 skipped, `pnpm check` reports 0 problems, and `cairn_validate.py` passes.
+
+snapshot: no changed snapshot file.

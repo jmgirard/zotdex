@@ -5,7 +5,7 @@
 - 80 more plugins now show an English description of at least six words. Each
   one showed no description, an English text of fewer than six words, or a text
   that was half or more Chinese. The index wrote each text from the plugin's
-  README or another file in its repository. Such a text hides later edits to the
+  README or another of its upstream files. Such a text hides later edits to the
   upstream description until someone removes the override. A plugin's categories
   can change with its new text.
 - The Overrides table on a plugin page now lists both upstream texts beside a

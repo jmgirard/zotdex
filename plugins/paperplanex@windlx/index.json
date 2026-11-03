@@ -4,7 +4,7 @@
     {
       "field": "description",
       "value": "Connects Zotero to a Paper Plane X backend you run yourself: uploads PDFs for parsing, extraction, and fact checking, links papers to research projects, and shows processing status and editable results in the item pane.",
-      "reason": "Translated from the introduction and the \"功能概览\" and \"配置后端\" sections of paper_plane_x_zotero/README.md, which is in Chinese. The manifest description, \"Zotero plugin for Paper Plane X\", only repeats the name, and the GitHub About text is half or more Chinese."
+      "reason": "Translated from the introduction and the \"功能概览\" and \"配置后端\" sections of README.md in the submodule repository WindLX/paper_plane_x_zotero, which is in Chinese. The manifest description, \"Zotero plugin for Paper Plane X\", only repeats the name, and the GitHub About text is half or more Chinese."
     }
   ]
 }

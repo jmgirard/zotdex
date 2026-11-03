@@ -3,7 +3,7 @@
   "overrides": [
     {
       "field": "description",
-      "value": "Hides Zotero's main window to the Windows system tray when you close it, restores or activates it from the tray icon, and quits normally from the tray menu, using only readable source with no bundled EXE or DLL.",
+      "value": "Hides Zotero's main window to the Windows system tray when you close it, restores or activates it from the tray icon, and quits normally from the tray menu.",
       "reason": "Translated from the opening and the \"功能\" section of README.md, which is in Chinese. The manifest description and the GitHub About text are half or more Chinese."
     }
   ]

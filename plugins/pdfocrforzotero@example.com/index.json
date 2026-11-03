@@ -3,7 +3,7 @@
   "overrides": [
     {
       "field": "description",
-      "value": "Makes scanned PDFs searchable and selectable from the right-click menu with a bundled RapidOCR engine that runs locally, needing no Python or Tesseract, and adds the result as a separate [OCR] attachment without changing the source PDF.",
+      "value": "Makes scanned PDFs searchable and selectable from the right-click menu with a bundled RapidOCR engine, needing no Python or Tesseract, and adds the result as a separate [OCR] attachment without changing the source PDF.",
       "reason": "Translated from the introduction and the \"为什么能开装即用\" and \"使用手册\" sections of README.md, which is in Chinese. The manifest description and the GitHub About text are half or more Chinese."
     }
   ]
