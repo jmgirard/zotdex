@@ -874,3 +874,18 @@ so it keeps only its `include` categories. The rest of D-037 stands: categories
 are the index's own grouping, the data carries none, and no bot merge needs hand
 work. This choice is wrong if Other tools holds so many plugins that a visitor
 cannot use it, or if users ask for it to go.
+
+### D-058: The build reads four plugins at once and paces its API requests, annotating D-015 and D-028
+
+2026-11-03, M087 plan. `pnpm build` read plugins one at a time, and a daily build
+reached D-015's 18-minute limit, which left plugins `not-read`. At the question set
+the user chose four reads at once, with the GitHub API requests of the plugin reads
+started at least 80 ms apart. GitHub's best-practices page advises serial requests,
+and its rate-limit page gives secondary limits by number. This choice departs from
+the advice and stays inside the numbers, and M087's branch runs test it. The plan
+rejected a longer limit, which the index outgrows, and serial API requests with
+parallel downloads, since API requests take most of a read's time. The 18-minute
+limit stays as a safety stop, and `not-read` keeps D-015's meaning and cost. D-028
+still holds, since reads start in the day's order, so a cut leaves the last entries
+in that order. A refused request still fails that plugin's read as build-level.
+This choice is wrong if a build log shows an HTTP 403 or 429 from the API.
