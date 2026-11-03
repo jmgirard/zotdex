@@ -1,14 +1,16 @@
-# paid-service-sweep: a hand read of which plugins need a paid service from their maker (M082, M083)
+# paid-service-sweep: a hand read of which plugins need a paid service from their maker (M082, M083, M084)
 
-**Provenance.** Ingested 2026-11-02 by M082 and extended the same day by M083,
-from reads of the plugins' own text on 2026-11-02. Pagination: none.
-Extraction: a 2026-11-02 snapshot, and READMEs and descriptions can change after it (observed 2026-11-02).
+**Provenance.** Ingested 2026-11-02 by M082 and extended by M083 and M084, from
+reads of the plugins' own text on 2026-11-02 and 2026-11-03. Pagination: none.
+Extraction: snapshots of 2026-11-02 and 2026-11-03, and READMEs and descriptions can change after them (observed 2026-11-03).
 
-**Scope.** This page records two reads. The first, which AC6 of M082 rests on,
+**Scope.** This page records three reads. The first, which AC6 of M082 rests on,
 covers the 695 entries under `plugins/` at commit `c8f2b65`. The second, which
 M083 adds, covers the 34 entries added between that commit and `34a02a8`. The
-sections before "Second read" hold the first read. This page builds no checker.
-A plugin added after `34a02a8` has not been read. Status lives in `ROADMAP.md`, decisions in
+third, which M084 adds, covers the 7 entries added between `34a02a8` and
+`1b2cebf`. The sections before "Second read" hold the first read. This page
+builds no checker. A plugin added after `1b2cebf` has not been read. Status
+lives in `ROADMAP.md`, decisions in
 `DECISIONS.md`, and architecture in `DESIGN.md`.
 
 ## Texts read
@@ -532,3 +534,38 @@ The list found 17 entries with a hit, and 17 with none.
 - `zotero-mineru@example.com`: the hit means registering an attachment, and its MinerU token comes from a third party
 - `zotero-remarkable-sync@piwowarski.fr`: reMarkable's cloud is a third party, and credits means acknowledgements
 - `zotero-research@local.invalid`: logs in to third-party AI sites, with no maker's service
+
+## Third read
+
+The read date is 2026-11-03. This read covers the 7 entries that
+`git diff --name-only --diff-filter=A 34a02a8 1b2cebf -- plugins/` lists as added
+`meta.json` files. It uses the word list and matching rule above. It reads three
+kinds of text. The first is each entry's `meta.json` description at `1b2cebf`.
+The second is its GitHub About text below. The third is each top-level file whose
+name starts with README, ignoring case, at the SHA below. The read found 10 such
+files, and every text was read.
+
+The session read every hit and gave 0 marks. So no entry of this read has
+`paidService`.
+
+```text
+arxiv-source-helper@local.research	5e56853ef8e50b70f2f32f66efedf176e95c0720	Zotero plugin that automatically saves arXiv TeX sources and provides local section, keyword, and table queries for AI readers.
+saved-search-folders@nickynoname.github.io	e5fee96ecfcb3f6842f46af3ae4c76af61f98d03	Organise Zotero's saved searches into folders, set your own order, and combine them with AND/OR. Stored in the search names, so nothing breaks without the plugin.
+zhinfo@zotero.local	5798d8b92ec0540e6bd8c9a4d92acf9741e3929c	Zotero 插件：在条目信息面板加入「中文标题」与「中文摘要」，打开条目时自动翻译填入（MyMemory / OpenAI 兼容大模型 / DeepL / Google）
+zotero-ai-collection@jiaxin.fan	c6b9b4156c5996aac6f19d95dc324bfc3fc217b1	Collection for Zotero：用 LLM根据「标题 + 摘要」为条目智能推荐 Zotero 分类，并提供可审核的确认对话框。
+zotero-obsidian-readonly@example.com	566aaffa90ddf91dea922fc6cc2855dc1baa8fcb	Read-only push from Zotero to standalone Markdown
+zotero-open-router@luciferer.github.io	fefb0f43237c636c2557b418c49bb88c6efbe3a5	Zotero 7–11 plugin to customize attachment double-click vs. Option+Double-Click routing, prioritize main article PDFs, and preview .md/.csv/.tsv/.json/.txt/.zip in internal tabs.
+zotero-tray@local	fc3aed4396f5c1e132afbd3fab3ca69777742902	Windows 托盘插件，适用于 Zotero 10：关闭到托盘、恢复与激活、右键正常退出；纯源码，无附带 EXE/DLL。
+```
+
+### Third read: marked
+
+None.
+
+### Third read: no mark
+
+The list found 3 entries with a hit, and 4 with none.
+
+- `zhinfo@zotero.local`: works with free MyMemory or the user's own third-party key, and register means code sections
+- `zotero-ai-collection@jiaxin.fan`: the hits are a trial on a test library and the user's own LLM key and quota, from a third party
+- `zotero-tray@local`: activate and register mean window and icon handling, nothing is sold

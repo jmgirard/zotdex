@@ -7,7 +7,7 @@ _Last hygiene check: 2026-11-03 (M083 archived; paid service read row narrowed; 
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M084 | Read the last merged plugins for paid services | planned | — | normal | milestones/M084-paid-service-third-read.md |
+| M084 | Read the last merged plugins for paid services | review | — | normal | milestones/M084-paid-service-third-read.md |
 | M083 | Read the merged plugins for paid services | done | — | normal | milestones/archive/M083-paid-service-second-read.md |
 | M082 | Mark plugins that need a paid service | done | — | normal | milestones/archive/M082-paid-service-mark.md |
 <!-- rows grouped by status, not by ID; keep the 3 most recent done/dropped rows; older ones: milestones/archive/ + git -->
