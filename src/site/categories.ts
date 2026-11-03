@@ -274,7 +274,7 @@ export const CATEGORIES: readonly Category[] = [
   {
     slug: "interface",
     name: "Window, tabs, and shortcuts",
-    about: "the main window, tray icons, tabs, menus, and keyboard shortcuts",
+    about: "how the main window behaves, tray icons, tabs, keyboard shortcuts, and small menu and toolbar changes",
     pattern:
       /(?<!new )\btabs?\b|\btray\b|fullscreen|full-screen|keyboard shortcuts?|hotkeys?|hamburger|close button|quick launch|系统托盘|托盘|最小化/iu,
     include: ["rebootero@chen7447.github.io", "vertical-toolbar@dylan.ac", "zotero-deselect@local", "zutilo@www.wesailatdawn.com"],

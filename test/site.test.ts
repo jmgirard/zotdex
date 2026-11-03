@@ -806,6 +806,7 @@ describe("the About page", () => {
     const text = mainText(about());
     expect(text).toContain("It assigns them from words in a plugin's name and descriptions, and it adds or removes some by hand.");
     expect(text).toContain("A plugin that fits no other category is under Other tools.");
+    expect(text).toContain("A plugin that the latest build did not read has only the categories added by hand, so it often shows none.");
     expect(text).toContain("A category can be wrong or missing. Plugin authors do not choose them, but a requested name or description can change the words they read.");
   });
 

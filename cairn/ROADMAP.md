@@ -7,7 +7,7 @@ _Last hygiene check: 2026-11-03 (M085 archived; one row graduated, one narrowed 
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M086 | Give every read plugin a category | in-progress | — | normal | milestones/M086-every-plugin-a-category.md |
+| M086 | Give every read plugin a category | review | — | normal | milestones/M086-every-plugin-a-category.md |
 | M085 | Let an older, larger repo ask for a listed add-on id | done | — | high | milestones/archive/M085-repeat-id-replace.md |
 | M084 | Read the last merged plugins for paid services | done | — | normal | milestones/archive/M084-paid-service-third-read.md |
 <!-- rows grouped by status, not by ID; keep the 3 most recent done/dropped rows; older ones: milestones/archive/ + git -->
