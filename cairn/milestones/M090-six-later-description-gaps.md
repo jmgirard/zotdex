@@ -1,13 +1,13 @@
 # M090: Fill the six later description gaps
 
-- **Status:** planned
+- **Status:** in-progress
 - **Priority:** normal
 - **Depends on:** M089
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — 6 plugins' shown descriptions and some of their categories change on the site
-- **Branch/PR:** —
+- **Branch/PR:** m090-six-later-description-gaps
 
 ## Goal
 
@@ -48,15 +48,15 @@ row "Fill description gaps on new plugins". Mixed texts with a CJK share under 0
 
 ## Tasks
 
-- [ ] T1: Run the command on the data file, and save the list. Read the plugin READMEs. Check that no `text-change` issue
+- [x] T1: Run the command on the data file, and save the list. Read the plugin READMEs. Check that no `text-change` issue
       records an owner's removal for a listed plugin (none exists on 2026-11-03).
-- [ ] T2: Write the overrides for the 4 `short` gaps and the 2 `cjk` gaps.
-- [ ] T3: Compare `categories` with and without each override on that data, read each added category, and add the
+- [x] T2: Write the overrides for the 4 `short` gaps and the 2 `cjk` gaps.
+- [x] T3: Compare `categories` with and without each override on that data, read each added category, and add the
       excludes for the wrong ones.
-- [ ] T4: Add the section to the ledger page: the data file's `generatedAt` and SHA-256, each gap's case, shown text,
+- [x] T4: Add the section to the ledger page: the data file's `generatedAt` and SHA-256, each gap's case, shown text,
       disposition, source, and each added category's mark. Say that these 6 were read failures in the earlier data, not
       new plugins, and update the page's Scope and Evidence snapshot, which say one data file.
-- [ ] T5: Change the count in the `CHANGELOG.md` entry, and add `zotfetch@edslab.research` and `zotxt@e6h.org` to the row
+- [x] T5: Change the count in the `CHANGELOG.md` entry, and add `zotfetch@edslab.research` and `zotxt@e6h.org` to the row
       "Refine the Latin part and short picks", since each has an English GitHub text of six or more words.
 
 ## Work log
@@ -71,6 +71,7 @@ row "Fill description gaps on new plugins". Mixed texts with a CJK share under 0
 - 2026-11-03: plan chose editing M089's Unreleased entry over a second entry, because one changelog line reads better for one kind of change and M089 has not shipped in a release; falsified by a release cut between them.
 - 2026-11-03: plan chose a section in the existing ledger page over a new page, because both reads share a date and a method; falsified by a page too long to read in one pass.
 - 2026-11-03: AC1's shelf file renamed from the audited name to `plugins-data-2026-11-03b.json`, since `cairn_validate.py` reads the earlier name's digits as a bad date; the same file, so the audit stands.
+- 2026-11-03: T1 to T5: the command printed 6 gaps at `819ee093`; READMEs read by the session, no subagent; no `text-change` issue exists. 6 overrides written, and the command prints 0 gaps. The comparison gave 11 added categories, 7 marked right and 4 excluded. Ledger section, changelog count, and the row's count added. These share this commit, since each is small.
 
 ## Decisions
 

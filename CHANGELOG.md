@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- 80 more plugins now show an English description of at least six words. Each
+- 86 more plugins now show an English description of at least six words. Each
   one showed no description, an English text of fewer than six words, or a text
   that was half or more Chinese. The index wrote each text from the plugin's
   README or another of its upstream files. Such a text hides later edits to the

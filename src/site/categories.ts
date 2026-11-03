@@ -102,6 +102,7 @@ export const CATEGORIES: readonly Category[] = [
       "zotero-ocr@bib.uni-mannheim.de",
       "zotero-pdf-transfer@charlesapetersen.github.io",
       "zoterotag@euclpts.com",
+      "zotfetch@nikhilweee.me",
       "zotron@diamondrill",
     ],
   },
@@ -219,6 +220,9 @@ export const CATEGORIES: readonly Category[] = [
       "zotero-tts@xujialiu.top",
       "zotero-wikicite@wikidata.org",
       "zoterocopyanything@example.com",
+      "zoterotransnator@euclpts.com",
+      "zotfetch@nikhilweee.me",
+      "zotxt@e6h.org",
     ],
   },
   {

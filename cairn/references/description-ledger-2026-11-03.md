@@ -4,7 +4,7 @@
 Pagination: —.
 Extraction: a 2026-11-03 snapshot, and the deployed data and the READMEs can change after it — observed 2026-11-03.
 
-**Scope.** This page records the ledger that M089 asks for. It lists each description gap in one data file, the disposition of each, and a mark for each category that an override adds. It is not a source summary, and it builds no checker. The command in `src/site/description-gaps.ts` and its tests in `test/description-gaps.test.ts` hold the rule. This is a reference, not an authority. Status lives in `ROADMAP.md`, decisions in `DECISIONS.md`, and architecture in `DESIGN.md`. `description-ledger.md` holds the same record for the data of 2026-10-31.
+**Scope.** This page records the ledger that M089 asks for. It lists each description gap in one data file, the disposition of each, and a mark for each category that an override adds. The section "Later gaps (M090)" does the same for a second data file of the same day. It is not a source summary, and it builds no checker. The command in `src/site/description-gaps.ts` and its tests in `test/description-gaps.test.ts` hold the rule. This is a reference, not an authority. Status lives in `ROADMAP.md`, decisions in `DECISIONS.md`, and architecture in `DESIGN.md`. `description-ledger.md` holds the same record for the data of 2026-10-31.
 
 **Evidence snapshot.**
 
@@ -12,6 +12,7 @@ Extraction: a 2026-11-03 snapshot, and the deployed data and the READMEs can cha
 - The run printed 80 lines: 15 `missing`, 47 `cjk`, and 18 `short` — observed 2026-11-03.
 - Each top-level file whose name starts with README, ignoring case, on each plugin's GitHub default branch. All 80 repos had at least one — observed 2026-11-03.
 - `gh issue list --label text-change --state all` listed no issue, so no owner's removal applies to a listed plugin — observed 2026-11-03.
+- Second data file, for M090: `generatedAt` 2026-11-03T22:05:15.306Z, SHA-256 `2972c80c6c7dda51596efd55af822b8ca090e25f6e785fde31d3325b843d3b18`, 736 records, all with an `upstream` block, on the shelf as `cairn/references/sources/plugins-data-2026-11-03b.json` — observed 2026-11-03.
 
 ## How a row gets its disposition
 
@@ -124,6 +125,26 @@ The site's categories (D-037) read the shown description, so the new override te
   - export: annotationmanage (exports to Zotero notes), bilingual-reader (a PDF attachment), paper-companion ("Markdown notes" in its panel), zotero-wikicite (syncs citations with Wikidata), zoterocopyanything ("synced locally").
   - organization: docboxtrans ("feed earlier translations").
   - interface: break-pdf ("tabs opened"), chartero ("overview tab").
+
+## Later gaps (M090)
+
+The first data file holds 39 records with no `upstream` block, and the command skips such a record. That build did not reach 38 of them (`not-read`), and one request failed. The second data file reads them all, and the command then prints 6 gaps with M089's overrides in place. The first build did not read these 6, and they are not new plugins. A later unread plugin can hide a gap in the same way. Each is an `override`, and after them the command prints no gap over the second file.
+
+| # | Plugin id | Case | Shown text | Disposition | Source |
+|---|---|---|---|---|---|
+| G81 | `zoterotransnator@euclpts.com` | short | Zotero PDF Translate Terminator | override | README.md, condensed |
+| G82 | `zotfetch@edslab.research` | short | ZotFetch: Batch PDF downloader | override | README.md, condensed |
+| G83 | `zotfetch@nikhilweee.me` | short | Fetch missing attachments | override | README.md, condensed |
+| G84 | `zoturead@zotero.org` | cjk | 今日优读（http://uread.today/），主要搭建一个知识平台以及读书辅助工具，提供书籍搜索，中图分类和学科搜索。 | override | README.md, translated |
+| G85 | `zotwanglele@wanglele.com` | cjk | Zotero 10 AI 全能插件 By Wanglele | override | README.md, translated |
+| G86 | `zotxt@e6h.org` | short | Plain text extensions for Zotero | override | README.md, condensed |
+
+A comparison on the second file, with the default branch's `exclude` lists, gave 11 added categories on 5 plugins and took none away. The read found 7 right and 4 wrong, by the rule of `category-ledger.md`.
+
+- Right: zoterotransnator (ai, notes, attachments), zoturead (metadata, rankings), zotwanglele (translation, notes).
+- Wrong, excluded, with the words that matched:
+  - export: zoterotransnator ("Markdown notes", notes inside Zotero), zotfetch@nikhilweee.me ("file sync is off"), zotxt ("such as Markdown", a kind of file its utilities read).
+  - notes: zotfetch@nikhilweee.me ("annotations stay usable").
 
 ## Open questions
 
