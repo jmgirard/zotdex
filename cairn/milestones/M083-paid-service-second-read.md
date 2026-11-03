@@ -50,6 +50,7 @@ Mark each plugin merged since the first paid service read whose main use needs a
 - 2026-11-02: T1 done: 34 entries read, 44 READMEs read at recorded SHAs, 17 with a hit, 0 marked. The session read the hits itself, since few were left; `paper-chat@zotero.plugin` was the nearest call, and its README offers the user's own provider key beside the maker's service.
 - 2026-11-02: T2 done: the read marks no entry, so no `paidService` is written and the branch changes nothing outside `cairn/`. The site gains no mark from this milestone, which is what the read found.
 - 2026-11-02: claim audit: not owed — no added lines outside cairn/
+- 2026-11-02: step-7 approval: m083-paid-service-second-read approved for merge
 
 ## Decisions
 
