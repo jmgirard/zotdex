@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Every plugin that the index has read now shows at least one category. A new
+  category, "Window, tabs, and shortcuts", holds plugins for the main window,
+  tray icons, tabs, menus, and keyboard shortcuts. A plugin that fits no other
+  category is under "Other tools", which the Category menu lists last. The word
+  rules and hand lists also place more plugins in the existing categories, such
+  as the PMCID fetcher under "Metadata and cleanup". A plugin whose read failed
+  in the latest build has only its hand-listed categories, as before.
 - The discovery bot now opens a held pull request for a repository that can
   replace a listed one. Such a repository is older than the one that lists its
   add-on id. It also has at least 20 stars and 10 times the listed one's stars.

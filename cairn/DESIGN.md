@@ -84,12 +84,15 @@ A search box filters the table to the rows whose name or description holds
 the query, both lowercased, and keeps it in `?q=` (M053). A "Category" menu
 after it filters the table to one category and keeps it in `?category=`
 (M066). Its options are the categories that at least one row has, as "Name
-(N)", most rows first and ties in `CATEGORIES` order. A category is the
+(N)", most rows first and ties in `CATEGORIES` order, and the menu lists Other
+tools last whatever its count (M086). A category is the
 index's own grouping, not a checkable fact (D-037): `categories` in
-`src/site/categories.ts` assigns each of the 13 categories whose pattern
+`src/site/categories.ts` assigns each of the 15 categories whose pattern
 matches the display name, the shown description, or the manifest or GitHub
 description, plus each whose `include` list holds the id, less each whose
-`exclude` list holds it. The data file carries no categories. The same script
+`exclude` list holds it. A record with upstream facts that no category takes
+gets Other tools, whose pattern matches nothing (D-057). A record with no
+upstream facts gets only its includes. The data file carries no categories. The same script
 writes a plugin count beside the filters: the total, how many plugins the
 filters pass on every page while a filter is on, or that none match (M044,
 M053, M058). Typing writes `?q=`

@@ -122,8 +122,10 @@ in the `q` query parameter of its address, such as `?q=pdf`.
 The home page has a "Category" menu. It lists each category that at least
 one plugin has, with the number of those plugins in parentheses after its
 name. The categories with the most plugins come first, and categories with
-the same number of plugins come in the order of the About page's list. If
-you pick a category, the table shows only the plugins in it. "All
+the same number of plugins come in the order of the About page's list. The
+menu lists Other tools last, whatever its number. A plugin that fits no other
+category is under Other tools. If you pick a category, the table shows only
+the plugins in it. "All
 categories" passes every plugin. The page keeps your choice in the
 `category` query parameter of its address, such as `?category=translation`.
 If the parameter names no category in the menu, the page passes every

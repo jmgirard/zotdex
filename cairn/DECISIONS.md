@@ -861,3 +861,16 @@ alone, since the entry already holds the id. At this plan the user moved two ent
 two. The rest of D-033, D-045, and D-053 stands. This choice is wrong if the
 maintainer closes nearly every such pull request, or if a listed repo hides a far
 larger original below these numbers.
+
+### D-057: A read plugin that no category takes shows Other tools, annotating D-037
+
+2026-11-03, M086 plan and T6. The user asked that no plugin be missing a category.
+Word rules and hand lists cannot place every plugin, since some fit none of the
+categories and some say too little, and the bot adds plugins that no one has read.
+At the question set the user chose a computed "Other tools" category for a record
+with upstream facts that no other category takes, over leaving such plugins with
+none. The menu lists it last. A record with no upstream facts has no text to read,
+so it keeps only its `include` categories. The rest of D-037 stands: categories
+are the index's own grouping, the data carries none, and no bot merge needs hand
+work. This choice is wrong if Other tools holds so many plugins that a visitor
+cannot use it, or if users ask for it to go.
