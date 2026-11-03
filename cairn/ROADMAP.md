@@ -7,7 +7,7 @@ _Last hygiene check: 2026-11-03 (M088 and M089 planned; M085 done row pruned; on
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M088 | Fix the small description fact gaps | planned | — | normal | milestones/M088-description-fact-gaps.md |
+| M088 | Fix the small description fact gaps | review | — | normal | milestones/M088-description-fact-gaps.md |
 | M089 | Fill the description gaps of 2026-11-03 | planned | M088 | normal | milestones/M089-description-gaps-2026-11-03.md |
 | M087 | Read plugins a few at a time | done | — | high | milestones/archive/M087-read-plugins-at-once.md |
 | M086 | Give every read plugin a category | done | — | normal | milestones/archive/M086-every-plugin-a-category.md |

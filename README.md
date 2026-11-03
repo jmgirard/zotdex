@@ -105,11 +105,13 @@ only repeats the name. For example, "Zotero Plugin for OCR" only repeats the
 name "Zotero OCR".
 
 Last, the site compares the share of Chinese, Japanese, and Korean text in
-the descriptions that are left. It counts each Han, Hiragana, Katakana, or
-Hangul character as one unit and each run of other letters as one unit. If
-less than half of the manifest description is such text, the site shows
-the manifest description. If not, the site shows the GitHub description in
-two cases: the site dropped the manifest description, or the GitHub
+the descriptions that are left. It reads each text in its NFC form, Unicode's
+composed form. It counts each Han, Hiragana, Katakana, or Hangul character as
+one unit. Each letter whose `Script_Extensions` property names one of these
+scripts, such as ー or 〆, is also one unit. Each run of other letters is one
+unit. If less than half of the manifest description is such text, the site
+shows the manifest description. If not, the site shows the GitHub description
+in two cases: the site dropped the manifest description, or the GitHub
 description has a lower share. In all other cases the site shows the
 manifest description, or no description.
 
@@ -246,8 +248,8 @@ left, the page shows "Unknown (no translations found)". The description
 comes from the plugin's manifest, from the About text of its GitHub
 repository, or from an index override. So it can be in another language
 than the languages fact names. The card shows the manifest description and
-the GitHub description as two more facts. If the index has overrides
-for the plugin, an "Overrides" table under its own heading in the card
+the GitHub description as two more facts, unless one is missing or blank. If
+the index has overrides for the plugin, an "Overrides" table under its own heading in the card
 lists them.
 
 The About page says how the index shows the declared range and how the

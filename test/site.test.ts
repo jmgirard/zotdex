@@ -575,7 +575,7 @@ describe("the plugin page", () => {
       ...(record.paidService ? [[PAID_TEXT, "paid-service"]] : []),
       ...(upstream
         ? [
-            ...(upstream.description !== undefined ? [["Manifest description", "manifest-description"]] : []),
+            ...(upstream.description?.trim() ? [["Manifest description", "manifest-description"]] : []),
             ...(upstream.repoDescription !== undefined ? [["GitHub description", "github-description"]] : []),
             ...(typeof upstream.archived === "boolean" ? [["Archived on GitHub", "archived"]] : []),
             ...(typeof upstream.sourceInRepo === "boolean" ? [["Source code at the repository's top level", "source-in-repo"]] : []),
@@ -1843,6 +1843,70 @@ describe("the built site", () => {
       const text = readFileSync(join(out, file), "utf8");
       for (const trace of traces) expect(text.includes(trace), `${file}: ${trace}`).toBe(false);
     }
+  });
+});
+
+describe("the description facts", () => {
+  // The shared fixture has no blank text, so these records get their own build.
+  const base = records.find((record) => record.id === "first-plugin@example.org")!;
+  const { description: _manifest, repoDescription: _github, ...upstream } = base.upstream!;
+  const override = { field: "description", value: "Index text.", reason: "A reason." };
+  const withTexts = (id: string, texts: { description?: string; repoDescription?: string }): PluginRecord => ({
+    ...base,
+    id,
+    upstream: { ...upstream, id, ...texts },
+    reports: [],
+    overrides: [override],
+  });
+  const both = withTexts("both-texts@example.org", { description: "Keeps notes tidy.", repoDescription: "Sorts notes by date." });
+  const plugins = [
+    { ...both, overrides: [override, { field: "name", value: "Index name.", reason: "A reason." }] },
+    withTexts("manifest-only@example.org", { description: "Keeps notes tidy." }),
+    withTexts("github-only@example.org", { repoDescription: "Sorts notes by date." }),
+    withTexts("blank-with-github@example.org", { description: " \n", repoDescription: "Sorts notes by date." }),
+    withTexts("blank-manifest@example.org", { description: " \n" }),
+    withTexts("no-text@example.org", {}),
+    {
+      id: "failed-read@example.org",
+      repoUrl: "https://github.com/example/failed-read",
+      failure: { name: "no-xpi-release", message: "The repo has no release with an .xpi." },
+      overrides: [override],
+    },
+  ];
+  let dir = "";
+  beforeAll(() => {
+    dir = outWith(JSON.stringify({ schemaVersion: 1, generatedAt: "2026-11-03T06:17:00.000Z", plugins }));
+    const run = pnpmSite(["--out", dir]);
+    if (run.status !== 0) throw new Error(run.stderr);
+  }, 120_000);
+  const pageOf = (id: string) => readFileSync(join(dir, "plugins", id, "index.html"), "utf8");
+
+  test("shows no Manifest description row for a blank text and keeps it for a text", () => {
+    expect(pageOf("blank-manifest@example.org")).not.toContain("<dt>Manifest description</dt>");
+    expect(pageOf("both-texts@example.org")).toMatch(/<dt>Manifest description<\/dt>\s*<dd data-fact="manifest-description">/);
+    expect(fact(pageOf("both-texts@example.org"), "manifest-description")).toBe("Keeps notes tidy.");
+  });
+
+  // The Upstream value cell of an override, one item per line.
+  const upstreamCell = (id: string, field: string) => {
+    const row = new RegExp(`<tr data-override="${field}">(.*?)</tr>`).exec(pageOf(id))![1]!;
+    return [...row.matchAll(/<td>(.*?)<\/td>/g)][1]![1]!.split(/<br\s*\/?>/);
+  };
+
+  test.each<[string, string[]]>([
+    ["both-texts@example.org", ["Manifest: Keeps notes tidy.", "GitHub: Sorts notes by date."]],
+    ["manifest-only@example.org", ["Manifest: Keeps notes tidy."]],
+    ["github-only@example.org", ["GitHub: Sorts notes by date."]],
+    ["blank-with-github@example.org", ["GitHub: Sorts notes by date."]],
+    ["blank-manifest@example.org", ["none"]],
+    ["no-text@example.org", ["none"]],
+    ["failed-read@example.org", ["none"]],
+  ])("the Upstream value cell of a description override on %s lists its texts", (id, lines) => {
+    expect(upstreamCell(id, "description")).toEqual(lines);
+  });
+
+  test("the Upstream value cell of another override keeps its one value", () => {
+    expect(upstreamCell("both-texts@example.org", "name")).toEqual([upstream.name]);
   });
 });
 

@@ -932,6 +932,10 @@ const themeButton = `(${wireThemeButton})();`;
       .overrides table {
         font-size: var(--text-s);
       }
+      /* As in the compat table, so a narrow column wraps between words. */
+      .overrides table {
+        overflow-wrap: normal;
+      }
       .table-wrap {
         overflow-x: auto;
       }

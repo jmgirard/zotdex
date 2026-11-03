@@ -111,19 +111,35 @@ export function rowMajorsAttribute(record: PluginRecord, zoteroRelease: string |
   return attributeValue(rowMajors(record, zoteroRelease));
 }
 
-// The upstream value an override corrects, under the override's field name.
+// The upstream value an override corrects, under the override's field name. A description has
+// two upstream texts, so upstreamLines reads those.
 export function upstreamValue(record: PluginRecord, field: string): string | undefined {
   const upstream = record.upstream;
   if (!upstream) return undefined;
   const fields: Record<string, string | undefined> = {
     name: upstream.name,
-    description: upstream.description,
     homepage: upstream.homepage,
     strict_min_version: upstream.strictMinVersion,
     strict_max_version: upstream.strictMaxVersion,
     languages: upstream.languages?.length ? upstream.languages.join(", ") : undefined,
   };
   return fields[field];
+}
+
+// The lines of the Overrides table's Upstream value cell: for a description, each upstream text
+// that is not blank under its label, and for another field, its one value; "none" with neither.
+export function upstreamLines(record: PluginRecord, field: string): string[] {
+  const value = upstreamValue(record, field);
+  const lines =
+    field === "description"
+      ? [
+          ...(record.upstream?.description?.trim() ? [`Manifest: ${record.upstream.description}`] : []),
+          ...(record.upstream?.repoDescription?.trim() ? [`GitHub: ${record.upstream.repoDescription}`] : []),
+        ]
+      : value === undefined
+        ? []
+        : [value];
+  return lines.length > 0 ? lines : ["none"];
 }
 
 // Whether this override is the one that applies to its field, for the version the index

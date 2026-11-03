@@ -128,7 +128,7 @@ const offered = new Set(categoryOptions(plugins).map(({ value }) => value));
       half of the manifest description is Chinese, Japanese, or Korean, the site shows it. If not, the site shows a GitHub
       description that it kept in two cases: the manifest description was dropped, or the GitHub description has less
       of that text.
-      The Details card of a plugin page shows both descriptions.
+      The Details card of a plugin page shows both descriptions, unless one is missing or blank.
     </p>
   </section>
   <section class="card" id="overrides" data-about="overrides">
@@ -151,7 +151,8 @@ const offered = new Set(categoryOptions(plugins).map(({ value }) => value));
       The Overrides table in a plugin's Details lists each override beside the upstream value. Its Used column says
       "yes" for the override that applies to the plugin version that the index read. An override for that version wins
       over one for every version. The declared range uses the <code>strict_min_version</code> and{" "}
-      <code>strict_max_version</code> overrides marked "yes".
+      <code>strict_max_version</code> overrides marked "yes". A description override lists both upstream texts, the
+      manifest description and the GitHub description, when the plugin has them.
     </p>
   </section>
   <section class="card" id="categories" data-about="categories">

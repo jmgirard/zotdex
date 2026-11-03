@@ -133,7 +133,8 @@ and "Broken" buttons after a line naming the version read. For a record with a f
 failure and the About line. An open "Details" card (h2) lists the plugin
 id, the repository and release facts, and the "Menus and settings in"
 fact (M024, M033), with each override beside the upstream value it
-corrects under an h3 (M007, M015, M054). The About page
+corrects under an h3 (M007, M015, M054), and a `description` override
+beside each upstream text that is not blank (M088). The About page
 (`site/src/pages/about.astro`) holds the method notes: the declared range
 and its marks, the start test, which reports count, and how overrides and
 the Used column work (M054), the categories, each with its `about`
@@ -185,11 +186,12 @@ The site drops a manifest or GitHub description that is blank or only
 repeats the plugin's name (M015). It shows the manifest one when it is left
 and its CJK share is below 0.5, else the GitHub one when it is left and the
 manifest one was dropped or has a higher share, else the manifest one when
-it is left; the share counts each Han,
-kana, or Hangul character and each run of other letters as one unit
-(M055). A `description` override that applies to the version the index
-read always shows (M015). The plugin page's Details card shows both
-descriptions (M055).
+it is left; the share reads the text's NFC form and counts each Han,
+kana, or Hangul character, each letter whose `Script_Extensions` names one
+of those scripts, and each run of other letters as one unit
+(M055, M088). A `description` override that applies to the version the index
+read always shows (M015). The plugin page's Details card shows each
+description that is not blank (M055, M088).
 
 The index runs on GitHub only: GitHub Actions, GitHub Pages, and GitHub
 issues. It has no server, no database, and no paid service. Thus every
