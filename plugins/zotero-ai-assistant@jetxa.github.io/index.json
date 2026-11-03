@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Adds an AI chat panel to the item pane with the item's title and abstract, selected text, or PDF full text as context, plus one-click translate and explain in the reader; needs an API key for an OpenAI-format model.",
+      "reason": "Condensed from the opening and Features sections of README.md. The manifest description, \"AI Assistant for Zotero\", only repeats the name, and the GitHub About text, \"Zotero AI Assistant\", only repeats it too."
+    }
+  ]
 }

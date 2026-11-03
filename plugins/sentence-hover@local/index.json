@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Shows a Chinese translation of the English sentence under the mouse in a PDF and highlights the matching Chinese words as you move between English words, with optional full-PDF pre-translation; needs your own translation API address, model, and key.",
+      "reason": "Translated from the \"基础功能\" and \"配置翻译服务\" sections of README.md, which is in Chinese. The manifest description and the GitHub About text are half or more Chinese."
+    }
+  ]
 }

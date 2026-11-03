@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Installs a translator that saves LCSC electronic component pages through the Zotero Connector as document items with a parameter note and the datasheet PDF, and fills a blank date from the PDF's first page.",
+      "reason": "Translated from the introduction and the \"安装更新\" and \"字段约定\" sections of README.md, which is in Chinese. The manifest description and the GitHub About text are half or more Chinese."
+    }
+  ]
 }

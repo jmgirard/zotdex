@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Shows a Chinese translation under each English paragraph of a PDF in the reading mode, using the Translate for Zotero plugin or an Ollama model, and can try to export the result as a re-laid-out bilingual PDF attachment.",
+      "reason": "Translated from the introduction and the \"主要功能\", \"使用\", and \"PDF 导出\" sections of README.md, which is in Chinese. The manifest description and the GitHub About text are half or more Chinese."
+    }
+  ]
 }

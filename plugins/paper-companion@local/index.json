@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Adds a PDF reader side panel for ongoing questions about the open paper, selected-text translation, Markdown notes, summaries of key points, and vocabulary review, using your own DeepSeek API key or ChatGPT account.",
+      "reason": "Translated from the introduction and the \"第一次提问\" and \"阅读时能做什么\" sections of README.md, which is in Chinese. The manifest description and the GitHub About text are half or more Chinese."
+    }
+  ]
 }

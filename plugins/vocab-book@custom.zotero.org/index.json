@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Collects words and phrases from PDFs into a vocabulary book with their source sentence and page, reviews them by flashcard or Anki export, and tracks per-paper reading status and notes; optional translation uses your own Baidu key or Youdao dictionary.",
+      "reason": "Translated from the \"能做什么\" and \"翻译设置\" sections of README.md, which is in Chinese. The manifest description and the GitHub About text are half or more Chinese."
+    }
+  ]
 }

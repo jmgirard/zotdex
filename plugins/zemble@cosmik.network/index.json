@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Connects references that have a URL or DOI to Semble, a social bookmarking service: adds columns showing how others use them, and opens, saves, or syncs items and collections there, with sharing needing an account and API key.",
+      "reason": "Condensed from the page description and the \"Signing In\" and \"Features\" sections of docs/index.html, which README.md links to. The manifest description, \"Zotero Plugin for Semble\", is in English and has fewer than six words, and the GitHub About text, \"A Zotero plugin for Semble\", is in English and not shown."
+    }
+  ]
 }

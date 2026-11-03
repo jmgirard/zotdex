@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Adds a chat pane to the PDF reader for questions about the current PDF or selected text, using a Gemini, OpenAI, or Anthropic API key; uploads the item's PDFs to that provider and saves chat history with the item.",
+      "reason": "Condensed from the opening, \"Current capabilities\", and Setup sections of README.md. The manifest description, \"Ask My Paper Plugin\", only repeats the name, and the GitHub About text is missing."
+    }
+  ]
 }

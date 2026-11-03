@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Updates item summaries from a ReadAi menu command through a server set by hostname in the preferences, but is in very limited testing and not usable until that server code is released.",
+      "reason": "Condensed from addon/locale/en-US/addon.ftl and addon/locale/en-US/preferences.ftl, with the testing status from README.md. The manifest description, \"Zotero ReadAi\", is in English and has fewer than six words, and the GitHub About text is missing."
+    }
+  ]
 }

@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Syncs items and their PDF attachments from Zotero to BibSonomy, a social bookmark and publication sharing system: adds them automatically, updates or deletes them there when they change in Zotero, and gets a share URL for a publication.",
+      "reason": "Condensed from the \"Features\", \"Working\", and \"About BibSonomy\" sections of README.md. The manifest description, \"Connect Zotero to BibSonomy\", is in English and has fewer than six words, and the GitHub About text is missing."
+    }
+  ]
 }

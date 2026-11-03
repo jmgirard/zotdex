@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Syncs files to a tablet by way of a directory: copies a specified file to a target directory set in the settings and retrieves it from there, overwriting the existing copy, with no other features such as annotation extraction.",
+      "reason": "Condensed from README.txt and the manifest description. The manifest description, \"Sync files to tablet\", is in English and has fewer than six words, and the GitHub About text, \"A Zotero plugin for sending and retrieving files from a directory\", is in English and not shown."
+    }
+  ]
 }

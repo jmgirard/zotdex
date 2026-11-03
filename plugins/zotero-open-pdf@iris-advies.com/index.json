@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Adds a right-click menu entry to open PDFs the opposite way from your Zotero default, in the system viewer or the built-in reader, and lets you add entries for your own PDF viewers through the config editor.",
+      "reason": "Condensed from the opening section of README.md. The manifest description, \"Open PDF\", only repeats the name, and the GitHub About text is missing."
+    }
+  ]
 }

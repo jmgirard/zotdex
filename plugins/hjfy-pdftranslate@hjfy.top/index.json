@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Translates arXiv papers into Chinese through the hjfy.top service from the right-click menu and attaches the result to the item as PDF-CN; can also upload an item's PDF, and new translations need an hjfy.top login.",
+      "reason": "Translated from the \"这个插件是干什么的？\" and \"它能做什么\" sections of README.md, which is in Chinese. The manifest description is half or more Chinese, and the GitHub About text, \"HJFY-PDFTranslate\", only repeats the name."
+    }
+  ]
 }

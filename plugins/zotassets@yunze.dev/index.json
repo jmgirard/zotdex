@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Assigns one role, such as main PDF, supplement, data, or code, to each attachment, detects main PDFs and supplements from first-page text, and renames PDFs by template after a preview, keeping original file names so they can be restored.",
+      "reason": "Condensed from the \"What It Does\", \"Highlights\", and \"Auto-Detection\" sections of README.md. The manifest description and the GitHub About text are half or more Chinese."
+    }
+  ]
 }

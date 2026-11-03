@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Queries citation counts automatically and lets you rate papers, as a toolbox with more features planned.",
+      "reason": "Condensed from the \"Features\" section of README.md. The manifest description, \"A tidy toolbox\", is in English and has fewer than six words, and the GitHub About text, \"A tidy toolbox for Zotero offering citation, rating, and more features coming soon.\", is in English and not shown."
+    }
+  ]
 }

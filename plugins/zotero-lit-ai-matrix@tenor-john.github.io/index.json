@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Shows a searchable, sortable table inside Zotero that combines item metadata with fields parsed from structured AI notes, such as ones made with Zotero GPT, plus a daily usage heatmap and CSV or Markdown export.",
+      "reason": "Condensed from the opening and Highlights sections of README.md. The manifest description, \"Zotero Lit AI Matrix\", only repeats the name, and the GitHub About text is missing."
+    }
+  ]
 }

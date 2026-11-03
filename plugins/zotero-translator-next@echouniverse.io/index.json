@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Translates text selected in the PDF reader, after cleaning up line breaks and hyphenation, through channels with automatic fallback, from MyMemory with no key to DeepSeek or custom OpenAI-compatible ones with a key, and keeps translation history and AI summaries.",
+      "reason": "Condensed from the \"Features\" and \"Quick start\" sections of README.en.md. The manifest description and the GitHub About text are half or more Chinese."
+    }
+  ]
 }

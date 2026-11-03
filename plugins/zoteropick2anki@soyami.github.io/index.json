@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Looks up an English word or phrase selected in the PDF or EPUB reader in five online dictionaries and sends it to Anki as a card with its source sentence, which needs Anki with AnkiConnect; lookup needs no key.",
+      "reason": "Condensed from the English short version in README.md. The manifest description and the GitHub About text are half or more Chinese."
+    }
+  ]
 }

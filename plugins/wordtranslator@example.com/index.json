@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Translates selected words and phrases in the PDF reader into Chinese and saves them as cards in a per-item vocabulary book, using default channels that need no account or your own key for AI and machine translation services.",
+      "reason": "Translated from the \"功能特点\" section of README.md, which is in Chinese. The manifest description and the GitHub About text are half or more Chinese."
+    }
+  ]
 }

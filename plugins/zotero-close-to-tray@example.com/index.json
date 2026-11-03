@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Asks what to do when you click Zotero's main window close button: minimize to the Windows system tray or quit, with the choice optionally remembered; Windows only, needing Windows PowerShell and Windows Script Host.",
+      "reason": "Condensed from the opening and the \"Features\" and \"Supported Systems and Runtime Environment\" sections of ReadMe_en.md. The manifest description and the GitHub About text are half or more Chinese."
+    }
+  ]
 }

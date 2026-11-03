@@ -12,7 +12,9 @@ body:
         Edit the plugin's manifest or GitHub About text upstream first. A manifest
         edit shows once the index reads a new release with it. An About edit changes the
         description only when the manifest's is missing, only repeats the name,
-        or is half or more Chinese, Japanese, or Korean.
+        or is half or more Chinese, Japanese, or Korean. If the plugin page's
+        Overrides table lists a description, the index's text hides both upstream
+        texts, and this form can replace or remove it.
 
         Rules for the new text:
 

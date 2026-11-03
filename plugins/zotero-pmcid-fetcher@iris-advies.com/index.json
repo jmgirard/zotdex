@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Fetches PMCID and PMID for items with a DOI from the right-click menu, or automatically when items are added or modified if a hidden preference is set, and can also add them as Zotero keywords.",
+      "reason": "Condensed from the opening section of README.md. The manifest description, \"PMCID fetcher\", only repeats the name, and the GitHub About text is missing."
+    }
+  ]
 }

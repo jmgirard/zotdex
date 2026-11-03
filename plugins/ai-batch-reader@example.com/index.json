@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Runs one custom prompt over several PDFs separately and saves each AI answer as a child note on its own item; needs your own DeepSeek, OpenAI, or compatible API key, with optional OCR for scanned PDFs.",
+      "reason": "Translated from the introduction and the \"主要功能\" and \"快速使用\" sections of README.md, which is in Chinese. The manifest description is half or more Chinese, and the GitHub About text is missing."
+    }
+  ]
 }

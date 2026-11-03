@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Translates PDF, Word, PowerPoint, Excel, and HTML documents from the right-click menu through the Suppr AI translation service, which needs an account: uploads the file, keeps its layout, and attaches the translation to the item.",
+      "reason": "Translated from the \"主要特性\" and \"使用方法\" sections and the FAQ of README.md, which is in Chinese. The manifest description, \"Zotero Suppr\", is in English and has fewer than six words, and the GitHub About text is half or more Chinese."
+    }
+  ]
 }

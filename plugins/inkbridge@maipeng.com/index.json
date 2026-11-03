@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Translates between Chinese and English in the PDF reader, with word lookup, screenshot translation that keeps formulas, and pronunciation, using models you deploy yourself; text and screenshot translation need an NVIDIA graphics card.",
+      "reason": "Translated from the introduction and the \"组件\" section of README.md, which is in Chinese. The manifest description and the GitHub About text are half or more Chinese."
+    }
+  ]
 }

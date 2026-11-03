@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Lets you select an area of a PDF for use in Obsidian, as a companion to the Obsidian-Broken-PDF plugin; it is at an early stage and works only in tabs opened after Zotero starts.",
+      "reason": "Condensed from the opening lines and \"Known issue\" section of README.md. The manifest description, \"Zotero Break PDF\", only repeats the name, and the GitHub About text is missing."
+    }
+  ]
 }

@@ -4,5 +4,12 @@
     "note": "Translation needs a purchased activation code, and more credits are bought as new codes.",
     "source": "https://sci-translate.top/filetrans/filetrans-zotero/",
     "read": "2026-11-02"
-  }
+  },
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Sends a selected PDF to the FT AI translation service, shows task progress, and imports the translation, a bilingual version, or both back to the original item; needs an activation code, and translation uses service credits.",
+      "reason": "Translated from the introduction and the \"功能\" and \"服务与隐私\" sections of README.md, which is in Chinese. The manifest description is half or more Chinese, and the GitHub About text is missing."
+    }
+  ]
 }

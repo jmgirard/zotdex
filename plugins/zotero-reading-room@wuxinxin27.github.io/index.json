@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Provides experimental AI analysis of a paper with evidence linked to PDF pages, using your own OpenAI-compatible, Anthropic, Gemini, or Ollama model.",
+      "reason": "Condensed from the opening and the feature list of README.en.md. The manifest description is half or more Chinese, and the GitHub About text is missing."
+    }
+  ]
 }

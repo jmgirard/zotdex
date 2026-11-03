@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Tags newly imported items with their CCF conference or journal rank (A, B, or C) from a built-in mapping, with a settings button to tag the whole library and AI checks that only suggest missing fields and tags.",
+      "reason": "Translated from the \"功能\" section of README.md, which is in Chinese. The manifest description, \"Zotero Auto CCF Tag Plugin\", only repeats the name, and the GitHub About text is missing."
+    }
+  ]
 }

@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- 80 more plugins now show an English description of at least six words. Each
+  one showed no description, an English text of fewer than six words, or a text
+  that was half or more Chinese. The index wrote each text from the plugin's
+  README or another of its upstream files. Such a text hides later edits to the
+  upstream description until someone removes the override. A plugin's categories
+  can change with its new text.
 - The Overrides table on a plugin page now lists both upstream texts beside a
   `description` override: the manifest description after `Manifest:` and the
   GitHub description after `GitHub:`. Before, it listed only the manifest

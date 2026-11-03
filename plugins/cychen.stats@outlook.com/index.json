@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Adds a Quick Look feature for Zotero items on macOS, opened from a menu item or with the Space key or Command-Y.",
+      "reason": "Condensed from README.md and the menu item label in bootstrap.js. The manifest description, \"Quick Look for Zotero 7.\", is in English and has fewer than six words, and the GitHub About text is missing."
+    }
+  ]
 }

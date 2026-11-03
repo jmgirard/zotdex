@@ -4,5 +4,12 @@
     "note": "Translation needs a Geyi membership at research level or above; new accounts get a one-day trial.",
     "source": "https://github.com/Nayuta-9/zotero-geyi-translator/blob/HEAD/README.md",
     "read": "2026-11-02"
-  }
+  },
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Translates PDFs from the right-click menu through the Geyi cloud service, keeping the original layout or using AI re-layout with optional bilingual output, and attaches the result to the same item; needs a Geyi account at research membership level or above.",
+      "reason": "Translated from the \"功能\" section of README.md and from the manifest description in addon/manifest.json, which are in Chinese. The manifest description and the GitHub About text are half or more Chinese."
+    }
+  ]
 }

@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Translates full papers in the Zotero reader through engines such as MinerU, pdf2zh, and Doc2X, and uses AI to write full-text and outline summaries and multi-paper comparison matrices, with a 7-day full-feature trial and a purchase link in its settings.",
+      "reason": "Translated from the \"核心功能亮点\" and \"授权与订阅\" sections of README.md, which is in Chinese. The manifest description and the GitHub About text are half or more Chinese."
+    }
+  ]
 }

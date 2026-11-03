@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Adds Chinese translation cards under each paragraph in Zotero's reading mode, translates contents pages and tables as whole units, skips references, and caches results locally; needs your own API key for Gemini, DeepSeek, OpenAI, or a compatible service.",
+      "reason": "Translated from the \"功能\" and \"配置\" sections of README.md, which is in Chinese. The manifest description and the GitHub About text are half or more Chinese."
+    }
+  ]
 }

@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Extracts figures, tables, and formulas from PDFs in the reader sidebar via PaddleOCR-VL, then lets you preview, copy, or export them as Markdown or JSON; needs an AI Studio or Baidu AI Cloud key, and selected pages are uploaded.",
+      "reason": "Translated from the opening and the \"功能亮点\", \"配置识别服务\", and \"使用说明\" sections of README.md, which is in Chinese. The manifest description is half or more Chinese, and the GitHub About text is missing."
+    }
+  ]
 }

@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Adds a CCFA column to the item list that shows the abbreviation of China Computer Federation (CCF) A-rank journals and conferences from its 2026 catalog, such as CVPR or TPAMI, matched without changing items, and stays blank for others.",
+      "reason": "Translated from the introduction and the \"匹配方式\" section of README.md, which is in Chinese. The manifest description is half or more Chinese, and the GitHub About text is missing."
+    }
+  ]
 }

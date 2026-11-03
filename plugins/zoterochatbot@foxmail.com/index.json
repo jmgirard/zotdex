@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Queries ChatGPT from inside Zotero with an OpenAI API key: asks research questions with paper titles and abstracts as context, summarizes attached PDFs, fetches BibTeX entries from DBLP, and translates text to Chinese.",
+      "reason": "Condensed from the \"Features\" section of README.md. The manifest description, \"ChatGPT in Zotero\", is in English and has fewer than six words, and the GitHub About text only repeats the name."
+    }
+  ]
 }

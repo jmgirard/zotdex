@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Adds Chinese title and abstract fields to the item pane and fills them by automatic translation, stored in the Extra field, using MyMemory by default, or Google, DeepL, or an OpenAI-compatible model, the last two with your own key.",
+      "reason": "Translated from the opening and the \"使用\", \"数据存在哪\", and \"翻译服务\" sections of README.md, which is in Chinese. The manifest description and the GitHub About text are half or more Chinese."
+    }
+  ]
 }

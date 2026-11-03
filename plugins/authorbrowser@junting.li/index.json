@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Browses a library's creators with their item counts and opens all items for an author, manages author aliases with batch merging and review, and searches authors on Google Scholar or CNKI.",
+      "reason": "Condensed from the \"Feature Overview\" section of README.md. The manifest description, \"Zotero Author Browser pannel\", is in English and has fewer than six words, and the GitHub About text is in English and not shown."
+    }
+  ]
 }

@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Shows a personal marked title in a new item list column and the citation dialog while the real title and citations stay unchanged, and can detect real titles, correct item types, and fill in metadata; requires Windows.",
+      "reason": "Translated from the introduction and the \"功能\" and \"系统要求\" sections of README.md, which is in Chinese. The manifest description and the GitHub About text are half or more Chinese."
+    }
+  ]
 }
