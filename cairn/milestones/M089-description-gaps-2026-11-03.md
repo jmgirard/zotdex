@@ -58,7 +58,7 @@ row "Refine the Latin part and short picks".
 - [x] T4: Write the overrides for the 47 `cjk` gaps, or mark a row `kept`. These can take more than one sitting, so
       commit each batch.
 - [x] T5: Run the category comparison of AC3, read each added category, and add the excludes for the wrong ones.
-- [ ] T6: Write `cairn/references/description-ledger-2026-11-03.md` in the shape of `description-ledger.md`, with its
+- [x] T6: Write `cairn/references/description-ledger-2026-11-03.md` in the shape of `description-ledger.md`, with its
       `INDEX.md` line: each gap's case, shown text, disposition, source, and each added category's mark.
 - [x] T7: Add the `CHANGELOG.md` entry.
 
@@ -79,6 +79,7 @@ row "Refine the Latin part and short picks".
 - 2026-11-03: T5: the comparison on the default branch's lists gives 53 added categories; the read marks 26 right and 27 wrong, and each wrong one is now on its category's `exclude` list; on the branch's lists the comparison gives the 26. A text that names a model only as the translation engine counts as wrong under `ai`, since that category's `about` names chat, summaries, explanations, and agents.
 - 2026-11-03: T7: `CHANGELOG.md` entry added; `pnpm test` (2238 passed, 6 skipped) and `pnpm check` (736 entries, 0 problems) pass. T2 to T5 and T7 share this commit, since the drafts came back together.
 - 2026-11-03: the simple-english lint hook flagged old lines of `CHANGELOG.md` on the T7 edit, none of them in the new entry; those entries stay as they are, as this milestone does not reword them.
+- 2026-11-03: T6: ledger page and `INDEX.md` line written; its table matches rows generated from the drafts and the command's list. The hook's other hits on the page stay: the `— observed` marks the rulebook asks for, quoted plugin text, and the two long lists of plugin names.
 
 ## Decisions
 

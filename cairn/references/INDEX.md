@@ -11,6 +11,7 @@ bullet lines.
 
 - category-ledger.md: a hand read of each plugin's categories on the deployed data of 2026-10-31 (M066), and of the plugins with no category on 2026-11-03 (M086)
 - description-ledger.md: the description gaps in the deployed data of 2026-10-31 and their overrides (M067)
+- description-ledger-2026-11-03.md: the description gaps in the deployed data of 2026-11-03, their overrides, and the categories they add (M089)
 - mdn-nth-child.md: which browsers read the `of <selector>` form of `:nth-child()` (MDN and its compat data)
 - microsoft-naming-a-file.md: which file and directory names Windows refuses (Microsoft's naming rules)
 - mozilla-toolkit-version.md: how Zotero and Firefox order version strings (MDN's legacy version format)
