@@ -1,6 +1,6 @@
 # M087: Read plugins a few at a time
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
@@ -75,6 +75,8 @@ A normal daily build reads every plugin before its time limit, with room for the
 - 2026-11-03: branch run 41689697258: `pnpm build` step 5:08 at 736 plugins, 0 failures; `/rate_limit` shows `core` limit 5000, 1527 used before the step (run 41685419485 in the same hour) and 3054 after, so one build uses 1527 requests, 2.07 a plugin, about 300 a minute; GraphQL 9 requests. So 3 builds fit one hour, and 3 hand builds plus other workflows can pass the limit.
 
 - 2026-11-03: branch run 41690770665: `pnpm build` step 5:32 at 736 plugins, 0 failures, 1527 `core` requests again (3054 to 4581 used, limit 5000); no HTTP 403 or 429 and no `not-read` in the job log. Temporary steps removed; `build.yml` matches main. Row "Retry build reads GitHub refuses" now holds the budget numbers.
+
+- 2026-11-03: claim audit: 44 claims read, 1 corrected — README.md, src/build/build.ts (a redirect that fetch follows is not paced; the CHANGELOG summary stands). The `not-read` message "reads no plugin" predates this work and stays.
 
 ## Decisions
 

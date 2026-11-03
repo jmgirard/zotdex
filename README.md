@@ -1358,7 +1358,8 @@ failure name is `facts-invalid`. The command still writes the file.
 
 The command reads up to 4 plugins at once. It starts each GitHub API request
 of these reads at least 80 ms after the one before it, and a request to
-another host does not wait. The command gives each plugin read 3 minutes. If
+another host does not wait. A redirect that fetch follows inside a request
+does not wait either. The command gives each plugin read 3 minutes. If
 a read takes longer, the command stops it, and the record fails with
 `request-failed`. The command starts no plugin read after 18 minutes from
 its start, and a read that is open at that time runs on to its end. Each

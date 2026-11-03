@@ -123,7 +123,8 @@ export const BUILD_LIMIT_MS = 18 * 60 * 1000;
 export const READS_AT_ONCE = 4;
 
 // The least time between the starts of two GitHub API requests of the plugin reads. It holds
-// them to 750 a minute. GitHub's rate-limit page, read on 2026-11-03, allows 900 (D-058).
+// the requests it paces to 750 a minute, and a redirect that fetch follows adds to that.
+// GitHub's rate-limit page, read on 2026-11-03, allows 900 (D-058).
 export const API_GAP_MS = 80;
 
 const DAY_MS = 24 * 60 * 60 * 1000;
