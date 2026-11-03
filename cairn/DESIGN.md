@@ -1066,3 +1066,34 @@ reused._
   size. No site test lists this pair. `--muted` at the same size measures
   5.36:1 and 6.58:1 on `--surface`. The maintainer chose the fainter look at
   the merge question with these figures shown. Added 2026-11-02 — M076.
+- The M004 host check lets through ::ffff:0:0:0/96 (SIIT), 64:ff9b:1::/48
+  (local NAT64), 100::/64, 2001::/23 (Teredo included), fec0::/10, 3fff::/20,
+  5f00::/16, and 192.88.99.0/24. The translated ranges reach a private address
+  only on a NAT64 or SIIT network. The build runs on GitHub's `ubuntu-latest`
+  runners. Routed from candidates 2026-11-03; added 2026-10-25 — M004.
+- The site pages have these small gaps, which no user report has named. (1)
+  The download button shows no prerelease mark, and no page says the author
+  can replace the file after the build (D-029). (2) "Old PluginArchived" has
+  no space (M053), the About link lacks `aria-current="page"`, and a scrolling
+  `.table-wrap` takes no keyboard focus. (3) The schema allows a start result
+  for release "07.0.1", which `compatMajors` and `majorStart` read as major
+  "07", so a plugin page shows a "7" row with no result and the home cell
+  none. The build never writes one (M054 review). (4) The plugin count's first
+  text is written while hidden, so screen readers miss it, a same-count change
+  writes the same text, and since M053 the search box rewrites it per key. The
+  toolbar appears after first paint and moves the table, which M060's pre-paint
+  style misses (M044, M053 reviews). (5) The language and category menus set
+  `appearance: none` and draw their arrow with two CSS gradients, seen only in
+  Chromium at 1280 and 375 px, never in Safari, Firefox, or forced colors. A
+  seam may show at a root font size other than 16 px (M049, M063, M066
+  reviews). (6) "Page p of P" is a second polite live region, first written
+  while hidden. Typing, then Next within 0.5 s, then Back returns to the
+  address before the typing, since Next drops the waiting write (M058 review).
+  (7) On 2026-10-30 the home page's 544 inline SVG icons were 157,458 of
+  801,348 decoded bytes, and each mark repeats its text in a `title` and a
+  hidden span. An SVG `<use>` sprite would drop most (M060 plan). (8)
+  `githubRepo` matches the host case-sensitively (`https://GitHub.com/a/b` gets
+  no repo line) and accepts any segment without `/?#` (`a/b.git` shows "b.git",
+  owner `..` links github.com). GitHub's `html_url` takes neither form (M061
+  review). Routed from candidates 2026-11-03; added 2026-10-29 — M024, M037,
+  M044, M049, M052, M053, M054, M058, M060, M061, M063, M066, D-029.

@@ -813,3 +813,27 @@ so. Such a plugin stays listed with a shown fact, as D-052 does for a repo with
 no source, and inclusion stays no judgment of quality. There is no hold and no
 refusal. This choice is wrong if users want a paid upgrade marked, or if marks
 fall far behind the new plugins.
+
+### D-055: A triage pass drops four candidate rows as not worth keeping
+
+2026-11-03, triage pass. A `/cairn-triage` pass weighed every candidate row
+and Known issues entry. The user accepted dropping these rows, because each
+covers a case with a low cost or one that no deployed data reaches:
+
+- "Close gaps in the home owner line" would have kept a long owner from
+  widening the table in a browser without `contain: inline-size`, and fixed
+  the owner shown for URLs such as `https://GitHub.com/a/b` or owner `..`. Such
+  a browser scrolls inside `.table-card`, and all 671 deployed URLs read
+  2026-11-02 have the plain form.
+- "Tighten the refresh-holds update read" would have kept the detail lines of
+  `pnpm refresh-holds` from going stale when a redirect goes away or a push
+  comes during a run. Only the maintainer runs it, and a rerun is safe, as D-046
+  says of its sibling row.
+- "Skip closed pull requests in local runs" would have stopped a local `pnpm
+  discover` from drafting a repo whose bot pull request was closed without a
+  merge. Only the maintainer runs it, and the maintainer reads each draft.
+- "Check the theme button's double label" would have stopped a screen reader
+  from reading the theme button's `aria-label` and `title` twice, at the cost of
+  the tooltip. A user report needs no row to be heard.
+
+Each drop can be reopened by an entry that supersedes this one.
