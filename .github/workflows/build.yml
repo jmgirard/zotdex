@@ -58,7 +58,15 @@ jobs:
       # below without an `if:` are then skipped, and the jobs
       # after this one do not run, so nothing is deployed. The start plan names the URL
       # and SHA-256 of each XPI the build read, and no artifact holds an XPI.
+      - name: TEMPORARY rate limit before
+        run: curl -s -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/rate_limit | jq -c '.resources.core,.resources.graphql'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: pnpm build --plan start-plan.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: TEMPORARY rate limit after
+        run: curl -s -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/rate_limit | jq -c '.resources.core,.resources.graphql'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # Reuses the `started` results of the deployed data for each XPI whose SHA-256 is unchanged,
