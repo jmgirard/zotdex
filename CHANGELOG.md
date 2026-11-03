@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- `pnpm build` now reads up to 4 plugins at once, and it starts each GitHub API
+  request of these reads at least 80 ms after the one before it. Before, it read
+  one plugin at a time, so a slow daily build could reach its 18-minute limit,
+  and the plugins that it had not read showed "Not read" until a later build.
+  The limit stays, and a plugin that a build does not reach still fails as
+  `not-read`.
 - Every plugin that the latest build read now shows at least one category. A
   new category, "Window, tabs, and shortcuts", holds plugins for how the main
   window behaves, tray icons, tabs, keyboard shortcuts, and small menu and
@@ -492,8 +498,8 @@
   its output is written. Work that a read left running, such as a host
   lookup that a time limit cut, no longer keeps it open.
 - If the number of whole days from 1970-01-01T00:00Z to `generatedAt` is
-  even, `pnpm build` reads the plugins in id order. If that number is odd,
-  it reads them in reverse id order. So the entries that the 18-minute
+  even, `pnpm build` starts the plugin reads in id order. If that number is
+  odd, it starts them in reverse id order. So the entries that the 18-minute
   limit leaves `not-read` are the last ids on even days and the first ids
   on odd days. Before, the build always read in id order, so a cut build
   left the last ids unread every day. The data file still lists its records

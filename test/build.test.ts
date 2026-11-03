@@ -11,6 +11,7 @@ import pluginsSchema from "../schemas/plugins.v1.schema.json" with { type: "json
 import { buildData, checkOutput, INDEX_REPO, type PluginsFile, writeData } from "../src/build/build.ts";
 import { changelogUrl, ZOTERO_RELEASE_URL } from "../src/build/zotero-release.ts";
 import { fixtureFetch, loadFixture, type Recorded, type Responses } from "./support/fixture-fetch.ts";
+import type { Fetch } from "../src/upstream/reader.ts";
 import { DNS_FAIL_HOST, mixedFailures } from "./support/mixed-failures.ts";
 import { pluginRepo } from "./support/plugin-repo.ts";
 
@@ -624,30 +625,31 @@ describe("pnpm build with a timer still pending", () => {
 
   test("writes the whole stdout of over 64 KiB before it exits", async () => {
     // Each entry's repo has no recorded answer, so its read fails with HTTP 404 and adds one
-    // stdout line.
+    // stdout line, which the long repo name makes over 3 KiB. Few entries keep the paced API
+    // requests short.
     const tree = tempDir();
-    for (let i = 0; i < 1500; i++) {
+    for (let i = 0; i < 80; i++) {
       const id = `plugin-${String(i).padStart(4, "0")}@example.org`;
       mkdirSync(join(tree, id));
-      writeFileSync(join(tree, id, "meta.json"), JSON.stringify({ id, repoUrl: `https://github.com/example/plugin-${i}` }));
+      writeFileSync(join(tree, id, "meta.json"), JSON.stringify({ id, repoUrl: `https://github.com/example/plugin-${i}-${"x".repeat(3000)}` }));
       writeFileSync(join(tree, id, "index.json"), JSON.stringify({ schemaVersion: 1 }));
     }
     const fixture = writeFixture({ [LABEL]: { json: { name: "report" } }, [ISSUES]: { json: [] } });
     const out = tempDir();
     const plain = pnpmBuild([tree, "--out", out], fixture);
     expect(Buffer.byteLength(plain.stdout)).toBeGreaterThan(64 * 1024);
-    expect(plain.stdout.trimEnd().split("\n").at(-1)).toMatch(/^wrote 1500 records to /);
+    expect(plain.stdout.trimEnd().split("\n").at(-1)).toMatch(/^wrote 80 records to /);
     const plainData = takeData(out);
-    expect(plainData?.plugins).toHaveLength(1500);
+    expect(plainData?.plugins).toHaveLength(80);
 
-    // This run's stdout is not read for its first 2 seconds, so the pipe fills and the
-    // command still holds unwritten output when it is done.
+    // This run's stdout is not read for its first 12 seconds, past the paced reads, so the pipe
+    // fills and the command still holds unwritten output when it is done.
     const { INIT_CWD: _outer, GITHUB_TOKEN: _token, GITHUB_REPOSITORY: _repo, ...env } = process.env;
     Object.assign(env, { ZPI_FIXTURE: fixture, NODE_OPTIONS: `--import=${PRELOAD} --import=${PENDING}` });
     const started = performance.now();
     const child = spawn(process.env.npm_execpath!, ["--silent", "--dir", ROOT, "build", tree, "--out", out], { env });
     child.stdout.pause();
-    setTimeout(() => child.stdout.resume(), 2000);
+    setTimeout(() => child.stdout.resume(), 12_000);
     let stdout = "";
     child.stdout.setEncoding("utf8").on("data", (text: string) => (stdout += text));
     const timer = setTimeout(() => child.kill("SIGKILL"), 40_000);
@@ -881,7 +883,7 @@ describe("buildData", () => {
     // UTC days 20757 and 20758 since 1970-01-01.
     const ODD = new Date("2026-10-31T23:30Z");
     const EVEN = new Date("2026-11-01T00:30Z");
-    function stalledTree(names = NAMES): { tree: string; recorded: Responses } {
+    function pluginTree(names: string[]): { tree: string; recorded: Responses } {
       const tree = tempDir();
       const recorded: Responses = { [LABEL]: { json: { name: "report" } }, [ISSUES]: { json: [] } };
       for (const name of names) {
@@ -891,6 +893,10 @@ describe("buildData", () => {
         writeFileSync(join(tree, id, "meta.json"), JSON.stringify({ id, name, repoUrl: `https://github.com/example/${name}` }));
         writeFileSync(join(tree, id, "index.json"), JSON.stringify({ schemaVersion: 1 }));
       }
+      return { tree, recorded };
+    }
+    function stalledTree(names = NAMES): { tree: string; recorded: Responses } {
+      const { tree, recorded } = pluginTree(names);
       recorded[stalledXpi].stall = "headers";
       return { tree, recorded };
     }
@@ -899,7 +905,7 @@ describe("buildData", () => {
 
     test("fails a read that passes its limit as request-failed and reads the next plugin", async () => {
       const { tree, recorded } = stalledTree();
-      const result = await buildData(tree, fixtureFetch(recorded).fetch, undefined, undefined, { readMs: 200 });
+      const result = await buildData(tree, fixtureFetch(recorded).fetch, undefined, undefined, { readMs: 200, apiGapMs: 0 });
       if (!result.ok) throw new Error(result.problems.join("\n"));
       expect(failures(result.text)).toEqual([
         ["a-first@example.org", "facts"],
@@ -910,10 +916,10 @@ describe("buildData", () => {
       expect(result.buildLevel).toEqual(["b-stalled@example.org"]);
     });
 
-    test("reads no plugin once the build limit has passed, and fails each entry left as not-read", async () => {
+    test("starts no plugin read once the build limit has passed, and fails each entry left as not-read", async () => {
       const { tree, recorded } = stalledTree();
       const { fetch, requests } = fixtureFetch(recorded);
-      const limits = { readMs: 1500, buildMs: 1000, startedAt: performance.now() };
+      const limits = { readMs: 1500, buildMs: 1000, startedAt: performance.now(), readsAtOnce: 1, apiGapMs: 0 };
       const result = await buildData(tree, fetch, EVEN, undefined, limits);
       if (!result.ok) throw new Error(result.problems.join("\n"));
       expect(failures(result.text)).toEqual([
@@ -932,7 +938,7 @@ describe("buildData", () => {
     ])("reads the plugins %s", async (_, now, order) => {
       const { tree, recorded } = stalledTree();
       const { fetch, requests } = fixtureFetch(recorded);
-      const result = await buildData(tree, fetch, now, undefined, { readMs: 200 });
+      const result = await buildData(tree, fetch, now, undefined, { readMs: 200, apiGapMs: 0 });
       if (!result.ok) throw new Error(result.problems.join("\n"));
       const repoReads = requests.map((r) => r.url).filter((url) => /^https:\/\/api\.github\.com\/repos\/example\/[^/]+$/.test(url));
       expect(repoReads).toEqual(order.map((name) => `https://api.github.com/repos/example/${name}`));
@@ -942,7 +948,7 @@ describe("buildData", () => {
       // Read last to first: d-fourth and c-third are read, then b-stalled's read passes the
       // build limit, so a-first is not read.
       const { tree, recorded } = stalledTree([...NAMES, "d-fourth"]);
-      const limits = { readMs: 3000, buildMs: 2000, startedAt: performance.now() };
+      const limits = { readMs: 3000, buildMs: 2000, startedAt: performance.now(), readsAtOnce: 1, apiGapMs: 0 };
       const result = await buildData(tree, fixtureFetch(recorded).fetch, ODD, undefined, limits);
       if (!result.ok) throw new Error(result.problems.join("\n"));
       expect(failures(result.text)).toEqual([
@@ -955,6 +961,169 @@ describe("buildData", () => {
       expect(result.plan.plugins.map((item) => item.entry)).toEqual(["c-third@example.org", "d-fourth@example.org"]);
     });
 
+    describe("reading plugins at once", () => {
+      const SIX = ["a-first", "b-second", "c-third", "d-fourth", "e-fifth", "f-sixth"];
+      const repoName = (url: string) => /^https:\/\/api\.github\.com\/repos\/example\/([^/]+)$/.exec(url)?.[1];
+      const releases = (name: string) => `https://api.github.com/repos/example/${name}/releases?per_page=100`;
+      const xpiOf = (name: string) => `https://github.com/example/${name}/releases/download/v1.0.0/plugin.xpi`;
+      const wait = (ms: number) => new Promise((done) => setTimeout(done, ms));
+
+      test("holds 4 reads open at most, and starts a fifth only when one ends", async () => {
+        const { tree, recorded } = pluginTree(SIX);
+        const answer = fixtureFetch(recorded).fetch;
+        const held = new Map<string, () => void>();
+        const started: string[] = [];
+        let open = 0;
+        let peak = 0;
+        let holding = true;
+        const fetch: Fetch = async (url, init) => {
+          const name = repoName(url);
+          if (name) {
+            started.push(name);
+            peak = Math.max(peak, ++open);
+            if (holding) await new Promise<void>((done) => held.set(name, done));
+          }
+          const response = await answer(url, init);
+          if (url.endsWith("/main/update.json")) open--;
+          return response;
+        };
+        const pending = buildData(tree, fetch, EVEN);
+        await vi.waitFor(() => expect(started).toEqual(SIX.slice(0, 4)), { timeout: 5000 });
+        await wait(2 * 80 + 40);
+        expect(started).toEqual(SIX.slice(0, 4));
+        held.get("a-first")!();
+        await vi.waitFor(() => expect(started).toEqual(SIX.slice(0, 5)), { timeout: 5000 });
+        holding = false;
+        for (const release of held.values()) release();
+        const result = await pending;
+        if (!result.ok) throw new Error(result.problems.join("\n"));
+        expect(peak).toBe(4);
+        expect(failures(result.text)).toEqual(SIX.map((name) => [`${name}@example.org`, "facts"]));
+      });
+
+      test.each([
+        ["an API request", releases("b-stalled")],
+        ["an XPI request", xpiOf("b-stalled")],
+      ])("reads on past a read stalled on %s", async (_, stalledUrl) => {
+        const { tree, recorded } = pluginTree(NAMES);
+        recorded[stalledUrl].stall = "headers";
+        const seen = new Map<string, number>();
+        const { fetch } = fixtureFetch(recorded, ({ url }) => seen.set(url, performance.now()));
+        const begun = performance.now();
+        const result = await buildData(tree, fetch, EVEN, undefined, { readMs: 3000 });
+        if (!result.ok) throw new Error(result.problems.join("\n"));
+        expect(failures(result.text)).toEqual([
+          ["a-first@example.org", "facts"],
+          ["b-stalled@example.org", "request-failed"],
+          ["c-third@example.org", "facts"],
+        ]);
+        expect(record(JSON.parse(result.text), "b-stalled@example.org")?.failure?.message).toContain("passed its time limit of 3000 ms");
+        expect(seen.get(xpiOf("c-third"))! - begun).toBeLessThan(3000);
+      });
+
+      test("starts the plugin reads' API requests 80 ms apart, an API update file included", async () => {
+        const { tree, recorded } = pluginTree(NAMES);
+        const updateUrl = "https://api.github.com/example/c-third/main/update.json";
+        Object.assign(recorded, pluginRepo("example/c-third", "c-third@example.org", { updateHost: "api.github.com" }));
+        const starts: { url: string; at: number }[] = [];
+        const { fetch } = fixtureFetch(recorded, ({ url }) => starts.push({ url, at: performance.now() }));
+        const result = await buildData(tree, fetch, EVEN);
+        if (!result.ok) throw new Error(result.problems.join("\n"));
+        expect(failures(result.text)).toEqual(NAMES.map((name) => [`${name}@example.org`, "facts"]));
+        const api = starts.filter(({ url }) => url.startsWith("https://api.github.com/") && url.includes("/example/"));
+        expect(api.map(({ url }) => url)).toContain(updateUrl);
+        expect(api).toHaveLength(7);
+        for (const [i, { at }] of api.slice(1).entries()) expect(at - api[i].at).toBeGreaterThanOrEqual(80);
+      });
+
+      test("lets a request to another host start while an API request waits", async () => {
+        const names = ["a-first", "b-second"];
+        const { tree, recorded } = pluginTree(names);
+        const starts = new Map<string, number>();
+        const { fetch } = fixtureFetch(recorded, ({ url }) => starts.set(url, performance.now()));
+        const result = await buildData(tree, fetch, EVEN, undefined, { apiGapMs: 600 });
+        if (!result.ok) throw new Error(result.problems.join("\n"));
+        const xpiAt = starts.get(xpiOf("a-first"))!;
+        expect(xpiAt - starts.get(releases("a-first"))!).toBeLessThan(300);
+        expect(xpiAt).toBeLessThan(starts.get(releases("b-second"))!);
+      });
+
+      test.each([
+        ["an even", EVEN, SIX, ["a-first", "b-second"], ["d-fourth", "f-sixth", "b-second"], ["c-third", "e-fifth", "a-first"]],
+        ["an odd", ODD, [...SIX].reverse(), ["f-sixth", "e-fifth"], ["d-fourth", "b-second", "f-sixth"], ["c-third", "a-first", "e-fifth"]],
+      ])("starts reads in the day's order and keeps id order when they end in another, on %s UTC day", async (_, now, order, slow, failedEnds, readEnds) => {
+        const { tree, recorded } = pluginTree(SIX);
+        const failing = ["b-second", "d-fourth", "f-sixth"];
+        for (const name of failing) recorded[`https://api.github.com/repos/example/${name}`] = { status: 500, json: {} };
+        const answer = fixtureFetch(recorded).fetch;
+        const started: string[] = [];
+        const ended: string[] = [];
+        let release!: () => void;
+        const others = new Promise<void>((done) => (release = done));
+        const fetch: Fetch = async (url, init) => {
+          const name = repoName(url);
+          if (name) {
+            started.push(name);
+            if (slow.includes(name)) await others;
+          }
+          const response = await answer(url, init);
+          const finished = name && !response.ok ? name : /\/example\/([^/]+)\/main\/update\.json$/.exec(url)?.[1];
+          if (finished) ended.push(finished);
+          if (ended.length === 4) release();
+          return response;
+        };
+        const result = await buildData(tree, fetch, now);
+        if (!result.ok) throw new Error(result.problems.join("\n"));
+        expect(started).toEqual(order);
+        expect(ended.filter((name) => failing.includes(name))).toEqual(failedEnds);
+        expect(ended.filter((name) => !failing.includes(name))).toEqual(readEnds);
+        expect((JSON.parse(result.text) as Output).plugins.map(({ id }) => id)).toEqual(SIX.map((name) => `${name}@example.org`));
+        expect(result.buildLevel).toEqual(failing.map((name) => `${name}@example.org`));
+        expect(result.plan.plugins.map((item) => item.entry)).toEqual(["a-first", "c-third", "e-fifth"].map((name) => `${name}@example.org`));
+      });
+
+      test("sends the other reads' API requests after a fetch that throws at once", async () => {
+        const { tree, recorded } = pluginTree(NAMES);
+        const answer = fixtureFetch(recorded).fetch;
+        const fetch: Fetch = (url, init) => {
+          if (repoName(url) === "a-first") throw new Error("thrown at once");
+          return answer(url, init);
+        };
+        const result = await buildData(tree, fetch, EVEN);
+        if (!result.ok) throw new Error(result.problems.join("\n"));
+        expect(failures(result.text)).toEqual([
+          ["a-first@example.org", "request-failed"],
+          ["b-stalled@example.org", "facts"],
+          ["c-third@example.org", "facts"],
+        ]);
+        expect(record(JSON.parse(result.text), "a-first@example.org")?.failure?.message).toContain("thrown at once");
+      });
+
+      test.each([
+        ["an even", EVEN, SIX.slice(0, 4), SIX.slice(4)],
+        ["an odd", ODD, SIX.slice(2), SIX.slice(0, 2)],
+      ])("lets open reads end at the build limit and starts no other, on %s UTC day", async (_, now, read, cut) => {
+        const { tree, recorded } = pluginTree(SIX);
+        const answer = fixtureFetch(recorded).fetch;
+        const started: string[] = [];
+        const startedAt = performance.now();
+        const buildMs = 2000;
+        const fetch: Fetch = async (url, init) => {
+          const name = repoName(url);
+          if (name) {
+            started.push(name);
+            await wait(startedAt + buildMs + 100 - performance.now());
+          }
+          return answer(url, init);
+        };
+        const result = await buildData(tree, fetch, now, undefined, { buildMs, startedAt });
+        if (!result.ok) throw new Error(result.problems.join("\n"));
+        expect([...started].sort()).toEqual(read);
+        expect(failures(result.text)).toEqual(SIX.map((name) => [`${name}@example.org`, cut.includes(name) ? "not-read" : "facts"]));
+        expect(result.buildLevel).toEqual(cut.map((name) => `${name}@example.org`));
+      });
+    });
+
     test("names the default limit of 3 minutes in the failure of a read that passes it", async () => {
       const { tree, recorded } = stalledTree();
       let reached!: () => void;
@@ -962,7 +1131,7 @@ describe("buildData", () => {
       const { fetch } = fixtureFetch(recorded, (seen) => seen.url === stalledXpi && reached());
       vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
       try {
-        const pending = buildData(tree, fetch);
+        const pending = buildData(tree, fetch, undefined, undefined, { apiGapMs: 0 });
         // The clock moves only once the read waits on the stalled XPI.
         await stalled;
         await vi.advanceTimersByTimeAsync(3 * 60 * 1000);

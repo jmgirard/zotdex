@@ -443,11 +443,13 @@ exception is a report that is abuse.
   record that has `upstream`; a failed label or issue read, or a listed
   issue with no `closed_by` key, writes no file and exits 1 (D-013). A
   pull request or an item that is not an object is left for `countReports`
-  to drop. A plugin read stops
+  to drop. The build reads up to 4 plugins at once, and starts each GitHub
+  API request of these reads at least 80 ms after the one before it; a
+  request to another host does not wait (D-058). A plugin read stops
   at 3 minutes and fails as `request-failed`. After 18 minutes from the
-  command's start, the build reads no more plugins, and each entry left
+  command's start, the build starts no more plugin reads, and each entry left
   fails as `not-read`. Both are build-level (D-015). When the whole UTC days
-  from 1970-01-01 to `generatedAt` are even, it reads the plugins in id
+  from 1970-01-01 to `generatedAt` are even, it starts the reads in id
   order, and when they are odd, in reverse; the records, the build-level
   list, and the start plan keep id order (D-028). The label and report
   issue read stops at 3 minutes in all, a failed report read under D-013
@@ -889,7 +891,8 @@ reused._
   Linux, checks its SHA-256, and runs `test/start-test-zotero.test.ts` under
   `xvfb-run` with `ZOTERO_BIN` set; the `check` job skips that file (M046).
 - `src/build/` reads the entries, then the `report` label and every page of
-  the closed report issues, runs the upstream reader on each plugin in turn,
+  the closed report issues, runs the upstream reader on the plugins, up to 4
+  at once (D-058),
   writes the `countReports` counts into each read record's `reports`, and checks each record and then the whole output against
   `schemas/plugins.v1.schema.json` before it writes the file.
   `.github/workflows/build.yml` runs `pnpm check` and the build (M007),

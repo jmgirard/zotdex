@@ -119,6 +119,14 @@ export const INDEX_REPO = "jmgirard/zotero-plugin-index";
 // around it.
 export const BUILD_LIMIT_MS = 18 * 60 * 1000;
 
+// The plugin reads that may be open at once (D-058).
+export const READS_AT_ONCE = 4;
+
+// The least time between the starts of two GitHub API requests of the plugin reads. It holds
+// the requests it paces to 750 a minute, and a redirect that fetch follows adds to that.
+// GitHub's rate-limit page, read on 2026-11-03, allows 900 (D-058).
+export const API_GAP_MS = 80;
+
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 // The longest the read of the report label and every report issue page may take in all.
@@ -127,7 +135,7 @@ export const REPORTS_LIMIT_MS = 3 * 60 * 1000;
 // `startedAt` is a performance.now() time. Its default, 0, is when the process started.
 // `reportsMs` bounds the label read and every page of the report issues together, `releaseMs`
 // the read of the current Zotero release and each changelog read, and `sourceMs` all the requests
-// of the source read together.
+// of the source read together. `readsAtOnce` and `apiGapMs` set the pace of the plugin reads.
 export interface TimeLimits {
   readMs?: number;
   reportsMs?: number;
@@ -135,17 +143,19 @@ export interface TimeLimits {
   sourceMs?: number;
   buildMs?: number;
   startedAt?: number;
+  readsAtOnce?: number;
+  apiGapMs?: number;
 }
 
 // Reads every entry under root, then the report label and the report issues of indexRepo,
-// then each plugin upstream, one at a time. A failed upstream read goes into that entry's
-// record. An entry that cannot be read, or whose meta.json or index.json is invalid, stops
-// the build before any request. The counts come only from the issues, so a failed label or
-// issue read, a listed issue with no closed_by key, or a report read that passes
+// then each plugin upstream, up to `readsAtOnce` at once. A failed upstream read goes into that
+// entry's record. An entry that cannot be read, or whose meta.json or index.json is invalid,
+// stops the build before any request. The counts come only from the issues, so a failed label
+// or issue read, a listed issue with no closed_by key, or a report read that passes
 // `reportsMs`, also stops it, before any upstream read (D-013). A plugin read that passes
 // `readMs` fails as request-failed. Once `buildMs` has passed since `startedAt`, the build
-// reads no more plugins, and each entry left gets the failure not-read. Both count as
-// build-level. The UTC day of `now` sets the read order. Then it reads the top-level names of
+// starts no more plugin reads, and each entry left gets the failure not-read. Both count as
+// build-level. The UTC day of `now` sets the order in which reads start. Then it reads the top-level names of
 // each repo it read, and a failed read leaves that record's sourceInRepo out. Last, it reads the
 // current Zotero release and the changelog page of each LAST_RELEASES major from zotero.org. A
 // failed read of the release leaves zoteroRelease out, and no read of these stops the build.
@@ -161,6 +171,8 @@ export async function buildData(
     sourceMs = SOURCE_READ_LIMIT_MS,
     buildMs = BUILD_LIMIT_MS,
     startedAt = 0,
+    readsAtOnce = READS_AT_ONCE,
+    apiGapMs = API_GAP_MS,
   }: TimeLimits = {},
 ): Promise<BuildResult> {
   let listed: Awaited<ReturnType<typeof listEntries>>;
@@ -208,38 +220,43 @@ export async function buildData(
     return { ok: false, problems: [`cannot read the report issues: ${which} in the list has no closed_by field`] };
   }
 
-  // The plugins are read in id order on even UTC days since 1970-01-01 and in reverse on odd
-  // ones, so a build that `buildMs` cuts leaves the last ids unread one day and the first
-  // ids the next. The records and the build-level list keep id order.
+  // The reads start in id order on even UTC days since 1970-01-01 and in reverse on odd ones,
+  // so a build that `buildMs` cuts leaves the last ids unread one day and the first ids the
+  // next. The records and the build-level list keep id order, whichever read ends first.
   const order = entries.map((_, i) => i);
   if (Math.floor(now.getTime() / DAY_MS) % 2 !== 0) order.reverse();
   const records: PluginRecord[] = new Array(entries.length);
   const buildLevelAt = new Set<number>();
   const xpis = new Map<string, XpiRead>();
-  for (const i of order) {
-    const { id, repoUrl, paidService, overrides } = entries[i];
-    const paid = paidService ? { paidService } : {};
-    if (performance.now() - startedAt >= buildMs) {
-      const message = `the build reads no plugin after ${duration(buildMs)}, its time limit`;
-      records[i] = { id, repoUrl, ...paid, failure: { name: "not-read", message }, overrides };
-      buildLevelAt.add(i);
-      continue;
+  const paced = pacedApi(fetch, apiGapMs);
+  const readEntries = async () => {
+    for (let next = order.shift(); next !== undefined; next = order.shift()) {
+      const i = next;
+      const { id, repoUrl, paidService, overrides } = entries[i];
+      const paid = paidService ? { paidService } : {};
+      if (performance.now() - startedAt >= buildMs) {
+        const message = `the build reads no plugin after ${duration(buildMs)}, its time limit`;
+        records[i] = { id, repoUrl, ...paid, failure: { name: "not-read", message }, overrides };
+        buildLevelAt.add(i);
+        continue;
+      }
+      const { buildLevel: counts, xpi, ...read } = await readRecord(repoUrl, paced, readMs);
+      if (counts) buildLevelAt.add(i);
+      if (xpi) xpis.set(id, xpi);
+      const record: PluginRecord = { id, repoUrl, ...paid, ...read, overrides };
+      // Facts that the schema rejects, such as a repo body with no created_at, become this
+      // record's failure, so one plugin cannot stop the whole file.
+      const recordProblems = validateRecord(JSON.parse(JSON.stringify(record)))
+        ? []
+        : (validateRecord.errors ?? []).map(describe);
+      if (recordProblems.length > 0 && record.upstream) {
+        records[i] = { id, repoUrl, ...paid, failure: { name: "facts-invalid", message: recordProblems.join("; ") }, overrides };
+      } else {
+        records[i] = record;
+      }
     }
-    const { buildLevel: counts, xpi, ...read } = await readRecord(repoUrl, fetch, readMs);
-    if (counts) buildLevelAt.add(i);
-    if (xpi) xpis.set(id, xpi);
-    const record: PluginRecord = { id, repoUrl, ...paid, ...read, overrides };
-    // Facts that the schema rejects, such as a repo body with no created_at, become this
-    // record's failure, so one plugin cannot stop the whole file.
-    const recordProblems = validateRecord(JSON.parse(JSON.stringify(record)))
-      ? []
-      : (validateRecord.errors ?? []).map(describe);
-    if (recordProblems.length > 0 && record.upstream) {
-      records[i] = { id, repoUrl, ...paid, failure: { name: "facts-invalid", message: recordProblems.join("; ") }, overrides };
-    } else {
-      records[i] = record;
-    }
-  }
+  };
+  await Promise.all(Array.from({ length: readsAtOnce }, readEntries));
   const source = await readSourceFacts(fetch, records.flatMap(({ repoUrl, upstream }) => (upstream ? [repoUrl] : [])), sourceMs);
   for (const { repoUrl, upstream } of records) {
     const sourceInRepo = source.facts.get(repoUrl);
@@ -348,6 +365,31 @@ async function readEntry(dir: string): Promise<{ repoUrl: string; paidService?: 
   }
   const { paidService, overrides } = index.value as { paidService?: PaidService; overrides?: Override[] };
   return { repoUrl, ...(paidService ? { paidService } : {}), overrides: overrides ?? [] };
+}
+
+// A fetch that starts each request to the GitHub API at least `gapMs` after the one before it,
+// whichever read sends it. A request to another host does not wait. A redirect that fetch
+// follows inside one call counts as that one call.
+function pacedApi(fetch: Fetch, gapMs: number): Fetch {
+  let queue = Promise.resolve();
+  let lastStart = Number.NEGATIVE_INFINITY;
+  return async (url, init) => {
+    if (new URL(url).host !== "api.github.com") return fetch(url, init);
+    const turn = queue.then(async () => {
+      const wait = lastStart + gapMs - performance.now();
+      // A timer can fire up to 1 ms early by this clock.
+      if (wait > 0) await new Promise((done) => setTimeout(done, Math.ceil(wait) + 1));
+      lastStart = performance.now();
+      // In an array, so that the next request's turn does not wait for this answer.
+      return [fetch(url, init)] as const;
+    });
+    queue = turn.then(
+      () => {},
+      () => {},
+    );
+    const [answer] = await turn;
+    return answer;
+  };
 }
 
 async function readRecord(
