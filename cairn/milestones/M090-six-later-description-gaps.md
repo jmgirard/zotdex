@@ -25,7 +25,7 @@ row "Fill description gaps on new plugins". Mixed texts with a CJK share under 0
 
 ## Acceptance criteria
 
-- [ ] AC1: `pnpm description-gaps cairn/references/sources/plugins-data-2026-11-03-2205.json` prints no gap line.
+- [ ] AC1: `pnpm description-gaps cairn/references/sources/plugins-data-2026-11-03b.json` prints no gap line.
 - [ ] AC2: Each `description` override that this milestone adds, as `git diff` of `plugins/*/index.json` against the
       default branch lists them, has no `version` and has an English value of at least six words. Each claim in the
       value is stated in the upstream file that its `reason` names, and the value holds no privacy or safety assurance
@@ -70,6 +70,7 @@ row "Fill description gaps on new plugins". Mixed texts with a CJK share under 0
 - 2026-11-03: criteria audit (full mode) by a fresh Opus reader: 11 findings, each taken. `kept` is cut, since all 6 have a text that says what the plugin does and D-038 keeps no clear short text; the Goal names the 6 ids and the data; AC2 binds the value's claims and M089's lesson and drops a repeated `pnpm check`; AC3 states the deliverable and the rule, which an over-exclude now fails; AC4 gives the count 86; T4 records the file's SHA-256, since the shelf is gitignored, and says these 6 were read failures; T5 adds the row's stale count. The reader's run confirmed 6 gaps and 736 of 736 records with an upstream block.
 - 2026-11-03: plan chose editing M089's Unreleased entry over a second entry, because one changelog line reads better for one kind of change and M089 has not shipped in a release; falsified by a release cut between them.
 - 2026-11-03: plan chose a section in the existing ledger page over a new page, because both reads share a date and a method; falsified by a page too long to read in one pass.
+- 2026-11-03: AC1's shelf file renamed from the audited name to `plugins-data-2026-11-03b.json`, since `cairn_validate.py` reads the earlier name's digits as a bad date; the same file, so the audit stands.
 
 ## Decisions
 
