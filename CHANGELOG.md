@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- The discovery bot now opens a held pull request for a repository that can
+  replace a listed one. Such a repository is older than the repository that
+  lists its add-on id, has at least 20 stars, and has at least 10 times that
+  repository's stars. Before, the bot refused it as `entry-exists`. The
+  maintainer decides, and the bot never merges this pull request.
+  `pdf2zh@guaguastandup.com` now lists
+  `guaguastandup/zotero-pdf2zh`, and `beaver@jlegewie.com` now lists
+  `jlegewie/beaver-zotero`, in place of two recent forks that kept those ids. In
+  the data, each entry's `repoUrl` and the facts read from that repository change.
 - The home page and plugin pages now show a card icon on a plugin whose main use
   stops without paying its maker, or stops after a trial. The Details card gives
   a note on what is paid for, a link to the source, and the date of the read. A

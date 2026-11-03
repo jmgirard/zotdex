@@ -74,9 +74,9 @@ When a repo older and far larger than the repo that lists its add-on id appears,
 - [x] T1: Add `replaces-entry` to `HOLD_REASONS` and `HOLD_TEXT`, and the test beside the namesake numbers in `src/discover/holds.ts`. In `draftEntry` (`src/discover/discover.ts:345`), read the listed repo's facts when an exact id repeats, and draft or refuse by AC1. The read needs each entry's id and repo, which `IndexedName` may not hold yet. Write the tests first. A test repo needs `stars` and dates, or it reads as unread (LESSONS M075).
 - [x] T2: In `src/discover/propose.ts` (near lines 174, 429, and 434), let a `replaces-entry` entry pass the existing-entry skip, write only `meta.json`, and run `pnpm check` on the entry as the head holds it. Add the release dates and the kept `index.json` values to the hold details and body (near lines 564 to 577). Keep `botPulls` (line 208) as the skip source, and test AC4 at `test/propose.test.ts` near line 906.
 - [x] T3: Let `src/discover/refresh-holds.ts` (lines 80 to 95) accept a pull request with one modified `meta.json`, and add the tests of AC3. `merge.ts:70` already refuses any `Hold:` line other than `none`, so its test pins that for the new reason.
-- [ ] T4: Run `pnpm add-plugin --out <empty dir>` for the two repos, copy each `meta.json` over the entry, read each repo for a paid service by D-054, and update the sweep page and its tsv, whose lines name the two forks.
-- [ ] T5: Write the ledger from the logs of the discover runs that GitHub holds, and add its `INDEX.md` line.
-- [ ] T6: Update `README.md` (hold reasons near lines 801 to 846), `cairn/DESIGN.md` (hold reasons, and the refusal statements near lines 705 and 758), and `CHANGELOG.md`, and append the decision entry.
+- [x] T4: Run `pnpm add-plugin --out <empty dir>` for the two repos, copy each `meta.json` over the entry, read each repo for a paid service by D-054, and update the sweep page and its tsv, whose lines name the two forks.
+- [x] T5: Write the ledger from the logs of the discover runs that GitHub holds, and add its `INDEX.md` line.
+- [x] T6: Update `README.md` (hold reasons near lines 801 to 846), `cairn/DESIGN.md` (hold reasons, and the refusal statements near lines 705 and 758), and `CHANGELOG.md`, and append the decision entry.
 - [ ] T7: Run `pnpm test` and `pnpm check` through `npx -y pnpm@12.15.0`, sending the test output to a file and reading its exit code (LESSONS M082).
 
 ## Work log
@@ -107,6 +107,8 @@ When a repo older and far larger than the repo that lists its add-on id appears,
 - 2026-11-03: T1 to T3 landed in one commit, since the reason, the pull request, and the refresh share one type; full suite green.
 - 2026-11-03: chose the pull request title and commit `Move <id> to <repo>`, and a `noListed` detail for a refresh when no entry lists the id now; also made the ids of a run's handoff count as pending, so only one repo of a run replaces an entry.
 - 2026-11-03: T4 moved both entries; each `meta.json` is byte-equal to `pnpm add-plugin --out` output; both READMEs read for a paid service, no mark; the sweep's other 734 tsv lines are unchanged.
+- 2026-11-03: correction to the line above: the tsv has 695 entry lines, so the other 693 are unchanged.
+- 2026-11-03: T5 and T6 wrote the ledger from all 30 discover runs, the docs, the changelog entry, and D-056; D-056 gives D-053's merge default its exception for `replaces-entry`.
 
 ## Decisions
 <!-- owner: implement / review · append-only; milestone-local; promote

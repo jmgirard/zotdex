@@ -837,3 +837,26 @@ covers a case with a low cost or one that no deployed data reaches:
   the tooltip. A user report needs no row to be heard.
 
 Each drop can be reopened by an entry that supersedes this one.
+
+### D-056: A far larger, older repo can ask for a listed add-on id through a held pull request, annotating D-033, D-045, and D-053
+
+2026-11-03, M085 plan. One add-on id holds one entry, and the bot's read order
+decides which repo gets it, as D-045 said of names. So a recent fork that kept
+its source's id could hold it while the bot refused the source on every read,
+and an index that names a stranger's repo for a popular plugin also gives that
+stranger the plugin's updates. From M085 on, a repo that is older than the listed
+repo, has at least 20 stars, and has at least 10 times its stars gets a bot pull
+request held as `replaces-entry`. These are the numbers of D-045's namesake test,
+turned the other way. The pull request changes only `meta.json`, so a maintainer's
+overrides and paid-service mark stay and the body names them. The user chose this
+over a warning in the discover report, which only someone reading the logs would
+see, and over changing no bot behavior. The numbers cannot show which repo is the
+original: two of the first four pairs that passed were credited continuations
+with newer releases. So the bot never replaces an entry itself, and D-053's
+default to merge has an exception. For `replaces-entry`, the question is whether
+the listed repo credits the new one and has a newer release. If it does, the
+listed repo stays and the maintainer closes the pull request. Otherwise the pull
+request merges. At this plan the user moved two entries by this question and kept
+two. The rest of D-033, D-045, and D-053 stands. This choice is wrong if the
+maintainer closes nearly every such pull request, or if a listed repo hides a far
+larger original below these numbers.

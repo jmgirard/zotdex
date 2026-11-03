@@ -260,7 +260,10 @@ shows each one separately. A combined verdict is out of scope.
    bot's read takes an update file on that site to another host, a URL of
    that read uses `http:` (D-047), or an issue proposed a
    repo with neither topic. A catalog or code-search repo with neither
-   topic gets no hold (D-042). A held pull request gets the `hold` label, and
+   topic gets no hold (D-042). It also holds when an entry lists the plugin's
+   add-on id from another GitHub repo and the new repo is older with at least
+   20 stars and at least 10 times that repo's stars. That pull request changes
+   only the entry's `meta.json` (M085, D-056). A held pull request gets the `hold` label, and
    D-053 states how the maintainer decides it. A
    daily job merges a pull request that says `Hold: none` and has no `hold`
    label at its first daily run at least 48 hours after it opens, once its
@@ -703,7 +706,8 @@ reused._
   find, and reads the newest
   pushed repos first, at most `budget` (100 by default) per run. It leaves out
   each repo whose owner/repo, ignoring case, an entry's `repoUrl` names,
-  and it refuses a plugin id that an entry directory already has. A state
+  and it refuses a plugin id that an entry directory already has, unless the
+  repo gets a `replaces-entry` hold (corrected M085). A state
   file, `.cache/discovery-state.json` by default, keeps each refused repo's
   `pushed_at` and failure while the index lacks the repo and the run found
   it or the record is under 30 days old (corrected M070). A later run
@@ -756,7 +760,8 @@ reused._
   requests again. `fetchBase` fetches the default branch and reads
   `plugins/` at the fetched commit with `git ls-tree` and `git cat-file`,
   and the write step skips an entry that the pull requests or that index
-  has; a fetched commit with no `plugins/` fails every entry (M042).
+  has, except that an entry held for `replaces-entry` needs its id in that
+  index (corrected M085); a fetched commit with no `plugins/` fails every entry (M042).
   `propose` builds on that same commit. `fetchBase` and `propose` give
   `git fetch` and `git push` the token as an
   `http.https://github.com/.extraheader` through `GIT_CONFIG_COUNT`, and
@@ -844,6 +849,10 @@ reused._
   those lines. It sends no label request and keeps each Hold line. For an
   `update-host` hold it also requests the update address from the outside
   host, within 60 seconds, and a failed read fails that pull request (M077).
+  `replacedEntry` (M085) reads the two repos of a `replaces-entry` hold, and
+  `propose` then writes only that entry's `meta.json` and checks and reports
+  the `index.json` at the fetched commit. `pnpm refresh-holds` takes such a
+  pull request when its one file is a modified `meta.json`.
   `pnpm merge-discover` (`src/discover/merge.ts`) reads
   every page of open pull requests, skips each that fails a condition (the
   Hold line read outside fences with `unfencedLines`, the label in any case,

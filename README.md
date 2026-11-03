@@ -833,6 +833,16 @@ reasons, in this order:
   topic `zotero-plugin` nor `zotero-addon`. A repository that
   `pnpm discover` finds in the catalog or by code search never gets this
   hold, since no issue proposed it.
+- `replaces-entry`: an entry already lists the plugin's add-on id from another
+  repository on GitHub. The new repository is older, has at least 20 stars,
+  and has at least 10 times that repository's stars. Any other repository
+  whose id the index has is refused as `entry-exists`. Three other cases are
+  also refused: an id that differs only in letter case, an issue run, and an
+  id that an open bot pull request adds. The pull request changes only the
+  entry's `meta.json`, so the entry keeps its `index.json`. The numbers cannot
+  show which repository is the original, so the maintainer decides. A listed
+  repository that credits the new one and has a newer release stays. Otherwise
+  the pull request merges.
 
 A held pull request also gets the label `hold`, and the maintainer merges or
 closes it. If the label request fails, `pnpm propose` names the pull request
@@ -852,6 +862,12 @@ the maintainer". They give the facts behind the hold:
 - For `update-host`, the host of the manifest's `update_url`, each other host
   that a redirect of the read went to, and whether a URL of the read used
   `http:`.
+- For `replaces-entry`, one line for the new repository and one for the listed
+  repository. Each has the creation day, the stars, and the day of the newest
+  stable release. A fact that the bot did not get says "not read", and a
+  repository with no stable release says "none". More lines name each override
+  and the paid-service mark that the kept `index.json` holds, or say that it
+  holds neither.
 - For every hold, the day that the owner's GitHub account was made, or a
   note that the bot did not get that day.
 
@@ -876,7 +892,8 @@ of these conditions:
 - It has the `hold` label.
 - Its one Hold line names reasons.
 - Its files are exactly `plugins/<id>/meta.json` and
-  `plugins/<id>/index.json`, both added.
+  `plugins/<id>/index.json`, both added. For a `replaces-entry` hold, its one
+  file is a modified `plugins/<id>/meta.json`.
 - Its body has the closing sentence below the Hold line.
 
 If nothing matches a `name-match` now, the line says so. Without options,
