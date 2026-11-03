@@ -566,5 +566,5 @@ console.log(JSON.stringify({ records: data.plugins.length, none, added, removed 
 
 ## Open questions
 
-- The open bot pull requests give 2 wrong of 27 and 3 of 19 with none. The M086 read checks only plugins with no category. No later read checks wrong assignments on new plugins — observed 2026-11-03.
+- The open bot pull requests give 2 wrong of 27 and 3 of 19 with none. The M086 read checks only plugins with no category. `category-ledger-2026-11-03.md` checks wrong assignments on the plugins added through 2026-11-03 (corrected M091) — observed 2026-11-03.
 - M067's description overrides changed the categories of 15 plugins after this read. `description-ledger.md`, section "Category changes", holds that read and the 9 excludes it added. The rows here for those plugins predate it — observed 2026-10-31.

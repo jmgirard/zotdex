@@ -55,7 +55,7 @@ console.log(lines.join("\n"));
 - Held-out group, rules of commit `87a6185b`: 20 wrong of 148 counted assignments (13.5%). That `categories.ts` has the blob hash `fd12546add47cecb59a722a69874a76e8a0b0cd4`. Merges squash, so this commit does not reach `main`.
 - Held-out group, base rules: 20 wrong of 146 counted assignments (13.7%).
 
-The held-out rate is over 1 in 10, the test of D-059. So the milestone stopped for the user's decision before the merge question.
+The held-out rate is over 1 in 10, the test of D-059. So the milestone stopped for the user's decision before the merge question. The user kept word rules, and D-060 records that decision.
 
 A fresh reader marked the held-out group after that commit. It did not read the tuning-group marks. The agent changed none of its wrong marks. The group holds only plugins that no earlier read names. So it holds no `other` assignment and no assignment from an `include` list alone, and the rate covers only plugins that the older patterns matched.
 
@@ -534,3 +534,68 @@ One line per plugin, in id order, with its categories under commit `87a6185b`. O
 - `zotmd@celery.dev`: attachments (right)
 - `zotobs-bridge@zotobs-io`: notes (right), export (right)
 - `ztransplit@zotero.org`: translation (right)
+
+## The branch's changes
+
+The compare script is in `category-ledger.md`, section "The M086 read of plugins with no category". It runs on the data file with the base commit's and the branch's `categories.ts`. It lists 83 losses and 51 gains over the 736 records.
+
+Each loss is a category that a line above marks wrong. No record of the older 272 plugins loses a category. No wrong mark stays on the branch, as the listing script shows.
+
+Each gain is below, and the read marks each one right. Readers added a gain where they saw that a plugin clearly lacks a category. So this read does not measure every missing category. An `other` gain comes where the branch removes a plugin's only other category.
+
+- `arxiv-source-helper@local.research`: ai-tools (right: local section and table queries serve outside AI readers)
+- `attanger-plus@gaiussheh`: attachments (right: keeps linked-file folders matched to collections, so it moves files)
+- `author-harvester@migueldelm`: search (right: imports an author's full bibliography from OpenAlex)
+- `citation-map@alessmor`: rankings (right: citation and reference metrics are a main feature)
+- `cite-non-english@boan-anbo.com`: citations (right: main feature is support for non-English citations)
+- `codex-zotero-bridge@guoxin-ink.github.io`: ai-tools (right: local bridge that lets Codex reach the library)
+- `jasminum@linxzh.com`: pdf-reading (right: its override names PDF bookmark and outline management)
+- `journal-crawler@ildon.github.io`: attachments (right: downloads PDFs of open access journal articles)
+- `journalabbr@zsc.com`: metadata (right: updates journal abbreviations on items)
+- `journallens@yunze623.github.io`: search (right: follows journals and browses recent papers)
+- `literature-library@local.zotero`: export (right: converts PDFs to Markdown with MinerU)
+- `literaturemind-bridge@literaturemind.local`: export (right: sends papers and PDF excerpts to an outside app)
+- `litmatrix@bapungiri`: notes (right: review matrix built from highlight colors)
+- `marktero@local`: export (right: one-way automatic Markdown note generation)
+- `numify@zotero-plugin.dev`: organization (right: numbers collection names with hierarchical prefixes)
+- `open-citations@zotero-plugin.org`: rankings (right: shows citation counts in a sortable column)
+- `open-inline-citation@example.com`: pdf-reading (right: opens inline citations from the reader in a new tab)
+- `paper-loom@local.research`: pdf-reading (right: listen-and-read feature, 听读)
+- `paper-loom@local.research`: search (right: follows citations and research connections, 追踪引文)
+- `paper-partner@qinsihan.github.io`: ai (right: answers reading questions automatically inside notes)
+- `paperlink@local.research`: attachments (right: links an already downloaded PDF instead of a second copy)
+- `paperplanex@windlx`: other (right: its texts name no feature of another category)
+- `pdf-ai-bookmarks@edwintuan.com`: pdf-reading (right: generates PDF bookmarks)
+- `pdf-content-flow@dylan.ac`: pdf-reading (right: zooms and steps through PDF page content)
+- `reader-tool-shortcuts@mi-lab.local`: interface (right: configurable keyboard shortcuts for reader tools)
+- `researchradar@korhonenaleksi.github.io`: search (right: surfaces newly published research from your journals)
+- `rule-outline@local.zotero`: pdf-reading (right: builds PDF outline and bookmarks for navigation)
+- `scholar-sidekick@scholar-sidekick.com`: metadata (right: resolves identifiers and flags mismatches, like referencecheck)
+- `sdt-pack-sitter@search-works-for-zotero.invalid`: other (right: no about text fits warming search index packs)
+- `sentence-focus@local`: pdf-reading (right: reading ruler, a focus aid in the reader)
+- `survey-papers-to-zotero-companion@vincent929-cyber.github.io`: ai-tools (right: localhost endpoint lets a Codex skill attach PDFs)
+- `tex-fetch@colefaraday`: attachments (right: downloads and attaches arXiv LaTeX source of papers)
+- `uts-citation@gracefullight.dev`: citations (right: copies bibliography in UTS APA 7th format)
+- `writeflex@dominiklukes.net`: notes (right: saves highlights from an outside reader into Zotero)
+- `zotero-ai-collection@jiaxin.fan`: organization (right: recommends collections for items)
+- `zotero-bibliometero@jose.local`: other (right: library charts fit no other category)
+- `zotero-declarative-bridge@deep-research.local`: ai-tools (right: local transactions let Codex agents reach the library)
+- `zotero-hjfy-split-reader@infinity4b.github.io`: pdf-reading (right: opens translations in a split-view reader)
+- `zotero-inbox-organizer@solitern.local`: organization (right: organizes the inbox collection)
+- `zotero-management-bridge@example.org`: ai-tools (right: local bridge for outside agents and scripts)
+- `zotero-neo@zotero-neo`: interface (right: keyboard-first layer for driving Zotero)
+- `zotero-obsidian-readonly@example.com`: export (right: pushes references and notes to Markdown files)
+- `zotero-openreview@example.com`: search (right: finds and imports papers from OpenReview)
+- `zotero-pdf-outline-builder@xfl031129.github.io`: pdf-reading (right: generated outlines and bookmarks give PDF navigation)
+- `zotero-random-read@xuan.dev`: organization (right: picks what to read next from collections)
+- `zotero-siyuan@example.com`: export (right: sends annotations to the SiYuan note app)
+- `zotero-split-view-reader@fuling.lin.at.outlook.com`: pdf-reading (right: split-view reading of PDFs in the reader)
+- `zotero-stylero@jose.local`: appearance (right: styling plugin with a light/dark toggle)
+- `zotero-wikicite@wikidata.org`: search (right: draws local citation networks from fetched citations)
+- `zoterofig@forgeters.github.io`: pdf-reading (right: figure and table navigation and preview in the reader)
+- `zotmd@celery.dev`: export (right: stores OCR results as Markdown files)
+
+## Open questions
+
+- The data file predates M090's 6 description overrides, which reached `main` after its `generatedAt`. This read did not read their effect on categories. `description-ledger-2026-11-03.md` holds M090's read of them. Observed 2026-11-03.
+- Plugins that the bot adds after the data file have no marks. The row "Check categories on new plugins" holds them. Observed 2026-11-03.
