@@ -334,8 +334,8 @@ warns when the hand-kept release lists fall behind (M068, D-040).
 A maintainer keeps one fact by hand: an optional `paidService` in `index.json`,
 with `note`, `source`, and `read`, for a plugin whose main use stops without
 paying its maker or stops after a trial. Payment words cannot show this, so no
-bot sets it (D-054). `cairn/references/paid-service-sweep.md` records the read of
-the entries at one commit, and later plugins stay unread until someone repeats it.
+bot sets it (D-054). `cairn/references/paid-service-sweep.md` records each read
+and the commit it covers, and later plugins stay unread until someone repeats it.
 
 Inclusion bar: a public repository, a Zotero 7+ manifest, and at least one
 release with a readable `update.json`. The bot checks all three, and it

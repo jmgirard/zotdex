@@ -1,12 +1,14 @@
-# paid-service-sweep: a hand read of which plugins need a paid service from their maker (M082)
+# paid-service-sweep: a hand read of which plugins need a paid service from their maker (M082, M083)
 
-**Provenance.** Ingested 2026-11-02 by M082 from a read of the plugins' own text
-on 2026-11-02. Pagination: none.
+**Provenance.** Ingested 2026-11-02 by M082 and extended the same day by M083,
+from reads of the plugins' own text on 2026-11-02. Pagination: none.
 Extraction: a 2026-11-02 snapshot, and READMEs and descriptions can change after it (observed 2026-11-02).
 
-**Scope.** This page records the read that AC6 of M082 rests on. It covers the
-695 entries under `plugins/` at commit `c8f2b65`. It builds no checker. A plugin
-added later has not been read. Status lives in `ROADMAP.md`, decisions in
+**Scope.** This page records two reads. The first, which AC6 of M082 rests on,
+covers the 695 entries under `plugins/` at commit `c8f2b65`. The second, which
+M083 adds, covers the 34 entries added between that commit and `34a02a8`. The
+sections before "Second read" hold the first read. This page builds no checker.
+A plugin added after `34a02a8` has not been read. Status lives in `ROADMAP.md`, decisions in
 `DECISIONS.md`, and architecture in `DESIGN.md`.
 
 ## Texts read
@@ -454,3 +456,79 @@ The `note` and `source` of each are in the entry's `index.json`.
 - zys-notebook@kazys.local: uses the user's own Google login, a third party
 - zys-praetor@kazys.local: uses the user's installed third-party CLI login
 - {c0f56f65-4363-4713-8f48-6bd18593c781}: embeds OpenAI's ChatGPT website, a third party
+
+## Second read
+
+The read date is 2026-11-02. This read covers the 34 entries that
+`git diff --name-only --diff-filter=A c8f2b65 34a02a8 -- plugins/` lists as added
+`meta.json` files. It uses the word list and matching rule above. It reads three
+kinds of text. The first is each entry's `meta.json` description at `34a02a8`.
+The second is its GitHub About text below. The third is each top-level file whose
+name starts with README, ignoring case, at the SHA below. The read found 44 such
+files, and every text was read.
+
+The session read every hit and gave 0 marks. So no entry of this read has
+`paidService`.
+
+```text
+ai-paragraph-notes@local.zotero	c850122022bb984c1474b8c620c2f969368c8dd6	Batch AI paragraph and figure-caption interpretations as native Zotero note annotations
+babeldoc-translator@zhuo.local	ea400fb8cc72666709e5567528fc890dc9e8c655	Zotero 10 plugin for translating PDF attachments with an isolated BabelDOC environment.
+bilingual-reader@local	b301de8799ad10147e78d08fee5fff9c8ca82ed3	Zotero 双语阅读器公开仓库
+bilingual-reader@zotero.local	819b351753312b37003e665829d992df1cbea5b3	Bilingual-reader是一款用于Zotero 10阅读模式的PDF翻译，提供段落中英对照翻译、翻译结果输出。
+bluebook-signals-for-zotero@mystery-lab.com	3a78f060e83c4e6b1f9ce749a371d92d6c4e5c3b	Zotero plugins to provide additional functionality for legal scholars writing in law reviews.
+ccf-rank@euclpts.com	b5f4c1dba47c4f85937ae229e5016d48a4f867dc	Zotero 插件，用于显示文献的 CCF 会议和期刊等级，已更新至2026新版数据。
+chatgpt-sidebar@zotero.local	4c4bb3c32251785997af7720e1bf0adf7034dbad	Zotero 阅读界面中的 ChatGPT 网页侧栏：选文解释、PDF 全文提问，可选 Chrome 本机登录连接，无需 API key。
+citegraph@jaeho.dev	a2e83602e5b43616fb1c4c0abed0af09321425b3	Citation relationships in a clean force graph. Zotero 10+.
+codex-pdf-bridge@local.personal	ae2ba6c64caa56c8f6cdd772da712099282342f7	Zotero–Codex–Obsidian literature bridge with native PDF annotations and structured notes.
+codex-translate@zotero.local	4a8389a665f5458b13b47833470a4019d7254206	Zotero 9 英文文献全文翻译与中英对照阅读；使用本机 Codex，自动从上游准备 PDF 运行环境。
+codex-zotero-bridge@guoxin-ink.github.io	87821f39ab111778706fef133a364dceef1b0587	Safely inspect, organize, and update a local Zotero library from Codex.
+doi-column@anfang886.github.io	7f052b094793db8c2563d6897357109ab46e5f4d	none
+extra-columns@petersharp.org	37dead3ada9ef8401b13233e1523d9786109d7b1	Show values from a Zotero item's Extra field as sortable columns in the item list
+page-count@damarals	9aba6783ac13122e4e2af0c2f0d2f7cc6a617b79	Zotero plugin: items-list column showing each item's real PDF page count
+paper-chat@zotero-llm-wiki	ffba96bd5471f961a5948bd678427a7bd92da0ac	Claude Code skills and plugin for research papers: ask about your Zotero PDFs with page-cited answers, search the literature via OpenAlex (no made-up DOIs), and build a self-updating literature wiki in Obsidian.
+paper-chat@zotero.plugin	7df2eaae6ab86d7300e25ae04f51dfffc6caf6d3	AI 论文助手：论文问答、划词翻译、文献检索、笔记与 PPT 生成 ｜ AI research assistant: chat with papers, translate selections, find literature, and generate notes and slides
+paper-lens@februarysea.github.io	5ae49f5516c5b1fdea5ab0a53bcaa858629e00a9	A lightweight Zotero PDF selection translator powered by Codex models.
+paper-partner@qinsihan.github.io	3d318a1c0ebd507aee82308ac06ff2f256f6f80a	An attention-friendly Zotero plugin that answers Q: questions inside native notes.
+paperflow@zotero.local	e5dbbb46c46eea287f6ad112e6e7428f5a1bfc41	none
+pdf-to-md@local	6f930d6b39faec0996bd97bcfd6b5f2f5c1ff3cf	把zotero中的PDF附件转换为md附件，方便外部agent工具使用，使用MinerU构建，支持本地部署的MinerU
+remarkable@damken.net	5931801e57040e324f68b424d6fa058b4565ae38	none
+rtf-odf-scan-for-zotero@mystery-lab.com	27a6ae72e6bb048fa808cd987f95327f67efd70f	RTF/ODF-Scan for Zotero add-on
+wo-yao-yan-pai@fish.com	218e43e0cba32fbbaf6b3feb61ad79e48306153b	none
+zot2rm@fbkarsdorp.github.io	bc73632773597ce43f44f7fb47f2b9c3de7bb859	Sync Zotero attachments with a reMarkable tablet over USB
+zotero-ai-notes@example.com	c0f1146f787d01bf3e1fa18ef9a0f0ca0e92c855	Turn Zotero PDF highlights and comments into evidence-checked Markdown notes and academic mind maps. Supports Zotero write-back, Markdown/OPML export, and XMind import.
+zotero-mcp-plugin@autoagent.my	81d0777b49ded0959d197c7610d8b6e5f32c2485	It's a plugin extension in Zotero.  Zotero MCP Plugin enables integration between AI assistants and Zotero through MCP. Zotero MCP Plugin 是一个 Zotero 插件，通过 MCP协议实现 AI 助手与 Zotero深度集成。插件支持文献检索、元   数据管理、全文分析和智能问答等功能，让 Claude、ChatGPT 等 AI 工具能够直接访问和操作您的文献库。
+zotero-mineru@example.com	e5bebf2a7afa18c1bb74325a2f953a91ca0d487c	Convert PDFs to Zotero notes with one click
+zotero-pdf2md@yyds.dev	b6799b9ad7213535b55b755e4ebce92ef907c6e4	`zotero-pdf2md` 是一个面向 Zotero 7 的插件，用来把 PDF 附件转换为 Markdown 源包、译文 Markdown，以及可直接预览的 HTML。
+zotero-random-read@xuan.dev	6da156df827c428df2380e6e520d1f621c117108	Zotero random read plugin
+zotero-remarkable-sync@piwowarski.fr	0ad37d5c57c73450ba5ef7f10be58362aa3183a1	Bidirectionally sync PDFs and annotations between Zotero and the reMarkable tablet
+zotero-research@local.invalid	faa7875b4dae6dd3df3e03fc9e79cffbf17cb45b	Zotero 10 网页 AI 阅读侧栏：网页中继 / API 直连 / MinerU 深度解析 / 知识沉淀
+zoteroai@zixuwang	659ec5ab5b077b771e1bcbed04a92188ec5111dc	none
+zoteropdf@euclpts.com	7bfb9af8ad51acb7bced04b920275894dc78ab98	Zotero plugin for export papers as PDF files
+zotfetch@nikhilweee.me	73eab9f832161048d46e516b37f617e8f5915c79	none
+```
+
+### Second read: marked
+
+None.
+
+### Second read: no mark
+
+The list found 17 entries with a hit, and 17 with none.
+
+- `bilingual-reader@local`: since 0.3.4 it needs no activation code, and users pay for their own DeepSeek key
+- `bluebook-signals-for-zotero@mystery-lab.com`: activated means opening a menu, nothing is sold
+- `chatgpt-sidebar@zotero.local`: uses the user's own ChatGPT account, a third party
+- `codex-pdf-bridge@local.personal`: the hit is a version upgrade, and it uses local Codex
+- `codex-translate@zotero.local`: uses the user's own Codex login, a third party
+- `codex-zotero-bridge@guoxin-ink.github.io`: states no paid service and no maker's cloud
+- `doi-column@anfang886.github.io`: registration means DOI registrants, nothing is sold
+- `extra-columns@petersharp.org`: cast member is a field name, and credits means acknowledgements
+- `paper-chat@zotero-llm-wiki`: needs a paid Claude plan or API key, from a third party
+- `paper-chat@zotero.plugin`: chat works with the user's own provider key, and only slide generation needs the maker's service
+- `paper-lens@februarysea.github.io`: uses the user's own ChatGPT plan, a third party
+- `paperflow@zotero.local`: uses the user's own Codex or Claude plan, a third party
+- `zot2rm@fbkarsdorp.github.io`: works over USB with no cloud account
+- `zotero-ai-notes@example.com`: the hit is the login manager that stores the user's key
+- `zotero-mineru@example.com`: the hit means registering an attachment, and its MinerU token comes from a third party
+- `zotero-remarkable-sync@piwowarski.fr`: reMarkable's cloud is a third party, and credits means acknowledgements
+- `zotero-research@local.invalid`: logs in to third-party AI sites, with no maker's service
