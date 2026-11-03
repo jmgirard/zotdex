@@ -81,3 +81,5 @@ spawned: diff-bug, blame-history, prior-review, ripple
 - fresh reader #1: three reasons leave some hits unexplained — fix now, including `zhinfo`'s register hit.
 - fresh reader #2: `zhinfo`'s PDF route needs a third-party LLM key — reject, false: it is not the main use, and a third party's key gets no mark.
 - fresh reader #3: same as diff-bug #5 — reject, style.
+- Every fix-now line above: fixed `303ff69`, which changes `cairn/` text only; `cairn_validate.py` exits 0 there, and no verdict or row changed, so the evidence stands.
+- Findings: 18, with 6 fixed, 12 rejected, 0 sent to a follow-up. Substantive amendments: 0. Changed snapshot files: 0. No PR is open, so no PR conversation was read.
