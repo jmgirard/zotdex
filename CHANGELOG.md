@@ -2,8 +2,8 @@
 
 ## Unreleased
 
-- The categories of the plugins added since 2026-10-31 were read one at a time,
-  and the word rules and the lists of exceptions changed. Those plugins lose
+- The categories of the plugins added since 2026-10-31 were each read, and the
+  word rules and the lists of exceptions changed. Those plugins lose
   wrong categories and gain some that they lacked, and one older plugin gains a
   category. The rules no longer take some words in another sense, such as an
   import translator, "easy to read", or a download by DOI. They still take
