@@ -116,6 +116,7 @@ When a repo older and far larger than the repo that lists its add-on id appears,
 - 2026-11-03: T8 fixed AC2's values and the other fix-now findings; the title is now `Replace a listed repo with <repo>`, with no id; the write step skips with `listed-changed` when the id no longer lists the compared repo; the follow-ups went to the row "Tighten the reads behind replaces-entry".
 - 2026-11-03: claim audit: 17 claims read, 2 corrected — README.md, src/discover/propose.ts
 - 2026-11-03: T8 also fixed the second pass's findings: a release 404 for an unread repo now says "not read", and bad kept JSON fails before the push.
+- 2026-11-03: step-7 approval: m085-repeat-id-replace approved for merge
 
 ## Decisions
 <!-- owner: implement / review · append-only; milestone-local; promote
