@@ -1,0 +1,8 @@
+{
+  "id": "saved-search-folders@nickynoname.github.io",
+  "name": "Saved Search Folders",
+  "description": "Organise saved searches into folders, give them a custom order, and combine them with AND/OR — all stored in the search names, so nothing breaks without the plugin.",
+  "homepage": "https://github.com/NickyNoName/zotero-saved-search-folders",
+  "repoUrl": "https://github.com/NickyNoName/zotero-saved-search-folders",
+  "updateUrl": "https://raw.githubusercontent.com/NickyNoName/zotero-saved-search-folders/main/updates.json"
+}
