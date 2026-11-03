@@ -16,7 +16,7 @@ export type HoldReason = (typeof HOLD_REASONS)[number];
 export const REPO = /^[a-z0-9_.-]+\/[a-z0-9_.-]+$/;
 // A day as YYYY-MM-DD.
 export const DAY = /^\d{4}-\d{2}-\d{2}$/;
-// The day of a repo's newest stable release, or `none` for a repo that has no stable release.
+// The day of GitHub's latest release of a repo, or `none` after a 404 for that release.
 export const RELEASE_DAY = /^(none|\d{4}-\d{2}-\d{2})$/;
 // The most matched entries that a hold's details name, and the most characters of a repo,
 // a name, and an update host there.
@@ -42,7 +42,8 @@ const NAMESAKE_TIMES = 10;
 // Paths that many unrelated repos share, so their files are not counted.
 const BOILERPLATE =
   /(^|\/)((licen[cs]e|copying)(\.[^/]*)?|\.gitignore|\.gitattributes|\.editorconfig|\.prettier[^/]*|\.npmrc|tsconfig[^/]*|package-lock\.json|pnpm-lock\.yaml|yarn\.lock|bun\.lockb?|\.?eslint(rc|ignore)?(\.[^/]*)?|zotero-plugin\.config\.[^/]*|\.travis\.yml|\.gitlab-ci\.yml)$|(^|\/)(\.github|\.husky|\.vscode|typings)\//i;
-// The longest wait for all the reads of one `matchEvidence` call.
+// The longest wait for all the reads of one `matchEvidence` call, and for each group of reads
+// of one `replacedEntry` call.
 const EVIDENCE_LIMIT_MS = 60 * 1000;
 
 // One entry of the index: its repo's lowercase owner and repo part, its meta.json name,
@@ -188,7 +189,7 @@ export function namedEntries(matched: IndexedName[]): IndexedName[] {
 // The facts behind a pull request's hold reasons, for the maintainer. `matches` is there
 // for `name-match`, `updateHost`, `updateHosts`, and `updateHttp` for `update-host`, and
 // `listed` and `repoReleasedOn` for `replaces-entry`, or `noListed` when no entry lists the id
-// now. `updateHosts` is each other host of the update.json read, in request order, left out
+// from another github.com repo now. `updateHosts` is each other host of the update.json read, in request order, left out
 // when there is none. `updateHttp` says that a URL of that read used http. `ownerCreatedOn` is the owner's
 // account creation day, there for any reason, since it also helps to judge a name match.
 // A fact of `name-match` or `replaces-entry` that the bot could not read is left out.
@@ -284,8 +285,9 @@ export function starsOf(value: unknown): number | undefined {
   return Number.isInteger(value) && (value as number) >= 0 ? (value as number) : undefined;
 }
 
-// The reads of one `matchEvidence` call, which all stop at `ms`. Each gives the answer, or
-// undefined when it fails. After a 403 or 429, which can mean a rate limit, it sends no more.
+// The repo reads of one `matchEvidence` or `replacedEntry` call, which all stop at `ms`. Each
+// gives the answer, or undefined when it fails. After a 403 or 429, which can mean a rate
+// limit, it sends no more. `releaseDay` has its own client, so this does not stop its reads.
 function evidenceReader(fetch: Fetch, ms: number) {
   const github = githubClient(boundFetch(fetch, AbortSignal.timeout(ms)));
   let refused = false;
@@ -375,9 +377,8 @@ export async function matchEvidence(
   return { own, entries };
 }
 
-// The day of a repo's newest stable release: `none` when GitHub answers that the repo has
-// none, and undefined when the read fails. GitHub's latest release is never a draft or a
-// prerelease.
+// The day of GitHub's latest release of a repo, which is never a draft or a prerelease: `none`
+// on a 404, and undefined when any other read fails.
 async function releaseDay(github: ReturnType<typeof githubClient>, base: string): Promise<string | undefined> {
   try {
     const { body } = await github.get(`${base}/releases/latest`);
@@ -390,9 +391,10 @@ async function releaseDay(github: ReturnType<typeof githubClient>, base: string)
 // What the bot reads for a new repo and for the repo of the entry whose add-on id is exactly
 // `id`, or undefined when no such entry has a github.com repo of a shape the handoff takes,
 // or when that repo is the new repo. `ownMeta` gives the new repo's date and stars when the
-// caller read them already. With `onlyFarLarger`, it also gives undefined unless the new repo
-// is far larger and older than the listed repo, and it reads no release for such a repo. A
-// read that fails or that `ms` cuts leaves its fact out, and it never throws.
+// caller read them already. With `onlyFarLarger`, it also gives undefined, with no read of a
+// release, unless the new repo is far larger and older than the listed repo. The reads of the
+// repos and the reads of the releases each stop at `ms`. A read that fails or that `ms` cuts
+// leaves its fact out, and it never throws.
 export async function replacedEntry(
   fetch: Fetch,
   facts: Pick<HoldFacts, "repo" | "indexed"> & { id: string },

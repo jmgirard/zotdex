@@ -144,7 +144,8 @@ export type ProposeHandoffResult =
 // The write step of a discover run. It checks the bot pull requests again by repo and
 // plugin id, since they can change while the read step runs, and the index at the
 // default branch's newest commit, which each pull request builds on. It opens one pull
-// request for each entry neither has. A failed read of the pull requests or the default
+// request for each entry neither has, or that the index has only by the id of the entry that
+// it replaces. A failed read of the pull requests or the default
 // branch ends the run before any push. A failed fetch of the default branch, or read of
 // its index, fails every entry; a failure for one entry is reported, and the run goes on.
 export async function proposeHandoff(options: ProposeHandoffOptions): Promise<ProposeHandoffResult> {
@@ -188,7 +189,7 @@ export interface BotPulls {
   // The same pull requests by owner/repo, with their URLs, and for an open one, the issue
   // its body closes when it has exactly one `Closes #<n>` line outside code blocks.
   pulls: Map<string, { url: string; open: boolean; closes?: number }>;
-  // The lowercase plugin ids whose entry directories the open ones add, so another repo
+  // The lowercase plugin ids whose entry directories the open ones add or change, so another repo
   // with the same id is not proposed beside them.
   ids: Set<string>;
 }

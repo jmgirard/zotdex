@@ -4,7 +4,7 @@
      cairn_validate's <150 over the plan-owned body. -->
 # M085: Let an older, larger repo ask for a listed add-on id
 
-- **Status:** in-progress   <!-- owner: transitioning skill · mirror-update; cairn/ROADMAP.md is the authority -->
+- **Status:** review   <!-- owner: transitioning skill · mirror-update; cairn/ROADMAP.md is the authority -->
 - **Priority:** high   <!-- owner: plan · create/amend-via-gate; high | normal | low -->
 - **Depends on:** —   <!-- owner: plan · create/amend-via-gate; M<xx>, M<yy> or — -->
 - **Driving RR:** —   <!-- owner: plan · create/amend-via-gate; RR<NN> whose Binding criteria bind this milestone's ACs (binding-criteria check), or — -->
@@ -77,7 +77,7 @@ When a repo older and far larger than the repo that lists its add-on id appears,
 - [x] T4: Run `pnpm add-plugin --out <empty dir>` for the two repos, copy each `meta.json` over the entry, read each repo for a paid service by D-054, and update the sweep page and its tsv, whose lines name the two forks.
 - [x] T5: Write the ledger from the logs of the discover runs that GitHub holds, and add its `INDEX.md` line.
 - [x] T6: Update `README.md` (hold reasons near lines 801 to 846), `cairn/DESIGN.md` (hold reasons, and the refusal statements near lines 705 and 758), and `CHANGELOG.md`, and append the decision entry.
-- [ ] T7: Run `pnpm test` and `pnpm check` through `npx -y pnpm@12.15.0`, sending the test output to a file and reading its exit code (LESSONS M082).
+- [x] T7: Run `pnpm test` and `pnpm check` through `npx -y pnpm@12.15.0`, sending the test output to a file and reading its exit code (LESSONS M082).
 
 ## Work log
 <!-- owner: any skill · append-only; one line per entry; absolute dates.
@@ -109,6 +109,8 @@ When a repo older and far larger than the repo that lists its add-on id appears,
 - 2026-11-03: T4 moved both entries; each `meta.json` is byte-equal to `pnpm add-plugin --out` output; both READMEs read for a paid service, no mark; the sweep's other 734 tsv lines are unchanged.
 - 2026-11-03: correction to the line above: the tsv has 695 entry lines, so the other 693 are unchanged.
 - 2026-11-03: T5 and T6 wrote the ledger from all 30 discover runs, the docs, the changelog entry, and D-056; D-056 gives D-053's merge default its exception for `replaces-entry`.
+- 2026-11-03: claim audit: 106 claims read, 12 corrected — README.md, CHANGELOG.md, src/discover/holds.ts, src/discover/discover.ts, src/discover/propose.ts
+- 2026-11-03: kept "newest stable release" in the pull request body, as AC2 words it, over "GitHub latest release" as the re-read suggested; README says that it is GitHub's latest release of the repo.
 
 ## Decisions
 <!-- owner: implement / review · append-only; milestone-local; promote

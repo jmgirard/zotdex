@@ -836,13 +836,13 @@ reasons, in this order:
 - `replaces-entry`: an entry already lists the plugin's add-on id from another
   repository on GitHub. The new repository is older, has at least 20 stars,
   and has at least 10 times that repository's stars. Any other repository
-  whose id the index has is refused as `entry-exists`. Three other cases are
-  also refused: an id that differs only in letter case, an issue run, and an
-  id that an open bot pull request adds. The pull request changes only the
-  entry's `meta.json`, so the entry keeps its `index.json`. The numbers cannot
-  show which repository is the original, so the maintainer decides. A listed
-  repository that credits the new one and has a newer release stays. Otherwise
-  the pull request merges.
+  whose id the index has is refused as `entry-exists`. A repeated id in an
+  issue run is also refused. So are an id that differs only in letter case and
+  an id that an open bot pull request adds or changes. The pull
+  request changes only the entry's `meta.json`, so the entry keeps its
+  `index.json`. The numbers cannot show which repository is the original, so
+  the maintainer decides. A listed repository that credits the new one and has
+  a newer release stays. Otherwise the maintainer merges the pull request.
 
 A held pull request also gets the label `hold`, and the maintainer merges or
 closes it. If the label request fails, `pnpm propose` names the pull request
@@ -864,10 +864,12 @@ the maintainer". They give the facts behind the hold:
   `http:`.
 - For `replaces-entry`, one line for the new repository and one for the listed
   repository. Each has the creation day, the stars, and the day of the newest
-  stable release. A fact that the bot did not get says "not read", and a
-  repository with no stable release says "none". More lines name each override
-  and the paid-service mark that the kept `index.json` holds, or say that it
-  holds neither.
+  stable release, which is GitHub's latest release of that repository. A fact
+  that the bot did not get says "not read", and a 404 for the release says
+  "none". If no entry lists the id from another GitHub repository now, one line
+  says so in place of the listed repository's line. More lines name each
+  override and the paid-service mark that the kept `index.json` holds, or say
+  that it holds neither.
 - For every hold, the day that the owner's GitHub account was made, or a
   note that the bot did not get that day.
 
@@ -881,7 +883,10 @@ does not fail the pull request. For an `update-host`, it also reads the
 update file's route: it requests the `update_url` and follows its redirects,
 without reading the file's contents. A failed read of the route fails the
 pull request and leaves its body as it is. An HTTP error, a refused host, a
-failed request, and a read past 60 seconds are each a failed read. First
+failed request, and a read past 60 seconds are each a failed read. For a
+`replaces-entry`, it also reads the two repositories and the kept `index.json`.
+A failed read of a repository says "not read" in the line. A failed read of
+`index.json` fails the pull request and leaves its body as it is. First
 update your
 checkout to the default branch, or the match
 lines can be wrong. The command acts on an open pull request that meets all

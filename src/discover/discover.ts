@@ -315,7 +315,8 @@ export interface DraftOptions {
   // The longest the read of the repo, and the branch-name check of its entry, may take.
   readMs?: number;
   refCheckMs?: number;
-  // The longest the reads of a name match's evidence may take.
+  // The longest the reads of a name match's evidence may take, and each group of reads of a
+  // replaced entry's facts.
   evidenceMs?: number;
   // The time the owner's account age is measured to, and whether an issue run drafts the
   // entry, for the hold reasons.
@@ -324,7 +325,8 @@ export interface DraftOptions {
 }
 
 // Reads one repo and writes its entry to outDir, unless the index or an open pull
-// request already has its plugin id. `repoUrl` in the result is the URL GitHub gives
+// request already has its plugin id. A repo with a `replaces-entry` hold is the exception
+// for an id that the index has. `repoUrl` in the result is the URL GitHub gives
 // for the repo. A read that passes `readMs` fails as request-failed, marked build-level.
 export async function draftEntry(repoUrl: string, options: DraftOptions): Promise<Drafted> {
   const { fetch, lookup, outDir, ids, pendingIds, readMs = READ_LIMIT_MS, refCheckMs } = options;
