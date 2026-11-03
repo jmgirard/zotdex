@@ -50,7 +50,7 @@ A normal daily build reads every plugin before its time limit, with room for the
 - [x] T1: In `src/build/build.ts`, replace the `for (const i of order)` loop (line 219) with a pool of `READS_AT_ONCE` (4) workers that take the next index in `order`; each worker checks `buildMs` before it starts a read. Wrap the fetch given to `readRecord` so that a request to `api.github.com` waits for its turn, `API_GAP_MS` (80) after the last turn. Add `readsAtOnce` and `apiGapMs` to the limits object.
 - [x] T2: In `test/build.test.ts`, set `readsAtOnce: 1` and `apiGapMs: 0` where a test rests on serial reads or fake timers. Add the tests that AC1 to AC5 name. See each new test fail once against a serial loop and against a fetch with no pacing.
 - [x] T3: Update README, DESIGN, the comment above `buildData`, and CHANGELOG; run the AC7 search. Run `pnpm test` and `pnpm check`.
-- [ ] T4: Add a temporary step to `build.yml` that prints `/rate_limit` before and after `pnpm build`. Run `build.yml` on the branch twice, record the time, the request count, and the limit, search each log, then remove the step.
+- [x] T4: Add a temporary step to `build.yml` that prints `/rate_limit` before and after `pnpm build`. Run `build.yml` on the branch twice, record the time, the request count, and the limit, search each log, then remove the step.
 
 ## Work log
 
@@ -73,6 +73,8 @@ A normal daily build reads every plugin before its time limit, with room for the
 - 2026-11-03: T1 to T3 done: `pnpm test` 2222 passed, 6 skipped; `pnpm check` 0 problems. The "over 64 KiB" stdout test moved from 1500 entries to 80 with long repo names, since 1500 paced API requests pass the spawn's time limit. Names chosen: `readsAtOnce`, `apiGapMs`, in the existing limits object.
 
 - 2026-11-03: branch run 41689697258: `pnpm build` step 5:08 at 736 plugins, 0 failures; `/rate_limit` shows `core` limit 5000, 1527 used before the step (run 41685419485 in the same hour) and 3054 after, so one build uses 1527 requests, 2.07 a plugin, about 300 a minute; GraphQL 9 requests. So 3 builds fit one hour, and 3 hand builds plus other workflows can pass the limit.
+
+- 2026-11-03: branch run 41690770665: `pnpm build` step 5:32 at 736 plugins, 0 failures, 1527 `core` requests again (3054 to 4581 used, limit 5000); no HTTP 403 or 429 and no `not-read` in the job log. Temporary steps removed; `build.yml` matches main. Row "Retry build reads GitHub refuses" now holds the budget numbers.
 
 ## Decisions
 
