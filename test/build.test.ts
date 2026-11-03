@@ -625,21 +625,22 @@ describe("pnpm build with a timer still pending", () => {
 
   test("writes the whole stdout of over 64 KiB before it exits", async () => {
     // Each entry's repo has no recorded answer, so its read fails with HTTP 404 and adds one
-    // stdout line.
+    // stdout line, which the long repo name makes over 1 KiB. Few entries keep the paced API
+    // requests short.
     const tree = tempDir();
-    for (let i = 0; i < 1500; i++) {
+    for (let i = 0; i < 80; i++) {
       const id = `plugin-${String(i).padStart(4, "0")}@example.org`;
       mkdirSync(join(tree, id));
-      writeFileSync(join(tree, id, "meta.json"), JSON.stringify({ id, repoUrl: `https://github.com/example/plugin-${i}` }));
+      writeFileSync(join(tree, id, "meta.json"), JSON.stringify({ id, repoUrl: `https://github.com/example/plugin-${i}-${"x".repeat(1000)}` }));
       writeFileSync(join(tree, id, "index.json"), JSON.stringify({ schemaVersion: 1 }));
     }
     const fixture = writeFixture({ [LABEL]: { json: { name: "report" } }, [ISSUES]: { json: [] } });
     const out = tempDir();
     const plain = pnpmBuild([tree, "--out", out], fixture);
     expect(Buffer.byteLength(plain.stdout)).toBeGreaterThan(64 * 1024);
-    expect(plain.stdout.trimEnd().split("\n").at(-1)).toMatch(/^wrote 1500 records to /);
+    expect(plain.stdout.trimEnd().split("\n").at(-1)).toMatch(/^wrote 80 records to /);
     const plainData = takeData(out);
-    expect(plainData?.plugins).toHaveLength(1500);
+    expect(plainData?.plugins).toHaveLength(80);
 
     // This run's stdout is not read for its first 2 seconds, so the pipe fills and the
     // command still holds unwritten output when it is done.
