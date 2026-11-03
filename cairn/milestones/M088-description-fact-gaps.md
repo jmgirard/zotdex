@@ -26,27 +26,27 @@ text stays as the manifest has it.
 
 ## Acceptance criteria
 
-- [ ] AC1: `cjkShare` in `src/site/description.ts` takes the NFC form of its text. It counts one CJK unit for each
+- [x] AC1: `cjkShare` in `src/site/description.ts` takes the NFC form of its text. It counts one CJK unit for each
       character whose `Script` is Han, Hiragana, Katakana, or Hangul, and for each letter whose `Script_Extensions`
       names one of them. It counts one other unit for each run of other letters. Tests in `test/description.test.ts`
       give these shares: `コーヒー` 1, `〆切` 1, `、。` 0, `Résumé notes 中文` with its accents decomposed 0.5, and
       `논문 notes` with its Hangul decomposed 2/3.
-- [ ] AC2: On `cairn/references/sources/plugins-data-2026-11-03.json`, with the checkout's overrides, `shownDescription`
+- [x] AC2: On `cairn/references/sources/plugins-data-2026-11-03.json`, with the checkout's overrides, `shownDescription`
       gives the same result on the branch as on the default branch for every record in the file, by a comparison run
       over all records.
-- [ ] AC3: A plugin page whose manifest description holds only whitespace has no "Manifest description" row in Details.
+- [x] AC3: A plugin page whose manifest description holds only whitespace has no "Manifest description" row in Details.
       A test in `test/site.test.ts` shows this, and shows that a page with a non-blank manifest description keeps the
       row.
-- [ ] AC4: In the Overrides table, the Upstream value cell of a `description` override lists the manifest text after the
+- [x] AC4: In the Overrides table, the Upstream value cell of a `description` override lists the manifest text after the
       label `Manifest:` and the GitHub text after the label `GitHub:`. Each appears only when it exists and is not
       blank. The cell reads `none` when neither does. Tests in `test/site.test.ts` cover these shapes: both texts,
       manifest only, GitHub only, a blank manifest with a GitHub text, a blank manifest alone, an upstream block with
       neither text, and a failure record with no upstream block. They also show that an override of another field keeps
       its one value.
-- [ ] AC5: README's and DESIGN's sentences on the CJK share name NFC and `Script_Extensions` letters. The About page's
+- [x] AC5: README's and DESIGN's sentences on the CJK share name NFC and `Script_Extensions` letters. The About page's
       Overrides paragraph says that a description override lists both upstream texts. The Unreleased section of
       `CHANGELOG.md` has an entry that claims only what the tests of AC1, AC3, and AC4 enforce.
-- [ ] AC6: `pnpm test` and `pnpm check` pass.
+- [x] AC6: `pnpm test` and `pnpm check` pass.
 
 ## Coverage
 
@@ -93,3 +93,12 @@ text stays as the manifest has it.
 ## Decisions
 
 ## Review
+
+Branch up to date with `origin/main` on 2026-11-03; `gh` lists no PR for the branch, so this is route (d).
+
+- AC1: 9 `cjkShare` rows pass in `test/description.test.ts`, by name in a verbose run: `コーヒー` 1, `〆切` 1, `、。` 0, decomposed `Résumé notes 中文` 0.5, decomposed `논문 notes` 2/3, and the 4 older rows. Implement saw the 4 new discriminating rows fail on the old code and `、。` fail with the letter limit removed.
+- AC2: a comparison of the default branch's and the branch's `shownDescription` over `plugins-data-2026-11-03.json`, with the checkout's overrides: 736 records, 682 shown, 0 differ.
+- AC3: "shows no Manifest description row for a blank text and keeps it for a text" passes in `test/site.test.ts`; the test failed on the old page.
+- AC4: 7 named shapes of the Upstream value cell and the other-field test pass in "the description facts" in `test/site.test.ts`; all 8 failed before the change, and the browser pane showed Jasminum's two labeled lines on the real data.
+- AC5: README's and DESIGN's share sentences name NFC and `Script_Extensions`, and About says a description override lists both texts, each read in a joined copy. CHANGELOG's two new entries state the table, the blank row, the marks, and decomposed text; a sentence on which commands use the share was not enforced by these tests, so it was removed here before this tick.
+- AC6: `pnpm test` exit 0, 2238 passed and 6 skipped; `pnpm check` exit 0, 736 entries, 0 problems.

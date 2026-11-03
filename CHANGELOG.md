@@ -9,8 +9,7 @@
   whose text is blank, and the table leaves such a text out.
 - The share of Chinese, Japanese, and Korean text now counts the marks ー and 〆
   as such text. It also reads a text with decomposed accents or Hangul in its
-  composed form. The site, `pnpm description-gaps`, and `pnpm text-request` use
-  this share.
+  composed form.
 - `pnpm build` now reads up to 4 plugins at once, and it starts each GitHub API
   request of these reads at least 80 ms after the one before it. Before, it read
   one plugin at a time, so a slow daily build could reach its 18-minute limit,
