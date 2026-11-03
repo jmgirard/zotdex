@@ -565,4 +565,5 @@ describe("the hold details", () => {
       listed: { repo: "carol/copy", stars: 2, releasedOn: "none" },
       ownerCreatedOn: expect.any(String),
     });
-  });});
+  });
+});

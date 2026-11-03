@@ -4,7 +4,7 @@
      cairn_validate's <150 over the plan-owned body. -->
 # M085: Let an older, larger repo ask for a listed add-on id
 
-- **Status:** in-progress   <!-- owner: transitioning skill · mirror-update; cairn/ROADMAP.md is the authority -->
+- **Status:** review   <!-- owner: transitioning skill · mirror-update; cairn/ROADMAP.md is the authority -->
 - **Priority:** high   <!-- owner: plan · create/amend-via-gate; high | normal | low -->
 - **Depends on:** —   <!-- owner: plan · create/amend-via-gate; M<xx>, M<yy> or — -->
 - **Driving RR:** —   <!-- owner: plan · create/amend-via-gate; RR<NN> whose Binding criteria bind this milestone's ACs (binding-criteria check), or — -->
@@ -114,6 +114,8 @@ When a repo older and far larger than the repo that lists its add-on id appears,
 - 2026-11-03: kept "newest stable release" in the pull request body, as AC2 words it, over "GitHub latest release" as the re-read suggested; README says that it is GitHub's latest release of the repo.
 - 2026-11-03: review return 1: AC2 fails as written, since the pull request body names only `paidService.note` and not each value of the kept mark; the same pass settled the other fix-now findings listed in the Review section.
 - 2026-11-03: T8 fixed AC2's values and the other fix-now findings; the title is now `Replace a listed repo with <repo>`, with no id; the write step skips with `listed-changed` when the id no longer lists the compared repo; the follow-ups went to the row "Tighten the reads behind replaces-entry".
+- 2026-11-03: claim audit: 17 claims read, 2 corrected — README.md, src/discover/propose.ts
+- 2026-11-03: T8 also fixed the second pass's findings: a release 404 for an unread repo now says "not read", and bad kept JSON fails before the push.
 
 ## Decisions
 <!-- owner: implement / review · append-only; milestone-local; promote
@@ -156,7 +158,7 @@ spawned: diff-bug, blame-history, prior-review, ripple
 - diff-bug #10: `JSON.parse` of the kept file runs after the force-push — fix now.
 - diff-bug #11: a pull request held for both `name-match` and `replaces-entry` gives two maintainer questions — fix now, in D-056.
 - diff-bug #12: a local `pnpm discover` with the default output does the extra reads and then reports a build-level `entry-exists` — follow-up, same row.
-- diff-bug #13: a 404 for a deleted repo reads as "none" — follow-up, same row.
+- diff-bug #13: a 404 for a deleted repo reads as "none" — fix now, moved from follow-up by the second pass's diff-bug #1.
 - diff-bug (c): `test/discover.test.ts` "reads no release" asserts bare `ok` false, and three tests repeat a path; floor gaps are the non-404 release failure, the `keptLines` version branch, and two `changedMeta` branches — fix now.
 - blame-history #1: a stale or forged handoff can open a held pull request over a different entry — fix now, same as diff-bug #8.
 - blame-history #2: the ledger lacks the listed repos' newest releases for the moved pairs, and one phrase is garbled — fix now.
@@ -174,3 +176,28 @@ spawned: diff-bug, blame-history, prior-review, ripple
 - ripple #7: the message "already adds" — reject, false, for the same reason as ripple #5.
 - ripple #8: the row "Review repeats of a listed add-on id" — reject, planned change, since hygiene graduates it.
 - ripple #9: `INDEX.md` omits M085 from the sweep's line — fix now.
+
+### Findings, second pass, on the fixes
+
+spawned: diff-bug, blame-history, ripple (prior-review had no new surface, since the fixes touch only lines this branch added)
+
+- diff-bug #1: a deleted listed repo's 404 prints "none" against AC2's "not read" — fix now.
+- diff-bug #2: this repo's "not read" and "none" lines have no test — fix now.
+- diff-bug #3: a nonzero check status still opens the pull request — reject, planned change, since every bot pull request does this and its body reports the status.
+- diff-bug #4: a repo that lists two ids gets a lasting `listed-changed` skip — reject, edge, since the index skips a repo it has, so no entry reaches this; the effect is a skip.
+- diff-bug #5: a forged plan that names the true listed repo still gets a held pull request — follow-up, row "Tighten the reads behind replaces-entry", parked.
+- diff-bug #6: the first pass's ripple #4 line was re-ruled with no work-log line — noted here: it first read fix now, and it became reject when the changelog sentence was read.
+- diff-bug #7: no test pins bad kept JSON failing before the push — fix now.
+- diff-bug #8: no refresh test asserts a real override — reject, planned change, since the first pass removed that repeat and `keptLines` has its test.
+- diff-bug #9: kept override lines omit `reason` — reject, planned change, since AC2 names each override's value.
+- diff-bug #10: the check reads a trimmed copy — reject, false, since trimming does not change what JSON parses to.
+- diff-bug #11: neither title nor body names the id — reject, false, since the diff's one file path names it.
+- diff-bug #12: "this question alone" is only in D-056 — reject, planned change, since a decision entry is where the maintainer's rule lives.
+- diff-bug #13: `test/holds.test.ts` formatting — fix now.
+- blame-history #1: the failed-read row left AC1's table — reject, false, since the three unread-value rows cover AC1's named cases and name-match tests cover a failed read.
+- blame-history #2: the refresh test of kept values left — reject, false, since the refresh tests still assert the Kept line.
+- blame-history #3: the title overrides an earlier work-log choice — reject, false, since T8's line records it.
+- ripple #4: README's "no longer lists" against the code's map — reject, false, since one repo holds one entry.
+- ripple #5: `CHANGELOG.md` line 352 — reject, false, as the first pass's ripple #4.
+- ripple #6: `test/holds.test.ts` formatting — fix now, same as diff-bug #13.
+- claim audit of the fixes: 17 claims read, 2 corrected (README's `name-match` line and a comment in `propose.ts`).

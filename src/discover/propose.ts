@@ -448,7 +448,7 @@ export async function propose(options: ProposeOptions): Promise<{ proposed: Prop
           await git(["update-index", "--add", "--cacheinfo", `100644,${blob},plugins/${id}/${file}`], index);
         }
         const tree = await git(["write-tree"], index);
-        // No id here: an id can hold `@name`, and a title has no code span to keep it from a mention.
+        // No id here, so no manifest text reaches the title.
         const title = replacing ? `Replace a listed repo with ${repo}` : `Add ${repo}`;
         const commit = await git(["commit-tree", "--no-gpg-sign", tree, "-p", baseCommit, "-m", title], {
           GIT_AUTHOR_NAME: BOT.name,

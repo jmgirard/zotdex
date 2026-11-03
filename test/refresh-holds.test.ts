@@ -225,6 +225,12 @@ describe("pnpm refresh-holds", () => {
       for (const line of LINES) expect(patches[0].sent.body).toContain(line);
     });
 
+    test("says not read, not none, for the release of a listed repo that is gone", async () => {
+      const held = pull(1, { body: source(1, ["replaces-entry"]) });
+      const { result } = await run({ [LIST]: { json: [held] }, ...replacing(), [`${INDEX}/pulls/1`]: { json: held }, [`${API}/example/second-plugin`]: { status: 404, json: {} } });
+      expect(result.changed[0].lines).toContain("- Listed repo: [example/second-plugin](https://github.com/example/second-plugin): created not read, stars not read, newest stable release not read");
+    });
+
     test("says when no entry lists the id from another repo now", async () => {
       const held = pull(1, { body: source(1, ["replaces-entry"]) });
       const other = "not-listed@example.org";

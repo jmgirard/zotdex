@@ -411,12 +411,13 @@ export async function replacedEntry(
   const own = ownMeta ?? (await metaFacts(read, ownBase));
   if (onlyFarLarger && !farLarger(own, listedMeta)) return undefined;
   const github = githubClient(boundFetch(fetch, AbortSignal.timeout(ms)));
-  const ownReleasedOn = await releaseDay(github, ownBase);
-  const listedReleasedOn = await releaseDay(github, listedBase);
+  // A 404 for the release of a repo that was not read can mean that the repo is gone.
+  const ownReleasedOn = own.createdAt && (await releaseDay(github, ownBase));
+  const listedReleasedOn = listedMeta.createdAt && (await releaseDay(github, listedBase));
   return {
     repo,
-    listed: { ...listedMeta, ...(listedReleasedOn && { releasedOn: listedReleasedOn }) },
-    own: { ...own, ...(ownReleasedOn && { releasedOn: ownReleasedOn }) },
+    listed: { ...listedMeta, ...(typeof listedReleasedOn === "string" && { releasedOn: listedReleasedOn }) },
+    own: { ...own, ...(typeof ownReleasedOn === "string" && { releasedOn: ownReleasedOn }) },
   };
 }
 

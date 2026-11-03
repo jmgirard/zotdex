@@ -836,7 +836,25 @@ describe("the write step checks the bot pull requests again and the index at the
 
     test("names a kept override's version, and says not read for a release it could not read", () => {
       expect(keptLines({ overrides: [{ field: "description", version: "1.0", value: "Text." }] })).toEqual(['- Kept override of ` description ` for version ` 1.0 `: ` "Text." `']);
-      expect(holdDetailLines({ listed: { repo: "bob/copy" } })).toContain("- Listed repo: [bob/copy](https://github.com/bob/copy): created not read, stars not read, newest stable release not read");
+      const lines = holdDetailLines({ listed: { repo: "bob/copy" } });
+      expect(lines).toContain("- This repo: created not read, stars not read, newest stable release not read");
+      expect(lines).toContain("- Listed repo: [bob/copy](https://github.com/bob/copy): created not read, stars not read, newest stable release not read");
+    });
+
+    test("says none for a repo with no stable release", () => {
+      expect(holdDetailLines({ repoReleasedOn: "none", listed: { repo: "bob/copy", releasedOn: "none" } }).slice(0, 2)).toEqual([
+        "- This repo: created not read, stars not read, newest stable release none",
+        "- Listed repo: [bob/copy](https://github.com/bob/copy): created not read, stars not read, newest stable release none",
+      ]);
+    });
+
+    test("fails the entry before the push when the kept index.json is not JSON", async () => {
+      const { remote, work } = checkout();
+      pushFromClone(remote, tempDir(), { [`plugins/${ID}/meta.json`]: meta("bob/copy"), [`plugins/${ID}/index.json`]: "not json\n" });
+      const { fetch } = fixtureFetch(opened);
+      const result = await proposeHandoff({ fetch, indexRepo: "example/index", gitDir: work, check: async () => ({ status: 0, output: "" }), entries: [replacing()] });
+      expect(result).toMatchObject({ ok: true, proposed: [], failed: [{ repo: "example/alpha", id: ID }] });
+      expect(git(remote, "for-each-ref", "--format=%(refname)", "refs/heads/discover")).toBe("");
     });
 
     test("a plan with a replacing entry's details passes the handoff check", async () => {

@@ -871,7 +871,8 @@ the maintainer". They give the facts behind the hold:
   that the bot did not get says "not read", and a 404 for the release says
   "none". If no entry lists the id from another GitHub repository now, one line
   says so in place of the listed repository's line. The new repository's line
-  then goes too, unless a `name-match` names an entry. More lines name each
+  then goes too, unless a `name-match` names or counts an entry. More lines
+  name each
   override and each value of the paid-service mark that the kept `index.json`
   holds, or say that it holds neither.
 - For every hold, the day that the owner's GitHub account was made, or a
