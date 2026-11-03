@@ -555,4 +555,19 @@ describe("the hold details", () => {
   test("an entry with no hold has no details", () => {
     expect(holdDetails(facts, [])).toBeUndefined();
   });
+
+  test("replaces-entry gives both repos' facts and leaves out what the bot could not read", () => {
+    const replaced = { repo: "carol/copy", listed: { stars: 2, releasedOn: "none" }, own: { createdAt: new Date("2025-01-10T09:00:00Z"), stars: 300, releasedOn: "2026-03-01" } };
+    expect(holdDetails({ ...facts, replaced }, ["replaces-entry"])).toEqual({
+      repoCreatedOn: "2025-01-10",
+      repoStars: 300,
+      repoReleasedOn: "2026-03-01",
+      listed: { repo: "carol/copy", stars: 2, releasedOn: "none" },
+      ownerCreatedOn: expect.any(String),
+    });
+  });
+
+  test("replaces-entry says when no entry lists the id now", () => {
+    expect(holdDetails(facts, ["replaces-entry"])?.noListed).toBe(true);
+  });
 });

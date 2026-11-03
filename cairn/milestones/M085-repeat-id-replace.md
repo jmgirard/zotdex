@@ -4,14 +4,14 @@
      cairn_validate's <150 over the plan-owned body. -->
 # M085: Let an older, larger repo ask for a listed add-on id
 
-- **Status:** planned   <!-- owner: transitioning skill · mirror-update; cairn/ROADMAP.md is the authority -->
+- **Status:** in-progress   <!-- owner: transitioning skill · mirror-update; cairn/ROADMAP.md is the authority -->
 - **Priority:** high   <!-- owner: plan · create/amend-via-gate; high | normal | low -->
 - **Depends on:** —   <!-- owner: plan · create/amend-via-gate; M<xx>, M<yy> or — -->
 - **Driving RR:** —   <!-- owner: plan · create/amend-via-gate; RR<NN> whose Binding criteria bind this milestone's ACs (binding-criteria check), or — -->
 - **Principles touched:** —   <!-- owner: plan · create/amend-via-gate; comma-separated IPn/GPn ids this milestone touches, or — -->
 - **Resolves:** —   <!-- owner: plan · create/amend-via-gate; comma-separated GitHub issues the scope absorbs, each `#N closes` (the PR closes it at merge) or `#N partial` (the remainder gets a candidate row), or — ; skill conduct only — no validate check parses it -->
 - **Surface tier:** user-facing — it changes the published entries and the bot's pull requests   <!-- owner: plan · create/amend-via-gate; user-facing | internal — <one-clause reason>; skill conduct only — no validate check parses it -->
-- **Branch/PR:** —   <!-- owner: implement (branch) / review (PR URL) · create; a companion checkout the milestone also works in is one further entry per checkout, `companion: <abs-path> <branch>` (implement), its PR URL appended by review — /milestone-review merges companions first, in listed order -->
+- **Branch/PR:** m085-repeat-id-replace   <!-- owner: implement (branch) / review (PR URL) · create; a companion checkout the milestone also works in is one further entry per checkout, `companion: <abs-path> <branch>` (implement), its PR URL appended by review — /milestone-review merges companions first, in listed order -->
 
 ## Goal
 <!-- owner: plan · create; a wrong goal returns to plan, never edited in place -->
@@ -71,9 +71,9 @@ When a repo older and far larger than the repo that lists its add-on id appears,
      cites; an insertion, removal, or reorder renumbers the labels and the
      Coverage lines together. -->
 
-- [ ] T1: Add `replaces-entry` to `HOLD_REASONS` and `HOLD_TEXT`, and the test beside the namesake numbers in `src/discover/holds.ts`. In `draftEntry` (`src/discover/discover.ts:345`), read the listed repo's facts when an exact id repeats, and draft or refuse by AC1. The read needs each entry's id and repo, which `IndexedName` may not hold yet. Write the tests first. A test repo needs `stars` and dates, or it reads as unread (LESSONS M075).
-- [ ] T2: In `src/discover/propose.ts` (near lines 174, 429, and 434), let a `replaces-entry` entry pass the existing-entry skip, write only `meta.json`, and run `pnpm check` on the entry as the head holds it. Add the release dates and the kept `index.json` values to the hold details and body (near lines 564 to 577). Keep `botPulls` (line 208) as the skip source, and test AC4 at `test/propose.test.ts` near line 906.
-- [ ] T3: Let `src/discover/refresh-holds.ts` (lines 80 to 95) accept a pull request with one modified `meta.json`, and add the tests of AC3. `merge.ts:70` already refuses any `Hold:` line other than `none`, so its test pins that for the new reason.
+- [x] T1: Add `replaces-entry` to `HOLD_REASONS` and `HOLD_TEXT`, and the test beside the namesake numbers in `src/discover/holds.ts`. In `draftEntry` (`src/discover/discover.ts:345`), read the listed repo's facts when an exact id repeats, and draft or refuse by AC1. The read needs each entry's id and repo, which `IndexedName` may not hold yet. Write the tests first. A test repo needs `stars` and dates, or it reads as unread (LESSONS M075).
+- [x] T2: In `src/discover/propose.ts` (near lines 174, 429, and 434), let a `replaces-entry` entry pass the existing-entry skip, write only `meta.json`, and run `pnpm check` on the entry as the head holds it. Add the release dates and the kept `index.json` values to the hold details and body (near lines 564 to 577). Keep `botPulls` (line 208) as the skip source, and test AC4 at `test/propose.test.ts` near line 906.
+- [x] T3: Let `src/discover/refresh-holds.ts` (lines 80 to 95) accept a pull request with one modified `meta.json`, and add the tests of AC3. `merge.ts:70` already refuses any `Hold:` line other than `none`, so its test pins that for the new reason.
 - [ ] T4: Run `pnpm add-plugin --out <empty dir>` for the two repos, copy each `meta.json` over the entry, read each repo for a paid service by D-054, and update the sweep page and its tsv, whose lines name the two forks.
 - [ ] T5: Write the ledger from the logs of the discover runs that GitHub holds, and add its `INDEX.md` line.
 - [ ] T6: Update `README.md` (hold reasons near lines 801 to 846), `cairn/DESIGN.md` (hold reasons, and the refusal statements near lines 705 and 758), and `CHANGELOG.md`, and append the decision entry.
@@ -103,6 +103,10 @@ When a repo older and far larger than the repo that lists its add-on id appears,
 - 2026-11-03: plan chose D-045's namesake numbers (20 stars, 10 times, older) over a new threshold, because they sort the 19 pairs read into 4 worth a look, and a false pass costs one closed pull request; falsified by a listed repo that hides a far larger original below these numbers.
 - 2026-11-03: question set: which entries move now — `pdf2zh@guaguastandup.com` and `beaver@jlegewie.com` only.
 - 2026-11-03: question set: start `Build data` after the merge — no, wait for the daily build.
+- 2026-11-03: kept one milestone over the 8-criteria split tripwire, because the 8th is the verify run and the rest ship as one change.
+- 2026-11-03: T1 to T3 landed in one commit, since the reason, the pull request, and the refresh share one type; full suite green.
+- 2026-11-03: chose the pull request title and commit `Move <id> to <repo>`, and a `noListed` detail for a refresh when no entry lists the id now; also made the ids of a run's handoff count as pending, so only one repo of a run replaces an entry.
+- 2026-11-03: T4 moved both entries; each `meta.json` is byte-equal to `pnpm add-plugin --out` output; both READMEs read for a paid service, no mark; the sweep's other 734 tsv lines are unchanged.
 
 ## Decisions
 <!-- owner: implement / review · append-only; milestone-local; promote

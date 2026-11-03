@@ -8,8 +8,9 @@ Extraction: snapshots of 2026-11-02 and 2026-11-03, and READMEs and descriptions
 covers the 695 entries under `plugins/` at commit `c8f2b65`. The second, which
 M083 adds, covers the 34 entries added between that commit and `34a02a8`. The
 third, which M084 adds, covers the 7 entries added between `34a02a8` and
-`1b2cebf`. The sections before "Second read" hold the first read. This page
-builds no checker. A plugin added after `1b2cebf` has not been read. Status
+`1b2cebf`. The sections before "Second read" hold the first read. "Fourth read"
+covers two entries that M085 moved to other repos. This page builds no checker.
+A plugin added after `1b2cebf` has not been read. Status
 lives in `ROADMAP.md`, decisions in
 `DECISIONS.md`, and architecture in `DESIGN.md`.
 
@@ -132,7 +133,7 @@ The `note` and `source` of each are in the entry's `index.json`.
 - auto-export@andriwild.github.io: Script loader text only, nothing is sold
 - autoattach@adolinjonathan-bot.github.io: Credits means acknowledgements, nothing is sold
 - babeldoc-for-zotero@veiluna.github.io: User's own third-party API key and balance
-- beaver@jlegewie.com: Fork needs no account, uses user's own provider key
+- beaver@jlegewie.com: Lasting free tier and the user's own key, a subscription is an upgrade (corrected M085, see "Fourth read")
 - better-bibtex@iris-advies.com: Word matches are about keys and markup only
 - better-find-full-text@example.com: Paywall on articles only, nothing is sold
 - bettersync@swroom.com: Template text about activation and GitHub login only
@@ -252,7 +253,7 @@ The `note` and `source` of each are in the entry's `index.json`.
 - pdf-noir@zotero-plugins: Register and injection words are technical, nothing is sold.
 - pdf-translate@thejieee.github.io: Quota refers to third-party translation engines, some free.
 - pdf2zh-connector@aarongig.com: Free Google or user's own API keys, third parties.
-- pdf2zh@guaguastandup.com: Free open source, invitation links and third-party engines only.
+- pdf2zh@guaguastandup.com: Free open source, invitation links and third-party engines only (corrected M085, see "Fourth read").
 - pdfhandcatcher@qifu04: Login means reusing institutional sessions.
 - perma-archiver@kirinchang.law: Perma.cc is a third party the maker does not run.
 - popfish@moonbow.dev: bills through BytesLink, which the README does not tie to the maker
@@ -569,3 +570,13 @@ The list found 3 entries with a hit, and 4 with none.
 - `zhinfo@zotero.local`: works with free MyMemory or the user's own third-party key, and register means code sections
 - `zotero-ai-collection@jiaxin.fan`: the hits are a trial on a test library and the user's own LLM key and quota, from a third party
 - `zotero-tray@local`: activate and register mean window and icon handling, nothing is sold
+
+## Fourth read
+
+The read date is 2026-11-03. M085 moved two entries to other repos, so this read
+covers those repos. It reads each repo's README at the SHA in
+`paid-service-sweep-shas.tsv`. The session read the README lines on payment and
+accounts, and gave 0 marks. So neither entry has `paidService`.
+
+- `beaver@jlegewie.com` from `jlegewie/beaver-zotero` at `8b7fa5b4fc7a16769de95001f7fb0d4ccdf46342`: no mark. The README says "Beaver is available for free with your own API key or you can subscribe". A lasting free plan with a paid upgrade gets no mark (D-054). It asks for an account, and no payment is named for that.
+- `pdf2zh@guaguastandup.com` from `guaguastandup/zotero-pdf2zh` at `5dd2eaf019f71266764c269bbd2104b559ae95cf`: no mark. The README sells nothing. It lists free engines and third-party engines that use the user's own key.

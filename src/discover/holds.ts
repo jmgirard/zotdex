@@ -9,13 +9,15 @@ export type Source = (typeof SOURCES)[number];
 
 // Why the bot holds a pull request for the maintainer instead of letting
 // `pnpm merge-discover` merge it, in the order a `holds` list gives them.
-export const HOLD_REASONS = ["name-match", "owner-unread", "new-account", "update-host", "issue-no-topic"] as const;
+export const HOLD_REASONS = ["name-match", "owner-unread", "new-account", "update-host", "issue-no-topic", "replaces-entry"] as const;
 export type HoldReason = (typeof HOLD_REASONS)[number];
 
 // A lowercase owner/repo, as the bot keys repos.
 export const REPO = /^[a-z0-9_.-]+\/[a-z0-9_.-]+$/;
 // A day as YYYY-MM-DD.
 export const DAY = /^\d{4}-\d{2}-\d{2}$/;
+// The day of a repo's newest stable release, or `none` for a repo that has no stable release.
+export const RELEASE_DAY = /^(none|\d{4}-\d{2}-\d{2})$/;
 // The most matched entries that a hold's details name, and the most characters of a repo,
 // a name, and an update host there.
 export const MATCHES_MAX = 5;
@@ -32,8 +34,9 @@ const GITHUB_HOSTS = ["github.com", "raw.githubusercontent.com"];
 const NOISE = new Set(["zotero", "plugin", "addon", "for"]);
 // Two repos share code at this percent of either one's counted files.
 const SHARED_PERCENT = 30;
-// A matched entry's repo is a namesake to hold for at this many stars and this many times
-// the new repo's.
+// One repo is far larger than another at this many stars and this many times the other's.
+// A matched entry's repo that is far larger and older is a namesake to hold for, and a new
+// repo that is far larger and older than the repo listing its id can replace that repo.
 const NAMESAKE_STARS = 20;
 const NAMESAKE_TIMES = 10;
 // Paths that many unrelated repos share, so their files are not counted.
@@ -42,13 +45,15 @@ const BOILERPLATE =
 // The longest wait for all the reads of one `matchEvidence` call.
 const EVIDENCE_LIMIT_MS = 60 * 1000;
 
-// One entry of the index: its repo's lowercase owner and repo part, its meta.json name, and
-// whether its repo is on github.com, the only host where the bot can read that repo.
+// One entry of the index: its repo's lowercase owner and repo part, its meta.json name,
+// whether its repo is on github.com, the only host where the bot can read that repo, and its
+// directory's name, which is its add-on id.
 export interface IndexedName {
   owner: string;
   repoPart: string;
   name?: string;
   github?: boolean;
+  id?: string;
 }
 
 // What the bot read of a repo. A fact that it could not read is left out.
@@ -73,6 +78,21 @@ export function nameKey(text: string): string {
   return (text.toLowerCase().match(/[a-z0-9]+/g) ?? []).filter((run) => !NOISE.has(run)).join("");
 }
 
+// A repo's facts for a `replaces-entry` hold. `releasedOn` is left out when it was not read.
+export interface ReplaceFacts {
+  createdAt?: Date;
+  stars?: number;
+  releasedOn?: string;
+}
+
+// What the bot read of a new repo and of the entry's repo that lists its add-on id.
+export interface ReplacedEntry {
+  // The listed repo as lowercase owner/repo.
+  repo: string;
+  listed: ReplaceFacts;
+  own: ReplaceFacts;
+}
+
 export interface HoldFacts {
   // The new repo as lowercase owner/repo.
   repo: string;
@@ -90,6 +110,8 @@ export interface HoldFacts {
   indexed: IndexedName[];
   // What the bot read for the matched entries. Without it, every matched entry is unread.
   evidence?: MatchEvidence;
+  // The entry this new repo would replace, when it would replace one.
+  replaced?: ReplacedEntry;
 }
 
 // The index entries of other owners whose name or repo part matches the new repo's.
@@ -117,14 +139,20 @@ export function identicalPercent(a: string[], b: string[]): number {
   return Math.max(percentOf(a, new Set(b)), percentOf(b, new Set(a)));
 }
 
+// Whether `larger` is older than `other`, has at least 20 stars, and has at least 10 times
+// the stars of `other`. A fact that was not read gives false.
+function farLarger(larger: Pick<RepoFacts, "createdAt" | "stars">, other: Pick<RepoFacts, "createdAt" | "stars">): boolean {
+  if (larger.createdAt === undefined || larger.stars === undefined || other.createdAt === undefined || other.stars === undefined) return false;
+  return larger.createdAt < other.createdAt && larger.stars >= NAMESAKE_STARS && larger.stars >= NAMESAKE_TIMES * other.stars;
+}
+
 // Whether a matched entry holds the new repo: it shares code, it is a far larger and older
 // namesake, or a fact that these tests need was not read.
 function entryHolds(own: RepoFacts | undefined, entry: RepoFacts | undefined): boolean {
   if (own?.createdAt === undefined || own.stars === undefined || own.firstCommit === undefined || own.blobs === undefined) return true;
   if (entry?.createdAt === undefined || entry.stars === undefined || entry.firstCommit === undefined || entry.blobs === undefined) return true;
   const sharesCode = own.firstCommit === entry.firstCommit || identicalPercent(own.blobs, entry.blobs) >= SHARED_PERCENT;
-  const namesake = entry.createdAt < own.createdAt && entry.stars >= NAMESAKE_STARS && entry.stars >= NAMESAKE_TIMES * own.stars;
-  return sharesCode || namesake;
+  return sharesCode || farLarger(entry, own);
 }
 
 export function holdReasons(facts: HoldFacts): HoldReason[] {
@@ -141,6 +169,7 @@ export function holdReasons(facts: HoldFacts): HoldReason[] {
     "new-account": facts.ownerCreatedAt !== undefined && facts.now.getTime() - facts.ownerCreatedAt.getTime() < NEW_ACCOUNT_MS,
     "update-host": route.some(({ protocol }) => protocol === "http:") || (!GITHUB_HOSTS.includes(facts.updateHost) && !onOwnerSite),
     "issue-no-topic": facts.issueRun && !facts.topics.some((topic) => TOPICS.includes(topic)),
+    "replaces-entry": facts.replaced !== undefined,
   };
   return HOLD_REASONS.filter((reason) => held[reason]);
 }
@@ -157,17 +186,21 @@ export function namedEntries(matched: IndexedName[]): IndexedName[] {
 }
 
 // The facts behind a pull request's hold reasons, for the maintainer. `matches` is there
-// for `name-match` and `updateHost`, `updateHosts`, and `updateHttp` for `update-host`.
-// `updateHosts` is each other host of the update.json read, in request order, left out when
-// there is none. `updateHttp` says that a URL of that read used http. `ownerCreatedOn` is the owner's
+// for `name-match`, `updateHost`, `updateHosts`, and `updateHttp` for `update-host`, and
+// `listed` and `repoReleasedOn` for `replaces-entry`, or `noListed` when no entry lists the id
+// now. `updateHosts` is each other host of the update.json read, in request order, left out
+// when there is none. `updateHttp` says that a URL of that read used http. `ownerCreatedOn` is the owner's
 // account creation day, there for any reason, since it also helps to judge a name match.
-// A fact of `name-match` that the bot could not read is left out.
+// A fact of `name-match` or `replaces-entry` that the bot could not read is left out.
 export interface HoldDetails {
   matches?: { repo: string; name?: string; createdOn?: string; stars?: number; sharedFirstCommit?: boolean; identicalPercent?: number }[];
   // How many more entries matched than `matches` names.
   moreMatches?: number;
   repoCreatedOn?: string;
   repoStars?: number;
+  repoReleasedOn?: string;
+  listed?: { repo: string; createdOn?: string; stars?: number; releasedOn?: string };
+  noListed?: true;
   updateHost?: string;
   updateHosts?: string[];
   updateHttp?: true;
@@ -195,7 +228,7 @@ function entryDetails(own: RepoFacts | undefined, entry: RepoFacts | undefined):
 // The details of `reasons`, within the limits of the handoff schema, or undefined for no
 // reason. A matched entry whose repo the schema refuses counts in `moreMatches`, so one odd
 // entry in the index cannot refuse a whole handoff.
-export function holdDetails(facts: Pick<HoldFacts, "repo" | "name" | "updateHost" | "updateRoute" | "ownerCreatedAt" | "indexed" | "evidence">, reasons: readonly HoldReason[]): HoldDetails | undefined {
+export function holdDetails(facts: Pick<HoldFacts, "repo" | "name" | "updateHost" | "updateRoute" | "ownerCreatedAt" | "indexed" | "evidence" | "replaced">, reasons: readonly HoldReason[]): HoldDetails | undefined {
   if (reasons.length === 0) return undefined;
   const details: HoldDetails = {};
   if (reasons.includes("name-match")) {
@@ -210,6 +243,24 @@ export function holdDetails(facts: Pick<HoldFacts, "repo" | "name" | "updateHost
     const repoCreatedOn = dayOf(own?.createdAt);
     if (repoCreatedOn) details.repoCreatedOn = repoCreatedOn;
     if (own?.stars !== undefined) details.repoStars = own.stars;
+  }
+  if (reasons.includes("replaces-entry")) {
+    const { replaced } = facts;
+    if (replaced) {
+      const repoCreatedOn = dayOf(replaced.own.createdAt);
+      if (repoCreatedOn) details.repoCreatedOn = repoCreatedOn;
+      if (replaced.own.stars !== undefined) details.repoStars = replaced.own.stars;
+      if (replaced.own.releasedOn) details.repoReleasedOn = replaced.own.releasedOn;
+      const createdOn = dayOf(replaced.listed.createdAt);
+      details.listed = {
+        repo: replaced.repo,
+        ...(createdOn && { createdOn }),
+        ...(replaced.listed.stars !== undefined && { stars: replaced.listed.stars }),
+        ...(replaced.listed.releasedOn && { releasedOn: replaced.listed.releasedOn }),
+      };
+    } else {
+      details.noListed = true;
+    }
   }
   if (reasons.includes("update-host")) {
     details.updateHost = cut(facts.updateHost, HOST_MAX);
@@ -322,6 +373,49 @@ export async function matchEvidence(
   };
   const [own, entries] = await Promise.all([readOwn(), readEntries()]);
   return { own, entries };
+}
+
+// The day of a repo's newest stable release: `none` when GitHub answers that the repo has
+// none, and undefined when the read fails. GitHub's latest release is never a draft or a
+// prerelease.
+async function releaseDay(github: ReturnType<typeof githubClient>, base: string): Promise<string | undefined> {
+  try {
+    const { body } = await github.get(`${base}/releases/latest`);
+    return dayOf(createdAtOf((body as { published_at?: unknown } | null)?.published_at));
+  } catch (error) {
+    return error instanceof ReadFailure && error.status === 404 ? "none" : undefined;
+  }
+}
+
+// What the bot reads for a new repo and for the repo of the entry whose add-on id is exactly
+// `id`, or undefined when no such entry has a github.com repo of a shape the handoff takes,
+// or when that repo is the new repo. `ownMeta` gives the new repo's date and stars when the
+// caller read them already. With `onlyFarLarger`, it also gives undefined unless the new repo
+// is far larger and older than the listed repo, and it reads no release for such a repo. A
+// read that fails or that `ms` cuts leaves its fact out, and it never throws.
+export async function replacedEntry(
+  fetch: Fetch,
+  facts: Pick<HoldFacts, "repo" | "indexed"> & { id: string },
+  { ownMeta, onlyFarLarger = false, ms = EVIDENCE_LIMIT_MS }: { ownMeta?: Pick<RepoFacts, "createdAt" | "stars">; onlyFarLarger?: boolean; ms?: number } = {},
+): Promise<ReplacedEntry | undefined> {
+  const entry = facts.indexed.find(({ id, github }) => id === facts.id && github === true);
+  if (!entry) return undefined;
+  const repo = entryRepo(entry);
+  if (repo === facts.repo || repo.length > REPO_MAX || !REPO.test(repo)) return undefined;
+  const read = evidenceReader(fetch, ms);
+  const ownBase = repoBase(facts.repo);
+  const listedBase = repoBase(repo);
+  const listedMeta = await metaFacts(read, listedBase);
+  const own = ownMeta ?? (await metaFacts(read, ownBase));
+  if (onlyFarLarger && !farLarger(own, listedMeta)) return undefined;
+  const github = githubClient(boundFetch(fetch, AbortSignal.timeout(ms)));
+  const ownReleasedOn = await releaseDay(github, ownBase);
+  const listedReleasedOn = await releaseDay(github, listedBase);
+  return {
+    repo,
+    listed: { ...listedMeta, ...(listedReleasedOn && { releasedOn: listedReleasedOn }) },
+    own: { ...own, ...(ownReleasedOn && { releasedOn: ownReleasedOn }) },
+  };
 }
 
 // The owner's account creation time from `GET /users/<owner>`, or undefined when the read

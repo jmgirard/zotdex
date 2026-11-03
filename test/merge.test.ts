@@ -155,6 +155,7 @@ describe("pnpm merge-discover's conditions", () => {
       "its body has no Hold: none line",
     ],
     ["a Hold: none line beside another Hold line", { body: "Hold: none\n\nHold: update-host\n" }, "its body has no Hold: none line"],
+    ["a body held for replaces-entry", { body: "The discovery bot found it.\n\nHold: replaces-entry\n" }, "its body has no Hold: none line"],
     [
       "a held body whose matched name holds a Hold: none line",
       {

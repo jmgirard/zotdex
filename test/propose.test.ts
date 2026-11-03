@@ -770,6 +770,89 @@ describe("the write step checks the bot pull requests again and the index at the
     expect(existsSync(join(work, "plugins", "Beta@Example.org"))).toBe(false);
   });
 
+  describe("an entry that replaces a listed one", () => {
+    const ID = "alpha@example.org";
+    const meta = (repo: string) =>
+      `${JSON.stringify({ id: ID, name: "Alpha", description: "A plugin for testing.", homepage: `https://github.com/${repo}`, repoUrl: `https://github.com/${repo}`, updateUrl: `https://raw.githubusercontent.com/${repo}/main/update.json` }, null, 2)}\n`;
+    const keptIndex = {
+      schemaVersion: 1,
+      paidService: { note: "Needs the maker's plan.", source: "https://github.com/bob/copy/blob/HEAD/README.md", read: "2026-11-02" },
+      overrides: [{ field: "description", value: "An English description of the plugin here.", reason: "Translated from the README of the listed repo." }],
+    };
+    const replacing = (): Written => {
+      const dir = join(entriesDir(tempDir()), ID);
+      mkdirSync(dir, { recursive: true });
+      writeFileSync(join(dir, "meta.json"), meta("example/alpha"));
+      writeFileSync(join(dir, "index.json"), `${JSON.stringify({ schemaVersion: 1 })}\n`);
+      return {
+        repo: "example/alpha",
+        repoUrl: "https://github.com/example/alpha",
+        id: ID,
+        version: "1.0",
+        outcome: "written",
+        dir,
+        holds: ["replaces-entry"],
+        holdDetails: { repoCreatedOn: "2025-01-10", repoStars: 300, repoReleasedOn: "2026-03-01", listed: { repo: "bob/copy", stars: 1, releasedOn: "none" } },
+      };
+    };
+    const opened: Responses = {
+      ...indexRepo,
+      [`POST ${PULLS}`]: { status: 201, json: { html_url: "https://github.com/example/index/pull/1", number: 1 } },
+      [`POST ${INDEX}/issues/1/labels`]: { status: 200, json: [] },
+    };
+
+    test("changes only meta.json, checks the kept index.json with pnpm check, and names what it keeps", async () => {
+      const { remote, work } = checkout();
+      pushFromClone(remote, tempDir(), { [`plugins/${ID}/meta.json`]: meta("bob/copy"), [`plugins/${ID}/index.json`]: `${JSON.stringify(keptIndex, null, 2)}\n` });
+      const { fetch, requests } = fixtureFetch(opened);
+      let checkedIndex: unknown;
+      const check: CheckRunner = async (dir) => {
+        checkedIndex = JSON.parse(readFileSync(join(dir, ID, "index.json"), "utf8"));
+        return pnpmCheck(dir);
+      };
+      const result = await proposeHandoff({ fetch, indexRepo: "example/index", gitDir: work, check, entries: [replacing()] });
+      expect(result).toMatchObject({ ok: true, proposed: [{ repo: "example/alpha", id: ID }], failed: [], skipped: [] });
+      expect(checkedIndex).toEqual(keptIndex);
+      expect(git(remote, "diff", "--name-status", "main", "discover/example/alpha")).toBe(`M\tplugins/${ID}/meta.json`);
+      const sent = JSON.parse(requests.find(({ method, url }) => method === "POST" && url === PULLS)!.body!);
+      expect(sent.title).toBe(`Move ${ID} to example/alpha`);
+      expect(sent.body).toContain("exited with status 0:");
+      expect(sent.body).toContain("Hold: replaces-entry");
+      expect(sent.body).toContain("- This repo: created 2025-01-10, 300 stars, newest stable release 2026-03-01");
+      expect(sent.body).toContain("- Listed repo: [bob/copy](https://github.com/bob/copy): created not read, 1 star, newest stable release none");
+      expect(sent.body).toContain('- Kept override of ` description `: ` "An English description of the plugin here." `');
+      expect(sent.body).toContain("- Kept paid-service mark: ` Needs the maker's plan. `");
+      expect(requests.some(({ url }) => url === `${INDEX}/issues/1/labels`)).toBe(true);
+    });
+
+    test("says so when the kept index.json has no override and no mark", async () => {
+      const { remote, work } = checkout();
+      pushFromClone(remote, tempDir(), { [`plugins/${ID}/meta.json`]: meta("bob/copy"), [`plugins/${ID}/index.json`]: `${JSON.stringify({ schemaVersion: 1 })}\n` });
+      const { fetch, requests } = fixtureFetch(opened);
+      await proposeHandoff({ fetch, indexRepo: "example/index", gitDir: work, check: async () => ({ status: 0, output: "" }), entries: [replacing()] });
+      expect(JSON.parse(requests.find(({ method, url }) => method === "POST" && url === PULLS)!.body!).body).toContain("- Kept from `index.json`: no override and no paid-service mark");
+    });
+
+    test("fails the entry when the default branch has no index.json for the id", async () => {
+      const { work } = checkout();
+      const { fetch } = fixtureFetch(opened);
+      const result = await proposeHandoff({ fetch, indexRepo: "example/index", gitDir: work, check: async () => ({ status: 0, output: "" }), entries: [replacing()] });
+      expect(result).toMatchObject({ ok: true, proposed: [], failed: [{ repo: "example/alpha", id: ID, message: expect.stringContaining("git cat-file failed") }] });
+    });
+
+    test.each([
+      ["open", "example/open-pr"],
+      ["closed without a merge", "example/closed-pr"],
+    ])("proposes no second pull request for a repo whose bot pull request is %s", async (_state, repo) => {
+      const { work } = checkout();
+      const { fetch, requests } = fixtureFetch(loadFixture(resolve(ROOT, "test/fixtures/discover/pulls.json")).responses);
+      const entry = { ...replacing(), repo, repoUrl: `https://github.com/${repo}` };
+      const result = await proposeHandoff({ fetch, indexRepo: "example/index", gitDir: work, check: async () => ({ status: 0, output: "" }), entries: [entry] });
+      expect(result).toEqual({ ok: true, proposed: [], failed: [], skipped: [{ repo, id: ID, reason: "in-bot-pull" }] });
+      expect(requests.filter(({ method }) => method === "POST")).toEqual([]);
+    });
+  });
+
   test("fails every entry, one an open bot pull request adds included, when main has no plugins folder", async () => {
     const { remote, work } = checkout();
     pushFromClone(remote, tempDir(), {}, ["plugins"]);

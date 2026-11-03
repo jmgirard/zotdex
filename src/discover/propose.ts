@@ -1,5 +1,5 @@
 import { execFile, spawn } from "node:child_process";
-import { cp, mkdtemp, rm } from "node:fs/promises";
+import { cp, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import process from "node:process";
@@ -171,7 +171,9 @@ export async function proposeHandoff(options: ProposeHandoffOptions): Promise<Pr
   const written: Written[] = [];
   for (const entry of entries) {
     const { repo, id } = entry;
-    if (index.repos.has(repo) || index.ids.has(id.toLowerCase())) skipped.push({ repo, id, reason: "in-index" });
+    // An entry that replaces another needs that entry's id in the index.
+    const idIsTaken = index.ids.has(id.toLowerCase()) && !entry.holds.includes("replaces-entry");
+    if (index.repos.has(repo) || idIsTaken) skipped.push({ repo, id, reason: "in-index" });
     else if (pulls.skip.has(repo) || pulls.ids.has(id.toLowerCase())) skipped.push({ repo, id, reason: "in-bot-pull" });
     else written.push(entry);
   }
@@ -404,6 +406,8 @@ export interface ProposeOptions {
 // branch commit that adds the entry's two files, and opens a pull request from it. The
 // commits are built with a temporary index file, so the checkout's working tree and
 // branch do not change. A git process that passes `gitMs` is killed and fails its entry.
+// An entry held for `replaces-entry` changes only that entry's meta.json, and its check and
+// body read the index.json that the default branch has, which fails it if the commit has none.
 export async function propose(options: ProposeOptions): Promise<{ proposed: Proposed[]; failed: ProposeFailure[] }> {
   const { fetch, indexRepo, gitDir, remote = "origin", pushBase, written, check, gitMs = GIT_LIMIT_MS, issue } = options;
   const { branch: base, commit: baseCommit } = pushBase;
@@ -427,16 +431,20 @@ export async function propose(options: ProposeOptions): Promise<{ proposed: Prop
       try {
         const checkDir = join(work, `check-${n}`);
         await cp(dir, join(checkDir, id), { recursive: true });
+        const replacing = entry.holds.includes("replaces-entry");
+        const keptIndex = replacing ? await git(["cat-file", "blob", `${baseCommit}:plugins/${id}/index.json`]) : undefined;
+        if (keptIndex !== undefined) await writeFile(join(checkDir, id, "index.json"), `${keptIndex}\n`);
         const checked = await check(checkDir);
 
         const index = { GIT_INDEX_FILE: join(work, `index-${n}`) };
         await git(["read-tree", baseCommit], index);
-        for (const file of ["meta.json", "index.json"]) {
+        for (const file of replacing ? ["meta.json"] : ["meta.json", "index.json"]) {
           const blob = await git(["hash-object", "-w", join(dir, file)]);
           await git(["update-index", "--add", "--cacheinfo", `100644,${blob},plugins/${id}/${file}`], index);
         }
         const tree = await git(["write-tree"], index);
-        const commit = await git(["commit-tree", "--no-gpg-sign", tree, "-p", baseCommit, "-m", `Add ${repo}`], {
+        const title = replacing ? `Move ${id} to ${repo}` : `Add ${repo}`;
+        const commit = await git(["commit-tree", "--no-gpg-sign", tree, "-p", baseCommit, "-m", title], {
           GIT_AUTHOR_NAME: BOT.name,
           GIT_AUTHOR_EMAIL: BOT.email,
           GIT_COMMITTER_NAME: BOT.name,
@@ -446,10 +454,10 @@ export async function propose(options: ProposeOptions): Promise<{ proposed: Prop
         await git(["push", "--quiet", "--force", remote, `${commit}:refs/heads/${branch}`], auth);
 
         const pull = (await github.post(`${API}/repos/${indexRepo}/pulls`, {
-          title: `Add ${repo}`,
+          title,
           head: branch,
           base,
-          body: body(entry, checked, issue),
+          body: body(entry, checked, issue, keptIndex === undefined ? [] : keptLines(JSON.parse(keptIndex))),
         })) as { html_url?: unknown; number?: unknown };
         const url = typeof pull?.html_url === "string" ? pull.html_url : "";
         if (entry.holds.length > 0) {
@@ -495,6 +503,8 @@ export const HOLD_TEXT: Record<HoldReason, string> = {
   "update-host":
     "The plugin's update.json is not on github.com, raw.githubusercontent.com, or the repo owner's own `<owner>.github.io` site, a redirect takes the read of it off the owner's site, or a URL of that read uses `http:`, so its updates come from another host or over an unencrypted connection.",
   "issue-no-topic": "An issue proposed this repo, and the repo has neither the zotero-plugin nor the zotero-addon topic.",
+  "replaces-entry":
+    "The index lists this plugin's add-on id from another repo. This repo is older, has at least 20 stars, and has at least 10 times that repo's stars, so this pull request points the entry at this repo. It changes only the entry's `meta.json`, and the entry keeps its `index.json`. These numbers cannot show which repo is the original. If the listed repo credits this repo and has a newer release, close this pull request, and otherwise merge it.",
 };
 
 // The line above a held body's facts, and the start of the sentence that ends a bot body.
@@ -509,8 +519,9 @@ export const UNHELD_TEXT =
 // and a code block, so text in them cannot mention a GitHub user. With `issue`, the body
 // says that issue asked for the entry, and closes it. A check output longer than
 // CHECK_OUTPUT_MAX is cut, and the body says so. The Hold line names the entry's hold
-// reasons, or says `Hold: none`, which `pnpm merge-discover` looks for.
-export function body(entry: Written, checked: { status: number; output: string }, issue?: number): string {
+// reasons, or says `Hold: none`, which `pnpm merge-discover` looks for. `kept` is the
+// detail lines for the kept index.json of an entry held for `replaces-entry`.
+export function body(entry: Written, checked: { status: number; output: string }, issue?: number, kept: string[] = []): string {
   const declared = (value: string | undefined) => (value === undefined ? "not declared" : code(value));
   const trimmed = checked.output.trimEnd();
   const chars = [...trimmed];
@@ -550,24 +561,41 @@ export function body(entry: Written, checked: { status: number; output: string }
           "The bot does not merge this pull request itself.",
           "",
           ...entry.holds.map((reason) => `- \`${reason}\`: ${HOLD_TEXT[reason]}`),
-          ...(entry.holdDetails ? ["", DETAILS_HEADING, "", ...holdDetailLines(entry.holdDetails)] : []),
+          ...(entry.holdDetails ? ["", DETAILS_HEADING, "", ...holdDetailLines(entry.holdDetails, kept)] : []),
         ]),
     "",
     `${CLOSING_START} the bot does not propose this repo again, from discovery or from an issue.`,
   ].join("\n");
 }
 
+// The detail lines for what an entry's index.json keeps when another repo replaces its
+// meta.json: each override and the paid-service mark, since they were written for the
+// listed repo. Each value goes in a code span.
+export function keptLines(index: unknown): string[] {
+  const { overrides, paidService } = (index ?? {}) as { overrides?: { field?: unknown; value?: unknown; version?: unknown }[]; paidService?: { note?: unknown } };
+  const lines = [
+    ...(overrides ?? []).map(({ field, value, version }) => `- Kept override of ${code(String(field))}${version === undefined ? "" : ` for version ${code(String(version))}`}: ${code(JSON.stringify(value))}`),
+    ...(paidService ? [`- Kept paid-service mark: ${code(String(paidService.note))}`] : []),
+  ];
+  return lines.length > 0 ? lines : ["- Kept from `index.json`: no override and no paid-service mark"];
+}
+
 // The lines under DETAILS_HEADING. A name goes in a code span, so it cannot add a line or
 // a mention; the schema's repo pattern keeps a repo safe in a link.
-export function holdDetailLines(details: HoldDetails): string[] {
-  const matched = (details.matches?.length ?? 0) > 0 || details.moreMatches;
+export function holdDetailLines(details: HoldDetails, kept: string[] = []): string[] {
+  const matched = (details.matches?.length ?? 0) > 0 || details.moreMatches || details.listed;
+  const released = (day: string | undefined) => `newest stable release ${day ?? "not read"}`;
+  const ownReleased = details.listed ? `, ${released(details.repoReleasedOn)}` : "";
   const created = (day: string | undefined) => `created ${day ?? "not read"}`;
   const stars = (count: number | undefined) => (count === undefined ? "stars not read" : count === 1 ? "1 star" : `${count} stars`);
   const firstCommit = (shared: boolean | undefined) => (shared === undefined ? "first commit not read" : shared ? "same first commit" : "another first commit");
   const identical = (percent: number | undefined) => (percent === undefined ? "identical files not read" : `${percent}% identical files`);
   return [
     ...(details.matches?.length === 0 && !details.moreMatches ? ["- Matching entries: none now"] : []),
-    ...(matched ? [`- This repo: ${created(details.repoCreatedOn)}, ${stars(details.repoStars)}`] : []),
+    ...(matched ? [`- This repo: ${created(details.repoCreatedOn)}, ${stars(details.repoStars)}${ownReleased}`] : []),
+    ...(details.listed ? [`- Listed repo: [${details.listed.repo}](https://github.com/${details.listed.repo}): ${created(details.listed.createdOn)}, ${stars(details.listed.stars)}, ${released(details.listed.releasedOn)}`] : []),
+    ...(details.noListed ? ["- Listed repo: no entry lists this id from another github.com repo now"] : []),
+    ...kept,
     ...(details.matches ?? []).map(
       (match) =>
         `- Matching entry: ${match.name === undefined ? "" : `${code(match.name)} `}[${match.repo}](https://github.com/${match.repo}): ${created(match.createdOn)}, ${stars(match.stars)}, ${firstCommit(match.sharedFirstCommit)}, ${identical(match.identicalPercent)}`,
