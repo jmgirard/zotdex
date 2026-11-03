@@ -7,7 +7,7 @@ _Last hygiene check: 2026-11-03 (M088 archived; one row narrowed; 25 lessons, 14
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M089 | Fill the description gaps of 2026-11-03 | planned | M088 | normal | milestones/M089-description-gaps-2026-11-03.md |
+| M089 | Fill the description gaps of 2026-11-03 | in-progress | M088 | normal | milestones/M089-description-gaps-2026-11-03.md |
 | M088 | Fix the small description fact gaps | done | — | normal | milestones/archive/M088-description-fact-gaps.md |
 | M087 | Read plugins a few at a time | done | — | high | milestones/archive/M087-read-plugins-at-once.md |
 | M086 | Give every read plugin a category | done | — | normal | milestones/archive/M086-every-plugin-a-category.md |
