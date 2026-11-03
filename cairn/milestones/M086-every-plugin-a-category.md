@@ -49,22 +49,22 @@ The ledger, About page, README, DESIGN, and CHANGELOG text for these changes.
      coverage-complete counts AC checkboxes positionally (M107); departures:
      a "Deviations from RR<NN>" table ends this section. -->
 
-- [ ] AC1: `categories` gives `metadata` to the record with the id
+- [x] AC1: `categories` gives `metadata` to the record with the id
       `zotero-pmcid-fetcher@iris-advies.com`, with the name and description that
       the record carries in `cairn/references/sources/plugins-data-2026-11-03.json`.
       On the base commit, `categories` returns `[]` for that record.
-- [ ] AC2: `categories` returns `["other"]` for a record with upstream facts that
+- [x] AC2: `categories` returns `["other"]` for a record with upstream facts that
       no other category takes, both when no pattern matches and when an `exclude`
       entry removes its only match. It returns no `other` for a record that another
       category takes. It returns `[]` for a record with no upstream facts and no
       `include` entry. The `pnpm text-request` command prints no `adds-category`
       line for `other`.
-- [ ] AC3: `CATEGORIES` holds 15 categories: the 13 of M066 in their order, then
+- [x] AC3: `CATEGORIES` holds 15 categories: the 13 of M066 in their order, then
       "Window, tabs, and shortcuts" (slug `interface`), then "Other tools" (slug
       `other`). When a record has `other`, `categoryOptions` lists it after every
       other option, even with the most records. It orders the other options by most
       records first, with ties in `CATEGORIES` order.
-- [ ] AC4: A new section of `cairn/references/category-ledger.md` holds a comparison
+- [x] AC4: A new section of `cairn/references/category-ledger.md` holds a comparison
       script, the base commit's hash, and the data file's `generatedAt`. The script
       applies the base commit's `categories` and the branch's `categories` to each
       record of the data file of AC1. The section has one line for each record with
@@ -75,16 +75,16 @@ The ledger, About page, README, DESIGN, and CHANGELOG text for these changes.
       an `include` entry, and such a line names the README. A line gives `other` only
       where the read found that no other category's `about` text fits the plugin. The
       user spot-checks these lines at the merge question.
-- [ ] AC5: The script of AC4 lists no category that a record has on the base commit
+- [x] AC5: The script of AC4 lists no category that a record has on the base commit
       and lacks on the branch. Each category that the branch adds to a record that
       already had one on the base commit has a line in the same ledger section, marked
       right by the same rule.
-- [ ] AC6: The About page's Categories section contains the sentence "A plugin that
+- [x] AC6: The About page's Categories section contains the sentence "A plugin that
       fits no other category is under Other tools." The README's category paragraph
       says the same, and `CHANGELOG.md` has an entry for the change. `cairn/DESIGN.md`
       names 15 categories. `cairn/DESIGN.md` and the README state that the menu lists
       Other tools last.
-- [ ] AC7: `pnpm test` and `pnpm check` exit 0. In a site built by `pnpm site` with
+- [x] AC7: `pnpm test` and `pnpm check` exit 0. In a site built by `pnpm site` with
       the data file of AC1 at `dist/v1/plugins.json` and viewed in the browser pane,
       the home page's Category menu shows both new names with Other tools last. The
       PMCID fetcher page lists Metadata and cleanup after "Index categories". The page
@@ -183,3 +183,14 @@ The ledger, About page, README, DESIGN, and CHANGELOG text for these changes.
      results, review findings + triage. EXEMPT from the 150-line cap (M55),
      as are the work log (D-046) and the decisions section (D-074); evidence
      never scrambles plan-owned content. -->
+
+Default branch unmoved since the cut (`origin/main` is `f92dcad`, the merge base). No PR is open. The Copilot round is off (no header line in `cairn/PROFILE.md`).
+
+- AC1: on the 2026-11-03 data file, the record reads "PMCID fetcher for Zotero" and "PMCID fetcher"; a node script gives `[]` from the base commit's `categories` and `["metadata"]` from the branch's. Test "gives metadata to the PMCID fetcher from its own words" passes.
+- AC2: tests pass by name for the no-match case, the exclude case, a record that another category takes, and the record with no upstream facts; "prints no Other tools line when the text loses the record's only match" passes.
+- AC3: "holds the 15 categories in the planned order" and "lists Other tools last even with the most records, and the others by most records with ties in list order" pass.
+- AC4: the script over the data file gives 145 records, and a parse of the ledger section equals its ids and categories (145 lines, True). 119 lines carry a right mark, 26 give `other`, and 22 name the README. The section holds the script, base hash `f92dcad…`, and `generatedAt` 2026-11-03T14:25:58.649Z. The user's spot-check is at the merge question.
+- AC5: the script lists no removal (`removed` is empty), and its 11 added records equal the ledger's 11 lines, all marked right.
+- AC6: built About text holds the sentence, and `test/site.test.ts` asserts it; joined README holds the sentence and "The menu lists Other tools last"; `CHANGELOG.md` has the entry; joined DESIGN holds "each of the 15 categories" and "the menu lists Other tools last", and no "13 categories".
+- AC7: `pnpm test` exit 0 (2215 passed, 6 skipped), `pnpm check` exit 0 (736 entries, 0 problems). Site built by `pnpm site` with the data file at `dist/v1/plugins.json`, viewed in the browser pane: the menu ends "Window, tabs, and shortcuts (27)", "Appearance (15)", "Other tools (26)"; the PMCID fetcher page reads "Index categories: Metadata and cleanup"; the Debug Log page reads "Index categories: Other tools"; no console errors.
+- Consistency gate: `cairn_validate.py` passes. No principle changed, so `cairn_impact` is skipped. The generic profile names no toolchain checks.
