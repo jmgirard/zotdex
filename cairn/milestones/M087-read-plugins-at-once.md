@@ -72,6 +72,8 @@ A normal daily build reads every plugin before its time limit, with room for the
 
 - 2026-11-03: T1 to T3 done: `pnpm test` 2222 passed, 6 skipped; `pnpm check` 0 problems. The "over 64 KiB" stdout test moved from 1500 entries to 80 with long repo names, since 1500 paced API requests pass the spawn's time limit. Names chosen: `readsAtOnce`, `apiGapMs`, in the existing limits object.
 
+- 2026-11-03: branch run 41689697258: `pnpm build` step 5:08 at 736 plugins, 0 failures; `/rate_limit` shows `core` limit 5000, 1527 used before the step (run 41685419485 in the same hour) and 3054 after, so one build uses 1527 requests, 2.07 a plugin, about 300 a minute; GraphQL 9 requests. So 3 builds fit one hour, and 3 hand builds plus other workflows can pass the limit.
+
 ## Decisions
 
 ## Review
