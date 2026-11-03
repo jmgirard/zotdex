@@ -73,6 +73,7 @@ row "Fill description gaps on new plugins". Mixed texts with a CJK share under 0
 - 2026-11-03: AC1's shelf file renamed from the audited name to `plugins-data-2026-11-03b.json`, since `cairn_validate.py` reads the earlier name's digits as a bad date; the same file, so the audit stands.
 - 2026-11-03: T1 to T5: the command printed 6 gaps at `819ee093`; READMEs read by the session, no subagent; no `text-change` issue exists. 6 overrides written, and the command prints 0 gaps. The comparison gave 11 added categories, 7 marked right and 4 excluded (review's rewording of one text left 9 and 2). Ledger section, changelog count, and the row's count added. These share this commit, since each is small.
 - 2026-11-03: claim audit: 57 claims read, 2 corrected — plugins/zoterotransnator@euclpts.com/index.json in `value`, plugins/zoturead@zotero.org/index.json in `reason`; CHANGELOG.md read, none wrong.
+- 2026-11-03: step-7 approval: m090-six-later-description-gaps approved for merge
 
 ## Decisions
 
