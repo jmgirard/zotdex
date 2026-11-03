@@ -219,6 +219,8 @@ export const CATEGORIES: readonly Category[] = [
       "zotero-tts@xujialiu.top",
       "zotero-wikicite@wikidata.org",
       "zoterocopyanything@example.com",
+      "zoterotransnator@euclpts.com",
+      "zotxt@e6h.org",
     ],
   },
   {

@@ -1,10 +1,10 @@
-# description-ledger-2026-11-03: the description gaps in the deployed data of 2026-11-03 (M089)
+# description-ledger-2026-11-03: the description gaps in the two deployed data files of 2026-11-03 (M089, M090)
 
 **Provenance.** Ingested 2026-11-03 by M089 from a run of `pnpm description-gaps` at commit `a2066a9`, after M088 and before any new override. Its input was the shelf file `cairn/references/sources/plugins-data-2026-11-03.json`. Four Opus subagents then read each listed plugin's files on GitHub and drafted the overrides, and the session read each draft.
 Pagination: —.
 Extraction: a 2026-11-03 snapshot, and the deployed data and the READMEs can change after it — observed 2026-11-03.
 
-**Scope.** This page records the ledger that M089 asks for. It lists each description gap in one data file, the disposition of each, and a mark for each category that an override adds. It is not a source summary, and it builds no checker. The command in `src/site/description-gaps.ts` and its tests in `test/description-gaps.test.ts` hold the rule. This is a reference, not an authority. Status lives in `ROADMAP.md`, decisions in `DECISIONS.md`, and architecture in `DESIGN.md`. `description-ledger.md` holds the same record for the data of 2026-10-31.
+**Scope.** This page records the ledger that M089 asks for. It lists each description gap in one data file, the disposition of each, and a mark for each category that an override adds. The section "Later gaps (M090)" does the same for a second data file of the same day. It is not a source summary, and it builds no checker. The command in `src/site/description-gaps.ts` and its tests in `test/description-gaps.test.ts` hold the rule. This is a reference, not an authority. Status lives in `ROADMAP.md`, decisions in `DECISIONS.md`, and architecture in `DESIGN.md`. `description-ledger.md` holds the same record for the data of 2026-10-31.
 
 **Evidence snapshot.**
 
@@ -12,6 +12,7 @@ Extraction: a 2026-11-03 snapshot, and the deployed data and the READMEs can cha
 - The run printed 80 lines: 15 `missing`, 47 `cjk`, and 18 `short` — observed 2026-11-03.
 - Each top-level file whose name starts with README, ignoring case, on each plugin's GitHub default branch. All 80 repos had at least one — observed 2026-11-03.
 - `gh issue list --label text-change --state all` listed no issue, so no owner's removal applies to a listed plugin — observed 2026-11-03.
+- Second data file, for M090: `generatedAt` 2026-11-03T22:05:15.306Z, SHA-256 `2972c80c6c7dda51596efd55af822b8ca090e25f6e785fde31d3325b843d3b18`, 736 records, all with an `upstream` block, on the shelf as `cairn/references/sources/plugins-data-2026-11-03b.json` — observed 2026-11-03.
 
 ## How a row gets its disposition
 
@@ -125,8 +126,27 @@ The site's categories (D-037) read the shown description, so the new override te
   - organization: docboxtrans ("feed earlier translations").
   - interface: break-pdf ("tabs opened"), chartero ("overview tab").
 
+## Later gaps (M090)
+
+The first data file holds 39 records with no `upstream` block, and the command skips such a record. That build did not reach 38 of them (`not-read`), and one request failed. The second data file reads them all, and the command then prints 6 gaps with M089's overrides in place. The first build did not read these 6, and they are not new plugins. A later unread plugin can hide a gap in the same way. Each is an `override`, and after them the command prints no gap over the second file.
+
+| # | Plugin id | Case | Shown text | Disposition | Source |
+|---|---|---|---|---|---|
+| G81 | `zoterotransnator@euclpts.com` | short | Zotero PDF Translate Terminator | override | README.md, condensed |
+| G82 | `zotfetch@edslab.research` | short | ZotFetch: Batch PDF downloader | override | README.md, condensed |
+| G83 | `zotfetch@nikhilweee.me` | short | Fetch missing attachments | override | README.md, condensed |
+| G84 | `zoturead@zotero.org` | cjk | 今日优读（http://uread.today/），主要搭建一个知识平台以及读书辅助工具，提供书籍搜索，中图分类和学科搜索。 | override | README.md, translated |
+| G85 | `zotwanglele@wanglele.com` | cjk | Zotero 10 AI 全能插件 By Wanglele | override | README.md, translated |
+| G86 | `zotxt@e6h.org` | short | Plain text extensions for Zotero | override | README.md, condensed |
+
+The session read these READMEs. A comparison on the second file, with the default branch's `exclude` lists, gave 9 added categories on 4 plugins and took none away. The read found 7 right and 2 wrong, by the rule of `category-ledger.md`.
+
+- Right: zoterotransnator (ai, notes, attachments), zoturead (metadata, rankings), zotwanglele (translation, notes).
+- Wrong, excluded, with the words that matched:
+  - export: zoterotransnator ("Markdown notes", notes inside Zotero), zotxt ("such as Markdown", a kind of file its utilities read).
+
 ## Open questions
 
-- Plugins added after this data file are not in the ledger, nor are shown texts in other languages, which the command does not see. The candidate row "Fill description gaps on new plugins" holds them — observed 2026-11-03.
+- Plugins added after the second data file are not in the ledger, nor are shown texts in other languages, which the command does not see. The candidate row "Fill description gaps on new plugins" holds them — observed 2026-11-03.
 - Some descriptions hold CJK text but have a CJK share below 0.5. They get no row, since no rule covers them (D-038) — observed 2026-11-03.
-- A record with no `upstream` block gets no row, since the command skips it — observed 2026-11-03.
+- A record with no `upstream` block gets no row, since the command skips it. The second data file has none — observed 2026-11-03.

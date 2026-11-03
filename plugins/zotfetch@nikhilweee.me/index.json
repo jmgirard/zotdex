@@ -1,3 +1,10 @@
 {
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "field": "description",
+      "value": "Adds a right-click command that downloads a new PDF when an item's file is missing from disk and attaches it to the existing PDF entry, where Zotero's own command adds a new entry.",
+      "reason": "Condensed from the opening, \"Usage\", and \"How is this different\" sections of README.md. The manifest description, \"Fetch missing attachments\", is in English and has fewer than six words, and the GitHub About text is missing."
+    }
+  ]
 }
