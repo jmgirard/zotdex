@@ -4,7 +4,7 @@
     {
       "field": "description",
       "value": "Adds right-click tools for books tied to the uread.today site: searches it, Douban, JD, Dangdang, Baidu, Google, and other sites, repairs Chinese Library Classification and subject numbers, fetches tables of contents, and updates Douban ratings or CNKI citation counts.",
-      "reason": "Translated from the \"快速开始\" and \"特性\" sections of README.md, which is in Chinese. The manifest description is half or more Chinese, and the GitHub About text is missing."
+      "reason": "Translated from the \"介绍\", \"快速开始\", and \"特性\" sections of README.md, which is in Chinese. The manifest description is half or more Chinese, and the GitHub About text is missing."
     }
   ]
 }

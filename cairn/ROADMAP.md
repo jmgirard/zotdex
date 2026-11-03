@@ -7,7 +7,7 @@ _Last hygiene check: 2026-11-03 (M089 archived; one row graduated, one filed; 25
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M090 | Fill the six later description gaps | in-progress | M089 | normal | milestones/M090-six-later-description-gaps.md |
+| M090 | Fill the six later description gaps | review | M089 | normal | milestones/M090-six-later-description-gaps.md |
 | M089 | Fill the description gaps of 2026-11-03 | done | M088 | normal | milestones/archive/M089-description-gaps-2026-11-03.md |
 | M088 | Fix the small description fact gaps | done | — | normal | milestones/archive/M088-description-fact-gaps.md |
 | M087 | Read plugins a few at a time | done | — | high | milestones/archive/M087-read-plugins-at-once.md |
