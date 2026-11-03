@@ -1,0 +1,8 @@
+{
+  "id": "zotero-obsidian-readonly@example.com",
+  "name": "ZotPush MD",
+  "description": "Push read-only di riferimenti, note, evidenze e immagini da Zotero a Markdown con YAML.",
+  "homepage": "https://github.com/paolovolterra/Zotpush",
+  "repoUrl": "https://github.com/paolovolterra/Zotpush",
+  "updateUrl": "https://raw.githubusercontent.com/paolovolterra/Zotpush/main/updates.json"
+}
