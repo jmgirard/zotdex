@@ -1,20 +1,20 @@
 # Roadmap
 
 _The only authority on milestone status. Grouped by status, not ID._
-_Last hygiene check: 2026-11-03 (M088 and M089 planned; M085 done row pruned; one row added; validate green)_
+_Last hygiene check: 2026-11-03 (M088 archived; one row narrowed; 25 lessons, 14 marked used, none captured; 2 Known issues added; validate green)_
 
 ## Milestones
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M088 | Fix the small description fact gaps | review | — | normal | milestones/M088-description-fact-gaps.md |
 | M089 | Fill the description gaps of 2026-11-03 | planned | M088 | normal | milestones/M089-description-gaps-2026-11-03.md |
+| M088 | Fix the small description fact gaps | done | — | normal | milestones/archive/M088-description-fact-gaps.md |
 | M087 | Read plugins a few at a time | done | — | high | milestones/archive/M087-read-plugins-at-once.md |
 | M086 | Give every read plugin a category | done | — | normal | milestones/archive/M086-every-plugin-a-category.md |
 <!-- rows grouped by status, not by ID; keep the 3 most recent done/dropped rows; older ones: milestones/archive/ + git -->
 
 ## Candidates
-- Close gaps in the description pick: (1) `cjkShare` counts by `Script=`, so the Script=Common kana marks ー (U+30FC) and 〆 count as other-letter runs, and a decomposed (NFD) Latin word splits at its combining marks, so kana-heavy or NFD text scores low; `Script_Extensions` and NFC would fix both but change AC3's rule; (2) a whitespace-only manifest description shows an empty "Manifest description" row in Details; (3) the Overrides table's "Upstream value" for a description override shows only the manifest text, not the GitHub text (M055 review); (4) plugins added after 2026-10-31 need `pnpm description-gaps` and overrides (M067 plan) — added 2026-10-29 — M055 — started M088
+- Close gaps in the description pick: (4) plugins added after 2026-10-31 need `pnpm description-gaps` and overrides (M067 plan); narrowed 2026-11-03 by M088 — added 2026-10-29 — M055, M088 — started M089
 - Check categories on new plugins: M066's 0 wrong of 363 was read on the tuning data, and 2 of 27 were wrong on 19 untuned plugins; patterns still match words out of sense ("Note:", "easy to read", "two-column layout", "magnifying glass", a Zotero "translator", 期刊缩写); read the categories of plugins added since 2026-10-31 and tune; a plugin page's category links name only the category, after "Index categories" (M066 review); M086's first read of wider patterns marked 9 of 20 additions wrong, so a new plugin can expect a higher rate than its tuned 0 of 130; narrowed 2026-11-03 by M086, which read the plugins with no category and gave the rest Other tools; low, as About says a category can be wrong — added 2026-10-31 — M066, M086, D-037, D-057
 - Keep a plugin's last good record: a plugin whose read fails or is cut shows "Not read" with no facts until a later build reads it, since the build restores no earlier data (D-010, D-015), and run 41653526255 lost one this way to a failed gitee.com request; reuse the deployed record as `pnpm carry-start-results` reuses start results (D-035), which needs a mark on the site and a check that the XPI's facts are not stale (M087 plan) — added 2026-11-03 — M087, D-015, D-035
 - [low] Let a run by hand start every plugin: after a change to the start-test code, the reporter, or a Zotero pin, carried results stay up to 7 days, and nothing lets a maintainer skip the carry for one run (M059 review) — added 2026-10-30 — M059, D-035

@@ -1115,3 +1115,13 @@ reused._
   owner `..` links github.com). GitHub's `html_url` takes neither form (M061
   review). Routed from candidates 2026-11-03; added 2026-10-29 — M024, M037,
   M044, M049, M052, M053, M054, M058, M060, M061, M063, M066, D-029.
+- The CJK share is a rough count. A letter plus a mark with no composed form
+  splits a run of other letters, and halfwidth katakana with a voiced mark or
+  conjoining Hangul letters that do not compose count as several CJK units, so
+  such a mixed text can land on the other side of 0.5. None of the 1,282
+  upstream texts read on 2026-11-03 holds such a form beside CJK text. Accepted
+  at the M088 gate
+- A manifest description of only format characters, such as U+200B, is not
+  blank to `trim`, so Details shows a row that looks empty and the Overrides
+  cell shows a bare `Manifest:`. None of the 1,282 upstream texts read on
+  2026-11-03 has no letter or digit. Accepted at the M088 gate
