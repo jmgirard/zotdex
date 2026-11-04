@@ -195,6 +195,50 @@ describe("categories", () => {
       expect(categories(record("Attachment Translator"))).not.toContain("attachments");
     });
 
+    test.each(["Snapshot Viewer", "Rename Helper", "OCR Helper", "附件工具"])("takes attachments from the name %s", (name) => {
+      expect(categories(record(name))).toContain("attachments");
+    });
+
+    test.each(["Paper LLM", "Paper GPT", "Paper Agent", "Paper RAG"])("takes ai from the name %s", (name) => {
+      expect(categories(record(name))).toContain("ai");
+    });
+
+    test.each(["AI Bridge", "AI Server", "AI Skill"])("takes no ai from the name %s", (name) => {
+      expect(categories(record(name))).not.toContain("ai");
+    });
+
+    test.each([
+      "An AI 智能体 for papers.",
+      "A copilot for your reading.",
+      "A tl;dr of each paper.",
+      "AI-powered search.",
+      "RAG over your library.",
+      "Q&A with a local LLM.",
+    ])("gives ai to the stated feature: %s", (description) => {
+      expect(categories(record("Helper", description))).toContain("ai");
+    });
+
+    test.each([
+      "Finds papers on Sci-Hub.",
+      "Downloads from SciDB.",
+      "Saves pages to the Wayback Machine.",
+      "Opens DjVu books.",
+      "Figure and table extraction.",
+      "Finds open-access PDFs.",
+      "Reads scanned PDF files.",
+      "扫描 PDF files",
+      "Saved as a snapshot.",
+    ])("gives attachments to the stated feature: %s", (description) => {
+      expect(categories(record("Helper", description))).toContain("attachments");
+    });
+
+    test.each([
+      ["SKR@zotero.org", "ai"],
+      ["ZotFileRecovery@jlegewie.com", "attachments"],
+    ])("gives %s its %s from the include list, whatever its text", (id, slug) => {
+      expect(categories(record("Helper", "Plain words.", { id }))).toContain(slug);
+    });
+
     test.each([
       ["ai", "Summarizes papers and answers questions."],
       ["attachments", "Downloads papers and moves them to a folder."],

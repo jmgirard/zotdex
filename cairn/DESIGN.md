@@ -100,8 +100,7 @@ has marked can expect the wrong rate of the latest held-out read, which
 `cairn/references/category-ledger-2026-11-03.md` holds (D-060).
 `cairn/references/category-ledger-2026-11-04.md` is a re-score of the two
 further tests on those marks, not a read of unread plugins (D-061). The same
-script
-writes a plugin count beside the filters: the total, how many plugins the
+script writes a plugin count beside the filters: the total, how many plugins the
 filters pass on every page while a filter is on, or that none match (M044,
 M053, M058). Typing writes `?q=`
 once the visitor stops for half a second (M053 review). A top bar on every

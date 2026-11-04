@@ -21,7 +21,7 @@ export interface Category {
 
 // A stated AI feature: chat, summaries and explanations, an assistant, an agent in Zotero, or
 // work done with a model. A text with the word MCP or bridge, "model context protocol", or
-// "AI agents", "AI clients", or "AI tools" counts only for the first three lines of AI_FEATURE;
+// "AI agents", "AI clients", "AI tools", or "AI 工具" counts only for the first three lines of AI_FEATURE;
 // this check is on each text, not the record. AI_NAME passes a name with AI, LLM, GPT, agent, or
 // RAG, unless the name also has MCP, bridge, server, or skill.
 const MODEL = String.raw`(?<!(?:\bcode\b[^.,;]*?|built|developed|written|made) (?:by|with) )(?:\bai\b|\bllms?\b|(?:chat)?gpt|claude|codex|deepseek|gemini|openai|ollama|\bagent\b|大模型|人工智能)`;
@@ -50,8 +50,8 @@ const AI_FEATURE = new RegExp(
 // What a further test takes as a stated file feature: a verb such as find, download, rename,
 // move, or manage near a file word, a snapshot being added or saved, running OCR, or a word
 // such as scanned, Sci-Hub, wayback, DjVu, or "figures and tables". FILE_NAME passes a name with
-// attachment, snapshot, renam, or ocr, whatever the plugin does, unless the name has translat
-// or 翻译.
+// attachment, 附件, snapshot, renam, or ocr, whatever the plugin does, unless the name has
+// translat or 翻译.
 const FILE_NAME = /^(?!.*(?:translat|翻译)).*(?:attachment|附件|snapshot|renam|ocr\b)/iu;
 const FILE = String.raw`(?:pdfs?\b|files?\b|attachments?\b|full.?texts?\b|snapshots?\b|附件)`;
 const ZH_FILE_VERB = "管理|下载|转换|移动|重命名|整理|查找|同步|删除";

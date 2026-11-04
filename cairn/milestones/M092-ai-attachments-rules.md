@@ -89,3 +89,46 @@ The `ai` and `attachments` rules need a stated feature wherever a frozen rule pa
 - AC6: the `Unreleased` entry says that such a plugin "can lose a wrong category of these two, and it can also lose a right one".
 - AC7: `pnpm test` exit 0, 2309 passed and 6 skipped. `pnpm check` exit 0, 736 entries, 0 problems. Consistency gate: `cairn_validate.py` exit 0, all checks passed; no principle changed; the generic profile names no toolchain check.
 - spawned: diff-bug, blame-history, prior-review, ripple
+- diff-bug #1: the MCP and bridge guard is per text, so "Zotero MCP" with "Lets Claude answer questions about your library." gets `ai` — follow-up: "Fix misses of the two further tests", low
+- diff-bug #2: credits to a tool in other words pass, such as "developed using Claude Code" — follow-up: same row
+- diff-bug #3: bare mentions such as "summary" pass beside a credit — follow-up: same row
+- diff-bug #4: `open\w*` and `import\w*` take "OpenAI" and "Important" — follow-up: same row
+- diff-bug #5: file forms cross sentence ends, such as "Clean look. Attachments open faster." — follow-up: same row
+- diff-bug #6: model words outside `MODEL` lose `ai`, such as "Tags items using Kimi." — follow-up: same row
+- diff-bug #7: `AI_NAME` misses "AI4Paper" and "Zotero Agents" — follow-up: same row
+- diff-bug #8: the lookahead cuts "AI features developed for Zotero." — follow-up: same row
+- diff-bug #9: the guard misfires on prose and misses "ZoteroMCP" and "AI client" — follow-up: same row
+- diff-bug #10: MCP texts pass the three lines outside the guard — follow-up: same row
+- diff-bug #11: the 2000-character limit still leaves a crafted text at about 1 s a text — reject (edge): only a crafted manifest text reaches it, outside documented and common use, since no text in the data passes 509 characters, and the effect is slow running
+- diff-bug #12: Chinese coverage is thinner than English, such as 打开附件 — follow-up: same row
+- diff-bug #13: removed `exclude` entries no longer guard a plugin whose text changes — reject (planned change): T4 calls for it, and the page and CHANGELOG state it
+- diff-bug #14: `pnpm text-request` prints only gains, and a further test adds a way to lose a category — follow-up: same row
+- diff-bug #15: `renam` passes "Author Prenames" — follow-up: same row
+- diff-bug #16: two new cases repeat strings of the `CASES` test — reject (planned change): AC4 names those forms
+- diff-bug #17: no test gives an include id a text that fails `further` — fix now
+- diff-bug #18: the test hard-codes the 2000-character limit — reject (false): it tests behavior that the change adds, at its boundary
+- diff-bug #19: claims in comments have no test, and two comments omit a guard word — fix now
+- diff-bug #20: a record with no name has its id as `texts[0]`, and no record has this form — follow-up: same row
+- diff-bug #21: the list script reads the working tree, while the page says the base commit — fix now
+- diff-bug #22: a stray one-word line in DESIGN — fix now
+- diff-bug #23: the name tests have no `s` flag — follow-up: same row
+- diff-bug #24: titles print "undefined" for a case with no description — reject (style)
+- diff-bug #25: `attachments` passes by a margin of 1 — reject (planned change): the bar was the user's choice, and the merge question names the margin
+- blame-history #1: the planning session had read the held-out section — reject (planned change): D-061 and the page state it
+- blame-history #2: removing `BRIDGES` and the hand excludes drops a guard that M066 added, with no D-entry — reject (planned change): T4 calls for it, D-037's hand lists stay, and the compare shows no change on the data
+- blame-history #3: a guard drops `ai` from a text with both MCP and chat words, and `litmtrans@srt117.github.io` keeps it only through its override — follow-up: same row
+- blame-history #4: `paddleocr` has no further form, and `zotero-figure-extract@achuan` keeps its category only through its override — follow-up: same row
+- blame-history #5: a test moved off `zofiles@zofiles.dev` — reject (planned change): that id left the `exclude` list
+- prior-review #1: the MCP guard again drops `ai` from real tools that also name MCP, as M091 ruled against — follow-up: same row; AC1's frozen rules cannot change, and 0 right marks were lost on the held-out group
+- prior-review #2: the counts rest on a group that the plan had read — reject (planned change): D-061 and the page state it
+- prior-review #3: snapshot forms with no listed verb lose `attachments` — follow-up: same row
+- prior-review #4: many new alternatives have no test — fix now
+- prior-review #5: removed `exclude` entries, as diff-bug #13 — reject (planned change)
+- prior-review #6: "Attachment Translator" loses `attachments` — follow-up: same row
+- prior-review #7: DESIGN keeps the tie to the 2026-11-03 rate — reject (planned change): D-061 keeps it
+- ripple #1: README and About say that categories come from words — reject (false): further tests are word rules, so this stays true
+- ripple #2: DESIGN's first sentence on `categories` — reject (false): the next sentence qualifies it, and `include` did not change
+- ripple #3: CHANGELOG's earlier "They still take others" — reject (false): still true
+- ripple #4: README's line that an override can change categories — reject (false): still true
+- ripple #5: the row "Drop excludes left by removed overrides" — reject (false): the row holds for the entries that remain
+- ripple #6: the absorbed row reads as untried — reject (planned change): hygiene removes it
