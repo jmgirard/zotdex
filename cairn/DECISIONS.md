@@ -903,3 +903,18 @@ and going on, and over tuning on every new plugin with no such group, which give
 every plugin to the rules and no measure of a plugin they have not seen. The rest of
 D-037 and D-057 stands. Later reads of new plugins use the same test. This choice
 is wrong if a held-out rate does not hold on the next new plugins that a read marks.
+
+### D-060: Word rules stay although a held-out read missed the 1-in-10 test, annotating D-037 and D-059
+
+2026-11-03, M091 stop. M091's held-out read marked more than 1 in 10 assignments
+wrong on plugins that the tuning did not see, and the tuning changed almost none of
+them. `cairn/references/category-ledger-2026-11-03.md` holds the counts. D-059 gave
+this decision to the user. The user kept word rules and finished the milestone, over
+finishing with a high-priority row to replace them, and over stopping to re-plan. A
+category stays the index's own grouping, which the About page says can be wrong, and
+the other ways to place a new plugin need work on each bot merge, which D-037
+rejected. So 1 in 10 no longer decides whether word rules stay. A category that a
+pattern gives a plugin that no read has marked can expect the rate of the latest
+held-out read, until a read fixes it. Later reads still state a held-out rate, as D-059 says. This choice is wrong if
+visitors report wrong categories as a problem, or if a later held-out read finds a
+rate clearly above this one.

@@ -4,14 +4,14 @@
      cairn_validate's <150 over the plan-owned body. -->
 # M091: Check categories on new plugins
 
-- **Status:** planned   <!-- owner: transitioning skill · mirror-update; cairn/ROADMAP.md is the authority -->
+- **Status:** review   <!-- owner: transitioning skill · mirror-update; cairn/ROADMAP.md is the authority -->
 - **Priority:** normal   <!-- owner: plan · create/amend-via-gate; high | normal | low -->
 - **Depends on:** —   <!-- owner: plan · create/amend-via-gate; M<xx>, M<yy> or — -->
 - **Driving RR:** —   <!-- owner: plan · create/amend-via-gate; RR<NN> whose Binding criteria bind this milestone's ACs (binding-criteria check), or — -->
 - **Principles touched:** —   <!-- owner: plan · create/amend-via-gate; comma-separated IPn/GPn ids this milestone touches, or — -->
 - **Resolves:** —   <!-- owner: plan · create/amend-via-gate; comma-separated GitHub issues the scope absorbs, each `#N closes` (the PR closes it at merge) or `#N partial` (the remainder gets a candidate row), or — ; skill conduct only — no validate check parses it -->
 - **Surface tier:** user-facing — visitors see the categories on the home menu, plugin pages, and About page   <!-- owner: plan · create/amend-via-gate; user-facing | internal — <one-clause reason>; skill conduct only — no validate check parses it -->
-- **Branch/PR:** —   <!-- owner: implement (branch) / review (PR URL) · create; a companion checkout the milestone also works in is one further entry per checkout, `companion: <abs-path> <branch>` (implement), its PR URL appended by review — /milestone-review merges companions first, in listed order -->
+- **Branch/PR:** m091-check-categories-new-plugins https://github.com/jmgirard/zotero-plugin-index/pull/826   <!-- owner: implement (branch) / review (PR URL) · create; a companion checkout the milestone also works in is one further entry per checkout, `companion: <abs-path> <branch>` (implement), its PR URL appended by review — /milestone-review merges companions first, in listed order -->
 
 ## Goal
 <!-- owner: plan · create; a wrong goal returns to plan, never edited in place -->
@@ -50,13 +50,13 @@ The site's categories rest on a hand read of the 464 plugins added since 2026-10
      coverage-complete counts AC checkboxes positionally (M107); departures:
      a "Deviations from RR<NN>" table ends this section. -->
 
-- [ ] AC1: The ledger holds one line for each of the 464 new plugins, naming each category that `categories` gives it under the base commit's `src/site/categories.ts` and a mark of right or wrong for each. The marks follow the rule in `cairn/references/category-ledger.md`, section "How the read marks an assignment", and for an `include` entry or `other` the rule of its section "The M086 read of plugins with no category". A script in the ledger takes the data file and a `categories.ts` path, and with the base commit's file it prints the same 464 ids and categories that the lines hold.
-- [ ] AC2: The ledger states two rates, each as wrong counted assignments over counted assignments: the tuning group under the base commit's rules, and the held-out group under the rules of a named commit. That commit holds every rule change from the tuning-group read and comes before the commit that adds the first held-out mark. The ledger holds that commit's `categories.ts` hash and the pull request number, and a line with marks for each held-out plugin under that commit, and the rate counts those lines. The ledger states that the group holds only plugins that no earlier read names. If the held-out rate is over 1 in 10, the ledger says so, and the milestone stops for the user's decision before the merge question.
-- [ ] AC3: `categories` gives no `notes` for a text with "Note:", no `organization` for "easy to read" or "two-column layout", no `appearance` for "magnifying glass", no `translation` for "import translator", and no `rankings` for 期刊缩写. It still gives `notes` for "a child note", `organization` for "mark it To Read" and "a sortable column", `appearance` for "a liquid glass look", `translation` for "Paper Translator", and `rankings` for 期刊等级.
-- [ ] AC4: Each category that a line of the ledger marks wrong is gone from that plugin when the ledger's script runs on the data file with the branch's `categories.ts`.
-- [ ] AC5: When the compare script of `cairn/references/category-ledger.md` runs on the data file with the base commit's and the branch's `categories.ts`, the ledger holds each gain it lists with the mark right, and each loss it lists as a category that the read marks wrong or as an `other` that a new category replaces. The ledger states that the read does not measure every missing category.
-- [ ] AC6: On a built plugin page, each link with `data-category` keeps the category's name as its visible text, and its `aria-label` is `<name>: plugins in this category`.
-- [ ] AC7: The `CHANGELOG.md` `## Unreleased` section states that the categories of plugins added since 2026-10-31 were read and the rules changed, and that the links have the new label. `cairn/DESIGN.md`'s plugin page lines name the label, `cairn/references/INDEX.md` lists the ledger, and `pnpm test` and `pnpm check` pass.
+- [x] AC1: The ledger holds one line for each of the 464 new plugins, naming each category that `categories` gives it under the base commit's `src/site/categories.ts` and a mark of right or wrong for each. The marks follow the rule in `cairn/references/category-ledger.md`, section "How the read marks an assignment", and for an `include` entry or `other` the rule of its section "The M086 read of plugins with no category". A script in the ledger takes the data file and a `categories.ts` path, and with the base commit's file it prints the same 464 ids and categories that the lines hold.
+- [x] AC2: The ledger states two rates, each as wrong counted assignments over counted assignments: the tuning group under the base commit's rules, and the held-out group under the rules of a named commit. That commit holds every rule change from the tuning-group read and comes before the commit that adds the first held-out mark. The ledger holds that commit's `categories.ts` hash and the pull request number, and a line with marks for each held-out plugin under that commit, and the rate counts those lines. The ledger states that the group holds only plugins that no earlier read names. If the held-out rate is over 1 in 10, the ledger says so, and the milestone stops for the user's decision before the merge question.
+- [x] AC3: `categories` gives no `notes` for a text with "Note:", no `organization` for "easy to read" or "two-column layout", no `appearance` for "magnifying glass", no `translation` for "import translator", and no `rankings` for 期刊缩写. It still gives `notes` for "a child note", `organization` for "mark it To Read" and "a sortable column", `appearance` for "a liquid glass look", `translation` for "Paper Translator", and `rankings` for 期刊等级.
+- [x] AC4: Each category that a line of the ledger marks wrong is gone from that plugin when the ledger's script runs on the data file with the branch's `categories.ts`.
+- [x] AC5: When the compare script of `cairn/references/category-ledger.md` runs on the data file with the base commit's and the branch's `categories.ts`, the ledger holds each gain it lists with the mark right, and each loss it lists as a category that the read marks wrong or as an `other` that a new category replaces. The ledger states that the read does not measure every missing category.
+- [x] AC6: On a built plugin page, each link with `data-category` keeps the category's name as its visible text, and its `aria-label` is `<name>: plugins in this category`.
+- [x] AC7: The `CHANGELOG.md` `## Unreleased` section states that the categories of plugins added since 2026-10-31 were read and the rules changed, and that the links have the new label. `cairn/DESIGN.md`'s plugin page lines name the label, `cairn/references/INDEX.md` lists the ledger, and `pnpm test` and `pnpm check` pass.
 
 ## Coverage
 <!-- owner: plan · create/amend-via-gate; each acceptance criterion → the
@@ -78,13 +78,13 @@ The site's categories rest on a hand read of the 464 plugins added since 2026-10
      cites; an insertion, removal, or reorder renumbers the labels and the
      Coverage lines together. -->
 
-- [ ] T1: Start the ledger with its provenance, the terms, the base commit, and the listing script. Compute the held-out ids by the rule and write them down, and do not read those plugins' texts or categories until T4.
-- [ ] T2: Read the tuning group under the base rules. Mark each category, search `cairn/references/category-ledger.md` for like plugins before marking one wrong (M089 lesson), and note each clearly missing category. State the tuning-group rate.
-- [ ] T3: Change the patterns in `src/site/categories.ts` for words that can go wrong again, starting with the six phrases of AC3, and add `include` and `exclude` entries for single plugins. Add the AC3 tests to `test/categories.test.ts`, seen red on the base rules first, and add one test for each other pattern narrowed. Stop changing rules, and commit: this is the named commit of AC2.
-- [ ] T4: Read the held-out group under the named commit and under the base rules, and write its lines. State the held-out rate, the `categories.ts` hash, and the group's limit. If the rate is over 1 in 10, stop with a close block that names the rate and D-059. Write the base-rule marks of these plugins as AC1's lines.
-- [ ] T5: Fix the held-out plugins' wrong marks with `include` or `exclude` entries, since their rate is now recorded. Run the listing script with the branch's file, then the compare script over all 736 records, and read and mark each gain and loss in the ledger, the older 272 plugins included.
-- [ ] T6: Add the `aria-label` to the link in `site/src/pages/plugins/[id]/index.astro:111`, and update the tests near `test/site.test.ts:444` and `:480`, which assume `data-category` is the last attribute. Look at one built plugin page in the browser pane.
-- [ ] T7: Write the `CHANGELOG.md` entry, the `cairn/DESIGN.md` lines, the `cairn/references/INDEX.md` line, and the open question in `cairn/references/category-ledger.md` that this read answers. Run `pnpm test` and `pnpm check`.
+- [x] T1: Start the ledger with its provenance, the terms, the base commit, and the listing script. Compute the held-out ids by the rule and keep them in a scratch file, and do not read those plugins' ids, texts, or categories until T4.
+- [x] T2: Read the tuning group under the base rules. Mark each category, search `cairn/references/category-ledger.md` for like plugins before marking one wrong (M089 lesson), and note each clearly missing category. State the tuning-group rate.
+- [x] T3: Change the patterns in `src/site/categories.ts` for words that can go wrong again, starting with the six phrases of AC3, and add `include` and `exclude` entries for single plugins. Add the AC3 tests to `test/categories.test.ts`, seen red on the base rules first, and add one test for each other pattern narrowed. Stop changing rules, and commit: this is the named commit of AC2.
+- [x] T4: Read the held-out group under the named commit and under the base rules, and write its lines. State the held-out rate, the `categories.ts` hash, and the group's limit. If the rate is over 1 in 10, stop with a close block that names the rate and D-059. Write the base-rule marks of these plugins as AC1's lines.
+- [x] T5: Fix the held-out plugins' wrong marks with `include` or `exclude` entries, since their rate is now recorded. Run the listing script with the branch's file, then the compare script over all 736 records, and read and mark each gain and loss in the ledger, the older 272 plugins included.
+- [x] T6: Add the `aria-label` to the link in `site/src/pages/plugins/[id]/index.astro:111`, and update the tests near `test/site.test.ts:444` and `:480`, which assume `data-category` is the last attribute. Look at one built plugin page in the browser pane.
+- [x] T7: Write the `CHANGELOG.md` entry, the `cairn/DESIGN.md` lines, the `cairn/references/INDEX.md` line, and the open question in `cairn/references/category-ledger.md` that this read answers. Run `pnpm test` and `pnpm check`.
 
 ## Work log
 <!-- owner: any skill · append-only; one line per entry; absolute dates.
@@ -114,6 +114,21 @@ The site's categories rest on a hand read of the 464 plugins added since 2026-10
 - 2026-11-03: plan-time sample: the first 70 new plugins by SHA-1 of the id, read roughly, about 1 in 8 assignments wrong; a rough read, not a ledger figure, and those 70 stay in the tuning group.
 - 2026-11-03: remainder ledger: read of 464 and tuning → this milestone; six phrases → this milestone; link label → this milestone; plugins after the data file → the row, which stays. The row's text is narrowed at review hygiene.
 - 2026-11-03: deploy: a merge deploys nothing; the review close block offers `gh workflow run build.yml --ref main`, and the daily build at 06:17 UTC deploys otherwise.
+- 2026-11-03: implement: base commit b941616b; the rule gives 100 held-out and 364 tuning plugins; one held-out id was on a line of the plan's phrase search, and no rule change may rest on it.
+- 2026-11-03: T1 done: ledger started with the group rule and listing script; minor amendment, the held-out ids reach the ledger at T4, so the agent that tunes does not read them first.
+- 2026-11-03: T2 done: tuning group 63 wrong of 503 counted assignments under the base rules, 32 missing marks accepted.
+- 2026-11-03: T3 done at 87a6185b: patterns narrowed and widened, id lists added, 24 tests red on the base rules; the compare over non-held records gives 34 gains and 63 losses, and every loss is a wrong mark.
+- 2026-11-03: T3 approach: a guard on any text naming MCP lost 3 right `ai` assignments, so the guard names only "MCP server" and "MCP bridge"; a wider net is the falsifier the plan named.
+- 2026-11-03: T4 result: a fresh Opus reader marked the held-out group; 20 wrong of 148 under 87a6185b (13.5%), 20 wrong of 146 under the base rules (13.7%); over 1 in 10, so the stop of AC2 and D-059 applies; the agent changed no held-out mark.
+- 2026-11-03: T6 label committed at 4c64c658 ahead of T4 and T5, since it touches no rule; the browser look waits.
+- 2026-11-03: stop: the user, at the chip this stop posed in place of T4's close block since the choice was theirs, kept word rules and finished the milestone, recorded as D-060, with a new row "Tighten the ai and attachments rules"; the M088 terminal row left the ROADMAP to keep it under its line cap.
+- 2026-11-03: T5 done: 22 list edits for the held-out plugins; the compare over 736 records gives 83 losses, each a wrong mark, and 51 gains, each read right; no older plugin loses a category.
+- 2026-11-03: T6 done: the browser pane shows the three labeled links on `paper-loom@local.research` and no console error; the build read the pinned data.
+- 2026-11-03: T7 done: CHANGELOG, DESIGN, INDEX, and the open question in `category-ledger.md` updated; the writing hook's other hits in `CHANGELOG.md` and `category-ledger.md` predate this branch and stay.
+- 2026-11-03: claim audit: 43 claims read, 6 corrected — CHANGELOG.md, src/site/categories.ts, test/categories.test.ts
+- 2026-11-03: review: four lenses, 28 findings; the fixes changed patterns after 87a6185b, removed the `ai` guard, and corrected D-060's unmerged wording to "a category that a pattern gives"; the compare stays 51 gains and 83 losses; `pnpm test` to re-run before the merge question.
+- 2026-11-03: step-7 approval: m091-check-categories-new-plugins approved for merge
+- 2026-11-03: delegation: four fresh Opus readers mark the tuning group in batches of 91, so the rule changes are not tuned by the readers of the held-out group; the agent settles every wrong and missing mark.
 
 ## Decisions
 <!-- owner: implement / review · append-only; milestone-local; promote
@@ -127,3 +142,47 @@ The site's categories rest on a hand read of the 464 plugins added since 2026-10
      results, review findings + triage. EXEMPT from the 150-line cap (M55),
      as are the work log (D-046) and the decisions section (D-074); evidence
      never scrambles plan-owned content. -->
+
+Evidence gathered 2026-11-03 at head 2e23d62c, with the scripts taken from the ledger's own code blocks.
+
+- AC1: the ledger holds 464 plugin lines, 364 in the tuning section and 100 in the held-out section. The group script, run on the base commit, gives the same ids for each section. The listing script on the base commit's `categories.ts` prints 464 ids, and no id's categories differ from its line, leaving out the two marked `not on the base commit`.
+- AC2: counted from the ledger's lines: tuning group 63 wrong of 503; held-out group 20 wrong of 148 at the named commit `87a6185b`, and 20 of 146 at the base commit. The ledger holds that commit's blob hash `fd12546a…`, and it equals `git rev-parse 87a6185b:src/site/categories.ts`. The first held-out mark landed in 51e3c3d2, after 87a6185b. The ledger states the group's limit, that the rate is over 1 in 10, and the stop; the work log records the user's decision at that stop. The PR number is not yet in the ledger, since no PR exists before the merge question; step 8 writes it right after the PR opens, and this box stays unticked until then. Step 8: the ledger names pull request #826, read at `grep -n '#826' cairn/references/category-ledger-2026-11-03.md`.
+- AC3: `test/categories.test.ts` passes with all 11 named uses, 6 left out and 6 right (rows named in the file, `vitest --reporter=verbose`); the left-out rows and five others failed on the base rules before T3 (24 failures).
+- AC4: the listing script on the branch's `categories.ts` gives none of the ledger's 83 wrong marks.
+- AC5: the M086 compare script over 736 records lists 51 gains and 83 losses. Each gain is in the ledger's changes section marked right, with none extra. Each loss is a category that the ledger marks wrong, and no wrong mark stays. The ledger states that the read does not measure every missing category.
+- AC6: a site build from the data file has 1067 `data-category` links, and each one's `aria-label` is `<name>: plugins in this category` with the name as its visible text. The exact-markup test near `test/site.test.ts:444` passes. The browser pane read the labels as the links' accessible names (T6).
+- AC7: the `CHANGELOG.md` `## Unreleased` section holds both entries, `cairn/DESIGN.md:123` names the label, `cairn/references/INDEX.md:13` lists the ledger. `pnpm test` exits 0 (2271 passed, 6 skipped), and `pnpm check` exits 0 (736 entries, 0 problems).
+- Consistency gate: `cairn_validate` passes; no principle changed, so `cairn_impact` is skipped; the generic profile names no toolchain checks.
+
+spawned: diff-bug, blame-history, prior-review, ripple
+
+- diff-bug #1: `(?<!\bin )\bsync` drops export for "Keeps your library in sync with Google Drive" and "Built-in sync with WebDAV folders" — fix now.
+- diff-bug #2: the `ai` guard removes `ai` from "AI chat with papers. Also runs a built-in MCP server." — fix now, guard removed and its two plugins listed by id.
+- diff-bug #3: the same guard misses "MCP servers" and "MCP-server" and works per text — fix now, by the same removal.
+- diff-bug #4: `(?<!\b(?:by|via) )\bdois?\b` drops metadata for "Fills item fields by DOI" and "Looks up each item's journal via DOI" — fix now, the narrowing now names only a download or import by DOI.
+- diff-bug #5: the attachments lookbehind drops "Translate and move attachments to a folder", and `(?<!子)附件` drops "管理条目的子附件" — fix now.
+- diff-bug #6: `(?<!import )translat` also drops "Import translations from a CSV of terms" — fix now.
+- diff-bug #7: new `思源` gives export to "思源黑体 reader font" — fix now, the pattern reads `思源笔记`.
+- diff-bug #8: narrowings fit only literal phrases: "two column", "double-column", "2-column", "Easier to read", "Note：", "Note -", "reading guidelines", and "A Zotero translator" still match, and "Notes: a quick capture panel." loses notes — fix now for all but two; "Note -" and "A Zotero translator" follow-up to the row "Check categories on new plugins", normal rung, since a plugin named Zotero Translator needs the word and the plan's audit kept the literal "import translator".
+- diff-bug #9: D-060 and DESIGN say any unmarked plugin can expect the held-out rate, but the group covers only plugins the older patterns matched — fix now, both now say a category that a pattern gives.
+- diff-bug #10: the ledger title and INDEX say "hand read", while AI readers made the first marks — fix now.
+- diff-bug #11: the ledger states "the user spot-checks them at the merge question" before that happens — reject, style: `category-ledger.md` uses the same wording for the same step.
+- diff-bug #12: the ledger says the held-out group holds only plugins no earlier read names, and it omits the one id on a plan search line — fix now, the ledger names `zctr@zotero.plugin`.
+- diff-bug #13: AC1 is ticked though two held-out lines hold `pdf-reading` that the base commit does not give — fix now, those lines name it after `At the named commit:`, so the lines hold the base categories.
+- diff-bug #14: the CHANGELOG's "import translator" and "easy to read" occur in no record — reject, false: the entry states what the rules do, tests show it, and the row asked for these words.
+- diff-bug #15: AC2's PR number is absent — reject, planned change: step 8 writes it right after the PR opens, and the box stays open until then.
+- diff-bug #16: added branches with no test: `MCP bridge`, `via`, `multi-`, `思源` — fix now, the first two are gone and the others have rows.
+- diff-bug #17: `autoattach@adolinjonathan-bot.github.io`'s `ai` exclude is dead under the narrowed pattern — fix now, by the guard's removal.
+- diff-bug #18: removing the M088 row leaves 2 terminal rows — reject, planned change: logged at T5, and this milestone's row is the third at hygiene.
+- diff-bug #19: T6 named `test/site.test.ts:480` for an update that it did not need, and that test now depends on attribute order — reject, false: `data-category` stays last, as the test had it before.
+- diff-bug #20: "Generates PDF bookmarks" and "Generates a PDF outline" may repeat one path — reject, false: each runs its own alternative of the pattern.
+- blame-history #1: the held-out group was tuned after it was measured, and D-060 rests on 13.5% for rules that no longer exist — reject, planned change: T5 calls for those entries, id entries do nothing for an unread plugin, and the ledger states the later changes and that no later group measures them.
+- blame-history #2: the `ai` guard drops `ai` from a real assistant that also offers an MCP server — fix now, same as diff-bug #2.
+- blame-history #3: the attachments lookbehind drops a plugin that translates and also manages attachments — fix now, same as diff-bug #5.
+- prior-review #1: held-out plugins were used for rule edits after their read, so the number is the last clean one, and M066 and M086 raised that a read of tuned data cannot test the rules — reject, planned change: same as blame-history #1, and the rate is on the frozen commit.
+- prior-review #2: the candidate row still names the six phrases and the link gap — fix now, at step 9's hygiene, as the plan's remainder line says.
+- ripple #1: the M089 row's Depends on names M088, whose row left the table — reject, false: the table's comment points older rows to the archive, which holds it.
+- ripple #2: the table comment says to keep 3 terminal rows, and 2 remain — reject, planned change: same as diff-bug #18.
+- ripple #3: the candidate row's text is stale — fix now, same as prior-review #2.
+- ripple #4: `category-ledger.md:32` gives import translators as a wrong mark beside the fixed case — reject, false: the rule it states still holds.
+- snapshot: no path on the branch has a `_snaps` or `__snapshots__` directory.

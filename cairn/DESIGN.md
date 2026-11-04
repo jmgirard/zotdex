@@ -92,7 +92,10 @@ matches the display name, the shown description, or the manifest or GitHub
 description, plus each whose `include` list holds the id, less each whose
 `exclude` list holds it. A record with upstream facts that no category takes
 gets Other tools, whose pattern matches nothing (D-057). A record with no
-upstream facts gets only its includes. The data file carries no categories. The same script
+upstream facts gets only its includes. The data file carries no categories. A
+category that a pattern gives a plugin that no read has marked can expect the
+wrong rate of the latest held-out read, which
+`cairn/references/category-ledger-2026-11-03.md` holds (D-060). The same script
 writes a plugin count beside the filters: the total, how many plugins the
 filters pass on every page while a filter is on, or that none match (M044,
 M053, M058). Typing writes `?q=`
@@ -117,7 +120,8 @@ whose `title` gives the count and its words (`starsText`); a
 as M054 does for the declared marks (M064). After the description, a page
 whose record has a category shows "Index categories", a link to the About
 page's Categories section, and each category's name as a link to the home
-page filtered by it, in `CATEGORIES` order (M066). The links are: the
+page filtered by it, in `CATEGORIES` order (M066). Each such link's
+`aria-label` is `<name>: plugins in this category` (M091). The links are: the
 `.xpi` file (`upstream.xpiUrl`, only when it passes `safeHref`, in the
 same plain button style as the others, D-029), the source ("Repository" for a
 record with `sourceInRepo: false`, M081), and the

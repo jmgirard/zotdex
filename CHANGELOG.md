@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- The categories of the plugins added since 2026-10-31 were each read, and the
+  word rules and the lists of exceptions changed. Those plugins lose
+  wrong categories and gain some that they lacked, and one older plugin gains a
+  category. The rules no longer take some words in another sense, such as an
+  import translator, "easy to read", or a download by DOI. They still take
+  others, so a plugin that no one has read can still have a wrong category.
+- Category links on a plugin page now tell screen readers that they list the
+  plugins of that category.
 - 86 more plugins now show an English description of at least six words. Each
   one showed no description, an English text of fewer than six words, or a text
   that was half or more Chinese. The index wrote each text from the plugin's

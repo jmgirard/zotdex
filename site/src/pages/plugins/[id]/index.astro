@@ -108,7 +108,7 @@ const { min, max } = declaredRange(record);
           {recordCategories.map((category, i) => (
             <>
               {i > 0 && ", "}
-              <a href={`${BASE}?category=${category.slug}`} data-category={category.slug}>{category.name}</a>
+              <a href={`${BASE}?category=${category.slug}`} aria-label={`${category.name}: plugins in this category`} data-category={category.slug}>{category.name}</a>
             </>
           ))}
         </p>
