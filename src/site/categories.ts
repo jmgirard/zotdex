@@ -6,12 +6,14 @@ import { appliedValue } from "./version.ts";
 // One category. slug is its value in data-categories and ?category=; about says what it
 // holds on the About page. pattern runs over each of a plugin's texts (see categories);
 // include adds the category to the plugins with those ids, and exclude takes it from them,
-// over include and over the pattern.
+// over include and over the pattern. further, when a category has it, must also pass for the
+// pattern to give the category; it reads all of a record's texts, the name first.
 export interface Category {
   slug: string;
   name: string;
   about: string;
   pattern: RegExp;
+  further?: (texts: string[]) => boolean;
   include: readonly string[];
   exclude: readonly string[];
 }
@@ -37,6 +39,49 @@ const BRIDGES = [
   "zoty-bridge@zoty.dev",
 ];
 
+// A stated AI feature: chat, summaries and explanations, an assistant, an agent in Zotero, or
+// work done with a model. A text about MCP or a bridge counts only for the first three lines.
+const MODEL = String.raw`(?<!(?:\bcode\b[^.,;]*?|built|developed|written|made) (?:by|with) )(?:\bai\b|\bllms?\b|(?:chat)?gpt|claude|codex|deepseek|gemini|openai|ollama|\bagent\b|大模型|人工智能)`;
+const AI_NAME = /^(?!.*\b(?:mcp|bridge|server|skills?)\b).*(?:\bai\b|\bllms?\b|gpt|\bagent\b|\brag\b)/iu;
+const AI_FEATURE = new RegExp(
+  [
+    String.raw`\bchat(?!gpt)|聊天`,
+    String.raw`\b(?:agents?|assistant)(?: that \w+| \w+ing)? (?:in|inside|within|for) (?:your )?zotero|zotero\s*(?:内|中|里).{0,6}(?:agent|智能体)`,
+    String.raw`\b(?:ai|llm)[- ]?(?:powered|based|driven|assisted|generated|reading|analysis|research|features?|answers?|plugin|service|providers?|models?|插件)(?!.{0,25}(?:develop|\bcod))`,
+    String.raw`^(?!.*(?:\bmcp\b|model context protocol|\bbridge\b|\bai (?:agents|clients|tools)\b|\bai\s*工具)).*(?:` +
+      [
+        String.raw`\bask\b|\bquestions?\b|\bdiscuss|\btalk to|\bconversation|\bq&a\b|\brag(?:flow)?\b|retrieval-augmented|对话|问答|提问`,
+        String.raw`summar|\bexplain|\bexplanation|\btl;?dr\b|总结|摘要|解释|讲解|解读|精读`,
+        String.raw`\bassistant\b|\bcopilot\b|\bzotero(?: \d+)?[- ]ai\b|助手|智能体`,
+        String.raw`${MODEL}(?: code| cli)? (?:in|inside|within) zotero`,
+        String.raw`(?:translat|翻译).*${MODEL}|${MODEL}.*(?:translat|翻译)`,
+        String.raw`\b(?:us(?:es?|ing)|via|through|powered by|based on) (?:(?:a|an|the|your own|local|remote) )*${MODEL}`,
+        String.raw`\b(?:analy[sz]|annotat|answer|classif|extract|filter|generat|review|sort|suggest|tag)\w*\b[^.;。]*?\b(?:with|using|by) (?:\S+ ){0,4}${MODEL}`,
+        String.raw`(?:使用|调用|基于|接入)\s*\S{0,6}\s*${MODEL}`,
+      ].join("|") +
+      ")",
+  ].join("|"),
+  "ius",
+);
+
+// A stated file feature: finding, downloading, renaming, moving, or managing attachments and
+// PDFs, snapshots, OCR, and figure extraction, not a mention of those words.
+const FILE_NAME = /^(?!.*(?:translat|翻译)).*(?:attachment|附件|snapshot|renam|ocr\b)/iu;
+const FILE = String.raw`(?:pdfs?\b|files?\b|attachments?\b|full.?texts?\b|snapshots?\b|附件)`;
+const ZH_FILE_VERB = "管理|下载|转换|移动|重命名|整理|查找|同步|删除";
+const FILE_FEATURE = new RegExp(
+  [
+    String.raw`\b(?:renam|mov(?:e|es|ing)\b|cop(?:y|ies|ying)\b|delet|remov|clean|manag|organi[sz]|sync|fetch|download|retriev|acquir|find|detect|convert|preview)\w*(?: \S+){0,3} ${FILE}`,
+    String.raw`^(?!.*(?:translat|翻译|译文)).*\b(?:attach(?:es|ing)?\b|export|import|open)\w*(?: \S+){0,3} ${FILE}`,
+    String.raw`${FILE}.{0,40}\bfolders?\b|(?:attachments?|pdfs?|files?) (?:manag|clean|downloader|renam|matching|path)`,
+    String.raw`(?:${ZH_FILE_VERB}).{0,10}附件|附件.{0,2}(?:${ZH_FILE_VERB})`,
+    String.raw`\b(?:add|sav|tak|captur|creat|archiv)\w*(?: \S+){0,3} snapshots?|\bas (?:a )?(?:\S+ ){0,2}snapshots?`,
+    String.raw`(?:runs?|with|via|performs?) ocr\b|\bocr\W+(?:\S+ )?(?:for|on|attachments?|pdfs?|text)\b|ocr\s*(?:插件|识别)|scanned|扫描`,
+    String.raw`(?:download|fetch)\w*(?: \S+){0,3} (?:papers?|articles?)|sci-hub|scidb|wayback|djvu|watch(?:ed)? folder|open-access (?:\S+ )?(?:pdfs?|cop)|figures?(?:,| and) tables?`,
+  ].join("|"),
+  "ius",
+);
+
 // The slug of the category of a read plugin that no other category takes (see categories).
 export const OTHER = "other";
 
@@ -47,6 +92,7 @@ export const CATEGORIES: readonly Category[] = [
     about: "chat with papers, AI summaries and explanations, and AI agents inside Zotero",
     pattern:
       /\bai\b|\bai\d|\bllms?\b|\bgpt|chatgpt|claude|codex|deepseek|gemini|openai|ollama|copilot|(?<!user-)\bagents?\b|\brag\b|retrieval-augmented|\bkimi\b|notebooklm|\bhermes\b|opencode|antigravity|\bchat\b|large language|literature assistant|ragflow|\btl;?dr\b|大模型|人工智能|智能对话/iu,
+    further: (texts) => AI_NAME.test(texts[0]!) || texts.some((text) => AI_FEATURE.test(text)),
     include: [
       "SKR@zotero.org",
       "ask-my-paper@euclpts.com",
@@ -216,6 +262,7 @@ export const CATEGORIES: readonly Category[] = [
     about: "finding and downloading PDFs, renaming and moving files, snapshots, and OCR",
     pattern:
       /(?<!translat\w* (?:zotero )?(?:pdf )?)attachments?\b|(?<!作为子)附件|full.?text pdfs|find(s|ing)? (the )?full.?text|download(s|ing)? (entitled )?(\w+ )?pdfs?|fetch pdfs|pdf files?|snapshots?|renam|\bocr\b|djvu|watch(ed)? folder|sci-hub|open-access|wayback|acquire pdfs|without pdfs|local pdf copies|pdf downloader|scidb|figure and table extraction|paddleocr/iu,
+    further: (texts) => FILE_NAME.test(texts[0]!) || texts.some((text) => FILE_FEATURE.test(text)),
     include: [
       "ZotFileRecovery@jlegewie.com",
       "arxiv-source-helper@local.research",
@@ -458,15 +505,21 @@ function texts(record: DescriptionRecord): string[] {
   );
 }
 
+// How much of each text a further test reads. Some of its patterns slow down on a long text
+// that a plugin's manifest can hold; the longest text on 2026-11-03 had 509 characters.
+const FURTHER_CHARS = 2000;
+
 // The slugs of a record's categories, in CATEGORIES order: each category whose exclude list
 // lacks the record's id and whose include list has it or whose pattern matches one of its
-// texts. A record with upstream facts that no category takes gets OTHER.
+// texts and whose further test, if any, passes. A record with upstream facts that no category
+// takes gets OTHER.
 export function categories(record: DescriptionRecord): string[] {
   const all = texts(record);
+  const start = all.map((text) => text.slice(0, FURTHER_CHARS));
   const slugs = CATEGORIES.filter(
     (category) =>
       !category.exclude.includes(record.id) &&
-      (category.include.includes(record.id) || all.some((text) => category.pattern.test(text))),
+      (category.include.includes(record.id) || (all.some((text) => category.pattern.test(text)) && (category.further?.(start) ?? true))),
   ).map((category) => category.slug);
   return slugs.length === 0 && record.upstream ? [OTHER] : slugs;
 }
