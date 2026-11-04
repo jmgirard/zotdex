@@ -11,6 +11,7 @@ bullet lines.
 
 - category-ledger.md: a hand read of each plugin's categories on the deployed data of 2026-10-31 (M066), and of the plugins with no category on 2026-11-03 (M086)
 - category-ledger-2026-11-03.md: AI readers' marks on the plugins added since 2026-10-31, with wrong rates before tuning and on a held-out group (M091)
+- category-ledger-2026-11-04.md: a re-score of the `ai` and `attachments` rules on the held-out marks of 2026-11-03, with the matches they lose (M092)
 - description-ledger.md: the description gaps in the deployed data of 2026-10-31 and their overrides (M067)
 - description-ledger-2026-11-03.md: the description gaps in the two deployed data files of 2026-11-03, their overrides, and the categories they add (M089, M090)
 - mdn-nth-child.md: which browsers read the `of <selector>` form of `:nth-child()` (MDN and its compat data)
