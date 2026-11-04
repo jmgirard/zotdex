@@ -4,14 +4,14 @@
      cairn_validate's <150 over the plan-owned body. -->
 # M092: Tighten the ai and attachments rules
 
-- **Status:** planned
+- **Status:** in-progress
 - **Priority:** normal
 - **Depends on:** —
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — categories show on the public site, and the changed rules decide them for each plugin that no one has read
-- **Branch/PR:** —
+- **Branch/PR:** m092-ai-attachments-rules
 
 ## Goal
 

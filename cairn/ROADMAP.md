@@ -7,7 +7,7 @@ _Last hygiene check: 2026-11-03 (M091 archived; one row narrowed, one new; 25 le
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M092 | Tighten the ai and attachments rules | planned | — | normal | milestones/M092-ai-attachments-rules.md |
+| M092 | Tighten the ai and attachments rules | in-progress | — | normal | milestones/M092-ai-attachments-rules.md |
 | M091 | Check categories on new plugins | done | — | normal | milestones/archive/M091-check-categories-new-plugins.md |
 | M090 | Fill the six later description gaps | done | M089 | normal | milestones/archive/M090-six-later-description-gaps.md |
 <!-- rows grouped by status, not by ID; keep the 3 most recent done/dropped rows; older ones: milestones/archive/ + git -->
