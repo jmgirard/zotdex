@@ -76,6 +76,7 @@ The `ai` and `attachments` rules need a stated feature wherever a frozen rule pa
 - 2026-11-04: T4 done: over 736 records with the lists set aside, `ai` loses 38 matches (33 on `exclude`, 5 right) and `attachments` loses 30 (23 on `exclude`, 7 right). Added 12 `include` entries, removed 56 `exclude` entries and the `BRIDGES` list, and kept 4 `exclude` entries that the rule still matches. AC3's compare lists no loss and no gain. One test moved to `bibtex-clean@ouyangjiahong.github.io`, since `zofiles@zofiles.dev` left the `exclude` list.
 - 2026-11-04: T5 done: ledger page, INDEX line, DESIGN sentences, and CHANGELOG entry written. About's "so it often shows none" stays, since 12 new `include` entries among 736 records do not make it false. Rate over all categories: 9 wrong of 134. The simple-english hook also listed 13 hits on older CHANGELOG entries; they are not this change's, so they stay.
 - 2026-11-04: claim audit: 30 claims read, 11 corrected — CHANGELOG.md, src/site/categories.ts, test/categories.test.ts. The rules' regular expressions did not change. Added "Claude Helper" and name-based `attachments` cases, since the corrected changelog names them.
+- 2026-11-04: step-7 approval: m092-ai-attachments-rules approved for merge
 
 ## Decisions
 
