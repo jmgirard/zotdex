@@ -81,7 +81,7 @@ describe("categories", () => {
   });
 
   test("gives Other tools to a read record whose only match an exclude entry removes", () => {
-    expect(categories(record("Helper", "Ask Claude about the paper.", { id: "zofiles@zofiles.dev" }))).toEqual(["other"]);
+    expect(categories(record("Helper", "Fetch missing attachments.", { id: "bibtex-clean@ouyangjiahong.github.io" }))).toEqual(["other"]);
   });
 
   test("gives metadata to the PMCID fetcher from its own words", () => {
