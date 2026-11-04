@@ -1,0 +1,8 @@
+{
+  "id": "zotero-putongdoc@lemos1235",
+  "name": "PutongDoc",
+  "description": "PutongDoc PDF translation plugin for Zotero.",
+  "homepage": "https://github.com/lemos1235/zotero-putongdoc#readme",
+  "repoUrl": "https://github.com/lemos1235/zotero-putongdoc",
+  "updateUrl": "https://raw.githubusercontent.com/lemos1235/zotero-putongdoc/main/update.json"
+}
