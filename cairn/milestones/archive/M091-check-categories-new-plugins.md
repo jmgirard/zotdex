@@ -1,0 +1,11 @@
+# M091: Check categories on new plugins
+
+**Status:** done (2026-11-03, PR #826 https://github.com/jmgirard/zotero-plugin-index/pull/826)
+
+**Goal:** The site's categories rest on a hand read of the 464 plugins added since 2026-10-31, a measured wrong rate on plugins that the tuning did not see, and category links that say what they do.
+
+**Outcome:** AI readers marked each category of the 464 new plugins in `plugins-data-2026-11-03b.json`, and the agent settled the marks. `cairn/references/category-ledger-2026-11-03.md` holds each line, the group and listing scripts, and the rates. Tuning group under the base rules: 63 wrong of 503 counted assignments. Held-out group of 100 under the frozen rules of `87a6185b`: 20 wrong of 148, against 20 of 146 under the base rules, so the test of D-059 failed and the run stopped. `src/site/categories.ts` then fixed each marked plugin: over 736 records it loses 83 categories, each marked wrong, and gains 51, each read right. Pattern changes narrow `translator`, `note`, `dois?`, `attachments?`, `附件`, `sync`, `obsidian`, `columns?`, `to read`, `glass`, `reading guide`, and 期刊, drop `venues?`, and add `journal abbreviations?`, `siyuan`, `思源笔记`, `reading ruler`, `split.?view`, and `pdf (bookmarks?|outlines?)`. Each plugin page's category link has the `aria-label` `<name>: plugins in this category`. CHANGELOG, DESIGN, and INDEX describe it.
+
+**Decisions:** D-059 (the 1-in-10 test reads plugins that the tuning did not see) and D-060 (word rules stay though the held-out read missed that test). The plan chose a held-out group over tuning on all 464, patterns first over only id lists, and an `aria-label` over longer visible text.
+
+**Review:** Criteria audit (full) 13 notes, all applied. Claim audit 43 claims, 6 corrected. Four-lens fan-out, 29 findings: 18 fixed, including the removal of an `ai` guard on "MCP server" and loosened narrowings that cut right uses; 11 rejected (5 false, 1 style, 5 planned change); part of one sent to the row "Check categories on new plugins". No return. No criterion amendment. CI passed. That row narrowed, moved to low, and lost its started token; new row "Tighten the ai and attachments rules". 9 lessons marked used M091; 1 captured; 2026-11-02 (M074, used M077) evicted by rank at the limit. The M088 row left the table at T5.

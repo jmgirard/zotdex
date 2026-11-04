@@ -1,21 +1,21 @@
 # Roadmap
 
 _The only authority on milestone status. Grouped by status, not ID._
-_Last hygiene check: 2026-11-03 (M090 archived; one row narrowed; 25 lessons, 5 marked used, none captured; validate green)_
+_Last hygiene check: 2026-11-03 (M091 archived; one row narrowed, one new; 25 lessons, 9 marked used, 1 captured, 1 evicted; validate green)_
 
 ## Milestones
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M091 | Check categories on new plugins | review | — | normal | milestones/M091-check-categories-new-plugins.md |
+| M091 | Check categories on new plugins | done | — | normal | milestones/archive/M091-check-categories-new-plugins.md |
 | M090 | Fill the six later description gaps | done | M089 | normal | milestones/archive/M090-six-later-description-gaps.md |
 | M089 | Fill the description gaps of 2026-11-03 | done | M088 | normal | milestones/archive/M089-description-gaps-2026-11-03.md |
 <!-- rows grouped by status, not by ID; keep the 3 most recent done/dropped rows; older ones: milestones/archive/ + git -->
 
 ## Candidates
-- Check categories on new plugins: M066's 0 wrong of 363 was read on the tuning data, and 2 of 27 were wrong on 19 untuned plugins; patterns still match words out of sense ("Note:", "easy to read", "two-column layout", "magnifying glass", a Zotero "translator", 期刊缩写); read the categories of plugins added since 2026-10-31 and tune; a plugin page's category links name only the category, after "Index categories" (M066 review); M086's first read of wider patterns marked 9 of 20 additions wrong, so a new plugin can expect a higher rate than its tuned 0 of 130; narrowed 2026-11-03 by M086, which read the plugins with no category and gave the rest Other tools; low, as About says a category can be wrong — added 2026-10-31 — M066, M086, D-037, D-057 — started M091
 - Keep a plugin's last good record: a plugin whose read fails or is cut shows "Not read" with no facts until a later build reads it, since the build restores no earlier data (D-010, D-015), and run 41653526255 lost one this way to a failed gitee.com request; reuse the deployed record as `pnpm carry-start-results` reuses start results (D-035), which needs a mark on the site and a check that the XPI's facts are not stale (M087 plan) — added 2026-11-03 — M087, D-015, D-035
 - Tighten the ai and attachments rules: M091's held-out read marked 20 of 148 assignments wrong, and 13 of the 20 are `ai` on plugins that serve outside AI tools or `attachments` on plugins that only mention attachments; its tuning fixed none of them on plugins it had not read, so try rules that need a stated feature, count the right matches they lose, and measure them on plugins no read has seen (`cairn/references/category-ledger-2026-11-03.md`) — added 2026-11-03 — M091, D-037, D-059, D-060
+- [low] Check categories on new plugins: M091 read the plugins in the data of 2026-11-03 (`generatedAt` 2026-11-03T22:05:15.306Z), and the bot adds up to 5 a run, so later plugins carry no marks; read them as `cairn/references/category-ledger-2026-11-03.md` does, with a held-out group (D-059); that data lacks M090's 6 overrides; "Note -" and "A Zotero translator" still match, since a plugin can be named Zotero Translator (M091 review); narrowed 2026-11-03 by M086 and M091; low, as About says a category can be wrong — added 2026-10-31 — M066, M086, M091, D-037, D-057, D-059, D-060
 - [low] Let a run by hand start every plugin: after a change to the start-test code, the reporter, or a Zotero pin, carried results stay up to 7 days, and nothing lets a maintainer skip the carry for one run (M059 review) — added 2026-10-30 — M059, D-035
 - [low] Read new plugins for paid services: M082 to M084 read the entries through `1b2cebf`, and the bot adds up to 5 a run, so later plugins carry no mark until someone reads them; repeat the word list and record in `cairn/references/paid-service-sweep.md`; a listing command waits for marks falling far behind the new plugins (M082 plan); narrowed 2026-11-03 by M083 and M084; also read the GitHub text of `zotero@wilddata.cn`, which names a free allowance for new users, and the maker's site of `zotbox@scigreat.com`, neither read for a mark (M089 review) — added 2026-11-02 — M082, M083, M084, M089, D-054
 - [low] Fill description gaps on new plugins: M089 and M090 fill the gaps in the two data files of 2026-11-03, and the bot adds up to 5 plugins a run, so later plugins need `pnpm description-gaps` and overrides; the command skips a plugin that the data's build did not read (M090), and it does not see other languages, and a word scan of that data found French (`hypothesis-import@zotero-plugin`, `readeck-import@zotero-plugin`), Spanish (`author-harvester@migueldelm`), and Turkish (`zotero-latin@mirket`) shown texts; `readeck-import` has an English GitHub text, so it needs a pick rule or a new override case (M088 plan) — added 2026-11-03 — M067, M089, M090, D-030, D-038
