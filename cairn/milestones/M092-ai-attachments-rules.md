@@ -105,12 +105,12 @@ The `ai` and `attachments` rules need a stated feature wherever a frozen rule pa
 - diff-bug #14: `pnpm text-request` prints only gains, and a further test adds a way to lose a category — follow-up: same row
 - diff-bug #15: `renam` passes "Author Prenames" — follow-up: same row
 - diff-bug #16: two new cases repeat strings of the `CASES` test — reject (planned change): AC4 names those forms
-- diff-bug #17: no test gives an include id a text that fails `further` — fix now
+- diff-bug #17: no test gives an include id a text that fails `further` — fix now, fixed 32bc233e
 - diff-bug #18: the test hard-codes the 2000-character limit — reject (false): it tests behavior that the change adds, at its boundary
-- diff-bug #19: claims in comments have no test, and two comments omit a guard word — fix now
+- diff-bug #19: claims in comments have no test, and two comments omit a guard word — fix now, fixed 32bc233e
 - diff-bug #20: a record with no name has its id as `texts[0]`, and no record has this form — follow-up: same row
-- diff-bug #21: the list script reads the working tree, while the page says the base commit — fix now
-- diff-bug #22: a stray one-word line in DESIGN — fix now
+- diff-bug #21: the list script reads the working tree, while the page says the base commit — fix now, fixed 32bc233e
+- diff-bug #22: a stray one-word line in DESIGN — fix now, fixed 32bc233e
 - diff-bug #23: the name tests have no `s` flag — follow-up: same row
 - diff-bug #24: titles print "undefined" for a case with no description — reject (style)
 - diff-bug #25: `attachments` passes by a margin of 1 — reject (planned change): the bar was the user's choice, and the merge question names the margin
@@ -122,7 +122,7 @@ The `ai` and `attachments` rules need a stated feature wherever a frozen rule pa
 - prior-review #1: the MCP guard again drops `ai` from real tools that also name MCP, as M091 ruled against — follow-up: same row; AC1's frozen rules cannot change, and 0 right marks were lost on the held-out group
 - prior-review #2: the counts rest on a group that the plan had read — reject (planned change): D-061 and the page state it
 - prior-review #3: snapshot forms with no listed verb lose `attachments` — follow-up: same row
-- prior-review #4: many new alternatives have no test — fix now
+- prior-review #4: many new alternatives have no test — fix now, fixed 32bc233e
 - prior-review #5: removed `exclude` entries, as diff-bug #13 — reject (planned change)
 - prior-review #6: "Attachment Translator" loses `attachments` — follow-up: same row
 - prior-review #7: DESIGN keeps the tie to the 2026-11-03 rate — reject (planned change): D-061 keeps it
