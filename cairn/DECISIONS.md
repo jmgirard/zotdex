@@ -918,3 +918,19 @@ pattern gives a plugin that no read has marked can expect the rate of the latest
 held-out read, until a read fixes it. Later reads still state a held-out rate, as D-059 says. This choice is wrong if
 visitors report wrong categories as a problem, or if a later held-out read finds a
 rate clearly above this one.
+
+### D-061: A rule can be scored on earlier held-out marks that its author did not see, annotating D-059
+
+2026-11-04, M092 plan. D-059 says that a held-out group is one that a read marks
+only after the rules are fixed. M092 tests new `ai` and `attachments` rules, and
+every listed plugin already has marks, so no such group exists now. At the question
+set the user chose a blind test: a fresh author who sees neither the held-out
+section of `cairn/references/category-ledger-2026-11-03.md` nor the id lists writes
+the rules, the rules are frozen, and they are scored on those marks. The user chose
+this over waiting for new plugins and over not building. The result of that test
+decides whether each rule ships, but it does not stand for unread plugins, since
+these marks are why the two categories were chosen. So DESIGN's expected rate stays
+that of the latest held-out read until a read of new plugins replaces it. The rest
+of D-059 and D-060 stands, and later reads of new plugins use D-059's test. This
+choice is wrong if that later read shows these two categories no better than the
+base rules.
