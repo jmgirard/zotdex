@@ -4,7 +4,7 @@
      cairn_validate's <150 over the plan-owned body. -->
 # M092: Tighten the ai and attachments rules
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** normal
 - **Depends on:** —
 - **Driving RR:** —
@@ -54,7 +54,7 @@ The `ai` and `attachments` rules need a stated feature wherever a frozen rule pa
 - [x] T3: Write the score script from the listing script in the 2026-11-03 ledger, with an anchored parse of the marks, since `ai-tools` sits beside `ai` and reasons hold commas. Run it once for each category, base against frozen, with the lists set aside. Apply AC1's bar to each category, and restore the base rule for a category that fails, with its test cases.
 - [x] T4: For each changed rule, run the compare with the lists set aside and split the losses as AC5 says. Add an `include` entry for each right match lost. Remove each `exclude` entry of that category that the rule no longer needs. Build AC3's data copy in a scratch folder, and run AC3's compare.
 - [x] T5: Write the ledger page with its Provenance block and INDEX line. It also states the wrong rate over all categories on the held-out group, with the lists set aside, the branch's two rules, and the base patterns for the rest, starting from 20 of 148. It states that the marks came before the rules, that the rules' author did not see them, that these marks are why the two categories were chosen, and that no read of unread plugins has tested the rules. It also states the cost of each new `include` entry: on a build that does not read that plugin, the plugin still shows the category. Update DESIGN's sentence on what `categories` assigns, the code comments in `categories.ts`, the held-out sentence, and the About sentence "so it often shows none" if the new entries make it false. Add the CHANGELOG entry of AC6.
-- [ ] T6: Run AC7's commands, with the output in a file, and read the exit code. If neither rule changed, the page and DESIGN text are the branch's whole diff, and the run still goes to the merge question.
+- [x] T6: Run AC7's commands, with the output in a file, and read the exit code. If neither rule changed, the page and DESIGN text are the branch's whole diff, and the run still goes to the merge question.
 
 ## Work log
 
@@ -75,6 +75,7 @@ The `ai` and `attachments` rules need a stated feature wherever a frozen rule pa
 - 2026-11-04: T3 done: one score, on the frozen rules. `ai` base 31 right and 7 wrong, candidate 31 right and 0 wrong. `attachments` base 13 right and 6 wrong, candidate 10 right and 2 wrong, which removes 4 and loses 3. Both pass AC1's bar, so both rules stay, and the margin for `attachments` is 1. Over all categories, 20 wrong of 148 becomes 9 of 134.
 - 2026-11-04: T4 done: over 736 records with the lists set aside, `ai` loses 38 matches (33 on `exclude`, 5 right) and `attachments` loses 30 (23 on `exclude`, 7 right). Added 12 `include` entries, removed 56 `exclude` entries and the `BRIDGES` list, and kept 4 `exclude` entries that the rule still matches. AC3's compare lists no loss and no gain. One test moved to `bibtex-clean@ouyangjiahong.github.io`, since `zofiles@zofiles.dev` left the `exclude` list.
 - 2026-11-04: T5 done: ledger page, INDEX line, DESIGN sentences, and CHANGELOG entry written. About's "so it often shows none" stays, since 12 new `include` entries among 736 records do not make it false. Rate over all categories: 9 wrong of 134. The simple-english hook also listed 13 hits on older CHANGELOG entries; they are not this change's, so they stay.
+- 2026-11-04: claim audit: 30 claims read, 11 corrected — CHANGELOG.md, src/site/categories.ts, test/categories.test.ts. The rules' regular expressions did not change. Added "Claude Helper" and name-based `attachments` cases, since the corrected changelog names them.
 
 ## Decisions
 

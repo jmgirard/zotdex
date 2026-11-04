@@ -148,8 +148,9 @@ describe("categories", () => {
     expect(categories(record("Helper", description))).toContain(slug);
   });
 
-  describe("needs a stated feature for ai and attachments", () => {
+  describe("needs a stated feature, or a word in the name, for ai and attachments", () => {
     test.each([
+      ["Claude Helper", undefined],
       ["Helper", "A Zotero MCP server for AI agents."],
       ["Helper", "An MCP server inside Zotero for agents."],
       ["Helper", "A Codex skill and Zotero companion for surveying papers."],
@@ -187,6 +188,11 @@ describe("categories", () => {
       "把 PDF 附件转换为 Markdown",
     ])("gives attachments to: %s", (description) => {
       expect(categories(record("Helper", description))).toContain("attachments");
+    });
+
+    test("takes attachments from a name, unless the name has translat or 翻译", () => {
+      expect(categories(record("Attachment Viewer"))).toContain("attachments");
+      expect(categories(record("Attachment Translator"))).not.toContain("attachments");
     });
 
     test.each([

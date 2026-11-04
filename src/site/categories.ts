@@ -7,7 +7,8 @@ import { appliedValue } from "./version.ts";
 // holds on the About page. pattern runs over each of a plugin's texts (see categories);
 // include adds the category to the plugins with those ids, and exclude takes it from them,
 // over include and over the pattern. further, when a category has it, must also pass for the
-// pattern to give the category; it reads all of a record's texts, the name first.
+// pattern to give the category; it reads the first FURTHER_CHARS characters of each of a
+// record's texts, the name first.
 export interface Category {
   slug: string;
   name: string;
@@ -19,7 +20,10 @@ export interface Category {
 }
 
 // A stated AI feature: chat, summaries and explanations, an assistant, an agent in Zotero, or
-// work done with a model. A text about MCP or a bridge counts only for the first three lines.
+// work done with a model. A text with the word MCP or bridge, "model context protocol", or
+// "AI agents", "AI clients", or "AI tools" counts only for the first three lines of AI_FEATURE;
+// this check is on each text, not the record. AI_NAME passes a name with AI, LLM, GPT, agent, or
+// RAG, unless the name also has MCP, bridge, server, or skill.
 const MODEL = String.raw`(?<!(?:\bcode\b[^.,;]*?|built|developed|written|made) (?:by|with) )(?:\bai\b|\bllms?\b|(?:chat)?gpt|claude|codex|deepseek|gemini|openai|ollama|\bagent\b|大模型|人工智能)`;
 const AI_NAME = /^(?!.*\b(?:mcp|bridge|server|skills?)\b).*(?:\bai\b|\bllms?\b|gpt|\bagent\b|\brag\b)/iu;
 const AI_FEATURE = new RegExp(
@@ -43,8 +47,11 @@ const AI_FEATURE = new RegExp(
   "ius",
 );
 
-// A stated file feature: finding, downloading, renaming, moving, or managing attachments and
-// PDFs, snapshots, OCR, and figure extraction, not a mention of those words.
+// What a further test takes as a stated file feature: a verb such as find, download, rename,
+// move, or manage near a file word, a snapshot being added or saved, running OCR, or a word
+// such as scanned, Sci-Hub, wayback, DjVu, or "figures and tables". FILE_NAME passes a name with
+// attachment, snapshot, renam, or ocr, whatever the plugin does, unless the name has translat
+// or 翻译.
 const FILE_NAME = /^(?!.*(?:translat|翻译)).*(?:attachment|附件|snapshot|renam|ocr\b)/iu;
 const FILE = String.raw`(?:pdfs?\b|files?\b|attachments?\b|full.?texts?\b|snapshots?\b|附件)`;
 const ZH_FILE_VERB = "管理|下载|转换|移动|重命名|整理|查找|同步|删除";
@@ -460,9 +467,9 @@ function texts(record: DescriptionRecord): string[] {
 const FURTHER_CHARS = 2000;
 
 // The slugs of a record's categories, in CATEGORIES order: each category whose exclude list
-// lacks the record's id and whose include list has it or whose pattern matches one of its
-// texts and whose further test, if any, passes. A record with upstream facts that no category
-// takes gets OTHER.
+// lacks the record's id and that either has the id on its include list, or has a pattern that
+// matches one of its texts and a further test, if any, that passes. A record with upstream facts
+// that no category takes gets OTHER.
 export function categories(record: DescriptionRecord): string[] {
   const all = texts(record);
   const start = all.map((text) => text.slice(0, FURTHER_CHARS));

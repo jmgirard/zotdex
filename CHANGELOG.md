@@ -8,11 +8,14 @@
   category. The rules no longer take some words in another sense, such as an
   import translator, "easy to read", or a download by DOI. They still take
   others, so a plugin that no one has read can still have a wrong category.
-- "AI assistants" and "Attachments and full text" now need a stated feature
-  for a plugin that no one has read, such as chat with a paper or finding a
-  PDF. Naming an AI tool or mentioning an attachment is not enough. Such a
-  plugin can lose a wrong category of these two, and it can also lose a right
-  one. Plugins listed today keep their categories.
+- "AI assistants" and "Attachments and full text" now need more than a
+  matching word for a plugin that no one has read: a stated feature, such as
+  chat with a paper or downloading a PDF, or certain words in its name. A name
+  such as "Zotero AI" or "Attachment Viewer" is still enough, but "Claude
+  Helper" is not. A description that only names an AI tool or mentions an
+  attachment usually is not enough. Such a plugin can lose a wrong category of
+  these two, and it can also lose a right one. Plugins listed today keep their
+  categories, unless their own text changes.
 - Category links on a plugin page now tell screen readers that they list the
   plugins of that category.
 - 86 more plugins now show an English description of at least six words. Each
