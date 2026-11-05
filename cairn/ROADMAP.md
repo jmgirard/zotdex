@@ -7,7 +7,7 @@ _Last hygiene check: 2026-11-05 (M097 archived; M094 row left the table; one les
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M098 | Give the table controls one design | planned | — | normal | milestones/M098-table-controls-design.md |
+| M098 | Give the table controls one design | review | — | normal | milestones/M098-table-controls-design.md |
 | M097 | Get the site ready for first visitors | done | — | high | milestones/archive/M097-first-visitors.md |
 | M096 | Say how to install a plugin and what it can reach | done | — | high | milestones/archive/M096-install-steps-risk-note.md |
 | M095 | Publish a license | done | — | high | milestones/archive/M095-publish-license.md |
@@ -51,5 +51,6 @@ _Last hygiene check: 2026-11-05 (M097 archived; M094 row left the table; one les
 - [parked] Drop excludes left by removed overrides: M067, M089, and M090 add `exclude` entries in `src/site/categories.ts` because of an override's wording, and they stay if an owner removes or replaces that override (D-049, D-050), so they can block a later right match in the upstream text; parked, as no documented or common use has reached this; promote when a user reports it (M089 review) — added 2026-11-03 — M067, M089, M090, D-049, D-050
 - [parked] Close gaps in the delisted list reads: a queued discover run can read an older list; a held pull request gets no check before a hand merge, so the next build fails; impossible dates and duplicate records pass (M093 review); promote when a removed plugin returns — added 2026-11-04 — M093, D-062
 - [parked] Add a picture to link previews: M094 ships text only, as the user chose; promote when the user asks — added 2026-11-04 — M094
+- [parked] Tighten the home controls at larger text: the pager and sort menu wrap unevenly at 20 to 24 px text at 320 px; the version group and sort menu pass the card at 32 px text under 457 px; pressing a version button moves the row 1 px; a longer option can cut a menu at 761 or 1001 px; the table's px steps do not follow text size; `--faint` on `--hover` is 2.96:1 in dark on inner dividers; the card's corners and focus corners show slivers; `homeScript` stand-ins do not share a wrapper; Chromium only (M098 review); promote when a user reports it — added 2026-11-05 — M098
 - [parked] Tighten link previews and the icon: no PNG icon for a browser that shows no SVG icon; no mark at a cut; a cut can keep stray spaces or leave a short or U+200B-only text; over 200 opening spaces drops the text; `ORIGIN` repeats the address; About gives no source for stars and other facts (M094 review); promote when a user reports it — added 2026-11-04 — M094
 <!-- one line per idea, high → normal → low → parked: `- [token] short title: detail — added YYYY-MM-DD — links`; tracking-rules "Candidate priority token" and "Candidate short title" have the rules -->
