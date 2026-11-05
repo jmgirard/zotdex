@@ -119,6 +119,8 @@ The home page's search box, filter menus, version buttons, sort menu, count, and
 - 2026-11-05: T8 done: `.controls` steps at 62.5rem, 47.5rem, and 22.5rem, so they follow the browser's text size; between 47.5rem and 62.5rem the category menu keeps its natural width and the language menu takes the rest. `.table-panel` drops `overflow: hidden`, and `.table-card` rounds its foot only when the pager is hidden. The version group takes `min-width: max-content`, and `.sort-menu` wraps. The padding rule, the repeated pre-paint expectation, and four stale test titles are gone; T5's text dropped that test, since `test/site.test.ts`'s "comes before the table" holds it. Measured in headless Chromium with `--blink-settings=defaultFontSize` at 16, 20, 24, and 32 px and 17 widths: no version button clipped, no default value cut below 32 px, search at least 206 px.
 - 2026-11-05: agent decision, replacing the earlier width: the two menus sit side by side from 361 to 760 px at the default text size, so a closed menu can cut a long name below about 690 px; 320 px takes one column, so its distance is 337 px, which AC4 does not cap.
 - 2026-11-05: claim audit: pass 1's line stands for the branch; the comments T8 adds go to review pass 2's diff-bug reader.
+- 2026-11-05: review pass 2 moved the one-column step to 21.25rem, so the side-by-side range starts at 341 px, replacing the 361 px in the agent decision above.
+- 2026-11-05: step-7 approval: m098-table-controls-design approved for merge
 
 ## Decisions
 <!-- owner: implement / review · append-only; milestone-local; promote
