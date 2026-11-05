@@ -59,7 +59,7 @@ Each build log shows how long the plugin reads took, by result and for the slowe
 
 - [x] T1: Tests first in `test/build.test.ts` for AC1. In `readEntries` (`src/build/build.ts`, near line 232) take `performance.now()` around `readRecord`, and keep the first start and last end; add `timings` and `readMs` to `BuildResult`. The result name comes from `readRecord`, before the `facts-invalid` check and the keep step.
 - [x] T2: Tests first for AC2. Export a formatting function (in `src/build/timing.ts` or `cli.ts`) and call it in `src/build/cli.ts` before the failed-record lines, through `oneLine`.
-- [ ] T3: README "Building the data" (the paragraph on what the command prints) and a CHANGELOG entry.
+- [x] T3: README "Building the data" (the paragraph on what the command prints) and a CHANGELOG entry.
 - [ ] T4: Run `build.yml` on the branch, which cannot deploy, and record the new lines' totals from its build log.
 
 ## Work log
@@ -86,6 +86,7 @@ Each build log shows how long the plugin reads took, by result and for the slowe
 
 - 2026-11-05: T1 done: `readEntries` times `readRecord` with `performance.now()` and keeps the first start and last end; `BuildResult` gains `timings` (`ReadTiming` in the new `src/build/timing.ts`) and `readsMs`. 2 new tests; the fixed-file test passes unchanged. The stall test uses `readMs: 3000`, since 300 ms also cut the Better Notes read.
 - 2026-11-05: T2 done: `timingLines` in `src/build/timing.ts`, printed in `src/build/cli.ts` just before the failed-record lines; `test/timing.test.ts` (4 tests) and one `pnpm build` placement test. Minor: the 64 KiB stdout test now compares the two runs without the timing lines and checks their count (12), since the seconds differ between runs.
+- 2026-11-05: T3 done: README "Building the data" describes the timing lines where the printed lines are listed, and CHANGELOG names them. Minor: the timer-pending test's `expectSameRun` also compares stdout without the timing lines, through shared `untimed` and `timedCount` helpers, after it failed once on a 0.1 s difference.
 ## Decisions
 <!-- owner: implement / review · append-only; milestone-local; promote
      cross-cutting ones to cairn/DECISIONS.md.

@@ -193,6 +193,12 @@ function expectSchemaCopies(out: string) {
 }
 
 // The lines from the first failure-name line through the build-level line.
+// The timing lines name times that differ from run to run, so two runs' stdout is compared
+// without them, and by how many there are.
+const TIMING_LINE = /^(plugin reads took \d+\.\d s|\S+: \d+ reads, \d+\.\d s in all|slow read: .*)$/;
+const untimed = (stdout: string) => stdout.split("\n").filter((line) => !TIMING_LINE.test(line));
+const timedCount = (stdout: string) => stdout.split("\n").filter((line) => TIMING_LINE.test(line)).length;
+
 function summary(stdout: string): string[] {
   const lines = stdout.trim().split("\n");
   const start = lines.findIndex((line) => line.startsWith("failed with ") || line.startsWith("build-level failures: "));
@@ -707,7 +713,8 @@ describe("pnpm build with a timer still pending", () => {
     expect(pending.error).toBeUndefined();
     expect(seconds).toBeLessThan(30);
     expect(pending.status).toBe(plain.status);
-    expect(pending.stdout).toBe(plain.stdout);
+    expect(untimed(pending.stdout)).toEqual(untimed(plain.stdout));
+    expect(timedCount(pending.stdout)).toBe(timedCount(plain.stdout));
     expect(pendingData).toEqual(plainData);
   }
 
@@ -760,13 +767,9 @@ describe("pnpm build with a timer still pending", () => {
     clearTimeout(timer);
     expect((performance.now() - started) / 1000).toBeLessThan(30);
     expect(status).toBe(plain.status);
-    // The timing lines name times that differ from run to run, so they are compared by count.
-    const timing = /^(plugin reads took \d+\.\d s|\S+: \d+ reads, \d+\.\d s in all|slow read: .*)$/;
-    const untimed = (text: string) => text.split("\n").filter((line) => !timing.test(line));
-    const timed = (text: string) => text.split("\n").filter((line) => timing.test(line)).length;
     expect(untimed(stdout)).toEqual(untimed(plain.stdout));
-    expect(timed(stdout)).toBe(timed(plain.stdout));
-    expect(timed(plain.stdout)).toBe(12);
+    expect(timedCount(stdout)).toBe(timedCount(plain.stdout));
+    expect(timedCount(plain.stdout)).toBe(12);
     expect(takeData(out)).toEqual(plainData);
   }, 120_000);
 });

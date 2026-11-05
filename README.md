@@ -1643,7 +1643,17 @@ If the Zotero release read failed, the command first prints its line. If the
 read of the top-level names failed for any repository, it prints that
 `::warning::` line next. Next, it prints the `::warning::` lines for the
 release lists above, and then the line for a failed read of the published
-data. Then it prints one line for each failed record. A record that keeps
+data. If the command started a plugin read, it then prints how long the
+reads took. The first line, `plugin reads took <s> s`, gives the time
+from the start of the first plugin read to the end of the last. Next comes
+one line `<result>: <n> reads, <s> s in all` for each result, in
+code-unit order. A result is `read` or the name of the read's failure. It
+comes before the schema check of the facts and before any kept facts.
+Then up to 10 lines `slow read: <id>: <s> s (<result>)` name the slowest
+reads, slowest first, with ties in id order. Each time is in seconds with
+one decimal. An entry that the time limit leaves `not-read` has no read,
+so these lines leave it out. Then it prints one line for each failed
+record. A record that keeps
 earlier facts counts as failed, and its line ends with
 `(kept the facts read at <readAt>)`. Next, it prints one line
 for each failure name, with the number of records that carry it. Then it

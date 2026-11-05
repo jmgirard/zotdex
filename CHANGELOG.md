@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- The `pnpm build` log now says how long the plugin reads took: the whole
+  read phase, the reads and time for each result, and the 10 slowest reads.
+  A build that its time limit cuts then shows where its time went.
 - A plugin that a build cannot read for a build-level reason, such as the
   build's time limit or an HTTP 5xx answer, now keeps the facts that an
   earlier build read, for at most 7 days. Before, its row showed "Not read"
