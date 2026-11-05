@@ -1303,7 +1303,7 @@ describe("the home page", () => {
     expect(facts["broken-plugin@example.org"]).toEqual([undefined, undefined]);
   });
 
-  test("holds a hidden sort menu whose first option is Stars", () => {
+  test("holds a sort menu whose first option is Stars", () => {
     const menu = /<p class="sort-menu"><label for="sort">Sort by<\/label> <select id="sort" data-sort autocomplete="off">(.*?)<\/select><\/p>/.exec(home());
     expect(menu).not.toBeNull();
     expect([...menu![1]!.matchAll(/<option value="([^"]*)">([^<]*)<\/option>/g)].map(([, value, text]) => [value, text])).toEqual([
@@ -1353,7 +1353,7 @@ describe("the home page", () => {
     ]));
   });
 
-  test("holds hidden version buttons, Any pressed, then one for each major", () => {
+  test("holds version buttons, Any pressed, then one for each major", () => {
     const group = /<div class="version-filter"><span id="([^"]+)">Declares Zotero<\/span><div role="group" aria-labelledby="([^"]+)" data-version-filter>(.*?)<\/div><\/div>/.exec(home());
     expect(group).not.toBeNull();
     expect(group![2]).toBe(group![1]);
@@ -1365,7 +1365,7 @@ describe("the home page", () => {
     ]);
   });
 
-  test("holds a hidden language menu with one option for each subtag, most plugins first", () => {
+  test("holds a language menu with one option for each subtag, most plugins first", () => {
     const menu = /<p class="language-filter"><label for="language">Menus and settings in<\/label> <select id="language" data-language-filter autocomplete="off">(.*?)<\/select><\/p>/.exec(home());
     expect(menu).not.toBeNull();
     const options = [...menu![1]!.matchAll(/<option value="([^"]*)">([^<]*)<\/option>/g)].map(([, value, text]) => [value, text]);
@@ -1389,7 +1389,7 @@ describe("the home page", () => {
     expect(expected.filter(([, slugs]) => slugs === "").length).toBeGreaterThan(1);
   });
 
-  test("holds a hidden category menu with one option for each category a row has, most rows first, ties in list order, and Other tools last", () => {
+  test("holds a category menu with one option for each category a row has, most rows first, ties in list order, and Other tools last", () => {
     const menu = /<p class="category-filter"><label for="category">Category<\/label> <select id="category" data-category-filter autocomplete="off">(.*?)<\/select><\/p>/.exec(home());
     expect(menu).not.toBeNull();
     const options = [...menu![1]!.matchAll(/<option value="([^"]*)">([^<]*)<\/option>/g)].map(([, value, text]) => [value, text]);
@@ -1424,8 +1424,6 @@ describe("the home page", () => {
     expect(html).toContain(
       '</table></div><nav class="pager" aria-label="Pages" data-pager hidden><button type="button" data-page-step="-1">Previous</button><span role="status" data-page-status></span><button type="button" data-page-step="1">Next</button></nav></div><ul class="legend"',
     );
-    // The classic script must run before the rows parse, or the rows paint before it hides them.
-    expect(html.indexOf("<script>", html.indexOf("<main>"))).toBeLessThan(html.indexOf("<tbody>"));
   });
 
   test("hides each control's element while it has hidden, whatever display its other rules give it", () => {

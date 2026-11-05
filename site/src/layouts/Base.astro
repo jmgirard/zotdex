@@ -289,13 +289,16 @@ const themeButton = `(${wireThemeButton})();`;
       /* One card holds the two groups of controls, the table, and the pager. */
       .table-panel {
         margin-top: var(--space-4);
-        overflow: hidden;
         background: var(--surface);
         border: 1px solid var(--line);
         border-radius: var(--radius);
       }
       .table-card {
         overflow-x: auto;
+      }
+      /* With no pager below it, the last row's hover fill stays inside the card's corners. */
+      .table-card:has(+ .pager[hidden]) {
+        border-radius: 0 0 var(--radius) var(--radius);
       }
       .controls {
         display: grid;
@@ -397,6 +400,7 @@ const themeButton = `(${wireThemeButton})();`;
       /* Two classes outrank .results p, which clears the margins of the row's paragraphs. */
       .results .sort-menu {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
         gap: var(--space-4);
         margin-left: auto;
@@ -409,8 +413,10 @@ const themeButton = `(${wireThemeButton})();`;
       .pager[hidden] {
         display: none;
       }
+      /* max-content, so larger browser text cannot make the rounded corners cut off a button. */
       [data-version-filter] {
         display: flex;
+        min-width: max-content;
         overflow: hidden;
       }
       [data-version-filter] button {
@@ -695,13 +701,29 @@ const themeButton = `(${wireThemeButton})();`;
         display: inline;
         margin: 0;
       }
-      /* Under 1000 px the menus' natural widths leave the search box too little, so it takes its own row. */
-      @media (max-width: 1000px) {
+      /* These steps are in rem, so they follow the browser's text size as the controls do. At 62.5rem
+         or less the menus' natural widths leave the search box too little, so it takes its own row. */
+      @media (max-width: 62.5rem) {
         .controls {
-          grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+          grid-template-columns: auto 1fr auto;
         }
         .search {
           grid-column: 1 / -1;
+        }
+      }
+      /* The two menus and the version buttons no longer fit on one row at their natural widths. */
+      @media (max-width: 47.5rem) {
+        .controls {
+          grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        }
+        .version-filter {
+          grid-column: 1 / -1;
+        }
+      }
+      /* Side by side, the menus would cut "All categories". */
+      @media (max-width: 22.5rem) {
+        .controls {
+          grid-template-columns: minmax(0, 1fr);
         }
       }
       @media (max-width: 760px) {
@@ -726,17 +748,6 @@ const themeButton = `(${wireThemeButton})();`;
         }
         .mark {
           width: 1.375rem;
-        }
-        .controls {
-          grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        }
-        /* Less room beside the arrow, so "All categories" stays whole at 320 px. */
-        [data-language-filter],
-        [data-category-filter] {
-          padding-right: var(--space-12);
-        }
-        .version-filter {
-          grid-column: 1 / -1;
         }
       }
 

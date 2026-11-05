@@ -4,7 +4,7 @@
      cairn_validate's <150 over the plan-owned body. -->
 # M098: Give the table controls one design
 
-- **Status:** in-progress   <!-- owner: transitioning skill · mirror-update; cairn/ROADMAP.md is the authority -->
+- **Status:** review   <!-- owner: transitioning skill · mirror-update; cairn/ROADMAP.md is the authority -->
 - **Priority:** normal   <!-- owner: plan · create/amend-via-gate; high | normal | low -->
 - **Depends on:** —   <!-- owner: plan · create/amend-via-gate; M<xx>, M<yy> or — -->
 - **Driving RR:** —   <!-- owner: plan · create/amend-via-gate; RR<NN> whose Binding criteria bind this milestone's ACs (binding-criteria check), or — -->
@@ -43,7 +43,7 @@ The home page's search box, filter menus, version buttons, sort menu, count, and
 
 - [ ] AC1: One look. In a build from the deployed data, the search box, the category, language, and sort menus, the version button group, and the Previous and Next buttons each have a computed height of 32 px, a corner radius of 6 px (`--radius-m`), and a top border color equal to `--faint`. Those controls, and each button inside the version group, have a font size of 14 px (`--text-m`). The visible labels "Category", "Menus and settings in", "Declares Zotero", and "Sort by" each have the computed font size, weight, and color of the "Plugin" header cell (12 px, 600, `--muted`). The count and "Page p of P" have a font size of 13 px (`--text-s`). A browser-pane read of these computed values on each named element, at 375 and 1200 px wide in the light and dark schemes, shows this.
 - [ ] AC2: One set of states. In a browser-pane read of a build from the deployed data, at 1200 px in each scheme: a pointer over the search box, a menu, an unpressed version button, or a Previous or Next button that is not at its end gives that control the `--hover` background, and a menu keeps its arrow. A button at its end keeps the `--surface` background under the pointer. The pressed version button has the `--hover` background, weight 600, `--text` color, and a 2 px `--accent` bar on its bottom edge. Keyboard focus on each of these controls draws a 2 px `--link` outline. The `--accent` bar has at least 3:1 contrast on `--hover` in both schemes. In `site/src/layouts/Base.astro`, the pressed button keeps its 3 px `ButtonText` border and the end button its `GrayText` color and border color under forced colors, and each of those rules comes after any rule of equal specificity that sets the same property.
-- [ ] AC3: One card. At 1200 px wide in a build from the deployed data, one element with the card's border and background holds, from top to bottom: a row with the search box, the category menu, the language menu, and the version buttons, with each visible label above its control and all four controls sharing one top edge within 1 px; a row with the count at its left and "Sort by" and its menu at its right; the table; and the pager, with Previous's left edge and Next's right edge at the card's inner edges within 1 px and "Page p of P" between them. `.table-card` has no border of its own. Each menu is as wide as on a main build from the same data, so a closed menu shows its longest option whole (304 and 188 px, measured 2026-11-05). The distance from the bottom of `.hero` to the top of the table's `thead` is at most 145 px (105 px on main, measured 2026-11-05). A browser-pane read of each element's bounding box shows this.
+- [ ] AC3: One card. At 1200 px wide in a build from the deployed data, one element with the card's border and background holds, from top to bottom: a row with the search box, the category menu, the language menu, and the version buttons, with each visible label above its control and all four controls sharing one top edge within 1 px; a row with the count at its left and "Sort by" and its menu at its right; the table; and the pager, with Previous's left edge within 1 px of the search box's left edge, Next's right edge within 1 px of the sort menu's right edge, and "Page p of P" between them. `.table-card` has no border of its own. Each menu is as wide as on a main build from the same data, so a closed menu shows its longest option whole (304 and 188 px, measured 2026-11-05). The distance from the bottom of `.hero` to the top of the table's `thead` is at most 145 px (105 px on main, measured 2026-11-05). A browser-pane read of each element's bounding box shows this.
 - [ ] AC4: Narrow widths. In a build from the deployed data, at each of 320, 375, 560, 760, and 1024 px wide, a browser-pane read gives the page `scrollWidth` equal to `clientWidth`, each control's bounding box lies inside the card's, and `.table-card` has computed `overflow-x: auto`. At 375 px the distance from the bottom of `.hero` to the top of the table's `thead` is at most 250 px (288 px on main, measured 2026-11-05). Screenshots at 320 and 375 px, and at 320 px with a search that matches nothing, show no label, button, or count word broken inside a word.
 - [ ] AC5: Same function. `git diff main -- src/site/home-filter.ts` changes only comment lines. Each control and the count keep every attribute they have on main except `class` and `hidden`, and their label words and option lists, and the pager stays a `nav` with its `aria-label`. In the built HTML the classic pre-paint script comes before `<tbody>`. In the browser pane with the deployed data, using each control once changes the table, the count, and the address as on main, Previous and Next move a page and Back returns, and Previous or Next scrolls the element that holds the table, not the controls row, to the top of the view.
 - [ ] AC6: No script. In a same-origin iframe with `sandbox="allow-same-origin"`, which runs no script, the home page shows every row in the card, and the bounding boxes of the search box, the menus, the version buttons, the count, the pager, and the two control rows that hold them are all empty.
@@ -56,8 +56,8 @@ The home page's search box, filter menus, version buttons, sort menu, count, and
 
 - AC1 → T2, T6
 - AC2 → T3, T5, T6
-- AC3 → T1, T2, T6
-- AC4 → T4, T6
+- AC3 → T1, T2, T6, T8
+- AC4 → T4, T6, T8
 - AC5 → T1, T5, T6
 - AC6 → T1, T2, T6
 - AC7 → T5, T7
@@ -73,9 +73,10 @@ The home page's search box, filter menus, version buttons, sort menu, count, and
 - [x] T2: In `site/src/layouts/Base.astro`, write one rule for the controls' sizes and one for the labels, then the card and the rows. Search takes the free width, and the menus and version group keep their natural width at desktop. Replace `.toolbar p`, which cancels `.filter-status`'s `margin-left: auto`, with a margin reset on the controls. Drop that auto margin, and put one on `.sort-menu`.
 - [x] T3: Add the hover, pressed, and focus states. Write hover on a menu with `background-color`, since the arrow is a `background-image`. Keep the forced-colors rules after the rules they override.
 - [x] T4: Fix the arrangement at 320 to 1024 px: search on its own row at the middle widths, and at 560 px or less the two menus side by side and the version buttons on their own row at full width.
-- [x] T5: Update the markup and CSS expectations in `test/site.test.ts`, keeping every behavior expectation of the `homeScript` tests and the theme button's hide rule. Add the `--accent` on `--hover` pair to the color test, and a test of the pre-paint script's place before `<tbody>`.
+- [x] T5: Update the markup and CSS expectations in `test/site.test.ts`, keeping every behavior expectation of the `homeScript` tests and the theme button's hide rule. Add the `--accent` on `--hover` pair to the color test.
 - [x] T6: Run the browser-pane reads of AC1 to AC6 on a build from the deployed data, in both schemes where the criterion says so.
 - [x] T7: Update README.md, `cairn/DESIGN.md`, the stale comments in `src/site/home-filter.ts`, and CHANGELOG.md.
+- [x] T8: Fix review return 1: width steps in rem, menus at natural width while all three fit, one column at 22.5rem or less, the card no longer hiding overflow, and the fix-now items in the Review section's pass 1.
 
 ## Work log
 <!-- owner: any skill · append-only; one line per entry; absolute dates.
@@ -113,6 +114,11 @@ The home page's search box, filter menus, version buttons, sort menu, count, and
 - 2026-11-05: claim audit: 60 claims read, 6 corrected — CHANGELOG.md, README.md, cairn/DESIGN.md, site/src/layouts/Base.astro, site/src/pages/index.astro; the one re-read corrected the pressed-fill wording once more, since "pale" held only in the light scheme.
 - 2026-11-05: review return 1: at larger browser text the search box collapses above 1000 px (87 px wide at root 24 px and 1200 px, diff-bug #1), closed menu values are cut at 561 to about 880 px at the default text size (diff-bug #3), and the fix-now items in the Review section's pass 1 remain open.
 - 2026-11-05: amendment routed: AC3 — "at the card's inner edges within 1 px" fails as written, since Previous and Next sit level with the rows' controls, 13 px in from the card's outer edges.
+- 2026-11-05: re-audit: AC3 (full) — nothing
+- 2026-11-05: amendment return: AC3 — "and the pager, with Previous's left edge within 1 px of the search box's left edge, Next's right edge within 1 px of the sort menu's right edge, and "Page p of P" between them"
+- 2026-11-05: T8 done: `.controls` steps at 62.5rem, 47.5rem, and 22.5rem, so they follow the browser's text size; between 47.5rem and 62.5rem the category menu keeps its natural width and the language menu takes the rest. `.table-panel` drops `overflow: hidden`, and `.table-card` rounds its foot only when the pager is hidden. The version group takes `min-width: max-content`, and `.sort-menu` wraps. The padding rule, the repeated pre-paint expectation, and four stale test titles are gone; T5's text dropped that test, since `test/site.test.ts`'s "comes before the table" holds it. Measured in headless Chromium with `--blink-settings=defaultFontSize` at 16, 20, 24, and 32 px and 17 widths: no version button clipped, no default value cut below 32 px, search at least 206 px.
+- 2026-11-05: agent decision, replacing the earlier width: the two menus sit side by side from 361 to 760 px at the default text size, so a closed menu can cut a long name below about 690 px; 320 px takes one column, so its distance is 337 px, which AC4 does not cap.
+- 2026-11-05: claim audit: pass 1's line stands for the branch; the comments T8 adds go to review pass 2's diff-bug reader.
 
 ## Decisions
 <!-- owner: implement / review · append-only; milestone-local; promote

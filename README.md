@@ -166,8 +166,8 @@ pressed and removes the parameter.
 
 The home page has a "Sort by" menu above the table, with the options Stars,
 Name, and Latest release. Stars is the default. It puts a higher GitHub star
-count first, and 0 counts as a value. Latest release puts a later release date first, for the
-release that the index read. Name ignores letter case and accents, and names
+count first, and 0 counts as a value. Latest release puts a later release date
+first, for the release that the index read. Name ignores letter case and accents, and names
 that are then equal sort by plugin id. Under Stars and Latest release, a
 plugin with no such value comes after every plugin that has one, and plugins
 that tie stay in Name order. A star count is a fact from GitHub. It is not a

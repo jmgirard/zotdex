@@ -7,9 +7,9 @@
   count and "Sort by" sit above the table. If the width allows, they share one
   row. The pager sits at the foot of the card. The controls have one height,
   text size, and edge. Each one changes on hover, except the pressed version
-  button and a pager button at its end. The pressed version button has the
-  hover fill and a thin red bar in place of a fill in the text color. What each
-  control does did not change.
+  button and a pager button at its end. The pressed version button now has the
+  hover fill and a thin bar in the site's accent color. Before, it had a fill in
+  the text color. What each control does did not change.
 - The home table now opens with the most GitHub stars first. A new "Sort by"
   menu also offers Name and Latest release, and the page keeps a choice other
   than Stars in the `sort` query parameter. A home row with a star count shows
