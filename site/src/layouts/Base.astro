@@ -426,15 +426,27 @@ const themeButton = `(${wireThemeButton})();`;
         border-left: 0;
       }
       [data-version-filter] button[aria-pressed="true"] {
-        background: var(--text);
-        color: var(--surface);
+        background: var(--hover);
+        color: var(--text);
         font-weight: 600;
+        box-shadow: inset 0 -2px 0 var(--accent);
+      }
+      /* background-color alone, since each menu draws its arrow in background-image. */
+      .search input:hover,
+      [data-language-filter]:hover,
+      [data-category-filter]:hover,
+      [data-sort]:hover,
+      [data-version-filter] button:not([aria-pressed="true"]):hover,
+      .pager button:not([aria-disabled="true"]):hover {
+        background-color: var(--hover);
+        color: var(--text);
       }
       .search input:focus-visible,
       [data-language-filter]:focus-visible,
       [data-category-filter]:focus-visible,
       [data-sort]:focus-visible,
-      [data-version-filter] button:focus-visible {
+      [data-version-filter] button:focus-visible,
+      .pager button:focus-visible {
         outline: 2px solid var(--link);
         outline-offset: 2px;
       }
@@ -654,10 +666,6 @@ const themeButton = `(${wireThemeButton})();`;
       .pager button[aria-disabled="true"] {
         color: var(--faint);
         cursor: default;
-      }
-      .pager button:focus-visible {
-        outline: 2px solid var(--link);
-        outline-offset: 2px;
       }
       /* Forced colors replace --faint, so GrayText marks a button at an end. */
       @media (forced-colors: active) {

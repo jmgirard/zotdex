@@ -2562,8 +2562,9 @@ describe("the site colors", () => {
   const darkBlock = /@media \(prefers-color-scheme: dark\) \{\s*:root:not\(\[data-theme="light"\]\) \{(.*?)\}/s.exec(layout)![1]!;
   const dark =new Map([...light, ...colors(darkBlock)]);
   // Each text token on each surface, and each status token on its own background and on
-  // the surface, at 4.5:1; each mark or icon token on the surface at 3:1, and the star, which
-  // the plugin page head shows on the page background, on both.
+  // the surface, at 4.5:1; each mark or icon token on the surface at 3:1, the star, which
+  // the plugin page head shows on the page background, on both, and the pressed version
+  // button's bar on that button's fill.
   const PAIRS: [string, string, number][] = [
     ...["--text", "--muted", "--link"].flatMap((text) =>
       ["--bg", "--surface", "--hover"].map((surface): [string, string, number] => [text, surface, 4.5]),
@@ -2576,6 +2577,7 @@ describe("the site colors", () => {
     ["--none", "--surface", 3],
     ["--star", "--bg", 3],
     ["--star", "--surface", 3],
+    ["--accent", "--hover", 3],
   ];
 
   describe("the favicon", () => {
