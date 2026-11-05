@@ -7,7 +7,7 @@ _Last hygiene check: 2026-11-05 (M100 archived; M097 row left the table; validat
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M101 | Time each plugin read in the build log | planned | — | normal | milestones/M101-time-each-read.md |
+| M101 | Time each plugin read in the build log | in-progress | — | normal | milestones/M101-time-each-read.md |
 | M100 | Keep a plugin's last good record | done | — | high | milestones/archive/M100-keep-last-good-record.md |
 | M099 | Replace the red logo with a blue puzzle piece | done | — | normal | milestones/archive/M099-puzzle-piece-logo.md |
 | M098 | Give the table controls one design | done | — | normal | milestones/archive/M098-table-controls-design.md |

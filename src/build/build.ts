@@ -12,6 +12,7 @@ import { LAST_RELEASES } from "../site/version.ts";
 import { type Kept, keptFacts } from "./keep.ts";
 import { PREVIOUS_LIMIT_MS, readPrevious } from "./previous.ts";
 import { readSourceFacts, SOURCE_READ_LIMIT_MS } from "./source.ts";
+import type { ReadTiming } from "./timing.ts";
 import { readChangelogRelease, readZoteroRelease, releaseListWarnings, ZOTERO_RELEASE_LIMIT_MS } from "./zotero-release.ts";
 
 export interface Override {
@@ -95,7 +96,10 @@ export interface StartPlan {
 // `buildLevel` lists the ids of the records whose failure usually points at the build, such as a
 // rate limit or a network error, in record order, kept records included. It and the plan stay
 // out of the data. `kept` lists the ids of the kept records, in record order, and
-// `previousProblem` names why the read of the deployed data failed, when it did. The
+// `previousProblem` names why the read of the deployed data failed, when it did. `timings`
+// holds one ReadTiming for each plugin read the build started, in id order, and `readsMs` the
+// milliseconds from the first read's start to the last read's end, absent when no read
+// started; both stay out of the data. The
 // plan has one item for each record whose upstream this build read, in record order, so a
 // kept record has none. `releaseProblem` names why
 // the read of the current Zotero release failed, when it did, and `sourceProblem` why the build
@@ -109,6 +113,8 @@ export type BuildResult =
       text: string;
       buildLevel: string[];
       kept: string[];
+      timings: ReadTiming[];
+      readsMs?: number;
       plan: StartPlan;
       previousProblem?: string;
       releaseProblem?: string;
@@ -250,6 +256,9 @@ export async function buildData(
   const buildLevelAt = new Set<number>();
   const xpis = new Map<string, XpiRead>();
   const paced = pacedApi(fetch, apiGapMs);
+  const timed: (ReadTiming | undefined)[] = new Array(entries.length);
+  let firstStart: number | undefined;
+  let lastEnd: number | undefined;
   const readEntries = async () => {
     for (let next = order.shift(); next !== undefined; next = order.shift()) {
       const i = next;
@@ -261,7 +270,13 @@ export async function buildData(
         buildLevelAt.add(i);
         continue;
       }
+      const start = performance.now();
+      firstStart ??= start;
       const { buildLevel: counts, xpi, ...read } = await readRecord(repoUrl, paced, readMs);
+      const end = performance.now();
+      lastEnd = Math.max(lastEnd ?? end, end);
+      // The result before the facts check and the keep step below, as readRecord gave it.
+      timed[i] = { id, ms: end - start, result: read.failure?.name ?? "read" };
       if (counts) buildLevelAt.add(i);
       if (xpi) xpis.set(id, xpi);
       const record: PluginRecord = { id, repoUrl, ...paid, ...read, overrides };
@@ -350,6 +365,8 @@ export async function buildData(
     text,
     buildLevel,
     kept,
+    timings: timed.filter((timing): timing is ReadTiming => timing !== undefined),
+    ...(firstStart !== undefined && lastEnd !== undefined ? { readsMs: lastEnd - firstStart } : {}),
     plan,
     releaseWarnings,
     ...(previousProblem ? { previousProblem } : {}),

@@ -1493,6 +1493,30 @@ describe("buildData", () => {
   });
 });
 
+describe("buildData read timings", () => {
+  test("times each read it starts, in id order, with readRecord's result, and the whole read phase", async () => {
+    const recorded = { ...responses(), [SECOND_UPDATE]: { stall: "headers" as const } };
+    const result = await buildData(TREE, fixtureFetch(recorded).fetch, new Date("2026-11-05T06:00:00Z"), undefined, { readMs: 3000 });
+    if (!result.ok) throw new Error(result.problems.join("\n"));
+    expect(result.timings.map(({ id, result: name }) => [id, name])).toEqual([
+      [BETTER_NOTES, "read"],
+      [FORKED, "fork"],
+      [SECOND, "request-failed"],
+    ]);
+    const second = result.timings.find(({ id }) => id === SECOND)!;
+    // A timer can fire up to 1 ms early by performance.now().
+    expect(second.ms).toBeGreaterThanOrEqual(2999);
+    expect(result.readsMs).toBeGreaterThanOrEqual(second.ms);
+  });
+
+  test("gives a not-read entry no timing, and no read phase when no read starts", async () => {
+    const result = await buildData(TREE, fixtureFetch(responses()).fetch, new Date("2026-11-05T06:00:00Z"), undefined, { buildMs: 0 });
+    if (!result.ok) throw new Error(result.problems.join("\n"));
+    expect(result.timings).toEqual([]);
+    expect(result).not.toHaveProperty("readsMs");
+  });
+});
+
 describe("buildData with the deployed data", () => {
   const PREVIOUS = "https://example.org/v1/plugins.json";
   const READ_AT = "2026-11-04T06:00:00.000Z";

@@ -4,14 +4,14 @@
      cairn_validate's <150 over the plan-owned body. -->
 # M101: Time each plugin read in the build log
 
-- **Status:** planned   <!-- owner: transitioning skill · mirror-update; cairn/ROADMAP.md is the authority -->
+- **Status:** in-progress   <!-- owner: transitioning skill · mirror-update; cairn/ROADMAP.md is the authority -->
 - **Priority:** normal   <!-- owner: plan · create/amend-via-gate; high | normal | low -->
 - **Depends on:** —   <!-- owner: plan · create/amend-via-gate; M<xx>, M<yy> or — -->
 - **Driving RR:** —   <!-- owner: plan · create/amend-via-gate; RR<NN> whose Binding criteria bind this milestone's ACs (binding-criteria check), or — -->
 - **Principles touched:** —   <!-- owner: plan · create/amend-via-gate; comma-separated IPn/GPn ids this milestone touches, or — -->
 - **Resolves:** —   <!-- owner: plan · create/amend-via-gate; comma-separated GitHub issues the scope absorbs, each `#N closes` (the PR closes it at merge) or `#N partial` (the remainder gets a candidate row), or — ; skill conduct only — no validate check parses it -->
 - **Surface tier:** internal — lines in the build log that the maintainer reads; the data and the site do not change   <!-- owner: plan · create/amend-via-gate; user-facing | internal — <one-clause reason>; skill conduct only — no validate check parses it -->
-- **Branch/PR:** —   <!-- owner: implement (branch) / review (PR URL) · create; a companion checkout the milestone also works in is one further entry per checkout, `companion: <abs-path> <branch>` (implement), its PR URL appended by review — /milestone-review merges companions first, in listed order -->
+- **Branch/PR:** m101-time-each-read   <!-- owner: implement (branch) / review (PR URL) · create; a companion checkout the milestone also works in is one further entry per checkout, `companion: <abs-path> <branch>` (implement), its PR URL appended by review — /milestone-review merges companions first, in listed order -->
 
 ## Goal
 <!-- owner: plan · create; a wrong goal returns to plan, never edited in place -->
@@ -57,7 +57,7 @@ Each build log shows how long the plugin reads took, by result and for the slowe
      cites; an insertion, removal, or reorder renumbers the labels and the
      Coverage lines together. -->
 
-- [ ] T1: Tests first in `test/build.test.ts` for AC1. In `readEntries` (`src/build/build.ts`, near line 232) take `performance.now()` around `readRecord`, and keep the first start and last end; add `timings` and `readMs` to `BuildResult`. The result name comes from `readRecord`, before the `facts-invalid` check and the keep step.
+- [x] T1: Tests first in `test/build.test.ts` for AC1. In `readEntries` (`src/build/build.ts`, near line 232) take `performance.now()` around `readRecord`, and keep the first start and last end; add `timings` and `readMs` to `BuildResult`. The result name comes from `readRecord`, before the `facts-invalid` check and the keep step.
 - [ ] T2: Tests first for AC2. Export a formatting function (in `src/build/timing.ts` or `cli.ts`) and call it in `src/build/cli.ts` before the failed-record lines, through `oneLine`.
 - [ ] T3: README "Building the data" (the paragraph on what the command prints) and a CHANGELOG entry.
 - [ ] T4: Run `build.yml` on the branch, which cannot deploy, and record the new lines' totals from its build log.
@@ -84,6 +84,7 @@ Each build log shows how long the plugin reads took, by result and for the slowe
 - 2026-11-05: plan gate chose the timing lines before the failed-record lines over after `build-level failures` because the tests' `summary` slice and last-line checks then stay exact; falsified by a test that reads the lines between `failed with` and `build-level failures` and meets a timing line.
 - 2026-11-05: criteria audit (reduced) by a fresh Opus reader: 8 findings, all applied: the unchanged-file test in place of "with and without the timings", the result name from `readRecord`, `readMs` − 1 for an early timer, no total when no read starts, id order, the lines placed outside the `summary` slice, a formatting function tested apart for the cap, a line break as a space, and ties in id order.
 
+- 2026-11-05: T1 done: `readEntries` times `readRecord` with `performance.now()` and keeps the first start and last end; `BuildResult` gains `timings` (`ReadTiming` in the new `src/build/timing.ts`) and `readsMs`. 2 new tests; the fixed-file test passes unchanged. The stall test uses `readMs: 3000`, since 300 ms also cut the Better Notes read.
 ## Decisions
 <!-- owner: implement / review · append-only; milestone-local; promote
      cross-cutting ones to cairn/DECISIONS.md.
