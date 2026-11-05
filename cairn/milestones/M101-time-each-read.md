@@ -37,9 +37,9 @@ Each build log shows how long the plugin reads took, by result and for the slowe
      coverage-complete counts AC checkboxes positionally (M107); departures:
      a "Deviations from RR<NN>" table ends this section. -->
 
-- [ ] AC1: `buildData` returns, outside the data, one timing for each plugin read that it started, in id order: the entry id, the milliseconds from the read's start to the end of `readRecord`, and the failure name that `readRecord` returned, or `read`. An entry that the time limit left `not-read` gets no timing. It also returns the milliseconds from the start of the first plugin read to the end of the last, absent when no read starts. `test/build.test.ts` covers a read that a stalled answer holds past a set `readMs`, whose timing is at least `readMs` − 1 and names `request-failed`, and a `not-read` entry with no timing, and its existing test "writes the same file as before the build-level rule" passes unchanged.
-- [ ] AC2: `pnpm build` prints the timing lines just before the line of the first failed record, or where that line would be: `plugin reads took <s> s`, then `<result>: <n> reads, <s> s in all` for each result in code-unit order, then up to the 10 slowest reads, slowest first and ties in id order, as `slow read: <id>: <s> s (<result>)`. `<s>` is seconds with one decimal, and a line break in an id becomes a space. A build that starts no plugin read prints none of these lines. A test of the exported function that formats the lines covers the order, the form, the 10-read cap, ties, and the line break, and one `pnpm build` test covers where the lines sit.
-- [ ] AC3: README's "Building the data" describes these lines, and CHANGELOG's Unreleased section names them. `pnpm test` and `pnpm check` pass.
+- [x] AC1: `buildData` returns, outside the data, one timing for each plugin read that it started, in id order: the entry id, the milliseconds from the read's start to the end of `readRecord`, and the failure name that `readRecord` returned, or `read`. An entry that the time limit left `not-read` gets no timing. It also returns the milliseconds from the start of the first plugin read to the end of the last, absent when no read starts. `test/build.test.ts` covers a read that a stalled answer holds past a set `readMs`, whose timing is at least `readMs` − 1 and names `request-failed`, and a `not-read` entry with no timing, and its existing test "writes the same file as before the build-level rule" passes unchanged.
+- [x] AC2: `pnpm build` prints the timing lines just before the line of the first failed record, or where that line would be: `plugin reads took <s> s`, then `<result>: <n> reads, <s> s in all` for each result in code-unit order, then up to the 10 slowest reads, slowest first and ties in id order, as `slow read: <id>: <s> s (<result>)`. `<s>` is seconds with one decimal, and a line break in an id becomes a space. A build that starts no plugin read prints none of these lines. A test of the exported function that formats the lines covers the order, the form, the 10-read cap, ties, and the line break, and one `pnpm build` test covers where the lines sit.
+- [x] AC3: README's "Building the data" describes these lines, and CHANGELOG's Unreleased section names them. `pnpm test` and `pnpm check` pass.
 
 ## Coverage
 <!-- owner: plan · create/amend-via-gate; each acceptance criterion → the
@@ -90,6 +90,7 @@ Each build log shows how long the plugin reads took, by result and for the slowe
 - 2026-11-05: T4 done: branch run 42125640367's build log printed `plugin reads took 220.6 s`, `read: 734 reads, 877.8 s in all`, one `github-http-error` (0.2 s) and one `update-json-http-error` (2.5 s), and 10 slow reads from 10.9 s (`ai4paper-v2@cpc.dev`) to 4.2 s, before the failed-record lines; 0 build-level failures. This is a healthy build's baseline: about 1.2 s a read.
 - 2026-11-05: claim audit: not owed — internal tier.
 - 2026-11-05: implement complete; status → review.
+- 2026-11-05: review: evidence recorded and every criterion ticked; gate clean; four-lens review next.
 ## Decisions
 <!-- owner: implement / review · append-only; milestone-local; promote
      cross-cutting ones to cairn/DECISIONS.md.
@@ -102,3 +103,8 @@ Each build log shows how long the plugin reads took, by result and for the slowe
      results, review findings + triage. EXEMPT from the 150-line cap (M55),
      as are the work log (D-046) and the decisions section (D-074); evidence
      never scrambles plan-owned content. -->
+
+- AC1: evidence — `buildData read timings` (2 tests) pass: the stalled read's timing is at least 2999 ms with `readMs: 3000` and names `request-failed`, the timings are in id order with `read`, `fork`, and `request-failed`, and `readsMs` covers them; a `buildMs: 0` build has no timings and no `readsMs`. "writes the same file as before the build-level rule" passes unchanged.
+- AC2: evidence — `test/timing.test.ts` (4 tests: order, form, ties in id order, the 10-read cap, a line break as a space, no lines with no read) and `pnpm build` > "prints the timing lines just before the failed-record lines, outside the summary block" pass; branch run 42125640367's log showed the lines in that place on all 736 plugins.
+- AC3: evidence — README "Building the data" (near line 1646) describes the three kinds of line and CHANGELOG's Unreleased section names them; `pnpm test` 2481 passed, 6 skipped, exit 0; `pnpm check` 736 entries, 0 problems.
+- gate: `cairn_validate.py` exit 0; profile `generic` consistency-gate: none; no principle changed.
