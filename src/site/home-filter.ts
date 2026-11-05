@@ -1,5 +1,5 @@
 // The home page's filters: the search box, the language menu, the Zotero version buttons,
-// the category menu, the sort menu, the plugin count beside them, and the pages below the table. The page's module script
+// the category menu, the sort menu, the plugin count above the table, and the pages below it. The page's module script
 // imports it, so it has no imports. The page's classic script carries the source text of
 // prePaintStyle.
 
@@ -85,7 +85,7 @@ export function sortOrder(sort: string): (a: SortRow, b: SortRow) => number {
   return (a, b) => byLarger(a.stars, b.stars) || byName(a, b);
 }
 
-// The plugin count beside the filters: the table's total rows when no filter is on, else
+// The plugin count above the table: the table's total rows when no filter is on, else
 // how many of them the filters pass on every page, or that none match.
 export function filterStatus(shown: number, total: number, filtering: boolean): string {
   const plugins = total === 1 ? "plugin" : "plugins";

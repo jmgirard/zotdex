@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- The home page's search box, filters, sort menu, count, and pager now share
+  one card with the table and one look. Each filter's label sits above it, the
+  count and "Sort by" sit on a row above the table, and the pager sits at the
+  foot of the card. The controls have one height, text size, and edge, and they
+  change on hover. The pressed version button has a thin red bar in place of a
+  solid fill. What each control does has not changed.
 - The home table now opens with the most GitHub stars first. A new "Sort by"
   menu also offers Name and Latest release, and the page keeps a choice other
   than Stars in the `sort` query parameter. A home row with a star count shows

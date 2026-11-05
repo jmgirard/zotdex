@@ -164,8 +164,8 @@ your choice in the `zotero` query parameter of its address, such as
 `?zotero=8`. If the parameter names no button, the page acts as if "Any" is
 pressed and removes the parameter.
 
-The home page has a "Sort by" menu with the options Stars, Name, and Latest
-release. Stars is the default. It puts a higher GitHub star count first, and 0
+The home page has a "Sort by" menu above the table, with the options Stars,
+Name, and Latest release. Stars is the default. It puts a higher GitHub star count first, and 0
 counts as a value. Latest release puts a later release date first, for the
 release that the index read. Name ignores letter case and accents, and names
 that are then equal sort by plugin id. Under Stars and Latest release, a
@@ -178,7 +178,7 @@ option, the page removes the parameter.
 
 The search box, the two filter menus, and the buttons work together: the table
 shows the plugins that pass all four, in the order of the sort menu. A count
-beside them reads "M plugins",
+above the table, across from the sort menu, reads "M plugins",
 where M is the number of plugins in the index. While a filter is on, it
 reads "N of M plugins", where N is the number that the filters pass. The
 count covers the plugins on every page. If the filters pass no plugin, the

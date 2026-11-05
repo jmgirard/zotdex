@@ -730,6 +730,11 @@ const themeButton = `(${wireThemeButton})();`;
         .controls {
           grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
         }
+        /* Less room beside the arrow, so "All categories" stays whole at 320 px. */
+        [data-language-filter],
+        [data-category-filter] {
+          padding-right: var(--space-12);
+        }
         .version-filter {
           grid-column: 1 / -1;
         }

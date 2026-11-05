@@ -73,9 +73,9 @@ The home page's search box, filter menus, version buttons, sort menu, count, and
 - [x] T2: In `site/src/layouts/Base.astro`, write one rule for the controls' sizes and one for the labels, then the card and the rows. Search takes the free width, and the menus and version group keep their natural width at desktop. Replace `.toolbar p`, which cancels `.filter-status`'s `margin-left: auto`, with a margin reset on the controls. Drop that auto margin, and put one on `.sort-menu`.
 - [x] T3: Add the hover, pressed, and focus states. Write hover on a menu with `background-color`, since the arrow is a `background-image`. Keep the forced-colors rules after the rules they override.
 - [x] T4: Fix the arrangement at 320 to 1024 px: search on its own row at the middle widths, and at 560 px or less the two menus side by side and the version buttons on their own row at full width.
-- [ ] T5: Update the markup and CSS expectations in `test/site.test.ts`, keeping every behavior expectation of the `homeScript` tests and the theme button's hide rule. Add the `--accent` on `--hover` pair to the color test, and a test of the pre-paint script's place before `<tbody>`.
-- [ ] T6: Run the browser-pane reads of AC1 to AC6 on a build from the deployed data, in both schemes where the criterion says so.
-- [ ] T7: Update README.md, `cairn/DESIGN.md`, the stale comments in `src/site/home-filter.ts`, and CHANGELOG.md.
+- [x] T5: Update the markup and CSS expectations in `test/site.test.ts`, keeping every behavior expectation of the `homeScript` tests and the theme button's hide rule. Add the `--accent` on `--hover` pair to the color test, and a test of the pre-paint script's place before `<tbody>`.
+- [x] T6: Run the browser-pane reads of AC1 to AC6 on a build from the deployed data, in both schemes where the criterion says so.
+- [x] T7: Update README.md, `cairn/DESIGN.md`, the stale comments in `src/site/home-filter.ts`, and CHANGELOG.md.
 
 ## Work log
 <!-- owner: any skill · append-only; one line per entry; absolute dates.
@@ -106,6 +106,10 @@ The home page's search box, filter menus, version buttons, sort menu, count, and
 - 2026-11-05: T2 done: one size rule covers the search box, the three menus, the version group, and the pager buttons; one label rule; `.table-panel`, `.controls`, `.results`, and the pager as a card foot. `.toolbar` and its `p` rule are gone, `.results .sort-menu` takes the auto margin, and `.table-panel` adds `overflow: hidden` so a row's hover fill stays inside the corners.
 - 2026-11-05: T3 done: one hover rule with `background-color`, the pressed button's `--hover` fill and 2 px `--accent` inset bar, the pager buttons joined to the focus rule. The forced-colors blocks stay after these rules. The color test gains `--accent` on `--hover`.
 - 2026-11-05: T4 done: search takes its own row at 1000 px or less, where the menus' natural widths would leave it under about 200 px (agent's choice of width); at 560 px or less the menus sit side by side and the version group fills its row. The rows' side padding became `--space-6`, the table cells' value, so their left edges line up at desktop; the 560 px cells keep `--space-3`, since the table is out of scope.
+- 2026-11-05: T5 done: the markup and edge expectations changed with T1 and T2, the color pair with T3, and the pre-paint place test with T1; no `homeScript` expectation changed.
+- 2026-11-05: T6 done on a build from the deployed data (736 plugins). Hover, pressed, focus, sizes, labels, order, and widths read as AC1 to AC4 state; the desktop distance is 133 px against the 145 cap and the 375 px distance 243 px against the 250 cap. The same scripted use of each control on this build and on main's gave the same count, rows, and address at every step. The no-script iframe shows 736 rows and no control. At 320 px the arrow space cut "All categories", so the two filter menus take `--space-12` right padding at 560 px or less; that change came after these reads, so review reads it fresh.
+- 2026-11-05: T7 done: README, DESIGN (the count's place, the card, known issue 4), the two comments in `home-filter.ts`, and one CHANGELOG entry.
+- 2026-11-05: T2 and the first test edits used a Python script rather than the Edit tool, against the rulebook's file-edit rule, so those changes did not reach the app's edited-files card; the branch diff holds them.
 
 ## Decisions
 <!-- owner: implement / review · append-only; milestone-local; promote

@@ -111,9 +111,11 @@ has marked can expect the wrong rate of the latest held-out read, which
 `cairn/references/category-ledger-2026-11-03.md` holds (D-060).
 `cairn/references/category-ledger-2026-11-04.md` is a re-score of the two
 further tests on those marks, not a read of unread plugins (D-061). The same
-script writes a plugin count beside the filters: the total, how many plugins the
+script writes a plugin count on the row above the table, across from the sort
+menu: the total, how many plugins the
 filters pass on every page while a filter is on, or that none match (M044,
-M053, M058). Typing writes `?q=`
+M053, M058). One card holds the row of the search box and filters, the row of
+the count and sort menu, the table, and the pager (M098). Typing writes `?q=`
 once the visitor stops for half a second (M053 review). A top bar on every
 page links to the home page, the About page (M054), the "Add a plugin"
 issue form, the repository's GitHub Discussions as "Feedback" (M097), and the
@@ -1166,7 +1168,7 @@ reused._
   none. The build never writes one (M054 review). (4) The plugin count's first
   text is written while hidden, so screen readers miss it, a same-count change
   writes the same text, and since M053 the search box rewrites it per key. The
-  toolbar appears after first paint and moves the table, which M060's pre-paint
+  rows of controls appear after first paint and move the table, which M060's pre-paint
   style misses (M044, M053 reviews). (5) The language and category menus set
   `appearance: none` and draw their arrow with two CSS gradients, seen only in
   Chromium at 1280 and 375 px, never in Safari, Firefox, or forced colors. A
