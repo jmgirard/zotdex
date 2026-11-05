@@ -1,0 +1,7 @@
+{
+  "id": "fix-proposals@ipbes-data",
+  "name": "Zotero Fix Proposals",
+  "description": "Shows fixes proposed for Zotero groups (e.g. by the IPBES Literature Report) and applies the ones you choose through Zotero Safe Edit, after approval.",
+  "repoUrl": "https://github.com/IPBES-Data/zotero-fix-proposals",
+  "updateUrl": "https://ipbes-data.github.io/IPBES.LiteratureReport/plugins/zotero-fix-proposals/updates.json"
+}
