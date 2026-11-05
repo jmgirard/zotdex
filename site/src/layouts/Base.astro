@@ -302,7 +302,8 @@ const themeButton = `(${wireThemeButton})();`;
         grid-template-columns: minmax(0, 1fr) auto auto auto;
         align-items: end;
         gap: var(--space-6) var(--space-8);
-        padding: var(--space-6) var(--space-8);
+        /* The same side padding as the table's cells, so the left edges line up. */
+        padding: var(--space-6);
         border-bottom: 1px solid var(--line);
       }
       .results {
@@ -310,7 +311,7 @@ const themeButton = `(${wireThemeButton})();`;
         flex-wrap: wrap;
         align-items: center;
         gap: var(--space-4) var(--space-8);
-        padding: var(--space-3) var(--space-8);
+        padding: var(--space-3) var(--space-6);
         border-bottom: 1px solid var(--line);
       }
       .controls p,
@@ -654,7 +655,7 @@ const themeButton = `(${wireThemeButton})();`;
         align-items: center;
         justify-content: space-between;
         gap: var(--space-4) var(--space-6);
-        padding: var(--space-3) var(--space-8);
+        padding: var(--space-3) var(--space-6);
         border-top: 1px solid var(--line);
         font-size: var(--text-s);
         color: var(--muted);
@@ -694,6 +695,15 @@ const themeButton = `(${wireThemeButton})();`;
         display: inline;
         margin: 0;
       }
+      /* Under 1000 px the menus' natural widths leave the search box too little, so it takes its own row. */
+      @media (max-width: 1000px) {
+        .controls {
+          grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+        }
+        .search {
+          grid-column: 1 / -1;
+        }
+      }
       @media (max-width: 760px) {
         .plugins .lang,
         .plugins .date {
@@ -716,6 +726,12 @@ const themeButton = `(${wireThemeButton})();`;
         }
         .mark {
           width: 1.375rem;
+        }
+        .controls {
+          grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        }
+        .version-filter {
+          grid-column: 1 / -1;
         }
       }
 
