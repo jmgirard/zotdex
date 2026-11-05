@@ -4,7 +4,7 @@
      cairn_validate's <150 over the plan-owned body. -->
 # M098: Give the table controls one design
 
-- **Status:** review   <!-- owner: transitioning skill · mirror-update; cairn/ROADMAP.md is the authority -->
+- **Status:** in-progress   <!-- owner: transitioning skill · mirror-update; cairn/ROADMAP.md is the authority -->
 - **Priority:** normal   <!-- owner: plan · create/amend-via-gate; high | normal | low -->
 - **Depends on:** —   <!-- owner: plan · create/amend-via-gate; M<xx>, M<yy> or — -->
 - **Driving RR:** —   <!-- owner: plan · create/amend-via-gate; RR<NN> whose Binding criteria bind this milestone's ACs (binding-criteria check), or — -->
@@ -111,6 +111,8 @@ The home page's search box, filter menus, version buttons, sort menu, count, and
 - 2026-11-05: T7 done: README, DESIGN (the count's place, the card, known issue 4), the two comments in `home-filter.ts`, and one CHANGELOG entry.
 - 2026-11-05: T2 and the first test edits used a Python script rather than the Edit tool, against the rulebook's file-edit rule, so those changes did not reach the app's edited-files card; the branch diff holds them.
 - 2026-11-05: claim audit: 60 claims read, 6 corrected — CHANGELOG.md, README.md, cairn/DESIGN.md, site/src/layouts/Base.astro, site/src/pages/index.astro; the one re-read corrected the pressed-fill wording once more, since "pale" held only in the light scheme.
+- 2026-11-05: review return 1: at larger browser text the search box collapses above 1000 px (87 px wide at root 24 px and 1200 px, diff-bug #1), closed menu values are cut at 561 to about 880 px at the default text size (diff-bug #3), and the fix-now items in the Review section's pass 1 remain open.
+- 2026-11-05: amendment routed: AC3 — "at the card's inner edges within 1 px" fails as written, since Previous and Next sit level with the rows' controls, 13 px in from the card's outer edges.
 
 ## Decisions
 <!-- owner: implement / review · append-only; milestone-local; promote
@@ -124,3 +126,48 @@ The home page's search box, filter menus, version buttons, sort menu, count, and
      results, review findings + triage. EXEMPT from the 150-line cap (M55),
      as are the work log (D-046) and the decisions section (D-074); evidence
      never scrambles plan-owned content. -->
+
+### Pass 1, 2026-11-05 (head 2d39ca3c; returned, so no box ticked)
+
+Evidence on a build from the deployed data, 736 plugins:
+- AC1: computed values as written at 375 and 1200 px in both schemes; no element differs.
+- AC2: hover, pressed, and focus read as written in both schemes, and the menu keeps its arrow; `--accent` on `--hover` is in the color test. The pressed and end-button forced-colors rules come after their rules; another forced-colors rule does not (diff-bug #2).
+- AC3: order, labels, one top edge at 208.5, menus 303.5 and 187.5 as on main, 133 px against the 145 cap. Previous and Next sit 13 px in from the card's outer edges, level with the search box and sort menu but not at "the card's inner edges", so the wording fails as written.
+- AC4: all five widths pass; 243 px against the 250 cap; screenshots at 320 and 375 px and at 320 px with no match show no broken word.
+- AC5: `home-filter.ts` diff is two comment lines; attributes, labels, options, and buttons equal main's; the same scripted use gives the same count, rows, and address at all 12 steps; Next puts `.table-card` at the top of the view.
+- AC6: 736 of 736 rows show, all in the card; every named box is empty.
+- AC7: `pnpm test` 2429 passed and 6 skipped; `pnpm check` 736 entries and 0 problems; `cairn_validate` passes.
+
+spawned: diff-bug, blame-history, prior-review, ripple
+
+- diff-bug #1: the search box collapses above 1000 px with larger browser text, to 87 px at root 24 px and 1200 px — fix now (floor return): the breakpoints take rem.
+- diff-bug #2: the 560 px padding rule beats the forced-colors rule — fix now: that rule goes.
+- diff-bug #3: closed menu values are cut at 561 to about 880 px, worse at 561 than at 560 — fix now (floor return): the version group takes its own row only below where all three fit.
+- diff-bug #4: at larger text the menus cut even the default value — fix now: one column below 22.5rem.
+- diff-bug #5: at root 32 px the version buttons are clipped with no way to reach them — fix now: the card stops hiding overflow, and the version group keeps its width.
+- diff-bug #6: at root 32 px the card cuts the sort menu — fix now: same, and `.sort-menu` wraps again.
+- diff-bug #7: the first-paint move grows to 124 px at 1200 px from 74 px on main, and falls to 234 px at 375 px from 257 px — known issue: The home page's rows of controls appear after first paint and move the table by 124 px at 1200 px wide and 234 px at 375 px on the data of 2026-11-05, against 74 px and 257 px before the card, which M060's pre-paint style misses. Accepted at the M098 gate
+- diff-bug #8: the new pre-paint expectation repeats the test at `test/site.test.ts:1975` and passes with no script — fix now: removed.
+- diff-bug #9: the `homeScript` stand-ins give each control its own wrapper, while the real ones share one — follow-up: new parked row "Tighten the home controls at larger text", promote when a user reports it; the real path passed the browser read.
+- diff-bug #10: the pager wraps unevenly at root 20 and 24 px at 320 px — follow-up: same row.
+- diff-bug #11: the 320 px padding fix is tuned to one font — fix now: gone with #2.
+- diff-bug #12: the search box's width at 1001 px depends on the longest option in the data — follow-up: same row.
+- diff-bug #13: the count is `--text` at weight 600 while "Page p of P" stays `--muted` at 400 — reject, planned change: the mockup the user chose shows it.
+- diff-bug #14: pressing a version button moves the row about 1 px, since weight 600 changes the group's width — follow-up: same row.
+- diff-bug #15: `--faint` on `--hover` is 2.96:1 in dark on the divider beside a pressed or hovered button — follow-up: same row; the group's outer edge holds 3:1.
+- diff-bug #16: four test titles still say "hidden" — fix now.
+- diff-bug #17: on focus, square button corners can show past the group's rounded edge — follow-up: same row; main has the same rule.
+- diff-bug #18: the comment says "Under 1000 px" but the rule includes 1000 — fix now, with #1.
+- diff-bug #19: a long README line, an unindented `<table>`, and "red" for a salmon bar in dark — fix now for the line and the wording; reject, style, for the indent.
+- blame-history #1: the count lost `--muted` — reject, planned change: as diff-bug #13.
+- blame-history #2: the pressed look replaces M037's fill — reject, planned change: the user chose it at the question set.
+- blame-history #3: the version and pager buttons moved to `--text-m` — reject, planned change: AC1.
+- blame-history #4: menu padding at narrow widths unchecked in a browser — fix now: gone with diff-bug #2.
+- blame-history #5: the count's 100% width rule went unverified at phone width — reject, false: the screenshots show the row at 320 and 375 px.
+- blame-history #6: search has no width cap — reject, planned change: AC3 gives it the free width.
+- prior-review #1: the version group lost its outer edge — reject, false: the shared size rule holds it, and AC1's read returns `--faint`.
+- prior-review #2: the pressed and hovered fills match — reject, planned change: the bar and weight tell them apart, and the user chose that look.
+- prior-review #3: labels shrank to `--text-xs` — reject, planned change: AC1.
+- ripple #1 to #4: the same four test titles — fix now: as diff-bug #16.
+- ripple #5 and #6: "a pager below the table" no longer describes the card — reject, false: the pager is still below the table.
+- snapshot: no snapshot file changed.
