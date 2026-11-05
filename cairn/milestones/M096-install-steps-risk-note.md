@@ -45,7 +45,7 @@ A visitor can learn from the site how to install a plugin and what a plugin can 
 - [x] T4: Add the `installing` section to `site/src/pages/about.astro`, before `not-vetted`. Add a sentence on it to the About intro. Read the built text for dropped spaces.
 - [x] T5: Replace the home intro in `site/src/pages/index.astro:57-61`, keeping `{DISCLAIMER}` and using `{" "}` before the link.
 - [x] T6: Update README and DESIGN, add the CHANGELOG entry, and add a D-entry that annotates D-029 and D-051: a plugin page now states a plugin's full access and that the index does not review code, in Zotero's own terms, and the home intro leads with what the site does. Wrap prose as the files do (lesson M036).
-- [ ] T7: Build the site from the deployed data (lesson M035) and view it in the browser pane: a plugin page and About at 375 px and desktop, in both color schemes. Measure the intro's lines at 375 px and check for side scrolling (lesson M048). Run `pnpm test` and `pnpm check`, sending the test output to a file and reading its exit code (lesson M082).
+- [x] T7: Build the site from the deployed data (lesson M035) and view it in the browser pane: a plugin page and About at 375 px and desktop, in both color schemes. Measure the intro's lines at 375 px and check for side scrolling (lesson M048). Run `pnpm test` and `pnpm check`, sending the test output to a file and reading its exit code (lesson M082).
 
 ## Work log
 
@@ -62,6 +62,7 @@ A visitor can learn from the site how to install a plugin and what a plugin can 
 - 2026-11-05: question set: start the build workflow by hand after the merge — yes, `gh workflow run build.yml --ref main`.
 - 2026-11-05: T1 done: source note and INDEX line; the page also says that an official plugin directory is planned, which the close names for the user.
 - 2026-11-05: T2 to T6 done in one commit, since the T2 tests fail until T5 lands; a negative margin on the note failed the style test, so the note keeps the page head's own gap; `INSTALL_HREF` in `site/src/data.ts` holds the shared link; D-064 added.
+- 2026-11-05: T7 done: built from the deployed data; at 375 px the home intro takes 5 lines and the plugin note 7, with no side scrolling on home, a plugin page, or About; viewed in light at 375 px and dark on desktop; no console errors; `pnpm test` and `pnpm check` pass.
 
 ## Decisions
 
