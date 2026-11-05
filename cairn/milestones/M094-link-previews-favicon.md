@@ -1,6 +1,6 @@
 # M094: Add link previews and a favicon
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
@@ -60,6 +60,7 @@ A shared link to any index page shows its own title and description, the page ha
 - 2026-11-04: T3: the repo had no topics; added `zotero`, `zotero-plugins`, and `plugin-directory` with `gh repo edit`, as the question set allowed; the topics read back as those three.
 - 2026-11-04: T4: README and CHANGELOG lines added, and a DESIGN.md sentence on the props and the icon file; `pnpm test` and `pnpm check` exit 0. The prose hook's hits on these two files are all on older lines, so they stay as they are.
 - 2026-11-04: claim audit fixes: README now says a text of 200 characters or fewer is not cut; the `previewDescription` comment no longer says "fixed"; `cutDescription` no longer cuts at spaces that open a text, and `previewDescription` falls back to the sentence when the cut holds only spaces, so AC1's non-empty text holds (a small addition to AC2's cut rule, which it did not cover); the About preview text and the About intro now say "the main facts", because About gives no source for some facts, such as stars and open issues.
+- 2026-11-04: claim audit: 38 claims read, 4 corrected — README.md, site/src/data.ts, src/site/description.ts, site/src/pages/about.astro. The same reader re-read the 4 and found none wrong.
 
 ## Decisions
 
