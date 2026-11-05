@@ -501,6 +501,18 @@ describe("pnpm build", () => {
     expect(commands).toEqual(["::warning::1 of 3 records carry a build-level failure"]);
   });
 
+  test("prints the timing lines just before the failed-record lines, outside the summary block", () => {
+    const result = pnpmBuild([TREE, "--out", tempDir()], writeFixture(responses()));
+    expect(result.status).toBe(0);
+    const lines = result.stdout.trim().split("\n");
+    const first = lines.findIndex((line) => line.startsWith("plugin reads took "));
+    expect(lines[first]).toMatch(/^plugin reads took \d+\.\d s$/);
+    expect(lines.slice(first + 1, first + 3)).toEqual([expect.stringMatching(/^fork: 1 reads, \d+\.\d s in all$/), expect.stringMatching(/^read: 2 reads, \d+\.\d s in all$/)]);
+    expect(lines.slice(first + 3, first + 6).every((line) => /^slow read: \S+: \d+\.\d s \((read|fork)\)$/.test(line))).toBe(true);
+    expect(lines[first + 6]).toMatch(new RegExp(`^${FORKED}: fork: `));
+    expect(summary(result.stdout)).toEqual(["failed with fork: 1", "build-level failures: 0 of 3 records"]);
+  });
+
   test("prints no warning when only a fork fails", () => {
     const result = pnpmBuild([TREE, "--out", tempDir()], writeFixture(responses()));
     expect(result.status).toBe(0);
@@ -748,7 +760,13 @@ describe("pnpm build with a timer still pending", () => {
     clearTimeout(timer);
     expect((performance.now() - started) / 1000).toBeLessThan(30);
     expect(status).toBe(plain.status);
-    expect(stdout).toBe(plain.stdout);
+    // The timing lines name times that differ from run to run, so they are compared by count.
+    const timing = /^(plugin reads took \d+\.\d s|\S+: \d+ reads, \d+\.\d s in all|slow read: .*)$/;
+    const untimed = (text: string) => text.split("\n").filter((line) => !timing.test(line));
+    const timed = (text: string) => text.split("\n").filter((line) => timing.test(line)).length;
+    expect(untimed(stdout)).toEqual(untimed(plain.stdout));
+    expect(timed(stdout)).toBe(timed(plain.stdout));
+    expect(timed(plain.stdout)).toBe(12);
     expect(takeData(out)).toEqual(plainData);
   }, 120_000);
 });
