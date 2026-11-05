@@ -211,6 +211,12 @@ with `http://` or `https://`, the page has no download link. If the
 repository address does not, the page shows that address, and the releases
 address after it, as plain text. A plugin whose read failed has no download or releases link.
 
+A plugin page with a download link has an install note after those links.
+It says how to install the file in Zotero, and it gives a step for Firefox.
+It also says that a plugin has full access to Zotero and the computer, and
+that the index does not review its code before listing it. The note links to
+the "Installing a plugin" section of the About page (`#installing`).
+
 A "Zotero compatibility" card follows. It names the plugin version that
 the index read and holds a table, newest major first. The table has one
 row for each Zotero major from 7 to 10. It also has a row for each other
@@ -261,6 +267,10 @@ and the home page's intro say: "This index is unofficial and not affiliated
 with or endorsed by Zotero, and it cannot vet the plugins it lists." The About
 page gives the reason, and it says that the start test is not a review of
 plugin code. It also states the terms in "License" below, and it links there.
+The home page's intro also says what the site shows, and it links to the About
+page's "Installing a plugin" section (`#installing`). That section gives
+Zotero's install steps, the step for Firefox, and Zotero's warning. It also
+says how a bot and a maintainer add plugins.
 
 The index lists a plugin whose GitHub repository is archived. Its row on the
 home page and the name on its page show "Archived". The Details card of its

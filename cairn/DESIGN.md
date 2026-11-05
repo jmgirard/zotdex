@@ -129,8 +129,9 @@ page filtered by it, in `CATEGORIES` order (M066). Each such link's
 `.xpi` file (`upstream.xpiUrl`, only when it passes `safeHref`, in the
 same plain button style as the others, D-029), the source ("Repository" for a
 record with `sourceInRepo: false`, M081), and the
-releases; a repo URL that fails `safeHref` shows as plain text. A
-"Zotero compatibility" card follows. For a read record it names the
+releases; a repo URL that fails `safeHref` shows as plain text. An install note
+follows when the `.xpi` link shows (M096), and then a
+"Zotero compatibility" card. For a read record it names the
 version read and holds one table row per major,
 newest first, for `ZOTERO_MAJORS` and each other major that the record's
 reports or start results name. The row's cells are the declared support,
@@ -148,7 +149,7 @@ text-change form and the remove-plugin form (M079, M093). The About page
 and its marks, the start test, which reports count, and how overrides and
 the Used column work (M054), the categories, each with its `about`
 text (M066), what the source fact means (M081), what the paid service
-mark means (M082), the grounds for removing a plugin (M093), and the license terms (M095, D-063). The home table marks an archived plugin with
+mark means (M082), the grounds for removing a plugin (M093), how to install a plugin (M096), and the license terms (M095, D-063). The home table marks an archived plugin with
 "Archived" after its name (M053), and the data carries the same `archived`
 fact (M013). A home row and a plugin page show a lock for a record with
 `sourceInRepo: false`, the fact that the top level of the repo's default branch
@@ -158,7 +159,12 @@ D-052). A home row and a plugin page show a card icon for a record with
 its note, source link, and read date (M082, D-054). Each page's footer and the home page's intro say: "This index
 is unofficial and not affiliated with or endorsed by Zotero, and it cannot vet
 the plugins it lists." (`DISCLAIMER`, M080, D-051). The holds and the start
-tests screen in part, and neither is a review of plugin code.
+tests screen in part, and neither is a review of plugin code. The home intro
+also says what the site shows, and it links to About's `#installing` section,
+which gives Zotero's install steps, a step for Firefox, Zotero's full-access
+warning, and how a bot and a maintainer add plugins (M096, D-064). A plugin page
+with a download link has an install note after its page head, with the same
+steps and warning and a link to that section (`data-fact="install-note"`, M096).
 
 Each plugin page's table shows one row, and the home table one declared
 mark, for each Zotero major version in `ZOTERO_MAJORS` (7 to 10). A
