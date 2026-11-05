@@ -1,13 +1,13 @@
 # M095: Publish a license
 
-- **Status:** planned
+- **Status:** in-progress
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — the terms that people who reuse the code and the public data rely on
-- **Branch/PR:** —
+- **Branch/PR:** m095-publish-license
 
 ## Goal
 
