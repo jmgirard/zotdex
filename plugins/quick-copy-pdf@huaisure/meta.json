@@ -1,0 +1,7 @@
+{
+  "id": "quick-copy-pdf@huaisure",
+  "name": "Quick Copy PDF",
+  "description": "在文献条目和 PDF 标签页的右键菜单中复制原始 PDF 文件。",
+  "repoUrl": "https://github.com/Huaisure/zotero-quick-copy-pdf",
+  "updateUrl": "https://raw.githubusercontent.com/Huaisure/zotero-quick-copy-pdf/main/updates.json"
+}
