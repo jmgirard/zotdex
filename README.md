@@ -1859,9 +1859,10 @@ third-party parts of the files that this section names.
 The facts that the index gathers are under
 [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/). So are its
 categories and the text that a maintainer wrote. The facts, the override text,
-and the paid-service notes are in `v1/plugins.json` and in the entries under
-`plugins/`. The categories are in `src/site/categories.ts` and on the site. The
-code of that file stays under the MIT License.
+and the paid-service notes are in the published data file, `v1/plugins.json`,
+and in the entries under `plugins/`. The categories are in
+`src/site/categories.ts` and on the site. The code of that file stays under the
+MIT License. A code comment counts as code.
 
 A maintainer can translate, condense, or copy a description override from an
 author's text. CC0 then covers only the maintainer's own part of that override.
@@ -1869,8 +1870,10 @@ The author's part keeps the author's terms.
 
 All other text keeps its author's terms. That text is plugin names and
 descriptions, GitHub About text, and text that an owner asked for. The index
-gives no license for it. The data file and the entries hold the first three,
-and they can hold text that an owner asked for.
+gives no license for it. In the data file, this text is in `upstream.name`,
+`upstream.description`, and `upstream.repoDescription`, and an override's
+`value` can hold it. The entries, the test files, and this README can also hold
+or quote it.
 
 These files hold parts from a third party. Those parts keep their source's
 terms, and the rest of each file follows the terms above:
