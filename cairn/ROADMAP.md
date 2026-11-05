@@ -7,6 +7,9 @@ _Last hygiene check: 2026-11-04 (M092 archived; one row graduated, one new; 25 l
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
+| M093 | Let people ask to remove a plugin | planned | — | high | milestones/M093-remove-plugin-path.md |
+| M094 | Add link previews and a favicon | planned | — | high | milestones/M094-link-previews-favicon.md |
+| M095 | Publish a license | planned | — | high | milestones/M095-publish-license.md |
 | M092 | Tighten the ai and attachments rules | done | — | normal | milestones/archive/M092-ai-attachments-rules.md |
 | M091 | Check categories on new plugins | done | — | normal | milestones/archive/M091-check-categories-new-plugins.md |
 | M090 | Fill the six later description gaps | done | M089 | normal | milestones/archive/M090-six-later-description-gaps.md |
@@ -48,12 +51,5 @@ _Last hygiene check: 2026-11-04 (M092 archived; one row graduated, one new; 25 l
 - [parked] Tighten the reads behind replaces-entry: (1) a failed read of the listed repo, an open pull request, or second place in a run records the `entry-exists` refusal, so a repo that passes waits for a push or 30 days; (2) `pnpm refresh-holds` reads the kept `index.json` at the pull request head, while a merge keeps main's; (3) `releaseDay` ignores the stop after a 403 or 429, at most two reads a pull request; (4) a local `pnpm discover` with the default output does the reads, then gives a build-level `entry-exists`; (5) a forged plan that names the true listed repo still gets a held pull request, with no new read of the test (M085 review); no documented or common use meets these; promote when a user reports it or a held pull request shows a wrong fact — added 2026-11-03 — M085, D-056
 - [parked] Flag copies listed before the original: M085 flags an original far larger and older than the listed copy; a copy stays listed when its original is below those numbers, has a case-variant id, or comes from an issue, and the file compare reads the repo, not the XPI, so it misses a copy that edits every file (M075 plan, M085 plan); narrowed 2026-11-03 by M085; promote when a maintainer finds a listed copy that these miss — added 2026-11-02 — M075, M085, D-045, D-056
 - [parked] Drop excludes left by removed overrides: M067, M089, and M090 add `exclude` entries in `src/site/categories.ts` because of an override's wording, and they stay if an owner removes or replaces that override (D-049, D-050), so they can block a later right match in the upstream text; parked, as no documented or common use has reached this; promote when a user reports it (M089 review) — added 2026-11-03 — M067, M089, M090, D-049, D-050
-<!-- unnumbered ideas; one line each, ordered high → normal → low → parked:
-     - [high] short title: detail — added YYYY-MM-DD — links   (no token: normal)
-     - [parked] short title: detail; promote when <condition> — added YYYY-MM-DD — links
-     opening token `[high]`/`[low]`/`[parked]` or absent (`normal`); `[parked]`: promotion condition not held (tracking-rules "Candidate priority token");
-     open each row with its short title, the words the cairn pane shows, then `: `;
-     the title is one sentence with no ending period, at least 5 words and at most 40 characters,
-     ending with `(#N)` for a row written for GitHub issue N, such as
-     `Fix SE of skewness calculation (#100)`; `/cairn-triage` offers a new title for one
-     with fewer than 5 words or more than 40 characters; tracking-rules "Candidate short title" has the whole rule -->
+- [parked] Add a picture to link previews: M094 ships text previews, as the user chose; a plain image with the index's name and mark, with no Zotero logo; promote when the user asks for one — added 2026-11-04 — M094
+<!-- one line per idea, high → normal → low → parked: `- [token] short title: detail — added YYYY-MM-DD — links`; tracking-rules "Candidate priority token" and "Candidate short title" have the rules -->

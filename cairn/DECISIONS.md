@@ -934,3 +934,34 @@ that of the latest held-out read until a read of new plugins replaces it. The re
 of D-059 and D-060 stands, and later reads of new plugins use D-059's test. This
 choice is wrong if that later read shows these two categories no better than the
 base rules.
+
+### D-062: The maintainer removes a plugin for an owner's request, spam, a misleading entry, or shown harm, annotating D-006, D-051, and D-053
+
+2026-11-04, M093 plan. DESIGN says that the maintainer removes spam and honors an
+author's request to delist, and no public text said so. Before the index is
+advertised, the user chose four grounds: a repository owner's request, spam, an
+entry that misleads about what the plugin is or who makes it, as D-053 frames it,
+and harm that a report shows with evidence a reader can check. A claim with no
+evidence removes nothing. The user rejected a rule of spam and misleading entries
+only, since a plugin with shown malware would stay listed, and a decision case by
+case with no stated rule.
+
+This does not make the index a reviewer. D-051 stands: the index cannot vet plugins
+and reads no plugin code unless a report's evidence asks for it. Inclusion stays no
+judgment of quality (D-006), and a plugin with no report stays listed. A removal
+lasts, because deleting an entry alone lets the bot propose the repo again. So a
+checked-in list names each removed repo. Its ids hold only ids that the maintainer
+judged unique to that repo, since a fork can keep its source's id (D-053, D-056).
+This choice is wrong if reports of harm take more of the maintainer's time than one
+person can give, or if a report of shown harm proves false after a removal.
+
+### D-063: The code is under MIT and the index's own data work is under CC0
+
+2026-11-04, M095 plan. The repo had no license, while its data is a public API
+(D-006). The user chose MIT for the code and CC0 1.0 for the facts the index
+gathers, its categories, and text the maintainer wrote, over MIT for everything,
+whose notice is awkward for a data file, and over AGPL for the code, which limits
+reuse. All other text keeps its author's terms, since the index cannot license
+plugin names, descriptions, GitHub About text, or text that an owner asked for.
+This choice is wrong if a data user or an author shows that these terms block a use
+that the index means to allow.
