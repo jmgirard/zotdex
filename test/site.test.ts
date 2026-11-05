@@ -105,13 +105,29 @@ describe("pnpm site", () => {
     for (const id of ids) expect(readdirSync(join(out, "plugins", id))).toEqual(["index.html"]);
   });
 
+  test("writes a 404 page at the top that says what happened, links home and to About, and asks not to be indexed", () => {
+    const html = readFileSync(join(out, "404.html"), "utf8");
+    const main = /<main>(.*?)<\/main>/s.exec(html)![1]!;
+    expect(main).toContain("<h1>Page not found</h1>");
+    expect(main).toContain("No page is at this address.");
+    expect(main).toContain('<a href="/zotero-plugin-index/">See all plugins</a>');
+    expect(main).toContain('<a href="/zotero-plugin-index/about/">About page</a>');
+    expect(html).toContain('<meta name="robots" content="noindex">');
+    expect(html).not.toMatch(/rel="canonical"|property="og:url"/);
+  });
+
+  test("asks only the 404 page not to be indexed", () => {
+    const indexed = htmlFiles(out).filter((file) => readFileSync(join(out, file), "utf8").includes('name="robots"'));
+    expect(indexed).toEqual(["404.html"]);
+  });
+
   test("leaves the data and schema files byte-identical", () => {
     for (const [file, bytes] of before) expect(readFileSync(join(out, file)).equals(bytes), file).toBe(true);
   });
 
   test("starts every link inside the site with the Pages path", () => {
     const files = htmlFiles(out);
-    expect(files).toHaveLength(ids.length + 2);
+    expect(files).toHaveLength(ids.length + 3);
     const inside = files.flatMap((file) =>
       [...readFileSync(join(out, file), "utf8").matchAll(/\s(?:href|src)="([^"]*)"/g)]
         .map((match) => match[1]!)
@@ -1941,7 +1957,7 @@ describe("the home page's classic script", () => {
 describe("the built site", () => {
   test("puts the top bar and the footer on every page", () => {
     const files = htmlFiles(out);
-    expect(files).toHaveLength(ids.length + 2);
+    expect(files).toHaveLength(ids.length + 3);
     for (const path of files) {
       const html = readFileSync(join(out, path), "utf8");
       const bar = /<body><header class="topbar"><div class="topbar-inner">(.*?)<\/div><\/header><main>/s.exec(html)?.[1];
@@ -1995,7 +2011,7 @@ describe("the built site", () => {
 
   test("starts every page with no scheme on <html>, a theme script in <head>, and the hidden button before its script", () => {
     const files = htmlFiles(out);
-    expect(files).toHaveLength(ids.length + 2);
+    expect(files).toHaveLength(ids.length + 3);
     for (const file of files) {
       const html = readFileSync(join(out, file), "utf8");
       expect(html, file).toMatch(/^<!DOCTYPE html><html lang="en"><head>/);
@@ -2011,7 +2027,7 @@ describe("the built site", () => {
 
   test("links each plugin page's Details card to the text-change form, and no other page", () => {
     const files = htmlFiles(out);
-    expect(files).toHaveLength(ids.length + 2);
+    expect(files).toHaveLength(ids.length + 3);
     for (const id of ids) {
       const html = page(id);
       const links = [...html.matchAll(/<a href="([^"]*)" data-text-change>/g)];
@@ -2032,7 +2048,7 @@ describe("the built site", () => {
     const form = "https://github.com/jmgirard/zotero-plugin-index/issues/new?template=remove-plugin.yml";
     const links = (html: string) => [...html.matchAll(/<a href="([^"]*remove-plugin\.yml[^"]*)"[^>]*>([^<]*)<\/a>/g)].map((match) => [match[1]!.replace(/&amp;|&#38;/g, "&"), match[2]!]);
     const files = htmlFiles(out);
-    expect(files).toHaveLength(ids.length + 2);
+    expect(files).toHaveLength(ids.length + 3);
     for (const file of files) {
       const html = readFileSync(join(out, file), "utf8");
       const id = ids.find((each) => file === join("plugins", each, "index.html"));
@@ -2131,8 +2147,8 @@ describe("the link preview tags", () => {
     };
   };
 
-  test("puts each tag once on every page, with the page's own address and text", () => {
-    const files = htmlFiles(out);
+  test("puts each tag once on every page with an address, with the page's own address and text", () => {
+    const files = htmlFiles(out).filter((file) => file !== "404.html");
     expect(files).toHaveLength(ids.length + 2);
     for (const file of files) {
       const preview = previewOf(file);

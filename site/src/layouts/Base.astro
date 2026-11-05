@@ -8,12 +8,13 @@ interface Props {
   title: string;
   // The text of a shared link's preview and of search results.
   description: string;
-  // The page's address from the host on, encoded, such as pluginHref gives.
-  path: string;
+  // The page's address from the host on, encoded, such as pluginHref gives. The 404 page has
+  // no address of its own, so it leaves this out and asks search engines not to index it.
+  path?: string;
 }
 const { title, description, path } = Astro.props;
 const { generatedAt } = loadData();
-const address = `${ORIGIN}${path}`;
+const address = path === undefined ? undefined : `${ORIGIN}${path}`;
 
 const themeHead = `(${applySavedTheme})();`;
 const themeButton = `(${wireThemeButton})();`;
@@ -26,13 +27,13 @@ const themeButton = `(${wireThemeButton})();`;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={address} />
+    {address ? <link rel="canonical" href={address} /> : <meta name="robots" content="noindex" />}
     <link rel="icon" type="image/svg+xml" href={`${BASE}favicon.svg`} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Zotero plugin index" />
-    <meta property="og:url" content={address} />
+    {address && <meta property="og:url" content={address} />}
     <meta name="twitter:card" content="summary" />
     <script is:inline set:html={themeHead} />
     <style is:global>
