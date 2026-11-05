@@ -143,7 +143,7 @@ describe("how to install a plugin", () => {
       const hasLink = html.includes('data-link="download"');
       expect(noteOf(html)).toHaveLength(hasLink ? 1 : 0);
       if (!hasLink) continue;
-      expect(html.replace(/>\s+</g, "><")).toMatch(/<\/div><\/div><p class="install-note" data-fact="install-note">/);
+      expect(html.replace(/>\s+</g, "><")).toMatch(/<div class="page-head" data-page-head>.*?<div class="actions" data-links>.*?<\/div><\/div><p class="install-note" data-fact="install-note">/s);
       expect(noteOf(html)[0]).toMatch(/<a href="\/zotero-plugin-index\/about\/#installing">More about installing<\/a>/);
     }
   });
@@ -813,6 +813,7 @@ describe("the About page", () => {
   test("the About intro says who reads the paid service fact, and the Start test section says when a plugin starts again", () => {
     const intro = /<p class="intro">([\s\S]*?)<\/p>/.exec(about())![1]!;
     expect(unescaped(intro).replace(/\s+/g, " ")).toContain("A maintainer reads the paid service fact by hand, and the build reads the others");
+    expect(unescaped(intro).replace(/\s+/g, " ")).toContain("It also says how to install a plugin, and it ends with the license terms.");
     const start = /<section class="card" id="start-test"[\s\S]*?<\/section>/.exec(about())![0];
     expect(unescaped(start).replace(/\s+/g, " ")).toContain("It also starts each plugin again on one day of each week");
   });

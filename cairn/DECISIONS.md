@@ -978,7 +978,10 @@ reads it, since nothing can show that no person ever did. An About section
 adds how a bot and a maintainer list plugins. The note is text, so D-029's
 plain link stays and an install button stays out of scope. D-051 stands, and
 the home intro still says that the index cannot vet, now after a first
-sentence on what the site shows. At the question set the user kept the home
-rows' download icons, which skip the note, and put the bot's role on About
-only. This choice is wrong if visitors install from a home row without knowing
-the risk, or if Zotero's steps or warning change.
+sentence on what the site shows. The intro's other sentences, on the daily
+read, who reads the paid service fact (M082), and when a plugin starts again
+(M059), stay on About only, so a visitor to the home page reads them one click
+away. At the question set the user kept the home rows' download icons, which
+skip the note, and put the bot's role on About only. This choice is wrong if
+visitors install from a home row without knowing the risk, or if Zotero's
+steps or warning change.

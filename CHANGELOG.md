@@ -439,7 +439,6 @@
   pass. The page keeps the choice in the `zotero` query parameter, such as
   `?zotero=8`. The script that runs the menu also runs the buttons, so
   without JavaScript the home page shows no buttons and lists every plugin.
-  The home page intro also links to the "Add a plugin" issue form.
 - `pnpm propose` checks each branch name in the handoff with git again. The
   check can fail to run: git cannot start, git ends with any result other
   than exit status 1, or the check passes its 30-second limit. An issue run

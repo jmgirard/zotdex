@@ -129,8 +129,9 @@ page filtered by it, in `CATEGORIES` order (M066). Each such link's
 `.xpi` file (`upstream.xpiUrl`, only when it passes `safeHref`, in the
 same plain button style as the others, D-029), the source ("Repository" for a
 record with `sourceInRepo: false`, M081), and the
-releases; a repo URL that fails `safeHref` shows as plain text. A
-"Zotero compatibility" card follows. For a read record it names the
+releases; a repo URL that fails `safeHref` shows as plain text. An install note
+follows when the `.xpi` link shows (M096), and then a
+"Zotero compatibility" card. For a read record it names the
 version read and holds one table row per major,
 newest first, for `ZOTERO_MAJORS` and each other major that the record's
 reports or start results name. The row's cells are the declared support,
@@ -148,7 +149,7 @@ text-change form and the remove-plugin form (M079, M093). The About page
 and its marks, the start test, which reports count, and how overrides and
 the Used column work (M054), the categories, each with its `about`
 text (M066), what the source fact means (M081), what the paid service
-mark means (M082), the grounds for removing a plugin (M093), and the license terms (M095, D-063). The home table marks an archived plugin with
+mark means (M082), the grounds for removing a plugin (M093), how to install a plugin (M096), and the license terms (M095, D-063). The home table marks an archived plugin with
 "Archived" after its name (M053), and the data carries the same `archived`
 fact (M013). A home row and a plugin page show a lock for a record with
 `sourceInRepo: false`, the fact that the top level of the repo's default branch
