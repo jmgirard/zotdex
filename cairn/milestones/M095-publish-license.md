@@ -21,10 +21,10 @@ The repository states the terms for reusing its code and its data.
 
 ## Acceptance criteria
 
-- [ ] AC1: `LICENSE` holds the MIT text of `gh api licenses/mit --jq .body`, with `[year]` and `[fullname]` filled so that it has the line `Copyright (c) 2026 Jeffrey Girard`, and `package.json` has `"license": "MIT"`.
-- [ ] AC2: README has a License section. It says that the code is under MIT, except each third-party file that it names, and that the facts the index gathers, its categories, and text the maintainer wrote are under CC0 1.0. It says that all other text keeps its author's terms: plugin names and descriptions, GitHub About text, and text that an owner asked for. "Using the data" links to it. The named files are those that a sweep of `git ls-files`, less `plugins/`, finds to come from a third party, with `cairn/references/` and `site/src/components/Icon.astro` read in that sweep, and the milestone's Review section records the sweep.
-- [ ] AC3: The built About page states the same three terms in one short section, with a link to README's License section. A test reads the built page's text and asserts the three terms.
-- [ ] AC4: CHANGELOG's Unreleased section has an entry. `pnpm test` and `pnpm check` exit 0.
+- [x] AC1: `LICENSE` holds the MIT text of `gh api licenses/mit --jq .body`, with `[year]` and `[fullname]` filled so that it has the line `Copyright (c) 2026 Jeffrey Girard`, and `package.json` has `"license": "MIT"`.
+- [x] AC2: README has a License section. It says that the code is under MIT, except each third-party file that it names, and that the facts the index gathers, its categories, and text the maintainer wrote are under CC0 1.0. It says that all other text keeps its author's terms: plugin names and descriptions, GitHub About text, and text that an owner asked for. "Using the data" links to it. The named files are those that a sweep of `git ls-files`, less `plugins/`, finds to come from a third party, with `cairn/references/` and `site/src/components/Icon.astro` read in that sweep, and the milestone's Review section records the sweep.
+- [x] AC3: The built About page states the same three terms in one short section, with a link to README's License section. A test reads the built page's text and asserts the three terms.
+- [x] AC4: CHANGELOG's Unreleased section has an entry. `pnpm test` and `pnpm check` exit 0.
 
 ## Coverage
 
@@ -70,3 +70,8 @@ The repository states the terms for reusing its code and its data.
 - 2026-11-04: the sweep above missed files that the claim audit and a follow-up search found, and these are now named as well: `test/site.test.ts` (lock, card, and star icon paths), and `test/add-plugin.test.ts` and `test/upstream.test.ts` (Better Notes' name and description). `test/version.test.ts` holds MDN's examples only, and `test/build.test.ts` holds part of a paragraph. A search for the icon paths and for Better Notes' description over the same files finds no other file.
 
 ## Review
+
+- AC1 evidence (2026-11-04, at 37ef2755): a script compared the JSON `body` of `gh api licenses/mit`, with `[year]` and `[fullname]` filled, to `LICENSE`, and they are equal, with the line `Copyright (c) 2026 Jeffrey Girard`; `package.json`'s `license` is `MIT`.
+- AC2 evidence: README line 1854 opens `## License`, and "Using the data" links it at line 315 with `(#license)`. The section says that the code is under MIT, except the third-party parts of the files that it names, that the facts, categories, and maintainer text are under CC0 1.0, and that all other text keeps its author's terms: plugin names and descriptions, GitHub About text, and owner text. Each of the 14 named paths exists. Sweep: `git ls-files` less `plugins/`; a word search for license and copied-from words; a read of every page in `cairn/references/`, the fixtures' `source` fields, the mockups, `Icon.astro`, and `favicon.svg`; a compare of icon paths with `lucide-static` 0.300.0, 0.400.0, and 1.68.0 and `feather-icons` 4.29.2; and a search for the icon paths and Better Notes' description. The milestone's Decisions section lists what each file holds, and each path read and not named with its reason.
+- AC3 evidence: `vitest run test/site.test.ts -t 'license terms'` passes 1 test. It reads the built `about/index.html`, asserts the three terms in the page's text, and asserts the link `https://github.com/jmgirard/zotero-plugin-index#license`. A browser look at the built About page showed the section last, with no console errors and no sideways overflow.
+- AC4 evidence: `CHANGELOG.md`'s `## Unreleased` opens with the entry; `pnpm check` exits 0 with 736 entries and 0 problems; `pnpm test` shows 2382 passed, 6 skipped, 0 failed. `cairn_validate` passes all checks.
