@@ -59,6 +59,7 @@ A shared link to any index page shows its own title and description, the page ha
 - 2026-11-04: T2: the icon uses each scheme's accent through a media query, because the light accent gives under 3:1 on the dark background and the dark accent under 3:1 on the light one; a test asserts at least 3:1 for each pair. Hand check on the fixture site at 2026-11-04: opened in the light and dark schemes in the browser pane, fill rgb(181, 35, 47) and rgb(240, 113, 120); the home page link answered 200.
 - 2026-11-04: T3: the repo had no topics; added `zotero`, `zotero-plugins`, and `plugin-directory` with `gh repo edit`, as the question set allowed; the topics read back as those three.
 - 2026-11-04: T4: README and CHANGELOG lines added, and a DESIGN.md sentence on the props and the icon file; `pnpm test` and `pnpm check` exit 0. The prose hook's hits on these two files are all on older lines, so they stay as they are.
+- 2026-11-04: claim audit fixes: README now says a text of 200 characters or fewer is not cut; the `previewDescription` comment no longer says "fixed"; `cutDescription` no longer cuts at spaces that open a text, and `previewDescription` falls back to the sentence when the cut holds only spaces, so AC1's non-empty text holds (a small addition to AC2's cut rule, which it did not cover); the About preview text and the About intro now say "the main facts", because About gives no source for some facts, such as stars and open issues.
 
 ## Decisions
 

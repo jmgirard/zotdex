@@ -43,11 +43,11 @@ export function displayName(record: PluginRecord): string {
   return appliedValue(record, "name", record.upstream?.name) ?? record.id;
 }
 
-// A plugin page's link preview text: its shown description, cut to length, or a fixed sentence
-// when it has none.
+// A plugin page's link preview text: its shown description, cut to length, or a sentence that
+// names the plugin when it has none or when the cut leaves only spaces.
 export function previewDescription(record: PluginRecord): string {
-  const shown = shownDescription(record);
-  return shown === undefined ? `${displayName(record)} is a plugin listed in the Zotero plugin index.` : cutDescription(shown);
+  const cut = cutDescription(shownDescription(record) ?? "");
+  return cut.trim() === "" ? `${displayName(record)} is a plugin listed in the Zotero plugin index.` : cut;
 }
 
 // The records in the home table's order: by display name, ignoring letter case and accents,

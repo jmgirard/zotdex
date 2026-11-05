@@ -1972,6 +1972,7 @@ describe("the plugin page's preview description", () => {
     withText("unbroken@example.org", "𠮷".repeat(250)),
     withText("no-text@example.org"),
     withText("quoted@example.org", quoted),
+    withText("blank-head@example.org", `${" ".repeat(205)}Keeps notes tidy in folders.`),
     {
       id: "failed-read@example.org",
       repoUrl: "https://github.com/example/failed-read",
@@ -1992,6 +1993,7 @@ describe("the plugin page's preview description", () => {
     ["no-text@example.org", "Tidy Notes is a plugin listed in the Zotero plugin index."],
     ["failed-read@example.org", "failed-read@example.org is a plugin listed in the Zotero plugin index."],
     ["quoted@example.org", quoted],
+    ["blank-head@example.org", "Tidy Notes is a plugin listed in the Zotero plugin index."],
   ])("on %s", (id, expected) => {
     const html = readFileSync(join(dir, "plugins", id, "index.html"), "utf8");
     expect(tagValue(html, "name", "description")).toBe(expected);
@@ -2006,6 +2008,9 @@ describe("cutDescription", () => {
     ["cuts at the last space of the first 200", `${"a".repeat(99)} ${"b".repeat(101)}`, "a".repeat(99)],
     ["cuts at 200 with no space there", `${"a".repeat(205)} b`, "a".repeat(200)],
     ["cuts at 200 when the only space opens the text", ` ${"a".repeat(205)}`, ` ${"a".repeat(199)}`],
+    ["cuts at 200 when two spaces open the text", `  ${"a".repeat(205)}`, `  ${"a".repeat(198)}`],
+    ["cuts at a later space after opening spaces", `  ${"a".repeat(50)} ${"b".repeat(205)}`, `  ${"a".repeat(50)}`],
+    ["keeps the first 200 when they are all spaces", `${" ".repeat(205)}a`, " ".repeat(200)],
   ])("%s", (_, text, expected) => {
     expect(cutDescription(text)).toBe(expected);
   });

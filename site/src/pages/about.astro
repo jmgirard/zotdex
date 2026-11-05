@@ -11,7 +11,7 @@ const offered = new Set(categoryOptions(plugins).map(({ value }) => value));
 
 <Base
   title="About: Zotero plugin index"
-  description="How the Zotero plugin index reads plugins: where each fact on a plugin page comes from and what it does not show."
+  description="How the Zotero plugin index reads plugins: where the main facts on a plugin page come from and what they do not show."
   path={`${BASE}about/`}
 >
   <div class="hero">
@@ -19,8 +19,8 @@ const offered = new Set(categoryOptions(plugins).map(({ value }) => value));
     <p class="intro">
       Each day, a build reads every listed plugin's GitHub repository and releases. A plugin page shows the facts that
       the build found for one release, the release the index read. A maintainer reads the paid service fact by hand, and
-      the build reads the others. This page says where each fact comes from and what it
-      does not show.
+      the build reads the others. This page says where the main facts come from and what they
+      do not show.
     </p>
   </div>
   <section class="card" id="declared" data-about="declared">
