@@ -159,8 +159,11 @@ describe("how to install a plugin", () => {
     "To install a plugin, save its .xpi file to your computer. Then, in Zotero, go to Tools → Plugins and drag the file onto the Plugins window.",
     "In Firefox, right-click the download link and choose Save Link As.",
     "A plugin has full access to your Zotero and your computer, so install only plugins from developers you trust.",
-    "A bot adds new plugins on its own, and a maintainer decides only those that one of its checks holds.",
-    "A maintainer who decides a held plugin checks who makes it and what it claims to be, not its code.",
+    "A bot adds most new plugins on its own.",
+    "If one of the bot's checks flags a plugin, the bot waits, and a maintainer decides whether to list it.",
+    "A maintainer can also add a plugin by hand or keep one out.",
+    "When deciding, a maintainer mainly checks whether the entry would mislead people about what the plugin is, who makes it, or who controls its updates.",
+    "A maintainer can compare files to spot a copy, but does not review the code.",
     "The index does not review a plugin's code before listing it.",
   ])("the About section says: %s", (sentence) => {
     const about = readFileSync(join(out, "about/index.html"), "utf8");
