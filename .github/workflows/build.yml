@@ -60,8 +60,9 @@ jobs:
       # below without an `if:` are then skipped, and the jobs
       # after this one do not run, so nothing is deployed. The start plan names the URL
       # and SHA-256 of each XPI the build read, and no artifact holds an XPI. With
-      # --previous, a record whose read fails for a build-level reason keeps the deployed
-      # record's facts for up to 7 days, and still counts as a failure (D-066).
+      # --previous, a record whose read fails for a build-level reason can keep the deployed
+      # record's facts when they were read at most 7 days before, and it still counts as a
+      # failure (D-066; README "Building the data" gives every condition).
       - run: >-
           pnpm build --plan start-plan.json
           --previous https://jmgirard.github.io/zotero-plugin-index/v1/plugins.json

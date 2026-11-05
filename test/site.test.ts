@@ -1289,7 +1289,7 @@ describe("the home page", () => {
       '<span class="mark" data-support="some" aria-hidden="true">◐</span> Declares part of it',
       '<span class="mark" data-support="none" aria-hidden="true">–</span> Declares none of it',
       "No mark: the plugin declares no range",
-      '<span class="badge" aria-hidden="true">Older data</span> The last build could not read the plugin, so the row shows the facts of an earlier build, read at most 7 days before it',
+      '<span class="badge" aria-hidden="true">Older data</span> The build of this data could not read the plugin, so the row shows the facts of an earlier build, read at most 7 days before it',
       `${LOCK_SVG} ${NO_SOURCE_TEXT}`,
       `${CARD_SVG} ${PAID_TEXT}`,
       '<span class="start" data-start="started" aria-hidden="true">●</span> Started in the start test',
@@ -2017,7 +2017,7 @@ describe("the built site", () => {
       const foot = /<\/main><footer class="foot"><div class="foot-inner foot-rule">(.*?)<\/div><\/footer><\/body>/s.exec(html)?.[1];
       expect(foot, path).toBe(
         `<p data-fact="disclaimer">${DISCLAIMER_TEXT}</p>` +
-          "<p>The last build ran on 2026-10-25.</p>" +
+          "<p>The data comes from the build of 2026-10-25.</p>" +
           '<p>Data file: <a href="/zotero-plugin-index/v1/plugins.json">v1/plugins.json</a></p>',
       );
     }
@@ -2275,9 +2275,11 @@ describe("a kept record", () => {
   const TWIN = "kept-twin@example.org";
   const failure = { name: "not-read", message: "the build reads no plugin after 18 minutes, its time limit" };
   const kept = { readAt: "2026-11-03T06:17:00.000Z", failure };
+  const ARCHIVED = "kept-archived@example.org";
   const plugins = [
     { ...base, id: KEPT, kept },
     { ...base, id: TWIN },
+    { ...base, id: ARCHIVED, upstream: { ...base.upstream!, id: ARCHIVED, archived: true }, kept },
   ];
   let dir = "";
   beforeAll(() => {
@@ -2288,7 +2290,7 @@ describe("a kept record", () => {
   const home = () => readFileSync(join(dir, "index.html"), "utf8");
   const page = (id: string) => readFileSync(join(dir, "plugins", id, "index.html"), "utf8");
   const rowOf = (id: string) => new RegExp(`<tr data-plugin="${escaped(id)}"[\\s\\S]*?</tr>`).exec(home())![0];
-  const BADGE = '<span class="badge" data-kept title="Facts from the build of 2026-11-03">Older data</span>';
+  const BADGE = '<span class="badge" data-kept title="Facts from an earlier build, on 2026-11-03">Older data</span>';
 
   test("the data file is valid against the v1 schema", () => {
     const validate = new Ajv({ allErrors: true }).compile(pluginsSchema);
@@ -2296,9 +2298,11 @@ describe("a kept record", () => {
     expect(validate(data), JSON.stringify(validate.errors)).toBe(true);
   });
 
-  test("shows the row that the same record with no kept shows, plus an Older data badge after the name", () => {
+  test("shows the row that the same record with no kept shows, plus an Older data badge after the name and any Archived badge", () => {
     const keptRow = rowOf(KEPT);
     expect(keptRow).toContain(BADGE);
+    // An archived kept record shows the badge after Archived.
+    expect(rowOf(ARCHIVED)).toMatch(/data-archived>Archived<\/span><span class="badge" data-kept /);
     expect(keptRow).not.toContain("Not read");
     expect(keptRow.replace(BADGE, "").replaceAll(KEPT, TWIN).replaceAll(encodeURIComponent(KEPT), encodeURIComponent(TWIN))).toBe(rowOf(TWIN));
     expect(rowOf(TWIN)).not.toContain("data-kept");
@@ -2306,15 +2310,15 @@ describe("a kept record", () => {
 
   test("names the badge in the home legend", () => {
     expect(/<li data-legend-kept>(.*?)<\/li>/s.exec(home())?.[1]).toBe(
-      '<span class="badge" aria-hidden="true">Older data</span> The last build could not read the plugin, so the row shows the facts of an earlier build, read at most 7 days before it',
+      '<span class="badge" aria-hidden="true">Older data</span> The build of this data could not read the plugin, so the row shows the facts of an earlier build, read at most 7 days before it',
     );
   });
 
-  test("says on the plugin page that the last build could not read it, with the failure and the day of the read", () => {
+  test("says on the plugin page that the build of the data could not read it, with the failure and the day of the read", () => {
     const text = /<p class="fineprint kept-note" data-fact="kept">(.*?)<\/p>/s.exec(page(KEPT))?.[1].replace(/\s+/g, " ").trim();
     expect(text).toBe(
-      "The last build could not read this plugin: <code>not-read</code>: the build reads no plugin after 18 minutes, its time limit. " +
-        'These facts come from the build of 2026-11-03. <a href="/zotero-plugin-index/about/#older-data">About older data</a>',
+      "The build that wrote this page, on 2026-11-05, could not read this plugin: <code>not-read</code>: the build reads no plugin after 18 minutes, its time limit. " +
+        'These facts come from an earlier build, on 2026-11-03. <a href="/zotero-plugin-index/about/#older-data">About older data</a>',
     );
     expect(page(KEPT)).toMatch(/<h1>[^<]*<span class="badge" data-kept>Older data<\/span>/);
     expect(page(TWIN)).not.toContain("data-kept");
@@ -2331,8 +2335,8 @@ describe("a kept record", () => {
     expect(text).toContain('A plugin that the build cannot read for another reason, such as a deleted repository, shows "Not read".');
   });
 
-  test("says in the footer when the last build ran", () => {
-    expect(home()).toContain("<p>The last build ran on 2026-11-05.</p>");
+  test("says in the footer which build the data comes from", () => {
+    expect(home()).toContain("<p>The data comes from the build of 2026-11-05.</p>");
   });
 });
 

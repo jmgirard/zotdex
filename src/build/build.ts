@@ -96,7 +96,8 @@ export interface StartPlan {
 // rate limit or a network error, in record order, kept records included. It and the plan stay
 // out of the data. `kept` lists the ids of the kept records, in record order, and
 // `previousProblem` names why the read of the deployed data failed, when it did. The
-// plan has one item for each record with upstream, in record order. `releaseProblem` names why
+// plan has one item for each record whose upstream this build read, in record order, so a
+// kept record has none. `releaseProblem` names why
 // the read of the current Zotero release failed, when it did, and `sourceProblem` why the build
 // has no source fact for some records. `releaseWarnings` says where the
 // Zotero release lists in src/site/version.ts fall behind and which changelog reads failed, and

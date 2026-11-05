@@ -295,7 +295,8 @@ with or endorsed by Zotero, and it cannot vet the plugins it lists." The About
 page gives the reason, and it says that the start test is not a review of
 plugin code. It also states the terms in "License" below, and it links there.
 Its "Older data" section says when a row shows the facts of an earlier
-build. Each page's footer also says on which day the last build ran.
+build. Each page's footer also names the day of the build that the data
+comes from.
 The home page's intro also says what the site shows, and it links to the About
 page's "Installing a plugin" section (`#installing`). That section gives
 Zotero's install steps, the step for Firefox, and Zotero's warning. It also
@@ -518,8 +519,8 @@ ships a release, a maintainer adds it to the workflow. The `startTests`
 field is new in schema v1. If you validate against a saved copy of the
 schema, fetch the schema again.
 
-The build does not start every plugin each day. Once in each build, it
-reads the published data of the last deploy. That data's record can have
+The build does not start every plugin each day. Once in each build,
+`pnpm carry-start-results` reads the published data of the last deploy. That data's record can have
 the same entry id, plugin id, plugin version, and `xpiSha256`. If so, the
 build keeps the record's `started` result for each tested release. It starts
 the plugin in a tested release in these cases:
@@ -1537,6 +1538,8 @@ block and `startTests` list, with a `kept` block:
 - Its `readAt` falls at most 7 days before this build's `generatedAt`, and
   not after it. `readAt` is the published record's own `kept.readAt`, or
   else the published file's `generatedAt`.
+- The kept record as the command writes it is valid against the record
+  schema. So `readAt` must be a UTC time that ends in `Z`.
 
 So a record that two builds in a row fail to read keeps the first
 `readAt`. The kept record also keeps this entry's own overrides and

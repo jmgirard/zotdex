@@ -12,7 +12,7 @@
   `readAt` and this build's `failure`, and `pnpm build` has a new
   `--previous <url>` option. A record with `kept` has no start test, and
   `pnpm carry-start-results` carries no result from one. The footer now
-  says when the last build ran.
+  names the day of the build that the data comes from.
 - The home page's search box, filters, sort menu, count, and pager now share
   one card with the table and one look. Each filter's label sits above it. The
   count and "Sort by" sit above the table. If the width allows, they share one
