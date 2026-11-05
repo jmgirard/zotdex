@@ -1128,6 +1128,20 @@ reused._
   (Mon) on Node 26, and a Node upgrade can change which rare codes count.
   A `languages` override records such a language. Accepted at the M025
   plan, 2026-10-27.
+- The locale message counts behind the `languages` list miscount some
+  files. A `.properties` value wrapped with a trailing `\` counts once per
+  line, a `.dtd` parameter entity (`<!ENTITY % …>`) counts as a message, a
+  `<!--` inside an entity value hides the entities after it, and a file found
+  twice, under both `locale/<tag>/` and `chrome/locale/<tag>/` or as two zip
+  entries of one name, counts twice. A stray file of another type, such as
+  `.DS_Store`, keeps its tag whatever its count, as M034's criteria ask.
+  `localeLanguages` decodes locale files as UTF-8, so a UTF-16 locale file
+  counts no messages; none of the 457 locale files read on 2026-10-27 is
+  UTF-16 (corrected M034). A folder whose files copy another folder's text
+  still counts as a language; none of the 23 listed multi-language plugins
+  read on 2026-10-27 has one, and `en-GB` copied from `en-US` can be the
+  author's choice. Routed from candidates 2026-11-05; added 2026-10-28 —
+  M023, M027, M034.
 - Plugin code that runs in a start-test job can rewrite that job's results,
   its own included, so the data can show a forged start. The job has no
   token permission and no secret, and `pnpm add-start-results` keeps only
@@ -1186,9 +1200,8 @@ reused._
   "07", so a plugin page shows a "7" row with no result and the home cell
   none. The build never writes one (M054 review). (4) The plugin count's first
   text is written while hidden, so screen readers miss it, a same-count change
-  writes the same text, and since M053 the search box rewrites it per key. The
-  rows of controls appear after first paint and move the table, which M060's
-  pre-paint style misses (M044, M053 reviews). (5) The language and category
+  writes the same text, and since M053 the search box rewrites it per key
+  (M044, M053 reviews). (5) The language and category
   menus set `appearance: none` and draw their arrow with two CSS gradients, seen only in
   Chromium at 1280 and 375 px, never in Safari, Firefox, or forced colors. A
   seam may show at a root font size other than 16 px (M049, M063, M066

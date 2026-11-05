@@ -1024,3 +1024,17 @@ The plan read the deployed data after the plugin reads, only when a build-level
 failure exists, so a normal build spends nothing on it. This choice is wrong if
 visitors read kept facts as current despite the badge, or if a kept record shows a
 release that its author withdrew.
+
+### D-067: A triage pass drops one candidate row as not worth keeping
+
+2026-11-05, triage pass. A `/cairn-triage` pass weighed every candidate row and
+Known issues entry. The user accepted dropping "Tighten the paced build reads".
+It would have fixed five gaps that the M087 review found in the paced API reads:
+a test that can show a gap under 80 ms after a pause over 1 ms, a read aborted in
+the queue that fails about 240 ms late, the host `api.github.com.` with a trailing
+dot skipping the pacing, a 64 KiB stdout test that a build slower than 12 s passes
+without a full pipe, and a test with about 160 ms of margin. No documented or
+common use meets them. A test that fails in CI shows itself without a row, and the
+build writes its API URLs with `api.github.com` and no trailing dot.
+
+The drop can be reopened by an entry that supersedes this one.
