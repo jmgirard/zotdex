@@ -1,6 +1,6 @@
 # M097: Get the site ready for first visitors
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
@@ -76,6 +76,7 @@ Help a first-time visitor find established plugins and find their way around the
 - 2026-11-05: T6 done: `site/src/pages/sitemap.xml.ts` writes `sitemap.xml` from the data with no new package, and every page's head links it.
 - 2026-11-05: T7 done: README, DESIGN, and CHANGELOG updated; the browser pane on the site built from the deployed data read no page or card overflow on all 15 pages at 375 px, a whole count on every row, both longest owners cut (the only cut rows, 11 and 1 stars), the three orders and Back working, and no console errors.
 - 2026-11-05: claim audit: 120 claims read, 8 corrected — src/site/home-filter.ts, cairn/DESIGN.md, CHANGELOG.md, test/site.test.ts; also one stale `filterHref` comment; the live 404 read waits for a deploy.
+- 2026-11-05: claim audit re-read: all 8 corrections and the `filterHref` comment hold; `pnpm test` and `pnpm check` pass; status set to review.
 
 ## Decisions
 
