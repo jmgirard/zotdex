@@ -46,7 +46,7 @@ Help a first-time visitor find established plugins and find their way around the
 - [x] T3: Show the count on the owner line, keeping it outside `[data-name]` and `[data-description]`, so the search does not read it. Cut only the owner with the ellipsis. Add the legend text. Add a fixture row with `LONG_OWNER` and a large count, by a text edit, and list it in the hand-kept fixture orders.
 - [x] T4: Add `site/src/pages/404.astro`. Make `path` optional in `Base.astro`, with the canonical link and `og:url` left out without it and a `noindex` meta on this page. Update the page-count and head-tag tests that the new page reaches near `test/site.test.ts:1994`.
 - [x] T5: Turn on Discussions with `gh repo edit jmgirard/zotero-plugin-index --enable-discussions`, as the user chose, and read the setting back. Add the "Feedback" link to the top bar and update the exact-match link test near `test/site.test.ts:1807`.
-- [ ] T6: Add an Astro endpoint, `site/src/pages/sitemap.xml.ts`, from `ORIGIN`, `BASE`, and `pluginHref`, with no new package (D-004). Add the head link in `Base.astro`. Add its tests.
+- [x] T6: Add an Astro endpoint, `site/src/pages/sitemap.xml.ts`, from `ORIGIN`, `BASE`, and `pluginHref`, with no new package (D-004). Add the head link in `Base.astro`. Add its tests.
 - [ ] T7: Update README (the site section and the top bar), `cairn/DESIGN.md` (lines near 58 and 106 and the GitHub-only line near 211), and CHANGELOG. Build the site from the deployed data and do the 375 px checks of AC3 and AC5 in the browser pane. Run `pnpm test` and `pnpm check`.
 
 ## Work log
@@ -73,6 +73,7 @@ Help a first-time visitor find established plugins and find their way around the
 - 2026-11-05: T3 done: home rows show the count after the owner, only the owner is cut, and the legend has the no-review line; `same-name-plugin` (the long owner in the fixture) took a count of 98765 in place of a new fixture row, which keeps the hand-kept fixture lists short. The 375 px checks wait for T7.
 - 2026-11-05: T4 done: `site/src/pages/404.astro` builds `404.html`; `path` in `Base.astro` is optional, and a page without one has no canonical link or `og:url` and a `noindex` tag. The live 404 read waits for a deploy after the merge.
 - 2026-11-05: T5 done: `gh repo edit --enable-discussions` ran and the setting reads true; the top bar links to Discussions as "Feedback". The 375 px check waits for T7.
+- 2026-11-05: T6 done: `site/src/pages/sitemap.xml.ts` writes `sitemap.xml` from the data with no new package, and every page's head links it.
 
 ## Decisions
 

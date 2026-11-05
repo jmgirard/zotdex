@@ -121,6 +121,26 @@ describe("pnpm site", () => {
     expect(indexed).toEqual(["404.html"]);
   });
 
+  test("writes a sitemap in the urlset form that lists exactly the canonical address of each page", () => {
+    const xml = readFileSync(join(out, "sitemap.xml"), "utf8");
+    expect(xml).toMatch(/^<\?xml version="1\.0" encoding="UTF-8"\?>\n<urlset xmlns="http:\/\/www\.sitemaps\.org\/schemas\/sitemap\/0\.9">\n/);
+    expect(xml).toMatch(/<\/urlset>\n$/);
+    const locs = [...xml.matchAll(/<url><loc>([^<]*)<\/loc><\/url>/g)].map(([, loc]) => loc!);
+    const canonicals = htmlFiles(out).flatMap((file) => {
+      const canonical = /<link rel="canonical" href="([^"]*)"/.exec(readFileSync(join(out, file), "utf8"))?.[1];
+      return canonical ? [canonical] : [];
+    });
+    expect(locs).toHaveLength(ids.length + 2);
+    expect(locs.toSorted()).toEqual(canonicals.toSorted());
+  });
+
+  test("links the sitemap from the head of every page", () => {
+    for (const file of htmlFiles(out)) {
+      const head = /<head>(.*?)<\/head>/s.exec(readFileSync(join(out, file), "utf8"))![1]!;
+      expect(head, file).toContain('<link rel="sitemap" type="application/xml" href="/zotero-plugin-index/sitemap.xml">');
+    }
+  });
+
   test("leaves the data and schema files byte-identical", () => {
     for (const [file, bytes] of before) expect(readFileSync(join(out, file)).equals(bytes), file).toBe(true);
   });
