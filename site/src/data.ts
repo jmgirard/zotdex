@@ -44,7 +44,7 @@ export function displayName(record: PluginRecord): string {
 }
 
 // A plugin page's link preview text: its shown description, cut to length, or a sentence that
-// names the plugin when it has none or when the cut leaves only spaces.
+// names the plugin when it has none or when the cut leaves only whitespace.
 export function previewDescription(record: PluginRecord): string {
   const cut = cutDescription(shownDescription(record) ?? "");
   return cut.trim() === "" ? `${displayName(record)} is a plugin listed in the Zotero plugin index.` : cut;

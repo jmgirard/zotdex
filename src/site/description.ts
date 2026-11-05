@@ -66,7 +66,7 @@ const CUT_LENGTH = 200;
 
 // A text for a link preview: whole up to 200 code points, and otherwise cut at the last space
 // in its first 200, or at 200 when that part has no space to cut at, as with Chinese text.
-// Spaces that open the text do not count, since a cut there leaves only spaces.
+// A space with only whitespace before it does not count, since a cut there leaves only whitespace.
 export function cutDescription(text: string): string {
   const points = [...text];
   if (points.length <= CUT_LENGTH) return text;

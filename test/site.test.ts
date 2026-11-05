@@ -1887,7 +1887,7 @@ describe("the built site", () => {
   });
 });
 
-// Each meta and link tag of a page, with its attribute values as a browser reads them.
+// Each meta and link tag of a page, with the character references in its attribute values decoded.
 function tagsOf(html: string): Record<string, string>[] {
   return [...html.matchAll(/<(?:meta|link)\b((?:[^>"]|"[^"]*")*)>/g)].map(
     ([, attributes]) => Object.fromEntries([...attributes!.matchAll(/([\w:-]+)="([^"]*)"/g)].map(([, name, value]) => [name!, decoded(value!)])),
@@ -1973,6 +1973,7 @@ describe("the plugin page's preview description", () => {
     withText("no-text@example.org"),
     withText("quoted@example.org", quoted),
     withText("blank-head@example.org", `${" ".repeat(205)}Keeps notes tidy in folders.`),
+    { ...withText("blank-override@example.org"), overrides: [{ field: "description", value: " \t\n", reason: "A reason." }] },
     {
       id: "failed-read@example.org",
       repoUrl: "https://github.com/example/failed-read",
@@ -1994,6 +1995,7 @@ describe("the plugin page's preview description", () => {
     ["failed-read@example.org", "failed-read@example.org is a plugin listed in the Zotero plugin index."],
     ["quoted@example.org", quoted],
     ["blank-head@example.org", "Tidy Notes is a plugin listed in the Zotero plugin index."],
+    ["blank-override@example.org", "Tidy Notes is a plugin listed in the Zotero plugin index."],
   ])("on %s", (id, expected) => {
     const html = readFileSync(join(dir, "plugins", id, "index.html"), "utf8");
     expect(tagValue(html, "name", "description")).toBe(expected);
@@ -2011,6 +2013,8 @@ describe("cutDescription", () => {
     ["cuts at 200 when two spaces open the text", `  ${"a".repeat(205)}`, `  ${"a".repeat(198)}`],
     ["cuts at a later space after opening spaces", `  ${"a".repeat(50)} ${"b".repeat(205)}`, `  ${"a".repeat(50)}`],
     ["keeps the first 200 when they are all spaces", `${" ".repeat(205)}a`, " ".repeat(200)],
+    ["does not cut at a space after opening whitespace of another kind", `\t ${"a".repeat(205)}`, `\t ${"a".repeat(198)}`],
+    ["cuts only at a space, not at a newline", `aaa\n${"b".repeat(205)}`, `aaa\n${"b".repeat(196)}`],
   ])("%s", (_, text, expected) => {
     expect(cutDescription(text)).toBe(expected);
   });

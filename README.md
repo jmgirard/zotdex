@@ -296,9 +296,10 @@ for link previews. The tags are a meta description, Open Graph tags, a Twitter
 card tag, and a canonical link. A shared link can show the page's title and
 description, with no picture. A plugin page uses its shown description. The
 page cuts a description of more than 200 characters at the last space in its
-first 200 characters. If that part has no space, the page cuts the description
-at 200 characters. If a plugin has no shown description, its page uses a
-sentence that names the plugin.
+first 200 characters. A space with only whitespace before it does not count. If
+that part has no other space, the page cuts the description at 200 characters.
+If a plugin has no shown description, or the result holds only whitespace, its
+page uses a sentence that names the plugin.
 
 ## Using the data
 
