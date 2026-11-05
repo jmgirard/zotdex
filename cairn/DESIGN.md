@@ -1198,3 +1198,10 @@ reused._
 - In the data, an override drawn from an author's text has no field that marks
   the maintainer's part, so a data user cannot apply the CC0 boundary by script;
   the override's `reason` says where the text came from. Accepted at the M095 gate
+- On 2026-11-05 the star spans of M097 added about 257 KB decoded to the home
+  page, 734 inline SVGs, and the whole change about 14 KB gzipped. An SVG `<use>`
+  sprite, which the site pages' gap (7) names, would drop most. Accepted at the
+  M097 gate
+- A change of the home page's sort menu changes no live region's text on page 1,
+  so a screen reader announces only the menu's own value. Accepted at the M097
+  gate

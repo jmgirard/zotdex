@@ -1,16 +1,15 @@
 # Roadmap
 
 _The only authority on milestone status. Grouped by status, not ID._
-_Last hygiene check: 2026-11-05 (M096 archived; M093 row left the table; no candidate row changed; 25 lessons, 8 marked used; validate green)_
+_Last hygiene check: 2026-11-05 (M097 archived; M094 row left the table; one lesson retired by rank; 2 known issues; validate green)_
 
 ## Milestones
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M097 | Get the site ready for first visitors | review | — | high | milestones/M097-first-visitors.md |
+| M097 | Get the site ready for first visitors | done | — | high | milestones/archive/M097-first-visitors.md |
 | M096 | Say how to install a plugin and what it can reach | done | — | high | milestones/archive/M096-install-steps-risk-note.md |
 | M095 | Publish a license | done | — | high | milestones/archive/M095-publish-license.md |
-| M094 | Add link previews and a favicon | done | — | high | milestones/archive/M094-link-previews-favicon.md |
 <!-- rows grouped by status, not by ID; keep the 3 most recent done/dropped rows; older ones: milestones/archive/ + git -->
 
 ## Candidates
