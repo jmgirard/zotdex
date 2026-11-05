@@ -1121,7 +1121,7 @@ describe("the home page", () => {
     expect(declared(".row-stars")).toMatchObject({ flex: "none", color: "var(--muted)" });
   });
 
-  test("says in the legend that the count and the default order come from GitHub and are no review", () => {
+  test("says in the legend that the count comes from GitHub, that the default order comes from it, and that neither is a review", () => {
     const item = /<li data-legend-stars>(.*?)<\/li>/s.exec(home())?.[1]?.replace(/\s+/g, " ");
     expect(item).toContain("The count of stars that GitHub gives. The default order comes from this count, and neither is a review by the index.");
   });

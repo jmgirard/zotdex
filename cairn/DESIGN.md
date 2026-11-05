@@ -73,8 +73,8 @@ script before the table runs before the rows parse. In a browser that runs
 module scripts, it adds a style that `prePaintStyle` writes from the
 address. The style hides the rows outside the asked page of the rows that
 `?language=`, `?zotero=`, and `?category=` pass (M066), and for a `?sort=`
-that is not empty it hides every row, as the rows parse in another order than
-the script shows (M097). So in a browser that reads
+that is not empty it hides every row, as `name` and `latest` show another order
+than the rows parse in (M097). So in a browser that reads
 `:nth-child(… of S)`, no row that the script hides paints while the page
 loads (see Known issues). A value that the script drops, or a page past the
 last one, also hides rows that the script then shows. For an address with
@@ -199,15 +199,16 @@ otherwise, so plugins of one name can be told apart. The line sits outside
 `[data-name]` and `[data-description]`, so the search does not read it. It
 stays on one line, an ellipsis cuts a long owner, and `contain: inline-size`
 keeps it from widening the table (M076). After the owner it shows the
-`upstream.stars` count with the star icon and `starsText`'s words in `--muted`,
-and only the owner is cut (M097). The legend says that the count comes from
+`upstream.stars` count with the star icon in `--muted`, with `starsText`'s words
+as its `title` and for screen readers, and only the owner is cut (M097). The legend says that the count comes from
 GitHub, that the default order comes from that count, and that neither is a
 review by the index (D-065).
 An address with no page shows `404.html`, whose main content says so and links
 to the home page and About, with `noindex` and no canonical link or `og:url`
 (M097). `sitemap.xml` lists the canonical address of the home page, About, and
 each plugin page, with a head link on each page; a maintainer submits it by
-hand, as a `robots.txt` cannot sit at the host's root (M097).
+hand, as this repo's Pages deploy publishes only under `/zotero-plugin-index/`,
+so it cannot put a `robots.txt` at the host's root (M097).
 A manifest `__MSG_` name or description takes its message from
 `_locales/en/`, `en_US/`, or `en_GB/` before the default locale (M055).
 The data also carries the GitHub repo's About text as `repoDescription`.
@@ -549,8 +550,9 @@ user reports. The exception is a report that is abuse.
   `PAGE_SIZE`,
   `pageCount`, `onPage`, and `chosenPage`, which the home page's script
   imports for the search box, the category and language menus, the version
-  buttons, the count, and the pager (renamed from `language-filter.ts`, M037;
-  pages M058; categories M066).
+  buttons, the sort menu, the count, and the pager (renamed from
+  `language-filter.ts`, M037; pages M058; categories M066; sort M097).
+  `site/src/data.ts` imports `sortOrder` for the built order (M097).
   It also holds `prePaintStyle`, whose source text the home page's classic
   script carries, so it calls and reads nothing outside its body except
   built-ins (M060);
