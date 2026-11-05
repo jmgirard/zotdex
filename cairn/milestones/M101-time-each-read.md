@@ -92,6 +92,7 @@ Each build log shows how long the plugin reads took, by result and for the slowe
 - 2026-11-05: implement complete; status → review.
 - 2026-11-05: review: evidence recorded and every criterion ticked; gate clean; four-lens review next.
 - 2026-11-05: four-lens review: 22 findings, 13 fixed in f63ea75a, 8 rejected (1 edge), 1 follow-up row (filed at hygiene); no floor return.
+- 2026-11-05: correction to the line above: the four-lens review had 21 findings, 12 fixed, 8 rejected (1 edge), 1 follow-up.
 ## Decisions
 <!-- owner: implement / review · append-only; milestone-local; promote
      cross-cutting ones to cairn/DECISIONS.md.
