@@ -7,7 +7,7 @@ _Last hygiene check: 2026-11-05 (M098 archived; M095 row left the table; one les
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M099 | Replace the red logo with a blue puzzle piece | in-progress | — | normal | milestones/M099-puzzle-piece-logo.md |
+| M099 | Replace the red logo with a blue puzzle piece | review | — | normal | milestones/M099-puzzle-piece-logo.md |
 | M098 | Give the table controls one design | done | — | normal | milestones/archive/M098-table-controls-design.md |
 | M097 | Get the site ready for first visitors | done | — | high | milestones/archive/M097-first-visitors.md |
 | M096 | Say how to install a plugin and what it can reach | done | — | high | milestones/archive/M096-install-steps-risk-note.md |

@@ -4,7 +4,7 @@
      cairn_validate's <150 over the plan-owned body. -->
 # M099: Replace the red logo with a blue puzzle piece
 
-- **Status:** in-progress   <!-- owner: transitioning skill · mirror-update; cairn/ROADMAP.md is the authority -->
+- **Status:** review   <!-- owner: transitioning skill · mirror-update; cairn/ROADMAP.md is the authority -->
 - **Priority:** normal   <!-- owner: plan · create/amend-via-gate; high | normal | low -->
 - **Depends on:** —   <!-- owner: plan · create/amend-via-gate; M<xx>, M<yy> or — -->
 - **Driving RR:** —   <!-- owner: plan · create/amend-via-gate; RR<NN> whose Binding criteria bind this milestone's ACs (binding-criteria check), or — -->
@@ -68,8 +68,8 @@ The site's logo no longer looks like an error, and red on the site means only a 
 - [x] T1: Change `test/site.test.ts` first: the favicon tests (near line 2591), the top bar's exact HTML (near 2004), the `--accent` on `--surface` pair (near 2578), and a forced-colors test that matches the layout source (lesson M063).
 - [x] T2: Set `--accent` in the three blocks, write `site/public/favicon.svg`, add `puzzle` to `Icon.astro`, put it in the `.brand` link in `Base.astro`, remove `.brand::before`, and add the forced-colors rule.
 - [x] T3: Update `README.md` (lines 335 and 1923), `CHANGELOG.md` (lines 11 and 41), and any `cairn/DESIGN.md` line that describes the icon. Make sure that the README exception at `test/site.test.ts:881` still holds.
-- [ ] T4: Build the site and view it as AC5 says, on localhost (lessons M015, M035).
-- [ ] T5: Run the checks of AC7, and send the output to a file (lesson M082).
+- [x] T4: Build the site and view it as AC5 says, on localhost (lessons M015, M035).
+- [x] T5: Run the checks of AC7, and send the output to a file (lesson M082).
 
 ## Work log
 <!-- owner: any skill · append-only; one line per entry; absolute dates.
@@ -97,6 +97,9 @@ The site's logo no longer looks like an error, and red on the site means only a 
 - 2026-11-05: criteria audit (full): 5 findings, all taken: README's Lucide file list gains `favicon.svg`; AC1 pins lucide-static 1.68.0; AC2 adds `--accent` on `--surface`; AC3 adds the forced-colors fill; AC5 views the favicon. Each changed criterion was checked again by the agent against the same questions.
 - 2026-11-05: T1, T2: tests first, seen failing on the old logo; `.brand .icon` fills `puzzle` from `Icon.astro` with `--accent`; `favicon.svg` uses the same path and an XML comment points to the notice; `--accent` now equals `--link`, as both are the site's blue.
 - 2026-11-05: T3: README, CHANGELOG, and DESIGN name the puzzle piece; README's Lucide list names `site/public/favicon.svg`; About's license text stays, as its words still hold.
+- 2026-11-05: T4: viewed on localhost with the deployed data: home and a plugin page at 375 and 1280 px in both schemes; logo 16 px, `#1d5fb8` and `#7fb0ff`, name on one line, no horizontal scroll; `favicon.svg` shows the blue piece in both schemes.
+- 2026-11-05: T5: `pnpm test` and `pnpm check` passed before the last test edit; run again below.
+- 2026-11-05: claim audit: 28 claims read, 1 corrected — `test/site.test.ts`: the test name said "before the site's name" with no assertion on order; added one, and the reader's re-read holds.
 
 ## Decisions
 <!-- owner: implement / review · append-only; milestone-local; promote

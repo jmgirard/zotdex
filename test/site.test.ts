@@ -2622,6 +2622,7 @@ describe("the site colors", () => {
         expect(icons, file).toHaveLength(1);
         expect(icons![0], file).toContain('aria-hidden="true"');
         expect(/<path\b[^>]*\bd="([^"]+)"/.exec(icons![0]!)?.[1], file).toBe(drawn);
+        expect(brand.startsWith(icons![0]!), file).toBe(true);
         expect(brand.replace(icons![0]!, ""), file).toBe("Zotero plugin index");
       }
     });
