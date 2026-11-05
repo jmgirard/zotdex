@@ -1238,3 +1238,7 @@ reused._
   only the plugins it read, while the rest keep older facts or show "Not
   read". Two of three builds on 2026-11-05 were cut this way. Recorded at
   M100; the parked row "Retry build reads GitHub refuses" holds the retry.
+- An author whose `update.json` host answers HTTP 5xx or does not answer, or
+  whose XPI makes the reader throw, gets a build-level failure, so the site
+  keeps that plugin's last facts for up to 7 days (D-066). Accepted at the
+  M100 gate
