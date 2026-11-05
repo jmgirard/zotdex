@@ -91,6 +91,7 @@ Each build log shows how long the plugin reads took, by result and for the slowe
 - 2026-11-05: claim audit: not owed — internal tier.
 - 2026-11-05: implement complete; status → review.
 - 2026-11-05: review: evidence recorded and every criterion ticked; gate clean; four-lens review next.
+- 2026-11-05: four-lens review: 22 findings, 13 fixed in f63ea75a, 8 rejected (1 edge), 1 follow-up row (filed at hygiene); no floor return.
 ## Decisions
 <!-- owner: implement / review · append-only; milestone-local; promote
      cross-cutting ones to cairn/DECISIONS.md.
@@ -108,3 +109,26 @@ Each build log shows how long the plugin reads took, by result and for the slowe
 - AC2: evidence — `test/timing.test.ts` (4 tests: order, form, ties in id order, the 10-read cap, a line break as a space, no lines with no read) and `pnpm build` > "prints the timing lines just before the failed-record lines, outside the summary block" pass; branch run 42125640367's log showed the lines in that place on all 736 plugins.
 - AC3: evidence — README "Building the data" (near line 1646) describes the three kinds of line and CHANGELOG's Unreleased section names them; `pnpm test` 2481 passed, 6 skipped, exit 0; `pnpm check` 736 entries, 0 problems.
 - gate: `cairn_validate.py` exit 0; profile `generic` consistency-gate: none; no principle changed.
+- spawned: diff-bug, blame-history, prior-review, ripple
+- diff-bug #1: README and CHANGELOG do not say the per-result sums overlap, since 4 reads run at once (877.8 s against 220.6 s on the branch run) — fix now, fixed f63ea75a
+- diff-bug #2: a read's time includes its waits for the API pace and the other workers — fix now (README says so; no code change), fixed f63ea75a
+- diff-bug #3: the `summary` helper's comment sits above the new timing helpers — fix now, fixed f63ea75a
+- diff-bug #4: the `readsMs` test would pass if `readsMs` were the sum of the reads — fix now (asserts it is less than the sum), fixed f63ea75a
+- diff-bug #5: the id-order test's start order equals id order on an even day — fix now (an odd day starts the reads in reverse), fixed f63ea75a
+- diff-bug #6: the not-read test covers only a build with no read — reject (false): AC1's no-timing promise is tested, and a not-read entry takes the `continue` before any timing in `readEntries`
+- diff-bug #7: ties compare raw milliseconds, so two reads shown alike can print out of id order — fix now (ties compare the shown tenth), fixed f63ea75a
+- diff-bug #8: a failed data write exits before the timing lines print — reject (edge): a write failure of `dist/`, outside the documented build, exits 1 with `write-failed`, and the log only lacks the timing lines
+- diff-bug #9: the 64 KiB test pins the timing-line count at 12 — reject (false): its fixture has one result and 80 reads, so 1 + 1 + 10 lines is fixed
+- blame-history #1: the two timer-pending tests no longer compare stdout exactly — reject (planned change): every other line stays exact and the timing-line counts must match; the seconds differ between runs
+- blame-history #2: the pinned count of 12 is brittle — reject (false), as diff-bug #9
+- blame-history #3: the `summary` comment — fix now with diff-bug #3, fixed f63ea75a
+- blame-history #4: failed-record lines print the raw entry id, which no schema limits; text from before M101 — follow-up: parked row "Print entry ids on one line in the build log", promote when a user reports it (filed at hygiene)
+- blame-history #5: lesson 2026-11-03 (M087)'s "needs over 88 KiB of output" is stale — reject (false): the test still needs over 88 KiB; the timing lines add to it
+- prior-review #1: the 64 KiB test's exact comparison was loosened — reject (planned change), as blame-history #1
+- prior-review #2: the timer-pending test's comparison was loosened — reject (planned change), as blame-history #1
+- prior-review #3: README's ragged wrap "A record that keeps" — fix now, fixed f63ea75a
+- prior-review #4: the `summary` comment — fix now with diff-bug #3, fixed f63ea75a
+- prior-review #5: README's "It comes before the schema check" is unclear — fix now ("A later schema check of the facts or a kept record does not change it"), fixed f63ea75a
+- ripple #1: README's print order leaves out the start-plan line before the timing lines — fix now, fixed f63ea75a
+- ripple #2: DESIGN's list of what the build prints leaves out the timing lines — fix now, fixed f63ea75a
+- verify after the fixes: `pnpm test` 2481 passed, 6 skipped, exit 0.
