@@ -37,13 +37,13 @@ The site's logo no longer looks like an error, and red on the site means only a 
      coverage-complete counts AC checkboxes positionally (M107); departures:
      a "Deviations from RR<NN>" table ends this section. -->
 
-- [ ] AC1: `site/public/favicon.svg` draws one shape, the `puzzle` path of lucide-static 1.68.0 filled, and no other shape element. Its light fill equals the layout's light `--accent` and its dark media-query fill equals the layout's dark `--accent`. A test in `test/site.test.ts` reads the built `favicon.svg` and shows each fill has at least 3:1 contrast with that scheme's `--bg`.
-- [ ] AC2: `--accent` is `#1d5fb8` in the light block of `site/src/layouts/Base.astro` and `#7fb0ff` in both dark blocks, and the pressed version button's bar still draws from `--accent`. The token-pair contrast test passes in both schemes for `--accent` on `--hover` and for a new pair, `--accent` on `--surface`, at 3:1.
-- [ ] AC3: In every built HTML page, enumerated by the `htmlFiles(out)` helper in `test/site.test.ts`, the `.brand` link holds one inline SVG with `aria-hidden="true"`, whose path equals the path in the built `favicon.svg`, and the link's text is exactly "Zotero plugin index". The `.brand::before` rule is gone from the layout. Under `@media (forced-colors: active)` the logo's fill is `CanvasText`.
-- [ ] AC4: A search of `site/` and `test/` for `#b5232f` and `#f07178`, case-insensitive, finds nothing.
-- [ ] AC5: On the built home page and one plugin page in the browser pane, at 375 px and 1280 px wide, in the light and the dark scheme, the logo shows in blue beside the site name, the site name stays on one line, and the page has no horizontal scroll. The built `favicon.svg`, served on localhost, shows the blue puzzle piece in both schemes.
-- [ ] AC6: `README.md`'s favicon sentence and the `CHANGELOG.md` Unreleased entries say the icon is a blue puzzle piece, and a search of `README.md`, `CHANGELOG.md`, and `cairn/DESIGN.md` for "filled square" finds nothing that describes the current icon. `README.md`'s list of files with Lucide paths names `site/public/favicon.svg`, which points to the notice in `site/src/components/Icon.astro`. That file's comment names `puzzle` as an unchanged path of lucide-static 1.68.0.
-- [ ] AC7: `pnpm test` and `pnpm check` pass (run as `npx -y pnpm@12.15.0`).
+- [x] AC1: `site/public/favicon.svg` draws one shape, the `puzzle` path of lucide-static 1.68.0 filled, and no other shape element. Its light fill equals the layout's light `--accent` and its dark media-query fill equals the layout's dark `--accent`. A test in `test/site.test.ts` reads the built `favicon.svg` and shows each fill has at least 3:1 contrast with that scheme's `--bg`.
+- [x] AC2: `--accent` is `#1d5fb8` in the light block of `site/src/layouts/Base.astro` and `#7fb0ff` in both dark blocks, and the pressed version button's bar still draws from `--accent`. The token-pair contrast test passes in both schemes for `--accent` on `--hover` and for a new pair, `--accent` on `--surface`, at 3:1.
+- [x] AC3: In every built HTML page, enumerated by the `htmlFiles(out)` helper in `test/site.test.ts`, the `.brand` link holds one inline SVG with `aria-hidden="true"`, whose path equals the path in the built `favicon.svg`, and the link's text is exactly "Zotero plugin index". The `.brand::before` rule is gone from the layout. Under `@media (forced-colors: active)` the logo's fill is `CanvasText`.
+- [x] AC4: A search of `site/` and `test/` for `#b5232f` and `#f07178`, case-insensitive, finds nothing.
+- [x] AC5: On the built home page and one plugin page in the browser pane, at 375 px and 1280 px wide, in the light and the dark scheme, the logo shows in blue beside the site name, the site name stays on one line, and the page has no horizontal scroll. The built `favicon.svg`, served on localhost, shows the blue puzzle piece in both schemes.
+- [x] AC6: `README.md`'s favicon sentence and the `CHANGELOG.md` Unreleased entries say the icon is a blue puzzle piece, and a search of `README.md`, `CHANGELOG.md`, and `cairn/DESIGN.md` for "filled square" finds nothing that describes the current icon. `README.md`'s list of files with Lucide paths names `site/public/favicon.svg`, which points to the notice in `site/src/components/Icon.astro`. That file's comment names `puzzle` as an unchanged path of lucide-static 1.68.0.
+- [x] AC7: `pnpm test` and `pnpm check` pass (run as `npx -y pnpm@12.15.0`).
 
 ## Coverage
 <!-- owner: plan · create/amend-via-gate; each acceptance criterion → the
@@ -113,3 +113,13 @@ The site's logo no longer looks like an error, and red on the site means only a 
      results, review findings + triage. EXEMPT from the 150-line cap (M55),
      as are the work log (D-046) and the decisions section (D-074); evidence
      never scrambles plan-owned content. -->
+
+- AC1 evidence: named tests pass on the built file: "draws one shape, the puzzle piece", "uses each scheme's accent" (fills equal the layout's `--accent`, each at least 3:1 on `--bg`). The path equals lucide-static 1.68.0 `puzzle.svg`, compared in the claim audit.
+- AC2 evidence: `Base.astro:51` `#1d5fb8`, `:102` and `:124` `#7fb0ff`; `:442` the bar uses `var(--accent)`. Named test "sets --accent" and the token-pair tests pass in both schemes, with `--accent` on `--surface` at 3:1 listed.
+- AC3 evidence: named test over `htmlFiles(out)` passes: one SVG with `aria-hidden="true"`, the favicon's path, first in the link, text exact. `grep brand::before` in the layout finds nothing. Named test pins `fill: CanvasText` after the base rule.
+- AC4 evidence: `grep -rniE "#b5232f|#f07178" site test` finds nothing (exit 1).
+- AC5 evidence: built with the deployed data at `06cc09bc`, and `git diff 06cc09bc..HEAD -- site/` is empty. Home and a plugin page at 375 and 1280 px, both schemes: logo 16 px in `#1d5fb8` and `#7fb0ff`, `white-space: nowrap`, name on one line, `scrollWidth` equals `clientWidth`. Screenshots of the top bar, the bar under the pressed button, and `favicon.svg` on localhost show blue in both schemes.
+- AC6 evidence: `README.md:336` and `CHANGELOG.md:41` name the blue puzzle piece; "filled square" count 0 in `README.md`, `CHANGELOG.md`, and `cairn/DESIGN.md`, on line-joined copies too; `README.md:1924` names `site/public/favicon.svg`, whose comment points to `Icon.astro`; `Icon.astro:9` names `puzzle` as unchanged from lucide-static 1.68.0.
+- AC7 evidence: `pnpm test` exit 0, 2433 passed, 6 skipped; `pnpm check` exit 0, 736 entries, 0 problems.
+- Consistency gate: `cairn_validate.py` exit 0; no principle changed, so no impact run; the generic profile's slot names no toolchain checks.
+
