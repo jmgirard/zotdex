@@ -4,14 +4,14 @@
      cairn_validate's <150 over the plan-owned body. -->
 # M098: Give the table controls one design
 
-- **Status:** planned   <!-- owner: transitioning skill · mirror-update; cairn/ROADMAP.md is the authority -->
+- **Status:** in-progress   <!-- owner: transitioning skill · mirror-update; cairn/ROADMAP.md is the authority -->
 - **Priority:** normal   <!-- owner: plan · create/amend-via-gate; high | normal | low -->
 - **Depends on:** —   <!-- owner: plan · create/amend-via-gate; M<xx>, M<yy> or — -->
 - **Driving RR:** —   <!-- owner: plan · create/amend-via-gate; RR<NN> whose Binding criteria bind this milestone's ACs (binding-criteria check), or — -->
 - **Principles touched:** —   <!-- owner: plan · create/amend-via-gate; comma-separated IPn/GPn ids this milestone touches, or — -->
 - **Resolves:** —   <!-- owner: plan · create/amend-via-gate; comma-separated GitHub issues the scope absorbs, each `#N closes` (the PR closes it at merge) or `#N partial` (the remainder gets a candidate row), or — ; skill conduct only — no validate check parses it -->
 - **Surface tier:** user-facing — site visitors use these controls on the home page   <!-- owner: plan · create/amend-via-gate; user-facing | internal — <one-clause reason>; skill conduct only — no validate check parses it -->
-- **Branch/PR:** —   <!-- owner: implement (branch) / review (PR URL) · create; a companion checkout the milestone also works in is one further entry per checkout, `companion: <abs-path> <branch>` (implement), its PR URL appended by review — /milestone-review merges companions first, in listed order -->
+- **Branch/PR:** m098-table-controls-design   <!-- owner: implement (branch) / review (PR URL) · create; a companion checkout the milestone also works in is one further entry per checkout, `companion: <abs-path> <branch>` (implement), its PR URL appended by review — /milestone-review merges companions first, in listed order -->
 
 ## Goal
 <!-- owner: plan · create; a wrong goal returns to plan, never edited in place -->
@@ -69,7 +69,7 @@ The home page's search box, filter menus, version buttons, sort menu, count, and
      cites; an insertion, removal, or reorder renumbers the labels and the
      Coverage lines together. -->
 
-- [ ] T1: Change the markup in `site/src/pages/index.astro`: an outer card holds two control rows that are hidden until the script runs, the existing `.table-card` scroller, and the pager. The classic pre-paint script stays before the table. Keep each attribute and label word. Previous and Next keep scrolling `.table-card`. The script unhides the two rows, and Base.astro's hide rule covers them.
+- [x] T1: Change the markup in `site/src/pages/index.astro`: an outer card holds two control rows that are hidden until the script runs, the existing `.table-card` scroller, and the pager. The classic pre-paint script stays before the table. Keep each attribute and label word. Previous and Next keep scrolling `.table-card`. The script unhides the two rows, and Base.astro's hide rule covers them.
 - [ ] T2: In `site/src/layouts/Base.astro`, write one rule for the controls' sizes and one for the labels, then the card and the rows. Search takes the free width, and the menus and version group keep their natural width at desktop. Replace `.toolbar p`, which cancels `.filter-status`'s `margin-left: auto`, with a margin reset on the controls. Drop that auto margin, and put one on `.sort-menu`.
 - [ ] T3: Add the hover, pressed, and focus states. Write hover on a menu with `background-color`, since the arrow is a `background-image`. Keep the forced-colors rules after the rules they override.
 - [ ] T4: Fix the arrangement at 320 to 1024 px: search on its own row at the middle widths, and at 560 px or less the two menus side by side and the version buttons on their own row at full width.
@@ -102,6 +102,7 @@ The home page's search box, filter menus, version buttons, sort menu, count, and
 - 2026-11-05: plan gate chose a thin `--accent` bar for the pressed button over today's solid fill because it ties to the top bar's square and is less heavy; falsified by visitors reading the red as an error.
 - 2026-11-05: question set: when the new look goes live after the merge — run the build workflow at once with `gh workflow run build.yml --ref main`, up to 30 minutes.
 - 2026-11-05: agent decisions: control text at `--text-m`, since lowering the search box and menus to 13 px loses legibility; label style copied from the table's header cells; existing label words kept, as M053 kept them; at 560 px or less the two menus sit side by side, so a long closed value can be cut there, and the open list shows it whole.
+- 2026-11-05: T1 done: `.table-panel` holds `.controls` and `.results`, each hidden in the HTML, then `.table-card` and the pager. Controls lose their own `hidden`, so the script's `closest("[hidden]")` calls unhide the rows with no script change; the count keeps its own. Markup expectations updated with the markup. T5 keeps the rest of the test work.
 
 ## Decisions
 <!-- owner: implement / review · append-only; milestone-local; promote

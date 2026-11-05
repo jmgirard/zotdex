@@ -61,51 +61,54 @@ const prePaint = `if ("noModule" in HTMLScriptElement.prototype) {
       <a href={INSTALL_HREF}>How to install a plugin</a>.
     </p>
   </div>
-  <div class="toolbar">
-    <p class="search" hidden>
-      <label for="search" class="visually-hidden">Search plugins</label>
-      <Icon name="search" />
-      <input type="search" id="search" data-search placeholder="Search plugins" autocomplete="off" />
-    </p>
-    <p class="category-filter" hidden>
-      <label for="category">Category</label>{" "}
-      <select id="category" data-category-filter autocomplete="off">
-        <option value="">All categories</option>
-        {categoryOptions(plugins).map(({ value, text }) => <option value={value}>{text}</option>)}
-      </select>
-    </p>
-    <p class="language-filter" hidden>
-      <label for="language">Menus and settings in</label>{" "}
-      <select id="language" data-language-filter autocomplete="off">
-        <option value="">All languages</option>
-        {languageOptions(plugins).map(({ value, text }) => <option value={value}>{text}</option>)}
-      </select>
-    </p>
-    <div class="version-filter" hidden>
-      <span id="version-filter-label">Declares Zotero</span>
-      <div role="group" aria-labelledby="version-filter-label" data-version-filter>
-        <button type="button" aria-pressed="true">Any</button>
-        {
-          ZOTERO_MAJORS.map((major) => (
-            <button type="button" value={major} aria-pressed="false">
-              {major}
-            </button>
-          ))
-        }
+  <script is:inline set:html={prePaint} />
+  <div class="table-panel">
+    <div class="controls" hidden>
+      <p class="search">
+        <label for="search" class="visually-hidden">Search plugins</label>
+        <Icon name="search" />
+        <input type="search" id="search" data-search placeholder="Search plugins" autocomplete="off" />
+      </p>
+      <p class="category-filter">
+        <label for="category">Category</label>{" "}
+        <select id="category" data-category-filter autocomplete="off">
+          <option value="">All categories</option>
+          {categoryOptions(plugins).map(({ value, text }) => <option value={value}>{text}</option>)}
+        </select>
+      </p>
+      <p class="language-filter">
+        <label for="language">Menus and settings in</label>{" "}
+        <select id="language" data-language-filter autocomplete="off">
+          <option value="">All languages</option>
+          {languageOptions(plugins).map(({ value, text }) => <option value={value}>{text}</option>)}
+        </select>
+      </p>
+      <div class="version-filter">
+        <span id="version-filter-label">Declares Zotero</span>
+        <div role="group" aria-labelledby="version-filter-label" data-version-filter>
+          <button type="button" aria-pressed="true">Any</button>
+          {
+            ZOTERO_MAJORS.map((major) => (
+              <button type="button" value={major} aria-pressed="false">
+                {major}
+              </button>
+            ))
+          }
+        </div>
       </div>
     </div>
-    <p class="sort-menu" hidden>
-      <label for="sort">Sort by</label>{" "}
-      <select id="sort" data-sort autocomplete="off">
-        <option value="">Stars</option>
-        <option value="name">Name</option>
-        <option value="latest">Latest release</option>
-      </select>
-    </p>
-    <p class="filter-status" role="status" data-filter-status hidden></p>
-  </div>
-  <script is:inline set:html={prePaint} />
-  <div class="table-card">
+    <div class="results" hidden>
+      <p class="filter-status" role="status" data-filter-status hidden></p>
+      <p class="sort-menu">
+        <label for="sort">Sort by</label>{" "}
+        <select id="sort" data-sort autocomplete="off">
+          <option value="">Stars</option>
+          <option value="name">Name</option>
+          <option value="latest">Latest release</option>
+        </select>
+      </p>
+    </div>
+    <div class="table-card">
     <table class="plugins">
       <caption class="visually-hidden">Plugins in the index</caption>
       <colgroup>
@@ -262,12 +265,13 @@ const prePaint = `if ("noModule" in HTMLScriptElement.prototype) {
         }
       </tbody>
     </table>
+    </div>
+    <nav class="pager" aria-label="Pages" data-pager hidden>
+      <button type="button" data-page-step="-1">Previous</button>
+      <span role="status" data-page-status></span>
+      <button type="button" data-page-step="1">Next</button>
+    </nav>
   </div>
-  <nav class="pager" aria-label="Pages" data-pager hidden>
-    <button type="button" data-page-step="-1">Previous</button>
-    <span role="status" data-page-status></span>
-    <button type="button" data-page-step="1">Next</button>
-  </nav>
   <ul class="legend" role="list" data-legend>
     <li><span class="mark" data-support="all" aria-hidden="true">{MARKS.all}</span> Declares every release of that Zotero version, up to its newest release</li>
     <li><span class="mark" data-support="some" aria-hidden="true">{MARKS.some}</span> Declares part of it</li>
@@ -299,8 +303,8 @@ const prePaint = `if ("noModule" in HTMLScriptElement.prototype) {
     sortOrder,
   } from "../../../src/site/home-filter.ts";
 
-  // The search box, the menus, the buttons, the sort menu, the count, and the pager are hidden in the HTML,
-  // so a page without JavaScript shows every row and no control.
+  // The two rows that hold the search box, the menus, the buttons, the sort menu, and the count are
+  // hidden in the HTML, as is the pager, so a page without JavaScript shows every row and no control.
   const search = document.querySelector<HTMLInputElement>("input[data-search]");
   const categorySelect = document.querySelector<HTMLSelectElement>("select[data-category-filter]");
   const select = document.querySelector<HTMLSelectElement>("select[data-language-filter]");

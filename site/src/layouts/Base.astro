@@ -359,13 +359,10 @@ const themeButton = `(${wireThemeButton})();`;
         font-size: var(--text-s);
         color: var(--muted);
       }
-      /* A script removes hidden from each control, so a page without JavaScript shows none. */
+      /* A script removes hidden from these, so a page without JavaScript shows no control. */
       [data-theme-toggle][hidden],
-      .search[hidden],
-      .language-filter[hidden],
-      .category-filter[hidden],
-      .version-filter[hidden],
-      .sort-menu[hidden],
+      .controls[hidden],
+      .results[hidden],
       .filter-status[hidden],
       .pager[hidden] {
         display: none;

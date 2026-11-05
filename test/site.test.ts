@@ -1304,7 +1304,7 @@ describe("the home page", () => {
   });
 
   test("holds a hidden sort menu whose first option is Stars", () => {
-    const menu = /<p class="sort-menu" hidden><label for="sort">Sort by<\/label> <select id="sort" data-sort autocomplete="off">(.*?)<\/select><\/p>/.exec(home());
+    const menu = /<p class="sort-menu"><label for="sort">Sort by<\/label> <select id="sort" data-sort autocomplete="off">(.*?)<\/select><\/p>/.exec(home());
     expect(menu).not.toBeNull();
     expect([...menu![1]!.matchAll(/<option value="([^"]*)">([^<]*)<\/option>/g)].map(([, value, text]) => [value, text])).toEqual([
       ["", "Stars"],
@@ -1354,7 +1354,7 @@ describe("the home page", () => {
   });
 
   test("holds hidden version buttons, Any pressed, then one for each major", () => {
-    const group = /<div class="version-filter" hidden><span id="([^"]+)">Declares Zotero<\/span><div role="group" aria-labelledby="([^"]+)" data-version-filter>(.*?)<\/div><\/div>/.exec(home());
+    const group = /<div class="version-filter"><span id="([^"]+)">Declares Zotero<\/span><div role="group" aria-labelledby="([^"]+)" data-version-filter>(.*?)<\/div><\/div>/.exec(home());
     expect(group).not.toBeNull();
     expect(group![2]).toBe(group![1]);
     const buttons = [...group![3]!.matchAll(/<button([^>]*)>([^<]*)<\/button>/g)].map(([, attributes, text]) => [attributes, text]);
@@ -1366,7 +1366,7 @@ describe("the home page", () => {
   });
 
   test("holds a hidden language menu with one option for each subtag, most plugins first", () => {
-    const menu = /<p class="language-filter" hidden><label for="language">Menus and settings in<\/label> <select id="language" data-language-filter autocomplete="off">(.*?)<\/select><\/p>/.exec(home());
+    const menu = /<p class="language-filter"><label for="language">Menus and settings in<\/label> <select id="language" data-language-filter autocomplete="off">(.*?)<\/select><\/p>/.exec(home());
     expect(menu).not.toBeNull();
     const options = [...menu![1]!.matchAll(/<option value="([^"]*)">([^<]*)<\/option>/g)].map(([, value, text]) => [value, text]);
     expect(options).toEqual([
@@ -1390,7 +1390,7 @@ describe("the home page", () => {
   });
 
   test("holds a hidden category menu with one option for each category a row has, most rows first, ties in list order, and Other tools last", () => {
-    const menu = /<p class="category-filter" hidden><label for="category">Category<\/label> <select id="category" data-category-filter autocomplete="off">(.*?)<\/select><\/p>/.exec(home());
+    const menu = /<p class="category-filter"><label for="category">Category<\/label> <select id="category" data-category-filter autocomplete="off">(.*?)<\/select><\/p>/.exec(home());
     expect(menu).not.toBeNull();
     const options = [...menu![1]!.matchAll(/<option value="([^"]*)">([^<]*)<\/option>/g)].map(([, value, text]) => [value, text]);
     // Three categories tie at 1, and their names in alphabetical order would put "Library
@@ -1409,21 +1409,23 @@ describe("the home page", () => {
     const html = home();
     expect(rows().length).toBe(ids.length);
     for (const { id, attributes } of rows()) expect(attributes, id).not.toMatch(/\shidden[\s=]|\shidden$/);
-    const toolbar = html.slice(html.indexOf('<div class="toolbar">') + '<div class="toolbar">'.length, html.indexOf("</div><script>"));
-    expect(toolbar.length).toBeGreaterThan(0);
-    expect(toolbar).toMatch(/^<p class="search" hidden><label for="search" class="visually-hidden">Search plugins<\/label><svg [^]*?<\/svg><input type="search" id="search" data-search placeholder="Search plugins" autocomplete="off"><\/p>/);
-    expect(toolbar).toMatch(/<p class="category-filter" hidden><label[^>]*>[^<]*<\/label> <select[^>]*>(?:<option[^>]*>[^<]*<\/option>)+<\/select><\/p>/);
-    expect(toolbar).toMatch(/<p class="language-filter" hidden><label[^>]*>[^<]*<\/label> <select[^>]*>(?:<option[^>]*>[^<]*<\/option>)+<\/select><\/p>/);
-    expect(toolbar).toMatch(/<div class="version-filter" hidden><span[^>]*>[^<]*<\/span><div role="group"[^>]*>(?:<button[^>]*>[^<]*<\/button>)+<\/div><\/div>/);
-    expect(toolbar).toMatch(/<p class="sort-menu" hidden><label[^>]*>[^<]*<\/label> <select[^>]*>(?:<option[^>]*>[^<]*<\/option>)+<\/select><\/p>/);
-    expect(toolbar).toMatch(/<p class="filter-status" role="status" data-filter-status hidden><\/p>$/);
+    const controls = /<div class="controls" hidden>(.*?)<\/div><div class="results" hidden>(.*?)<\/div><div class="table-card">/s.exec(html);
+    expect(controls).not.toBeNull();
+    const [, filters, results] = controls!;
+    expect(filters).toMatch(/^<p class="search"><label for="search" class="visually-hidden">Search plugins<\/label><svg [^]*?<\/svg><input type="search" id="search" data-search placeholder="Search plugins" autocomplete="off"><\/p>/);
+    expect(filters).toMatch(/<p class="category-filter"><label[^>]*>[^<]*<\/label> <select[^>]*>(?:<option[^>]*>[^<]*<\/option>)+<\/select><\/p>/);
+    expect(filters).toMatch(/<p class="language-filter"><label[^>]*>[^<]*<\/label> <select[^>]*>(?:<option[^>]*>[^<]*<\/option>)+<\/select><\/p>/);
+    expect(filters).toMatch(/<div class="version-filter"><span[^>]*>[^<]*<\/span><div role="group"[^>]*>(?:<button[^>]*>[^<]*<\/button>)+<\/div><\/div>$/);
+    expect(results).toMatch(/^<p class="filter-status" role="status" data-filter-status hidden><\/p><p class="sort-menu"><label[^>]*>[^<]*<\/label> <select[^>]*>(?:<option[^>]*>[^<]*<\/option>)+<\/select><\/p>$/);
     expect(html.match(/<input[\s>]/g)).toHaveLength(1);
     expect(html.match(/<select[\s>]/g)).toHaveLength(3);
     expect(html.match(/<button[\s>]/g)).toHaveLength(ZOTERO_MAJORS.length + 4);
     expect(html.match(/\sdata-filter-status/g)).toHaveLength(1);
     expect(html).toContain(
-      '</table></div><nav class="pager" aria-label="Pages" data-pager hidden><button type="button" data-page-step="-1">Previous</button><span role="status" data-page-status></span><button type="button" data-page-step="1">Next</button></nav>',
+      '</table></div><nav class="pager" aria-label="Pages" data-pager hidden><button type="button" data-page-step="-1">Previous</button><span role="status" data-page-status></span><button type="button" data-page-step="1">Next</button></nav></div><ul class="legend"',
     );
+    // The classic script must run before the rows parse, or the rows paint before it hides them.
+    expect(html.indexOf("<script>", html.indexOf("<main>"))).toBeLessThan(html.indexOf("<tbody>"));
   });
 
   test("hides each control's element while it has hidden, whatever display its other rules give it", () => {
@@ -1431,7 +1433,7 @@ describe("the home page", () => {
       declarations.some(([property, value]) => property === "display" && value === "none"),
     );
     const selectors = hiding.flatMap(({ selector }) => selector.split(",").map((part) => part.trim()));
-    for (const control of ["[data-theme-toggle][hidden]", ".search[hidden]", ".category-filter[hidden]", ".language-filter[hidden]", ".sort-menu[hidden]", ".version-filter[hidden]", ".filter-status[hidden]", ".pager[hidden]"]) {
+    for (const control of ["[data-theme-toggle][hidden]", ".controls[hidden]", ".results[hidden]", ".filter-status[hidden]", ".pager[hidden]"]) {
       expect(selectors, control).toContain(control);
     }
   });
