@@ -1,7 +1,7 @@
 # Roadmap
 
 _The only authority on milestone status. Grouped by status, not ID._
-_Last hygiene check: 2026-11-05 (triage: dropped "Tighten the paced build reads", not worth keeping, D-067; routed "Tighten the locale message counts" to Known issues; compressed "Read new plugins for paid services", "Answer report issues left open", and the site pages gaps entry; retitled "Print entry ids on one line in the build log" → "Print each entry id on one log line"; validate green)_
+_Last hygiene check: 2026-11-05 (status audit: "Check categories on new plugins" parked until 100 new plugins list; no open issues; 14 bot pull requests wait under D-033, #839 held for new-account; validate green)_
 
 ## Milestones
 
