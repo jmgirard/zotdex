@@ -985,3 +985,17 @@ away. At the question set the user kept the home rows' download icons, which
 skip the note, and put the bot's role on About only. This choice is wrong if
 visitors install from a home row without knowing the risk, or if Zotero's
 steps or warning change.
+
+### D-065: The home table opens in star order, and the legend says that this is no review, annotating D-006 and D-051
+
+2026-11-05, M097 plan. Before the index is advertised, the home table had no
+sort, so a visitor could not pick out established plugins. The user chose a
+"Sort by" menu with Stars as the default, over keeping Name as the default,
+which implies no ranking but leaves the first screen to the alphabet. A star
+count is a fact that GitHub gives, and the plugin page already shows it. It is
+not a review. The legend says that the count and the default order come from
+GitHub and that neither is a review by the index. D-006 and D-051 stand:
+inclusion is no judgment of quality, and the index cannot vet plugins. The
+plain list order now favors older, known repos, and a new plugin starts far
+down. This choice is wrong if visitors read the order as the index's advice,
+or if star counts get inflated to reach the first page.
