@@ -186,6 +186,8 @@ const LOCK_SVG =
   '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 11h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2z"></path><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
 const noSourceMark = (icon: string) => `<span class="no-source" data-no-source><span aria-hidden="true" title="${NO_SOURCE_TEXT}">${icon}</span><span class="visually-hidden">${NO_SOURCE_TEXT}</span></span>`;
 const PAID_TEXT = "Needs a paid service from its maker";
+const STAR_SVG =
+  '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>';
 const CARD_SVG =
   '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"></path><path d="M2 10h20"></path></svg>';
 const paidMark = (icon: string) => `<span class="paid-service" data-paid-service><span aria-hidden="true" title="${PAID_TEXT}">${icon}</span><span class="visually-hidden">${PAID_TEXT}</span></span>`;
@@ -999,6 +1001,7 @@ describe("the home page", () => {
   test("holds one table whose body has one row per record, most stars first and then by name and id", () => {
     expect(home().match(/<table[\s>]/g)).toHaveLength(1);
     expect(rows().map(({ id }) => id)).toEqual([
+      "same-name-plugin@example.org",
       "first-plugin@example.org",
       "old-plugin@example.org",
       // A count of 0 comes before the rows with no count.
@@ -1008,7 +1011,6 @@ describe("the home page", () => {
       // "Café Tools" and "cafe tools" compare equal, so their ids order them.
       "a-cafe@example.org",
       "b-cafe@example.org",
-      "same-name-plugin@example.org",
       "locale-plugin@example.org",
       "min-only-plugin@example.org",
       "next-plugin@example.org",
@@ -1035,12 +1037,18 @@ describe("the home page", () => {
         (record.upstream?.archived === true ? '<span class="badge" data-archived>Archived</span>' : "") +
         (record.upstream?.sourceInRepo === false ? ` ${noSourceMark(LOCK_SVG)}` : "") +
         (record.paidService ? ` ${paidMark(CARD_SVG)}` : "") +
-        (owner ? `<div class="owner" data-owner>By ${escaped(owner)}</div>` : "") +
+        (owner
+          ? `<div class="owner" data-owner><span class="owner-name">By ${escaped(owner)}</span> ` +
+            (record.upstream?.stars === undefined
+              ? ""
+              : `<span class="row-stars" data-repo-stars><span aria-hidden="true" title="${starsText(record.upstream.stars)}">· ${STAR_SVG} ${record.upstream.stars.toLocaleString("en")}</span> <span class="visually-hidden">${starsText(record.upstream.stars)}</span></span>`) +
+            "</div>"
+          : "") +
         (description ? `<div class="desc" data-description>${escaped(description)}</div>` : ""),
     );
   });
 
-  const shownOwner = (id: string) => /<div class="owner" data-owner>By ([^<]*)<\/div>/.exec(row(id).cells[0]!.html)?.[1];
+  const shownOwner = (id: string) => /<div class="owner" data-owner><span class="owner-name">By ([^<]*)<\/span>/.exec(row(id).cells[0]!.html)?.[1];
 
   // same-name-plugin's two repo URLs name different owners, so its row also shows that the
   // upstream URL comes first.
@@ -1052,6 +1060,34 @@ describe("the home page", () => {
     ["ssh-plugin@example.org", undefined],
   ])("shows the owner of %s as %s", (id, owner) => {
     expect(shownOwner(id)).toBe(owner);
+  });
+
+  test("shows a record's star count after the owner, with the plugin page's words, and 0 as a count", () => {
+    const stars = (id: string) => /<span class="owner-name">[^<]*<\/span> (<span class="row-stars" data-repo-stars>.*?)<\/div>/s.exec(row(id).cells[0]!.html)?.[1];
+    const shown = (count: string, words: string) =>
+      new RegExp(`^<span class="row-stars" data-repo-stars><span aria-hidden="true" title="${words}">· <svg [^]*?</svg> ${count}</span> <span class="visually-hidden">${words}</span></span>$`);
+    expect(stars("same-name-plugin@example.org")).toMatch(shown("98,765", starsText(98765)));
+    expect(stars("{c2a6e4c8-1b7d-4f3a-9e2b-5d8f0a1c3e7b}")).toMatch(shown("0", starsText(0)));
+    // A record with no count, and a failed read, show none.
+    expect(stars("next-plugin@example.org")).toBeUndefined();
+    expect(stars("broken-plugin@example.org")).toBeUndefined();
+  });
+
+  test("keeps a star count out of what the search reads", () => {
+    const page = homeScript("https://jmgirard.github.io/zotero-plugin-index/?q=98,765");
+    expect(page.visible()).toEqual([]);
+  });
+
+  test("cuts only the owner's name, so a count stays whole", () => {
+    const rules = cssRules(readFileSync(resolve(ROOT, "site/src/layouts/Base.astro"), "utf8"));
+    const declared = (selector: string) => Object.fromEntries(rules.find((rule) => rule.selector === selector)?.declarations ?? []);
+    expect(declared(".owner-name")).toMatchObject({ "min-width": "0", overflow: "hidden", "text-overflow": "ellipsis" });
+    expect(declared(".row-stars")).toMatchObject({ flex: "none", color: "var(--muted)" });
+  });
+
+  test("says in the legend that the count and the default order come from GitHub and are no review", () => {
+    const item = /<li data-legend-stars>(.*?)<\/li>/s.exec(home())?.[1]?.replace(/\s+/g, " ");
+    expect(item).toContain("The count of stars that GitHub gives. The default order comes from this count, and neither is a review by the index.");
   });
 
   test("reads the owner of a repo URL with a trailing slash", () => {
@@ -1218,6 +1254,7 @@ describe("the home page", () => {
       `${CARD_SVG} ${PAID_TEXT}`,
       '<span class="start" data-start="started" aria-hidden="true">●</span> Started in the start test',
       '<span class="start" data-start="start-error" aria-hidden="true">✕</span> Failed to install, start, or answer in the start test',
+      expect.stringContaining("The count of stars that GitHub gives."),
       "A declared range comes from the plugin's manifest and the index's overrides, not from a test. A start test does not show that a plugin works.",
     ]);
   });
@@ -1609,7 +1646,7 @@ describe("the home page script", () => {
   });
 
   test("matches a row on its name but not on its owner's text alone", () => {
-    expect(homeScript(`${PAGE}?q=first+plugin`).visible()).toEqual(["first-plugin@example.org", "same-name-plugin@example.org"]);
+    expect(homeScript(`${PAGE}?q=first+plugin`).visible()).toEqual(["same-name-plugin@example.org", "first-plugin@example.org"]);
     expect(homeScript(`${PAGE}?q=${LONG_OWNER}`).visible()).toEqual([]);
   });
 

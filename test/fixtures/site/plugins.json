@@ -108,6 +108,7 @@
         "updateUrl": "https://example.org/same-name-plugin/update.json",
         "updateHost": "example.org",
         "repoUrl": "https://github.com/abcdefghijklmnopqrstuvwxyzabcdefghijklm/same-name-plugin",
+        "stars": 98765,
         "repoCreatedAt": "2025-06-01T00:00:00Z",
         "openIssues": 0,
         "releaseCount": 1,

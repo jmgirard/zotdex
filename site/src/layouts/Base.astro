@@ -468,14 +468,27 @@ const themeButton = `(${wireThemeButton})();`;
         text-decoration: underline;
       }
       /* contain adds nothing to the cell's minimum width, so a long owner is cut to the cell's
-         width and does not widen the table. */
+         width and does not widen the table. Only the owner is cut, so a star count stays whole. */
       .owner {
+        display: flex;
+        gap: var(--space-2);
         contain: inline-size;
-        overflow: hidden;
         font-size: var(--text-xs);
         color: var(--faint);
-        text-overflow: ellipsis;
         white-space: nowrap;
+      }
+      .owner-name {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .row-stars {
+        flex: none;
+        color: var(--muted);
+      }
+      .row-stars .icon {
+        width: 0.75rem;
+        height: 0.75rem;
       }
       .desc {
         display: -webkit-box;
