@@ -7,6 +7,7 @@ _Last hygiene check: 2026-11-05 (M097 archived; M094 row left the table; one les
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
+| M098 | Give the table controls one design | planned | — | normal | milestones/M098-table-controls-design.md |
 | M097 | Get the site ready for first visitors | done | — | high | milestones/archive/M097-first-visitors.md |
 | M096 | Say how to install a plugin and what it can reach | done | — | high | milestones/archive/M096-install-steps-risk-note.md |
 | M095 | Publish a license | done | — | high | milestones/archive/M095-publish-license.md |
