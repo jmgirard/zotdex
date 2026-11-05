@@ -109,6 +109,7 @@ A plugin that a build cannot read for a build-level reason keeps its last read f
 - 2026-11-05: T7 done: `buildData` over all 736 entries with `buildMs: 0` against a saved copy of the deployed data of 2026-11-05 15:22 UTC kept 502 of 502 records with deployed facts, each `upstream` unchanged, 0 schema problems, an empty start plan. Branch run 42110419077 of `build.yml` (granted at the question set) passed with deploy skipped: the build step took 4:51, the run 26:18; 1 build-level failure (`zotero-pdf2md@yyds.dev`, HTTP 500) kept nothing, since the deployed record had no `upstream`; the `plugins-data` artifact passes the schema.
 - 2026-11-05: implement complete; status → review.
 - 2026-11-05: review: evidence recorded and every criterion ticked; consistency gate: `cairn_validate` all checks passed, the generic profile names no toolchain checks, no principle changed; four-lens review running.
+- 2026-11-05: four-lens review: 38 findings, 26 fixed on the branch in e717cc28, 10 rejected, 1 known issue, 1 follow-up row (filed at hygiene, where the graduated M100 row frees ROADMAP bytes); no floor return.
 ## Decisions
 <!-- owner: implement / review · append-only; milestone-local; promote
      cross-cutting ones to cairn/DECISIONS.md.
@@ -130,3 +131,43 @@ A plugin that a build cannot read for a build-level reason keeps its last read f
 - AC6: evidence — `test/site.test.ts` "a kept record" (6 tests: schema, row compared by HTML with its twin plus the badge after any Archived badge, legend, plugin page note, About, footer) and the updated About-sections, legend, and footer tests pass; the browser pane showed the badge, note, About section, legend, and footer at 375 px and desktop in light and dark (T7 work log).
 - AC7: evidence — `test/workflows.test.ts` "keeps the deployed data's facts with pnpm build --previous, the one pnpm build step" passes; `build.yml`'s time comment names the 60-second read of the deployed data; `pnpm test` 2471 passed, 6 skipped, exit 0; `pnpm check` 736 entries, 0 problems.
 - gate: `cairn_validate.py` exit 0; profile `generic` consistency-gate: none; `cairn_impact` not run, no principle changed.
+- spawned: diff-bug, blame-history, prior-review, ripple
+- diff-bug #1: About's "If an earlier build read the plugin at most 7 days before, the site then keeps the facts of that read" is false when that read never reached the published data — fix now, fixed e717cc28
+- diff-bug #2: an author whose `update_url` host answers 5xx or stalls, or whose XPI makes the reader throw, makes a build-level failure and so keeps the plugin's last facts shown for up to 7 days — known issue: An author whose `update.json` host answers HTTP 5xx or does not answer, or whose XPI makes the reader throw, gets a build-level failure, so the site keeps that plugin's last facts for up to 7 days (D-066). Accepted at the M100 gate
+- diff-bug #3: About's start-test paragraph leaves out that a plugin with older data gets no start test — fix now, fixed e717cc28
+- diff-bug #4: no test of a deployed `generatedAt` that `Date.parse` reads but the schema refuses (`+00:00`) — fix now, fixed e717cc28
+- diff-bug #5: "keeps nothing for a failure that is not build-level…" never read the deployed data — fix now (a new test with a 404 beside a 503), fixed e717cc28
+- diff-bug #6: the schema's `startTests` text "keeps the results of the build that read its facts" leaves out carried results — fix now ("keeps the start results published with its facts"), fixed e717cc28
+- diff-bug #7: the 30-minute job limit holds with 3.5 minutes outside the limited reads — fix now: the comment states the 26.5-minute total and that the other steps took 10 s in run 42110419077, fixed e717cc28
+- diff-bug #8: `--previous --out x` takes "--out" as the address — reject (edge): an option typed with no value, outside the documented usage; the build then warns that it cannot read the deployed data and keeps nothing, as the existing `--out` and `--plan` options do
+- diff-bug #9: kept `startTests` can name a Zotero release no longer tested — reject (false): such a result is still a true result for the release it names, and the site names the release beside it
+- diff-bug #10: the failure page's own "The last build could not read this plugin" is false after a build that deploys nothing; text from before M100 — follow-up: parked row "Name the build on the failure page", promote when a user reports it
+- blame-history #1: the time margin is tighter than D-015 planned — fix now with diff-bug #7, fixed e717cc28
+- blame-history #2: after a keep, the next read starts the plugin in every tested release — reject (planned change): AC4 has carry take nothing from a kept record
+- blame-history #3: the footer sentence changed with no D-entry — reject (planned change): AC6 sets the footer text, and no D-entry governs that line
+- blame-history #4: the deployed data's address is written in three places — reject (false): `test/workflows.test.ts` checks the workflow's address against `PREVIOUS_URL`
+- prior-review #1: the schema's `failure` text and README say a failed read always has `failure` and no `upstream` — fix now, fixed e717cc28
+- prior-review #2: README says a failed record's card shows no table or report buttons — fix now, fixed e717cc28
+- prior-review #3: README's categories sentence lacks About's "and that keeps no older data" — fix now, fixed e717cc28
+- prior-review #4: CHANGELOG's "has no start test" read as contradicting README's kept results — fix now (both now say no start test in that build and the results published with its facts), fixed e717cc28
+- prior-review #5: no test of a deployed-data fetch that rejects — fix now, fixed e717cc28
+- prior-review #6: the time margin — fix now with diff-bug #7, fixed e717cc28
+- ripple #1: README "one item for each record with an `upstream` block" — fix now, fixed e717cc28
+- ripple #2: README "If the read of a plugin fails, its record has no `upstream` block" — fix now, fixed e717cc28
+- ripple #3: the schema's `failure` description — fix now with prior-review #1, fixed e717cc28
+- ripple #4: ROADMAP's row "Keep a plugin's last good record" still says no earlier data — reject (planned change): the row carries `started M100` and graduates at this milestone's hygiene
+- ripple #5: DESIGN "keeps its shape (D-011)" — fix now, fixed e717cc28
+- ripple #6: DESIGN names the build step without `--previous` — fix now (README's next sentence already names it), fixed e717cc28
+- ripple #7: README "The command writes no `startTests` list" — fix now, fixed e717cc28
+- ripple #8: README's carry-start-results text omits kept records — fix now, fixed e717cc28
+- ripple #9: README's categories line and CHANGELOG's earlier categories entry — fix now for README, fixed e717cc28; the CHANGELOG entry records an earlier change and stays (reject, false: it was true of that change)
+- ripple #10: README "one that the last build failed to read, does not show" under the version buttons — fix now, fixed e717cc28
+- ripple #11: README's plugin page card text — fix now with prior-review #2, fixed e717cc28
+- ripple #12: CHANGELOG's earlier "shows Not read" entry — reject (false): it records an earlier change, and the new entry states the exception
+- ripple #13: About's start rules omit kept records — fix now with diff-bug #3, fixed e717cc28
+- ripple #14: README "The build cannot read the published data. It then keeps no earlier result" — reject (false): the bullet is about the carry step's read, which is still true
+- ripple #15: README "It writes no record, so it is not a build-level failure or a failure of a plugin" — reject (false): the line is about the Zotero release read, still true
+- ripple #16: "kept results" in `pnpm add-start-results` text collides with the new field's name — reject (style): the text predates M100 and names start results it keeps
+- ripple #17: DESIGN places the carry read in `carry.ts` — fix now, fixed e717cc28
+- ripple #18: About's intro "the facts that the build found" — fix now ("a build"), fixed e717cc28
+- verify after the fixes: `pnpm test` 2474 passed, 6 skipped, exit 0.
