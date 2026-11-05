@@ -60,7 +60,12 @@ mark. It also says that the star count comes from GitHub, that the default
 order comes from that count, and that neither is a review by the index. A
 plugin with no declared range shows no declared marks. If the last
 build failed to read a plugin, its row shows "Not read" in place of the
-version cells.
+version cells. There is one exception: a read that failed for a
+build-level reason. If an earlier build read the plugin at most 7 days
+before, the row then shows the facts of that build. It has an "Older data"
+badge after the name, and the plugin's page names the day of the read and
+the failure. "Building the data" says which failures are
+build-level.
 
 The "Menus and settings" cell shows the language codes of the plugin's
 languages list, after overrides, in list order. Regional forms such as
@@ -131,8 +136,8 @@ name. Apart from Other tools, the categories with the most plugins come
 first. Categories with the same number of plugins come in the order of the
 About page's list. The menu lists Other tools last, whatever its number.
 A plugin that fits no other category is under Other tools. A plugin that the
-latest build did not read has only the categories added by hand, so it often
-shows none. If you pick a category, the table shows only the plugins in it.
+latest build did not read, and that keeps no earlier facts, has only the
+categories added by hand, so it often shows none. If you pick a category, the table shows only the plugins in it.
 "All categories" passes every plugin. The page keeps your choice in the
 `category` query parameter of its address, such as `?category=translation`.
 If the parameter names no category in the menu, the page passes every
@@ -159,7 +164,8 @@ The home page also has "Declares Zotero" buttons: "Any" and one button for
 each Zotero major from 7 to 10. If you press a major, the table shows only
 the plugins whose declared range covers all or part of that version. These
 are the plugins with a ✓ or ◐ mark for it. A plugin with no declared range,
-or one that the last build failed to read, does not show. The page keeps
+or one that the last build failed to read and that keeps no earlier
+facts, does not show. The page keeps
 your choice in the `zotero` query parameter of its address, such as
 `?zotero=8`. If the parameter names no button, the page acts as if "Any" is
 pressed and removes the parameter.
@@ -261,7 +267,8 @@ declares a range, the declared range comes before that link. Then a line names t
 "Works" button and a "Broken" button. The buttons open the report forms on
 GitHub with the plugin id and that version filled in. If the last build
 failed to read a plugin, the card shows the failure in place of the table,
-with no report buttons.
+with no report buttons. A plugin that keeps earlier facts shows the table
+and the buttons for the version of those facts.
 
 An open "Details" card comes last. Its last lines link to the forms that ask
 to change the plugin's text and to remove the plugin or report harm. It lists
@@ -289,6 +296,9 @@ and the home page's intro say: "This index is unofficial and not affiliated
 with or endorsed by Zotero, and it cannot vet the plugins it lists." The About
 page gives the reason, and it says that the start test is not a review of
 plugin code. It also states the terms in "License" below, and it links there.
+Its "Older data" section says when a row shows the facts of an earlier
+build. Each page's footer also names the day of the build that the data
+comes from.
 The home page's intro also says what the site shows, and it links to the About
 page's "Installing a plugin" section (`#installing`). That section gives
 Zotero's install steps, the step for Firefox, and Zotero's warning. It also
@@ -359,7 +369,9 @@ The index publishes its data file on GitHub Pages:
 A daily build updates the data. If more than half of the records carry a
 build-level failure, such as a rate limit or a network error, the build
 deploys nothing. "Building the data" below says which failures are
-build-level. If every record carries a failure, whatever its name, the build
+build-level. A record that keeps earlier facts, as the `kept` paragraph
+below says, counts here as a record with that failure. If every record
+carries a failure, whatever its name, the build
 also deploys nothing. The build also deploys nothing in these cases: it
 cannot read the report issues, it cannot write the start plan,
 `pnpm add-start-results` fails, or the site build fails. If the data or
@@ -468,6 +480,20 @@ the one with the higher issue number counts. The count follows each issue's
 current text, so a reporter who edits a closed report changes the count.
 When the index reads a new release of a plugin, its counts start over.
 
+A record can have a `kept` block in place of a `failure` block. Then the
+build failed to read the plugin for a build-level reason. The record holds
+the `upstream` block and the `startTests` list that an earlier build
+published. The `kept` block has two fields. `readAt` is the
+start time of the build that read those facts, as that build's
+`generatedAt` gives it. `failure` has this build's failure name and
+message. The record's `reports` list counts the reports that this build
+read, for the version in `upstream`. The build keeps earlier facts for at
+most 7 days after `readAt`, as "Building the data" says. A deploy can fail
+for some days, so facts on the published site can be older than 7 days.
+Data written before the build kept facts has no `kept` block. The field is
+new in schema v1. If you validate against a saved copy of the schema,
+fetch the schema again.
+
 A record with an `upstream` block can have a `startTests` list. It says
 whether the plugin version in `upstream.version` started in each tested
 Zotero release, such as
@@ -495,8 +521,8 @@ ships a release, a maintainer adds it to the workflow. The `startTests`
 field is new in schema v1. If you validate against a saved copy of the
 schema, fetch the schema again.
 
-The build does not start every plugin each day. Once in each build, it
-reads the published data of the last deploy. That data's record can have
+The build does not start every plugin each day. Once in each build,
+`pnpm carry-start-results` reads the published data of the last deploy. That data's record can have
 the same entry id, plugin id, plugin version, and `xpiSha256`. If so, the
 build keeps the record's `started` result for each tested release. It starts
 the plugin in a tested release in these cases:
@@ -511,6 +537,11 @@ the plugin in a tested release in these cases:
   release twice.
 - The build cannot read the published data. It then keeps no earlier
   result that day.
+- The published record has a `kept` block, so its results come from an
+  earlier build.
+
+A record with a `kept` block has no start test in that build. It keeps
+the `startTests` list of the build that read its facts.
 
 So a `started` result is most often up to 7 days old. If the build on the
 re-test day deploys nothing, the result stays until the next re-test day.
@@ -1486,14 +1517,42 @@ GitHub marks the release that the reader read as a prerelease. It also has
 a `languages` list and an `xpiUrl` field, which "Using the data"
 describes. Each record
 with an `upstream` block has a `reports` list, which "Using the data"
-describes. The command writes no `startTests` list. The daily build adds
-it with `pnpm add-start-results`, as "Starting plugins in Zotero" says.
+describes. The command writes no `startTests` list, except on a record
+that keeps earlier facts. The daily build adds it with
+`pnpm add-start-results`, as "Starting plugins in Zotero" says.
 
-If the read of a plugin fails, its record has no `upstream` block. The
-record has a `failure` block with the failure name and a message. If the
+If the read of a plugin fails, its record has no `upstream` block, unless
+it keeps earlier facts as `--previous` below says. The record has a
+`failure` block with the failure name and a message. If the
 read stops with an error that the reader does not name, the failure name is
 `unexpected-error`. If the read gives facts that the schema rejects, the
 failure name is `facts-invalid`. The command still writes the file.
+
+To keep earlier facts, add `--previous <url>`. The daily build gives the
+address of the published `v1/plugins.json`. The command reads that data
+after the reads of the top-level names below. It reads it once, and only
+if a record has a build-level failure. The limits are those of
+`pnpm carry-start-results`: 60 seconds and 16 MiB. If all of these hold, a
+record with a build-level failure keeps the published record's `upstream`
+block and `startTests` list, with a `kept` block:
+
+- The published `plugins` list names the entry id exactly once.
+- That record has the same `repoUrl`, has an `upstream` block, and is valid
+  against the record schema.
+- Its `readAt` falls at most 7 days before this build's `generatedAt`, and
+  not after it. `readAt` is the published record's own `kept.readAt`, or
+  else the published file's `generatedAt`.
+- The kept record as the command writes it is valid against the record
+  schema. So `readAt` must be a UTC time that ends in `Z`.
+
+So a record that two builds in a row fail to read keeps the first
+`readAt`. The kept record also keeps this entry's own overrides and
+`paidService`, and gets the reports that this build counts. In every
+other case the record has a `failure` block, as above. If the command
+cannot read the published data, or its `generatedAt`, it keeps nothing. It
+prints one line that starts with `::warning::cannot read the deployed data`
+and names the cause. The line does not change the exit status. Without
+`--previous`, the command reads no published data and keeps nothing.
 
 The command reads up to 4 plugins at once. It starts each GitHub API request
 of these reads at least 80 ms after the one before it, and a request to
@@ -1509,7 +1568,8 @@ names by character code, so capital letters come before small letters. If
 that number is odd, it starts them in reverse id order. So the entries that
 get `not-read` are the last ids on even days and the first ids on odd days.
 The file lists its records in id order on every day. A plugin with either
-failure shows no facts until a later build reads it. The read of the
+failure shows no facts until a later build reads it, unless it keeps
+earlier facts. The read of the
 `report` label and the report issues, which comes before the plugin reads,
 also counts toward the 18 minutes. After the plugin reads, the build reads each
 repository's top-level names with GraphQL requests of 40 repositories each, for
@@ -1581,11 +1641,16 @@ read of the top-level names is not a failure of a record, so it is never
 build-level, whatever its cause (D-052).
 If the Zotero release read failed, the command first prints its line. If the
 read of the top-level names failed for any repository, it prints that
-`::warning::` line next. Next, it prints the `::warning::` lines for the release lists above. Then
-it prints one line for each failed record. Next, it prints one line
+`::warning::` line next. Next, it prints the `::warning::` lines for the
+release lists above, and then the line for a failed read of the published
+data. Then it prints one line for each failed record. A record that keeps
+earlier facts counts as failed, and its line ends with
+`(kept the facts read at <readAt>)`. Next, it prints one line
 for each failure name, with the number of records that carry it. Then it
-prints the number of records with a build-level failure. If a record
-carries a build-level failure, the command also prints a `::warning::`
+prints the number of records with a build-level failure. With
+`--previous`, it next prints the number of records that keep earlier
+facts. If a record carries a build-level failure, the command also prints a
+`::warning::`
 line. GitHub Actions shows this line as a warning on the run. If more than
 half of the records carry a build-level failure, the command exits with
 status 1. If every record carries a failure, whatever its name, the command
@@ -1621,12 +1686,15 @@ data file before the start plan that `--plan` names. If it cannot write the
 plan, it prints `write-failed` with the plan's path and exits with status
 1. The new data file then stays in place.
 
+The full usage is
+`pnpm build [<dir>] [--out <dir>] [--plan <file>] [--previous <url>]`.
 To read the entries in another directory, give its path: `pnpm build <dir>`.
 To write the file under another directory, add `--out <dir>`. As with
 `pnpm add-plugin`, set `GITHUB_TOKEN` to get a higher GitHub API limit.
 
 To also write a start plan, add `--plan <file>`. The plan has one item for
-each record with an `upstream` block. Each item names the entry id, the
+each record whose `upstream` block this build read, so a record that keeps
+earlier facts has none. Each item names the entry id, the
 plugin id and version, and the manifest's `strict_min_version` and
 `strict_max_version`. It also names the URL of the XPI that the build read
 and the SHA-256 of the bytes that it got. The data's `xpiUrl` and
@@ -1669,7 +1737,8 @@ The command reads the data file at `--previous`, which is the published
 finds the earlier record with the item's entry id. That record's
 `upstream` can have the item's plugin id and version, and the item's
 SHA-256 as `xpiSha256`. If so, the command copies the record's `started`
-results into the item as a `carried` list. An item gets no `carried` list
+results into the item as a `carried` list. It copies nothing from a
+record with a `kept` block. An item gets no `carried` list
 on its entry's re-test day. The command counts the day from `generatedAt`
 in the `--data` file, which is the data file that `pnpm build` wrote. It
 then writes the plan in place and prints how many results it carried.
@@ -1813,10 +1882,11 @@ The `Build data` workflow runs once a day, and you can also start it by
 hand. It has four jobs:
 
 1. The build job runs `pnpm check` and `pnpm build --plan start-plan.json`.
-   Then it runs `pnpm carry-start-results` on the plan with the published
-   data, as "Starting plugins in Zotero" says. It gives the SHA-256 of the
-   plan and the `pnpm data-digest` value of `dist/` as job outputs. It
-   keeps `dist/` as a workflow artifact named `plugins-data`, and the plan
+   It gives `pnpm build` the published data's address as `--previous`, so a
+   plugin that it fails to read can keep earlier facts. Then it runs
+   `pnpm carry-start-results` on the plan with the published data, as
+   "Starting plugins in Zotero" says. It gives the SHA-256 of the plan and
+   the `pnpm data-digest` value of `dist/` as job outputs. It keeps `dist/` as a workflow artifact named `plugins-data`, and the plan
    as an artifact named `start-plan`. No artifact holds an XPI.
 2. The start-test job runs once for each tested Zotero release for Linux.
    It downloads Zotero from download.zotero.org and checks the file against

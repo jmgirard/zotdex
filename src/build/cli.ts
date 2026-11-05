@@ -2,7 +2,7 @@ import { resolve } from "node:path";
 import process, { argv } from "node:process";
 import { buildData, writeData, writePlan } from "./build.ts";
 
-const USAGE = "usage: pnpm build [<dir>] [--out <dir>] [--plan <file>]";
+const USAGE = "usage: pnpm build [<dir>] [--out <dir>] [--plan <file>] [--previous <url>]";
 
 async function main(): Promise<number> {
   const args = argv.slice(2);
@@ -11,14 +11,16 @@ async function main(): Promise<number> {
   const positional: string[] = [];
   let repeated = false;
   for (let i = 0; i < args.length; i++) {
-    if (args[i] === "--out" || args[i] === "--plan") {
+    if (args[i] === "--out" || args[i] === "--plan" || args[i] === "--previous") {
       repeated ||= options.has(args[i]);
       options.set(args[i], args[++i]);
     } else positional.push(args[i]);
   }
   const out = options.get("--out");
   const planFile = options.get("--plan");
-  if (repeated || positional.length > 1 || (options.has("--out") && !out) || (options.has("--plan") && !planFile)) {
+  const previous = options.get("--previous");
+  const missing = ["--out", "--plan", "--previous"].some((option) => options.has(option) && !options.get(option));
+  if (repeated || positional.length > 1 || missing) {
     console.error(USAGE);
     return 1;
   }
@@ -34,7 +36,9 @@ async function main(): Promise<number> {
   const oneLine = (text: string) => text.replace(/[\r\n]+/g, " ");
 
   // GitHub Actions names the repo the workflow runs in. An empty value reads as unset.
-  const built = await buildData(root, (url, init) => fetch(url, init), undefined, process.env.GITHUB_REPOSITORY || undefined);
+  // With --previous, a record whose read fails for a build-level reason can keep the facts of the
+  // deployed data at that address (D-066).
+  const built = await buildData(root, (url, init) => fetch(url, init), undefined, process.env.GITHUB_REPOSITORY || undefined, { previous });
   // An invalid entry, a failed read of the report issues, or output that the schema
   // rejects writes no file and exits 1, so the daily build deploys nothing.
   if (!built.ok) {
@@ -53,6 +57,9 @@ async function main(): Promise<number> {
   // A list in src/site/version.ts that a Zotero release left behind keeps its marks as they
   // were until someone edits it, so these lines do not change the exit code either.
   for (const warning of built.releaseWarnings) console.log(`::warning::${oneLine(warning)}`);
+  // A failed read of the deployed data keeps no earlier facts, and the build goes on as it did
+  // before it kept them, so this read does not change the exit code either.
+  if (built.previousProblem) console.log(`::warning::cannot read the deployed data, so no record keeps earlier facts: ${oneLine(built.previousProblem)}`);
   const written = await writeData(outDir, built.text);
   if (!written.ok) {
     console.error(`write-failed: ${written.message}`);
@@ -67,17 +74,28 @@ async function main(): Promise<number> {
     }
     console.log(`wrote a start plan of ${built.plan.plugins.length} plugins to ${resolve(cwd, planFile)}`);
   }
-  const failed = built.data.plugins.filter((plugin) => plugin.failure);
-  for (const { id, failure } of failed) console.log(`${id}: ${failure!.name}: ${oneLine(failure!.message)}`);
+  // A kept record's read failed too, so it counts here and in both bars below, under the name of
+  // this build's failure.
+  const failed = built.data.plugins.flatMap(({ id, failure, kept }) => {
+    const why = failure ?? kept?.failure;
+    return why ? [{ id, failure: why, readAt: kept?.readAt }] : [];
+  });
+  for (const { id, failure, readAt } of failed) {
+    const keptLine = readAt ? ` (kept the facts read at ${readAt})` : "";
+    console.log(`${id}: ${failure.name}: ${oneLine(failure.message)}${keptLine}`);
+  }
   const counts = new Map<string, number>();
-  for (const { failure } of failed) counts.set(failure!.name, (counts.get(failure!.name) ?? 0) + 1);
+  for (const { failure } of failed) counts.set(failure.name, (counts.get(failure.name) ?? 0) + 1);
   for (const name of [...counts.keys()].sort()) console.log(`failed with ${name}: ${counts.get(name)}`);
   const total = built.data.plugins.length;
   const buildLevel = built.buildLevel.length;
   console.log(`build-level failures: ${buildLevel} of ${total} records`);
+  // Without --previous no record can keep earlier facts, so the line is left out.
+  if (previous) console.log(`kept earlier facts: ${built.kept.length} of ${total} records`);
   // GitHub Actions shows this line as a warning on the run.
   if (buildLevel > 0) console.log(`::warning::${buildLevel} of ${total} records carry a build-level failure`);
-  console.log(`wrote ${total} records to ${written.path}, ${failed.length} with a failed upstream read`);
+  const keptPart = previous ? `, ${built.kept.length} of them with kept facts` : "";
+  console.log(`wrote ${total} records to ${written.path}, ${failed.length} with a failed upstream read${keptPart}`);
   // A build-level failure, such as a rate limit or a network error, usually points at the
   // build, not at the plugin. When more than half of the records carry one, exit 1, so the daily
   // build deploys nothing and the last good data stays. Also exit 1 when

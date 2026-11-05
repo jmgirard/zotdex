@@ -518,6 +518,17 @@ user reports. The exception is a report that is abuse.
   GraphQL batches of 40 after the plugin reads, within 3 minutes. A failure
   leaves `sourceInRepo` out and sets `sourceProblem`, which the CLI prints as a
   warning, and it never withholds a deploy (D-052).
+  After the source read and before the report count, a build given
+  `--previous` reads the deployed data with `readPrevious` in
+  `src/build/previous.ts`, once and only when a record has a build-level
+  failure. `keptFacts` in `src/build/keep.ts` then gives each such record the
+  deployed record's `upstream` and `startTests` with a `kept` field when the
+  deployed list names the id once, the `repoUrl` matches, the record passes
+  the schema, and its `readAt` is at most `KEEP_MS` (7 days) before
+  `generatedAt` and not after it. A kept record stays build-level, counts as
+  failed in both deploy bars, gets no start plan item, and keeps its start
+  results through `pnpm add-start-results`, and `pnpm carry-start-results`
+  carries none from it. A failed read keeps nothing and warns (D-066, M100).
   After the plugin reads, `readZoteroRelease` in
   `src/build/zotero-release.ts` reads the current Zotero release from
   zotero.org with no token and a 30 s limit, and the build writes it as the
@@ -599,7 +610,8 @@ user reports. The exception is a report that is abuse.
   the reporter plugin of `src/start-test/reporter/`, and writes one of the
   four results, or exits 1 with a failure name (M046). `pnpm
   carry-start-results --plan --data [--previous]` (`carryPlan`,
-  `carryResults` in `src/start-test/carry.ts`, M059) reads the deployed
+  `carryResults` in `src/start-test/carry.ts`, M059; the read is
+  `readPrevious` in `src/build/previous.ts` since M100) reads the deployed
   `v1/plugins.json` within 60 s and 16 MiB and writes into each plan item
   a `carried` list of the earlier record's `started` results, when the
   record's upstream has the item's id, version, and `xpiSha256`, except on
@@ -977,8 +989,8 @@ reused._
   for that read, and `test/workflows.test.ts` checks both (M021). The reader
   marks a failure build-level beside its name, and `buildData` returns the
   marked ids outside the data, so the published file keeps its shape
-  (D-011). Since M047 the workflow has four jobs. The build job runs
-  `pnpm build --plan start-plan.json`, then since M059 `pnpm
+  (D-011); since M100 a kept record holds its failure in `kept` (D-066). Since M047 the workflow has four jobs. The build job runs
+  `pnpm build --plan start-plan.json`, with `--previous` since M100, then since M059 `pnpm
   carry-start-results` on the plan, gives the plan's SHA-256 as the job
   output `plan-sha256` and, since M069, the `pnpm data-digest --dir dist`
   value as `data-sha256`, and uploads `dist/` as `plugins-data` and the
@@ -1219,3 +1231,10 @@ reused._
   filter menus sit side by side, so a closed menu cuts a long name: 12 of 16
   categories and 2 of 50 languages at 375 px on the data of 2026-11-05. The open
   list shows each name whole. Accepted at the M098 gate
+- Kept facts can be older than 7 days on the site. The limit counts back
+  from each build, and a build that deploys nothing leaves the last deployed
+  kept facts in place. Recorded at M100, 2026-11-05 (D-066).
+- A build that GitHub's slow or 5xx answers cut still deploys fresh facts for
+  only the plugins it read, while the rest keep older facts or show "Not
+  read". Two of three builds on 2026-11-05 were cut this way. Recorded at
+  M100; the parked row "Retry build reads GitHub refuses" holds the retry.

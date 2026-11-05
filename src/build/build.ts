@@ -9,6 +9,8 @@ import type { StartResultName } from "../start-test/start-test.ts";
 import { boundFetch, type Fetch, githubClient, ReadFailure, readUpstream, type UpstreamFacts, type XpiRead } from "../upstream/reader.ts";
 import { duration, READ_LIMIT_MS, withinLimit } from "../upstream/time-limit.ts";
 import { LAST_RELEASES } from "../site/version.ts";
+import { type Kept, keptFacts } from "./keep.ts";
+import { PREVIOUS_LIMIT_MS, readPrevious } from "./previous.ts";
 import { readSourceFacts, SOURCE_READ_LIMIT_MS } from "./source.ts";
 import { readChangelogRelease, readZoteroRelease, releaseListWarnings, ZOTERO_RELEASE_LIMIT_MS } from "./zotero-release.ts";
 
@@ -42,6 +44,10 @@ export interface PluginRecord {
   // Whether the version in upstream started in each tested Zotero release that its manifest
   // range covers, ordered by Zotero version. `pnpm add-start-results` adds it after the build.
   startTests?: StartTestRecord[];
+  // On a record whose read failed for a build-level reason, when it holds the upstream and
+  // startTests of the deployed record of an earlier build (D-066): when that build started,
+  // and this build's failure. Such a record has no `failure`.
+  kept?: Kept;
   failure?: { name: string; message: string };
   overrides: Override[];
 }
@@ -87,8 +93,11 @@ export interface StartPlan {
 }
 
 // `buildLevel` lists the ids of the records whose failure usually points at the build, such as a
-// rate limit or a network error, in record order. It and the plan stay out of the data. The
-// plan has one item for each record with upstream, in record order. `releaseProblem` names why
+// rate limit or a network error, in record order, kept records included. It and the plan stay
+// out of the data. `kept` lists the ids of the kept records, in record order, and
+// `previousProblem` names why the read of the deployed data failed, when it did. The
+// plan has one item for each record whose upstream this build read, in record order, so a
+// kept record has none. `releaseProblem` names why
 // the read of the current Zotero release failed, when it did, and `sourceProblem` why the build
 // has no source fact for some records. `releaseWarnings` says where the
 // Zotero release lists in src/site/version.ts fall behind and which changelog reads failed, and
@@ -99,7 +108,9 @@ export type BuildResult =
       data: PluginsFile;
       text: string;
       buildLevel: string[];
+      kept: string[];
       plan: StartPlan;
+      previousProblem?: string;
       releaseProblem?: string;
       sourceProblem?: string;
       releaseWarnings: string[];
@@ -136,6 +147,9 @@ export const REPORTS_LIMIT_MS = 3 * 60 * 1000;
 // `reportsMs` bounds the label read and every page of the report issues together, `releaseMs`
 // the read of the current Zotero release and each changelog read, and `sourceMs` all the requests
 // of the source read together. `readsAtOnce` and `apiGapMs` set the pace of the plugin reads.
+// `previous` is the address of the deployed data, which the build reads within `previousMs`
+// only when a record's read failed for a build-level reason; without it the build keeps no
+// earlier facts.
 export interface TimeLimits {
   readMs?: number;
   reportsMs?: number;
@@ -145,6 +159,8 @@ export interface TimeLimits {
   startedAt?: number;
   readsAtOnce?: number;
   apiGapMs?: number;
+  previous?: string;
+  previousMs?: number;
 }
 
 // Reads every entry under root, then the report label and the report issues of indexRepo,
@@ -159,6 +175,9 @@ export interface TimeLimits {
 // each repo it read, and a failed read leaves that record's sourceInRepo out. Last, it reads the
 // current Zotero release and the changelog page of each LAST_RELEASES major from zotero.org. A
 // failed read of the release leaves zoteroRelease out, and no read of these stops the build.
+// Between the source read and the report count, a record whose read failed for a build-level
+// reason keeps the deployed record's facts by `keptFacts`, and stays build-level; a failed read
+// of the deployed data keeps nothing and sets previousProblem.
 export async function buildData(
   root: string,
   fetch: Fetch,
@@ -173,6 +192,8 @@ export async function buildData(
     startedAt = 0,
     readsAtOnce = READS_AT_ONCE,
     apiGapMs = API_GAP_MS,
+    previous,
+    previousMs = PREVIOUS_LIMIT_MS,
   }: TimeLimits = {},
 ): Promise<BuildResult> {
   let listed: Awaited<ReturnType<typeof listEntries>>;
@@ -262,11 +283,44 @@ export async function buildData(
     const sourceInRepo = source.facts.get(repoUrl);
     if (upstream && sourceInRepo !== undefined) upstream.sourceInRepo = sourceInRepo;
   }
+  // After the source read, so a kept upstream keeps its own sourceInRepo, and before the report
+  // count, so a kept record's reports count for the version it shows.
+  const keptAt = new Set<number>();
+  let previousProblem: string | undefined;
+  if (previous && buildLevelAt.size > 0) {
+    const earlier = await readPrevious(previous, fetch, previousMs);
+    if ("problem" in earlier) previousProblem = earlier.problem;
+    else if (typeof earlier.generatedAt !== "string" || Number.isNaN(Date.parse(earlier.generatedAt))) {
+      previousProblem = `${previous} has no readable generatedAt`;
+    } else {
+      for (const i of [...buildLevelAt].sort((a, b) => a - b)) {
+        const { id, repoUrl, paidService, failure, overrides } = records[i];
+        if (!failure) continue;
+        const facts = keptFacts<NonNullable<PluginRecord["upstream"]>, StartTestRecord>(
+          id,
+          repoUrl,
+          failure,
+          earlier,
+          now,
+          (value) => validateRecord(value) === true,
+        );
+        if (!facts) continue;
+        const record: PluginRecord = { id, repoUrl, ...(paidService ? { paidService } : {}), ...facts, overrides };
+        // The record as it will be written, with the report counts still to come.
+        if (!validateRecord(JSON.parse(JSON.stringify({ ...record, reports: [] })))) continue;
+        records[i] = record;
+        keptAt.add(i);
+      }
+    }
+  }
   const buildLevel = entries.flatMap(({ id }, i) => (buildLevelAt.has(i) ? [id] : []));
+  const kept = entries.flatMap(({ id }, i) => (keptAt.has(i) ? [id] : []));
   const reports = countReports(issues, records);
-  const plugins = records.map(({ id, repoUrl, paidService, upstream, failure, overrides }): PluginRecord => {
+  const plugins = records.map(({ id, repoUrl, paidService, upstream, startTests, kept: keptFrom, failure, overrides }): PluginRecord => {
     const paid = paidService ? { paidService } : {};
-    return upstream ? { id, repoUrl, ...paid, upstream, reports: reports.get(id) ?? [], overrides } : { id, repoUrl, ...paid, failure, overrides };
+    if (!upstream) return { id, repoUrl, ...paid, failure, overrides };
+    const tests = startTests ? { startTests } : {};
+    return { id, repoUrl, ...paid, upstream, reports: reports.get(id) ?? [], ...tests, ...(keptFrom ? { kept: keptFrom } : {}), overrides };
   });
   // The changelog reads run at the same time as the release read, so all of them end within
   // `releaseMs`.
@@ -295,8 +349,10 @@ export async function buildData(
     data,
     text,
     buildLevel,
+    kept,
     plan,
     releaseWarnings,
+    ...(previousProblem ? { previousProblem } : {}),
     ...(release.ok ? {} : { releaseProblem: release.message }),
     ...(source.problem ? { sourceProblem: source.problem } : {}),
   };

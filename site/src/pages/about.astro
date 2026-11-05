@@ -18,7 +18,7 @@ const offered = new Set(categoryOptions(plugins).map(({ value }) => value));
     <h1>How the index reads plugins</h1>
     <p class="intro">
       Each day, a build reads every listed plugin's GitHub repository and releases. A plugin page shows the facts that
-      the build found for one release, the release the index read. A maintainer reads the paid service fact by hand, and
+      a build found for one release, the release the index read. A maintainer reads the paid service fact by hand, and
       the build reads the others. This page says where the main facts come from and what they
       do not show. It also says how to install a plugin, and it ends with the license
       terms.
@@ -74,7 +74,8 @@ const offered = new Set(categoryOptions(plugins).map(({ value }) => value));
       from the one last tested, when that release has no earlier result, or when the last result was not a start. It
       also starts each plugin again on one day of each week, and every plugin on a day when it cannot read the last
       published data. On the other days it keeps the last start result, so a
-      result is most often up to a week old. If the build on the weekly day deploys nothing, the result stays another
+      result is most often up to a week old. A plugin with <a href={`${BASE}about/#older-data`}>older data</a> gets no start test until
+      a build reads it again. If the build on the weekly day deploys nothing, the result stays another
       week.
     </p>
     <ul class="about-list" role="list">
@@ -98,6 +99,18 @@ const offered = new Set(categoryOptions(plugins).map(({ value }) => value));
     <p data-fact="start-not-works">
       A start is not a report that the plugin works. The test does not use the plugin, and an error after the 3 seconds
       still counts as a start. The plugin's own code runs during its test, so a plugin can change its own result.
+    </p>
+  </section>
+  <section class="card" id="older-data" data-about="older-data">
+    <h2>Older data</h2>
+    <p data-fact="older-data">
+      Sometimes the build cannot read a plugin because of a problem with the build or a host, such as its time limit, a
+      read that takes too long, or a server error. If the published data holds facts about the plugin that a build read
+      at most 7 days before, the site keeps them. The plugin's row has an "Older data" badge, and its page names the day
+      of that read and the problem. A plugin that the build cannot read for another reason, such as a deleted
+      repository, shows "Not read". The 7 days count back from each build, and a build can fail to update the site, so
+      kept facts on the site can be older. A plugin with older data gets no start test, and it keeps the start results
+      published with its facts.
     </p>
   </section>
   <section class="card" id="reports" data-about="reports">
@@ -165,8 +178,8 @@ const offered = new Set(categoryOptions(plugins).map(({ value }) => value));
     <p>
       The index sorts plugins into categories of its own, so that you can find plugins of one kind. It assigns them from
       words in a plugin's name and descriptions, and it adds or removes some by hand. A plugin can have several
-      categories. A plugin that fits no other category is under Other tools. A plugin that the latest build did not read
-      has only the categories added by hand, so it often shows none. A category can be wrong or missing. Plugin authors
+      categories. A plugin that fits no other category is under Other tools. A plugin that the latest build did not read,
+      and that keeps no older data, has only the categories added by hand, so it often shows none. A category can be wrong or missing. Plugin authors
       do not choose them, but a requested name or description can change the words they read.
     </p>
     <ul class="about-list" role="list" data-category-list>

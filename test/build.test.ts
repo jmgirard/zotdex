@@ -97,6 +97,7 @@ interface Output {
     paidService?: unknown;
     upstream?: Record<string, unknown>;
     reports?: unknown[];
+    kept?: { readAt: string; failure: { name: string; message: string } };
     failure?: { name: string; message: string };
     overrides: unknown[];
   }[];
@@ -572,6 +573,96 @@ describe("pnpm build", () => {
       ),
     );
     expect(without.stdout).not.toContain("start plan");
+  });
+});
+
+describe("pnpm build with --previous", () => {
+  const PREVIOUS = "https://example.org/v1/plugins.json";
+  const COPY = "second-copy@example.org";
+  // TREE plus a copy of SECOND that reads the same repo, so both read the same 503.
+  const withCopy = () => {
+    const tree = tempDir();
+    cpSync(TREE, tree, { recursive: true });
+    cpSync(join(TREE, SECOND), join(tree, COPY), { recursive: true });
+    return tree;
+  };
+  // The data that a build of `tree` over the passing responses deploys now, so its readAt
+  // falls within 7 days of the spawned build.
+  async function deployedOf(tree: string) {
+    const result = await buildData(tree, fixtureFetch(responses()).fetch);
+    if (!result.ok) throw new Error(result.problems.join("\n"));
+    return result.data;
+  }
+  async function run(tree: string, recorded: Responses, earlier?: Recorded) {
+    const deployed = earlier ?? { json: await deployedOf(tree) };
+    const out = tempDir();
+    const result = pnpmBuild([tree, "--out", out, "--previous", PREVIOUS], writeFixture({ ...recorded, [PREVIOUS]: deployed }));
+    return { result, out, deployed };
+  }
+  const failing = () => ({ ...responses(), [SECOND_UPDATE]: { status: 503, text: "Service Unavailable" } });
+
+  test("prints a line for each kept record and the count, and exits 0 under both bars", async () => {
+    const { result, out, deployed } = await run(TREE, failing());
+    expect(result.status, result.stderr).toBe(0);
+    const readAt = (deployed.json as PluginsFile).generatedAt;
+    expect(`\n${result.stdout}`).toContain(
+      `\n${SECOND}: update-json-http-error: the update.json at ${SECOND_UPDATE} returned HTTP 503 (kept the facts read at ${readAt})\n`,
+    );
+    expect(summary(result.stdout)).toEqual(["failed with fork: 1", "failed with update-json-http-error: 1", "build-level failures: 1 of 3 records"]);
+    expect(`\n${result.stdout}`).toContain("\nkept earlier facts: 1 of 3 records\n");
+    expect(result.stdout).toMatch(/\nwrote 3 records to \S+, 2 with a failed upstream read, 1 of them with kept facts\n/);
+    expect(record(readOutput(out), SECOND)?.kept?.readAt).toBe(readAt);
+  });
+
+  test("exits 1 when build-level records, kept or not, are more than half of all records", async () => {
+    // 2 of 4 records are build-level, which is not more than half.
+    const half = await run(withCopy(), failing());
+    expect(half.result.status, half.result.stderr).toBe(0);
+    expect(`\n${half.result.stdout}`).toContain("\nkept earlier facts: 2 of 4 records\n");
+    // A second copy makes 3 of 5, while one record still reads.
+    const tree = withCopy();
+    cpSync(join(TREE, SECOND), join(tree, "second-copy-2@example.org"), { recursive: true });
+    const { result, out } = await run(tree, failing());
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain("3 of 5 records carry a build-level failure, more than half");
+    expect(result.stderr).not.toContain("records carry a failure");
+    expect(`\n${result.stdout}`).toContain("\nkept earlier facts: 3 of 5 records\n");
+    expect(record(readOutput(out), COPY)?.kept).toBeDefined();
+    expect(record(readOutput(out), BETTER_NOTES)?.kept).toBeUndefined();
+  });
+
+  test("exits 1 when every record is kept or has a failure, though most are not build-level", async () => {
+    const recorded: Responses = failing();
+    delete recorded["https://api.github.com/repos/windingwind/zotero-better-notes"];
+    const { result } = await run(TREE, recorded);
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain("all 3 records carry a failure");
+    expect(result.stderr).not.toContain("more than half");
+    expect(`\n${result.stdout}`).toContain("\nkept earlier facts: 1 of 3 records\n");
+  });
+
+  test("prints a kept record's failure message on one line, so upstream text cannot start a workflow command", async () => {
+    const recorded = { ...responses(), "https://api.github.com/repos/windingwind/zotero-better-notes": { unexpected: "planted\n::stop-commands::planted" } };
+    const { result } = await run(TREE, recorded);
+    expect(`\n${result.stdout}`).toContain(`\n${BETTER_NOTES}: unexpected-error: planted ::stop-commands::planted (kept the facts read at `);
+    const commands = result.stdout.split("\n").filter((line) => line.startsWith("::"));
+    expect(commands).toEqual(["::warning::1 of 3 records carry a build-level failure"]);
+  });
+
+  test("warns on one line and exits as before when it cannot read the deployed data", async () => {
+    const { result, out } = await run(TREE, failing(), { status: 503, text: "Service Unavailable" });
+    expect(result.status).toBe(0);
+    expect(`\n${result.stdout}`).toContain(
+      `\n::warning::cannot read the deployed data, so no record keeps earlier facts: GET ${PREVIOUS} returned HTTP 503\n`,
+    );
+    expect(`\n${result.stdout}`).toContain("\nkept earlier facts: 0 of 3 records\n");
+    expect(record(readOutput(out), SECOND)?.failure?.name).toBe("update-json-http-error");
+  });
+
+  test("prints the usage for --previous with no address", () => {
+    const result = pnpmBuild([TREE, "--previous"]);
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain("usage: pnpm build [<dir>] [--out <dir>] [--plan <file>] [--previous <url>]");
   });
 });
 
@@ -1402,6 +1493,161 @@ describe("buildData", () => {
   });
 });
 
+describe("buildData with the deployed data", () => {
+  const PREVIOUS = "https://example.org/v1/plugins.json";
+  const READ_AT = "2026-11-04T06:00:00.000Z";
+  const NOW = new Date("2026-11-05T06:00:00.000Z");
+  const DAY = 24 * 60 * 60 * 1000;
+  const SECOND_FAILURE = { name: "update-json-http-error", message: `the update.json at ${SECOND_UPDATE} returned HTTP 503` };
+  type Deployed = { generatedAt: unknown; plugins: Record<string, unknown>[] };
+  let built: PluginsFile;
+  beforeAll(async () => {
+    const result = await buildData(TREE, fixtureFetch(responses()).fetch, new Date(READ_AT));
+    if (!result.ok) throw new Error(result.problems.join("\n"));
+    built = result.data;
+    built.plugins.find((plugin) => plugin.id === SECOND)!.startTests = [{ zotero: "10.0.6", result: "timed-out" }];
+  });
+  // A copy of the deployed data that a test may change.
+  const deployed = (): Deployed => structuredClone(built) as unknown as Deployed;
+  const deployedRecord = (data: Deployed, id: string) => data.plugins.find((plugin) => plugin.id === id)!;
+  // The responses in which SECOND's update.json answers 503, a build-level failure.
+  const failing = () => ({ ...responses(), [SECOND_UPDATE]: { status: 503, text: "Service Unavailable" } });
+
+  async function rebuild(recorded: Responses, earlier: Recorded | undefined, now = NOW, limits: Parameters<typeof buildData>[4] = {}) {
+    const { fetch, requests } = fixtureFetch(earlier ? { ...recorded, [PREVIOUS]: earlier } : recorded);
+    const result = await buildData(TREE, fetch, now, undefined, { previous: PREVIOUS, ...limits });
+    if (!result.ok) throw new Error(result.problems.join("\n"));
+    return { result, output: JSON.parse(result.text) as Output, previousReads: requests.filter(({ url }) => url === PREVIOUS).length };
+  }
+
+  // The kept record of SECOND: the deployed facts, this build's reports and overrides, and kept.
+  const keptSecond = (data: Deployed, readAt: string, failure: { name: string; message: string }) => {
+    const { upstream, startTests, overrides } = deployedRecord(data, SECOND);
+    const reports = [{ zoteroMajor: 7, works: 0, broken: 1 }];
+    return { id: SECOND, repoUrl: "https://github.com/example/second-plugin", upstream, reports, startTests, kept: { readAt, failure }, overrides };
+  };
+
+  test("keeps the deployed facts of a record whose read fails with a 5xx answer, which stays build-level", async () => {
+    const data = deployed();
+    const { result, output } = await rebuild(failing(), { json: data });
+    expect(record(output, SECOND)).toEqual(keptSecond(data, READ_AT, SECOND_FAILURE));
+    expect(record(output, SECOND)).not.toHaveProperty("failure");
+    expect(result.buildLevel).toEqual([SECOND]);
+    expect(result.kept).toEqual([SECOND]);
+    expect(result.previousProblem).toBeUndefined();
+    expect(checkOutput(output)).toEqual([]);
+    // A kept record has no start plan item.
+    expect(result.plan.plugins.map(({ entry }) => entry)).toEqual([BETTER_NOTES]);
+  });
+
+  test("counts this build's reports on a kept record's version, and keeps its upstream's sourceInRepo", async () => {
+    const data = deployed();
+    const second = deployedRecord(data, SECOND);
+    (second.upstream as Record<string, unknown>).sourceInRepo = false;
+    second.reports = [];
+    const { output } = await rebuild(failing(), { json: data });
+    expect(record(output, SECOND)?.upstream?.sourceInRepo).toBe(false);
+    expect(record(output, SECOND)?.reports).toEqual([{ zoteroMajor: 7, works: 0, broken: 1 }]);
+  });
+
+  test("keeps the deployed facts of each record that the time limit leaves not-read, and not of one with no upstream", async () => {
+    const data = deployed();
+    const { result, output } = await rebuild(responses(), { json: data }, NOW, { buildMs: 0 });
+    const notRead = { name: "not-read", message: "the build reads no plugin after 0 minutes, its time limit" };
+    expect(result.kept).toEqual([BETTER_NOTES, SECOND]);
+    expect(record(output, BETTER_NOTES)?.upstream).toEqual(deployedRecord(data, BETTER_NOTES).upstream);
+    expect(record(output, BETTER_NOTES)).toMatchObject({ kept: { readAt: READ_AT, failure: notRead } });
+    expect(record(output, SECOND)).toEqual(keptSecond(data, READ_AT, notRead));
+    expect(record(output, FORKED)).toEqual({ id: FORKED, repoUrl: expect.any(String), failure: notRead, overrides: [] });
+    expect(result.buildLevel).toEqual([BETTER_NOTES, FORKED, SECOND]);
+  });
+
+  test("keeps the deployed facts of a record whose read passes its time limit as request-failed", async () => {
+    const data = deployed();
+    const { output } = await rebuild({ ...responses(), [SECOND_UPDATE]: { stall: "headers" } }, { json: data }, NOW, { readMs: 300 });
+    expect(record(output, SECOND)?.kept?.failure.name).toBe("request-failed");
+    expect(record(output, SECOND)?.upstream).toEqual(deployedRecord(data, SECOND).upstream);
+  });
+
+  test("keeps facts read exactly 7 days before generatedAt, and not 1 ms more", async () => {
+    const at = new Date(Date.parse(READ_AT) + 7 * DAY);
+    expect(record((await rebuild(failing(), { json: deployed() }, at)).output, SECOND)?.kept?.readAt).toBe(READ_AT);
+    const late = await rebuild(failing(), { json: deployed() }, new Date(at.getTime() + 1));
+    expect(record(late.output, SECOND)?.failure).toEqual(SECOND_FAILURE);
+    expect(late.result.kept).toEqual([]);
+  });
+
+  test("keeps the first readAt when it keeps an already kept record again", async () => {
+    const first = await rebuild(failing(), { json: deployed() });
+    const again = await rebuild(failing(), { json: JSON.parse(first.result.text) }, new Date(NOW.getTime() + DAY));
+    expect(record(again.output, SECOND)?.kept).toEqual({ readAt: READ_AT, failure: SECOND_FAILURE });
+    // The first readAt also sets the 7 days.
+    const late = await rebuild(failing(), { json: JSON.parse(first.result.text) }, new Date(Date.parse(READ_AT) + 7 * DAY + 1));
+    expect(record(late.output, SECOND)?.failure).toEqual(SECOND_FAILURE);
+  });
+
+  test.each<[string, (data: Deployed) => void]>([
+    ["has no upstream", (data) => (data.plugins = data.plugins.map((p) => (p.id === SECOND ? { id: SECOND, repoUrl: p.repoUrl, failure: { name: "fork", message: "" }, overrides: [] } : p)))],
+    ["has another repoUrl", (data) => (deployedRecord(data, SECOND).repoUrl = "https://github.com/example/other-plugin")],
+    ["fails the record schema", (data) => ((deployedRecord(data, SECOND).upstream as Record<string, unknown>).stars = -1)],
+    ["is named twice", (data) => data.plugins.push(structuredClone(deployedRecord(data, SECOND)))],
+    ["is more than 7 days old", (data) => (data.generatedAt = new Date(NOW.getTime() - 7 * DAY - 1).toISOString())],
+    ["is read after generatedAt", (data) => (data.generatedAt = new Date(NOW.getTime() + 1).toISOString())],
+    ["has a readAt that Date.parse cannot read", (data) => (deployedRecord(data, SECOND).kept = { readAt: "2026-13-01T00:00:00Z", failure: SECOND_FAILURE })],
+    // Date.parse reads it, but the record written with it fails the schema's readAt pattern.
+    ["comes from a file whose generatedAt is not a UTC time ending in Z", (data) => (data.generatedAt = "2026-11-04T06:00:00+00:00")],
+  ])("keeps nothing when the deployed record %s", async (_case, edit) => {
+    const data = deployed();
+    edit(data);
+    const { result, output } = await rebuild(failing(), { json: data });
+    expect(record(output, SECOND)).toEqual({ id: SECOND, repoUrl: "https://github.com/example/second-plugin", failure: SECOND_FAILURE, overrides: [] });
+    expect(result.kept).toEqual([]);
+    expect(result.previousProblem).toBeUndefined();
+  });
+
+  test("keeps nothing for a failure that is not build-level in a build that reads the deployed data", async () => {
+    const recorded = { ...failing(), "https://api.github.com/repos/windingwind/zotero-better-notes": { status: 404, json: {} } };
+    const { result, output, previousReads } = await rebuild(recorded, { json: deployed() });
+    expect(previousReads).toBe(1);
+    expect(result.kept).toEqual([SECOND]);
+    expect(record(output, BETTER_NOTES)?.failure?.name).toBe("github-http-error");
+    expect(record(output, BETTER_NOTES)).not.toHaveProperty("kept");
+    expect(record(output, BETTER_NOTES)).not.toHaveProperty("upstream");
+  });
+
+  test("keeps nothing for a failure that is not build-level, and reads no deployed data when no failure is build-level", async () => {
+    const { result, output, previousReads } = await rebuild({ ...responses(), [SECOND_UPDATE]: { status: 404, text: "Not Found" } }, { json: deployed() });
+    expect(record(output, SECOND)?.failure?.name).toBe("update-json-http-error");
+    expect(record(output, SECOND)).not.toHaveProperty("upstream");
+    expect(result.kept).toEqual([]);
+    expect(previousReads).toBe(0);
+  });
+
+  test("keeps nothing and reads no deployed data with no previous address", async () => {
+    const { fetch, requests } = fixtureFetch({ ...failing(), [PREVIOUS]: { json: deployed() } });
+    const result = await buildData(TREE, fetch, NOW);
+    if (!result.ok) throw new Error(result.problems.join("\n"));
+    expect(record(JSON.parse(result.text), SECOND)?.failure).toEqual(SECOND_FAILURE);
+    expect(result.kept).toEqual([]);
+    expect(requests.some(({ url }) => url === PREVIOUS)).toBe(false);
+  });
+
+  test.each<[string, Recorded | undefined, string]>([
+    ["a fetch that rejects", { error: "getaddrinfo ENOTFOUND" }, `cannot read ${PREVIOUS}: getaddrinfo ENOTFOUND`],
+    ["an answer other than 200", { status: 404, text: "Not Found" }, `GET ${PREVIOUS} returned HTTP 404`],
+    ["a body over 16 MiB", { chunks: { size: 1024 * 1024, count: 17 } }, `the body of ${PREVIOUS} is over 16777216 bytes`],
+    ["a read past its time limit", { stall: "headers" }, `cannot read ${PREVIOUS}: the read passed its time limit of 50 ms`],
+    ["a body that is not JSON", { text: "<html>" }, `${PREVIOUS} is not JSON`],
+    ["a body with no plugins list", { json: { generatedAt: READ_AT } }, `${PREVIOUS} has no plugins list`],
+    ["a generatedAt that does not parse", { json: { generatedAt: "yesterday", plugins: [] } }, `${PREVIOUS} has no readable generatedAt`],
+  ])("keeps nothing and names the problem after %s", async (_case, earlier, problem) => {
+    const { result, output } = await rebuild(failing(), earlier, NOW, { previousMs: 50 });
+    expect(result.previousProblem).toEqual(expect.stringContaining(problem));
+    expect(record(output, SECOND)?.failure).toEqual(SECOND_FAILURE);
+    expect(result.kept).toEqual([]);
+  });
+});
+
 describe("checkOutput", () => {
   const facts = {
     id: SECOND,
@@ -1419,6 +1665,16 @@ describe("checkOutput", () => {
 
   test("passes a record with upstream facts", () => {
     expect(checkOutput(file({ ...base, upstream: facts }))).toEqual([]);
+  });
+
+  test("passes a record with upstream facts and kept, and reports kept beside a failure or with no upstream", () => {
+    const kept = { readAt: "2026-10-24T06:00:00.000Z", failure: { name: "not-read", message: "the build reads no plugin after 18 minutes, its time limit" } };
+    expect(checkOutput(file({ ...base, upstream: facts, kept }))).toEqual([]);
+    const both = checkOutput(file({ ...base, upstream: facts, kept, failure: kept.failure }));
+    expect(both.some((problem) => problem.startsWith("/plugins/0 "))).toBe(true);
+    expect(checkOutput(file({ ...base, failure: kept.failure, kept }))).toContain("/plugins/0 must have property upstream when property kept is present");
+    expect(checkOutput(file({ ...base, upstream: facts, kept: { ...kept, readAt: "yesterday" } })).some((p) => p.startsWith("/plugins/0/kept/readAt "))).toBe(true);
+    expect(pluginsSchema.properties.schemaVersion.const).toBe(1);
   });
 
   test("reports a record that holds both upstream facts and a failure", () => {

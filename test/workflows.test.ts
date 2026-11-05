@@ -88,9 +88,17 @@ describe("build.yml", () => {
     expect(tested).toEqual(matrix);
   });
 
+  test("keeps the deployed data's facts with pnpm build --previous, the one pnpm build step", () => {
+    const job = jobText(build, "build");
+    expect(job).toContain(`      - run: >-\n          pnpm build --plan start-plan.json\n          --previous ${PREVIOUS_URL}\n        env:\n`);
+    expect(job.match(/^ {10}pnpm build /gm)).toHaveLength(1);
+    expect(job).not.toMatch(/^ {6}- run: pnpm build/m);
+    expect(PREVIOUS_URL).toBe("https://jmgirard.github.io/zotero-plugin-index/v1/plugins.json");
+  });
+
   test("carries start results from the deployed data after pnpm build and before the start plan's upload", () => {
     const job = jobText(build, "build");
-    const built = job.indexOf("      - run: pnpm build --plan start-plan.json\n");
+    const built = job.indexOf("      - run: >-\n          pnpm build --plan start-plan.json\n");
     const carry = job.indexOf(
       "      - run: >-\n          pnpm carry-start-results --plan start-plan.json --data dist/v1/plugins.json\n" +
         `          --previous ${PREVIOUS_URL}\n`,

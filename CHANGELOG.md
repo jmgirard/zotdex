@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+- A plugin that a build cannot read for a build-level reason, such as the
+  build's time limit or an HTTP 5xx answer, now keeps the facts that an
+  earlier build read, for at most 7 days. Before, its row showed "Not read"
+  until a later build read it. The home row then has an "Older data" badge,
+  and the plugin's page names the day of the read and the failure. Such a
+  record counts as failed in the build log and in both deploy limits. The
+  data file has a new optional `kept` field on such a record, with
+  `readAt` and this build's `failure`, and `pnpm build` has a new
+  `--previous <url>` option. A record with `kept` has no start test in that
+  build and keeps the start results published with its facts, and
+  `pnpm carry-start-results` carries no result from one. The footer now
+  names the day of the build that the data comes from.
 - The home page's search box, filters, sort menu, count, and pager now share
   one card with the table and one look. Each filter's label sits above it. The
   count and "Sort by" sit above the table. If the width allows, they share one
