@@ -5,9 +5,11 @@
 - A new issue form asks to remove a plugin or reports harm. Each plugin page
   and the About page link to it. The form is public, and a maintainer reads
   each request. About states the four reasons for a removal.
-- A removed plugin now stays off the index. `delisted.json` names it, and
-  `pnpm check` refuses its entry. The discovery bot does not propose it. The
-  bot closes an "Add a plugin" issue for it as not planned.
+- A removed plugin now stays off the index. `delisted.json` names its repo and,
+  where a maintainer judged it unique, its id. `pnpm check` refuses such an
+  entry, and the discovery bot does not propose it. The bot closes an "Add a
+  plugin" issue for it as not planned. A copy under a new name and a new id is
+  not covered.
 - The categories of the plugins added since 2026-10-31 were each read, and the
   word rules and the lists of exceptions changed. Those plugins lose
   wrong categories and gain some that they lacked, and one older plugin gains a

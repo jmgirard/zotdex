@@ -1855,6 +1855,7 @@ describe("the built site", () => {
       "To ask, use the form for removing a plugin or reporting harm",
       "The form opens a public GitHub issue",
       "A removed plugin stays off the index",
+      "so a copy under a new name and a new id is not covered",
       "The index still cannot vet plugins, and it does not review their code.",
     ]) {
       expect(text).toContain(words);

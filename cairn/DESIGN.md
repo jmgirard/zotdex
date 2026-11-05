@@ -374,7 +374,8 @@ misleads about what the plugin is or who makes it, or for harm that a report
 shows with evidence a reader can check (D-062, M093). `delisted.json` names
 each removed repo, and its `ids` hold only ids judged unique to that repo. So
 `pnpm check`, discovery, and "Add a plugin" issues keep the plugin off the
-index, and a bot pull request for it does not merge. An author cannot remove
+index, and a bot pull request for it does not merge. A copy under a new name
+and a new id is not covered. An author cannot remove
 user reports. The exception is a report that is abuse.
 
 ## Function Families

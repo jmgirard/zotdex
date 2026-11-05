@@ -219,8 +219,9 @@ const offered = new Set(categoryOptions(plugins).map(({ value }) => value));
       plugin's page. The form opens a public GitHub issue, and a maintainer answers there.
     </p>
     <p>
-      A removed plugin stays off the index, and the bot does not propose it again. The index still cannot vet plugins, and
-      it does not review their code.
+      A removed plugin stays off the index, and the bot does not propose it again. A list names its repository and, when
+      a maintainer judges it unique, its plugin id, so a copy under a new name and a new id is not covered. The index still
+      cannot vet plugins, and it does not review their code.
     </p>
   </section>
   <section class="card" id="not-vetted" data-about="not-vetted">

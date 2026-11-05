@@ -68,6 +68,8 @@ A plugin's owner or any reader can ask from the site to remove a listed plugin, 
 - 2026-11-04: created the `remove-plugin` label on GitHub, as the question set allowed.
 - 2026-11-04: implementation choices: a missing or refused list stops `pnpm discover` and fails the issue read, and `pnpm check` names it as `delisted-file`, so a lost list cannot readmit a plugin; a refusal for a listed repo or id is recorded in the discovery state, so a fork with a listed id does not spend a read each day; `pnpm propose` does not read the list, since its read steps and the merge job's check cover it; the plugin page puts the link in its own line, because "Is this your plugin?" misframed a reader's report.
 - 2026-11-04: T1 to T7 done in one checkpoint, as the tasks share the list module; `pnpm test` 2360 passed, 6 skipped; `pnpm check` 736 entries, 0 problems; a site built from the deployed data showed the About section and the link in the browser pane with no console error.
+- 2026-11-04: claim audit: 90 claims read, 5 corrected — README.md, CHANGELOG.md, .github/ISSUE_TEMPLATE/remove-plugin.yml, site/src/pages/about.astro
+- 2026-11-04: the claim audit's corrections add the rebuild step, the merge job's skip of held and newer pull requests, the closed-pull-request limit on listing a plugin again, the issue exception for a listed id with a bot pull request, and the limit that a copy under a new name and a new id is not covered.
 - 2026-11-04: the simple-english hook reports older README and CHANGELOG sentences outside this change; left as they are, and this change's own sentence it flagged is split.
 
 ## Decisions

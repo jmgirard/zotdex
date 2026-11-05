@@ -1279,19 +1279,25 @@ filled in, and the About page links to it too. The form adds the label
 `remove-plugin` and opens a public issue. No bot answers it. A maintainer
 reads each request.
 
-A maintainer removes a plugin when its repository's owner asks, when it is
-spam, when its entry misleads people about what the plugin is or who makes it,
-or when a report shows harm with evidence that a reader can check. A claim with
-no evidence removes nothing. The index still cannot vet plugins, and it does
-not review their code.
+A maintainer removes a plugin for any of four reasons:
+
+- Its repository's owner asks.
+- It is spam.
+- Its entry misleads people about what the plugin is or who makes it.
+- A report shows harm with evidence that a reader can check.
+
+A claim with no evidence removes nothing. The index still cannot vet plugins,
+and it does not review their code.
 
 To remove a plugin, do these steps on a branch:
 
 1. Delete the entry's directory under `plugins/`.
 2. Add a record to `delisted.json` at the top of the repo.
 3. Run `pnpm check`, then merge the change.
-4. Close any open bot pull request for the repo.
-5. Answer the issue, then close it.
+4. Close any open bot pull request for the repo or the id.
+5. Run `Build data` by hand. Otherwise, the plugin stays on the site until the
+   next daily build.
+6. Answer the issue, then close it.
 
 A record has four fields:
 
@@ -1301,8 +1307,8 @@ A record has four fields:
 
 Write `repo` in lowercase. `issue` is the number of the request, and `date` is
 the day of the removal. Put an id in `ids` only if you judged it unique to that
-repo, because a fork can keep its source's id, and a listed id blocks every
-repo that carries it. `ids` can be empty.
+repo. A fork can keep its source's id, and a listed id blocks every repo that
+carries it. `ids` can be empty.
 
 The list keeps a removed plugin off the index in three places:
 
@@ -1312,11 +1318,23 @@ The list keeps a removed plugin off the index in three places:
   listed id as `delisted-id`.
 - An "Add a plugin" issue that names such a repo gets a comment that names the
   removal. The bot closes the issue as not planned and opens no pull request.
+  The exception is an unlisted repo that carries a listed id and already has a
+  bot pull request. That issue gets the answer about the pull request.
 - `pnpm check` fails on an entry that the list names, so the merge job does not
-  merge a bot pull request for it. The job reports that pull request as failed
+  merge a bot pull request for it. The job skips a held pull request and one
+  under 48 hours old. For any other, the job reports it as failed and exits 1
   each day until you close it.
 
-To list a plugin again, remove its record. The bot can then propose it again.
+The list names a repo and the ids in its record, and nothing else. The bot can
+propose a repo again in these cases:
+
+- The repo moves to a new name, and its record has no id.
+- The repo moves to a new name, and the plugin changes its id.
+- A fork has a new id.
+
+To list a plugin again, remove its record. The bot can then propose it, unless
+a bot pull request for that repo was closed without a merge. In that case, add
+the entry by hand.
 
 ## Checking entries
 
