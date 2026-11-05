@@ -339,7 +339,7 @@ const prePaint = `if ("noModule" in HTMLScriptElement.prototype) {
     const sort = () => {
       if (sortSelect.value === sorted) return;
       sorted = sortSelect.value;
-      rows.splice(0, rows.length, ...(sorted === "" ? built : built.toSorted(sortOrder(sorted))));
+      rows.splice(0, rows.length, ...(sorted === "" ? built : [...built].sort(sortOrder(sorted))));
       tbody.append(...rows.map((entry) => entry.row));
     };
     const language = () => ({ value: select.value, options: languages });

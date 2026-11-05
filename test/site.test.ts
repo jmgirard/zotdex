@@ -98,13 +98,11 @@ describe("pnpm site", () => {
     expect(result.status).toBe(0);
   });
 
-  test("writes the home page, the About page, and one page for each record under its raw id, beside the 404 page and the sitemap", () => {
+  test("writes the home page, the About page, and one page for each record under its raw id", () => {
     expect(existsSync(join(out, "index.html"))).toBe(true);
     expect(readdirSync(join(out, "about"))).toEqual(["index.html"]);
     expect(readdirSync(join(out, "plugins")).sort()).toEqual([...ids].sort());
     for (const id of ids) expect(readdirSync(join(out, "plugins", id))).toEqual(["index.html"]);
-    expect(existsSync(join(out, "404.html"))).toBe(true);
-    expect(existsSync(join(out, "sitemap.xml"))).toBe(true);
   });
 
   test("writes a 404 page at the top that says what happened, links home and to About, and asks not to be indexed", () => {
@@ -1116,7 +1114,6 @@ describe("the home page", () => {
     const declared = (selector: string) => Object.fromEntries(rules.find((rule) => rule.selector === selector)?.declarations ?? []);
     expect(declared(".owner-name")).toMatchObject({ "min-width": "0", overflow: "hidden", "text-overflow": "ellipsis" });
     expect(declared(".row-stars")).toMatchObject({ flex: "none", color: "var(--muted)" });
-    // The icon takes the count's color, not the plugin page's star color.
     expect(declared(".row-stars .icon")).toMatchObject({ fill: "currentColor", stroke: "none" });
     expect(home()).not.toMatch(/class="row-stars"[^>]*data-repo-stars/);
   });
@@ -1676,6 +1673,14 @@ describe("the home page script", () => {
       // Stars puts same-name-plugin first, and Name ties them and orders by id.
       expect(homeScript(`${PAGE}?q=first+plugin`).visible()).toEqual(["same-name-plugin@example.org", "first-plugin@example.org"]);
       expect(homeScript(`${PAGE}?q=first+plugin&sort=name`).visible()).toEqual(["first-plugin@example.org", "same-name-plugin@example.org"]);
+    });
+
+    test("pages the rows in the chosen order", () => {
+      const first = homeScript(`${PAGE}?sort=name`, 60);
+      expect(first.visible()).toEqual(first.all().slice(0, 50));
+      const second = homeScript(`${PAGE}?sort=name&page=2`, 60);
+      expect(second.visible()).toEqual(second.all().slice(50, 100));
+      expect(second.all()).toEqual(first.all());
     });
 
     test("going back to Stars restores the built order, not a new sort", () => {

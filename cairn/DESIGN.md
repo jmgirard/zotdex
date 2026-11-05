@@ -63,9 +63,9 @@ sensitivity and then by id (M097, D-065). The menu's `name` value is that name
 order (M053), and its `latest` value puts a later `latestReleaseDate` first,
 with a missing or unreadable date last and ties in name order. The script
 reorders the rows on a change and shows page 1, keeps `name` or `latest` in
-`?sort=`, and removes any other value. Without JavaScript the menu stays
-hidden and the rows keep the built order. Going back to Stars restores the
-built order. The home page's script shows
+`?sort=`, and removes any other value. Going back to Stars restores the built
+order. Without JavaScript the menu stays hidden and the rows keep the built
+order. The home page's script shows
 the rows the filters pass 50 at a time, with a pager below the table, and
 keeps the page after 1 in `?page=`; Previous and Next add a history entry
 with `pushState`, the filters still replace the address, and a filter event
@@ -566,7 +566,9 @@ user reports. The exception is a report that is abuse.
   `majorStart`, `shortLanguages`, and `monthYear` for the home table, and
   `compatMajors`, `majorReport`, and `startWords` for the plugin page's
   table (M054). `site/src/components/Icon.astro` draws the line icons, the lock
-  (M081), the card (M082), and the star, which `Base.astro` fills only inside `[data-repo-stars]` (M064).
+  (M081), the card (M082), and the star, which `Base.astro` fills with `--star`
+  inside `[data-repo-stars]` (M064) and with the count's color in `.row-stars`
+  (M097).
   `site/src/layouts/Base.astro` holds the color and size tokens for both
   color schemes, the shared rules, the top bar, and the footer. Added M007;
   pills and descriptions M015; languages M024; version buttons M037; status

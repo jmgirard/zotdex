@@ -125,8 +125,8 @@ export function chosenPage(asked: string | null, pages: number): number {
 // q, a sort value that is not empty, since name and latest show the rows in another order than
 // they parse and this function does not check the value, a language, zotero, or category value
 // that is not letters, digits, and hyphens, or a page of more than 6 digits hides every row.
-// Otherwise the CSS shows the asked page of the rows
-// that the language, zotero, and category values pass. Each value gets its own :not() rule with one attribute
+// Otherwise the CSS shows the asked page of the rows that the language, zotero, and category
+// values pass. Each value gets its own :not() rule with one attribute
 // selector, and each rule that uses :nth-child(… of S) stands alone, so a browser that cannot
 // read that form drops only those rules. The home page builds a classic script from this
 // function's source text, so it calls and reads nothing from outside its body except

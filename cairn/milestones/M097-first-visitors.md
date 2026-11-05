@@ -23,7 +23,7 @@ Help a first-time visitor find established plugins and find their way around the
 
 - [x] AC1: With JavaScript, the home page has a "Sort by" menu with the options Stars (the default), Name (`name`), and Latest release (`latest`). Stars puts a higher `upstream.stars` first, and 0 is a value. Latest release puts a later `upstream.latestReleaseDate` first. Name uses the display name with `localeCompare` at base sensitivity, then the id. Under Stars and Latest release, a record with no such value comes after every record that has one, and records that tie keep Name order. A change of the menu reorders the rows that the filters pass and shows page 1. The page keeps `sort=name` or `sort=latest` in the address, reads it on load and on Back and Forward, and removes any other `sort` value, `sort=stars` included. `test/home-filter.test.ts` tests the order on rows that cover each case in this criterion. `test/site.test.ts` tests that the built rows carry each record's values, and it tests the parameter, the row order, and page 1 on the built page's script.
 - [x] AC2: Without JavaScript, the built home page lists every row in Stars order and shows no sort menu: the menu's wrapper has `hidden`, and the layout's `[hidden]` rule names it. `test/site.test.ts` tests the order, the wrapper, and the rule. For an address whose `sort` value is not empty, `prePaintStyle` hides every row. The existing cases in `test/support/pre-paint.ts` keep their styles, and new cases cover `?sort=name`, `?sort=x`, `?sort=`, `?sort=%20`, `?sort=name&page=2`, and `?sort=name&language=en`.
-- [ ] AC3: A home row that shows an owner and whose record has `upstream.stars` shows a star icon and the count after the owner, in `--muted`, with the same words as the plugin page (`starsText`) in its title and for screen readers. A long owner is cut with an ellipsis, and the count stays whole. At 375 px with the deployed data, the home page has no page overflow, the table card does not scroll sideways, and the count shows whole in each row with the longest owner name and in the most-starred row whose owner is cut, as a browser pane check that pages to those rows shows. The legend under the table says that the count comes from GitHub, that the default order comes from that count, and that neither is a review by the index.
+- [x] AC3: A home row that shows an owner and whose record has `upstream.stars` shows a star icon and the count after the owner, in `--muted`, with the same words as the plugin page (`starsText`) in its title and for screen readers. A long owner is cut with an ellipsis, and the count stays whole. At 375 px with the deployed data, the home page has no page overflow, the table card does not scroll sideways, and the count shows whole in each row with the longest owner name and in the most-starred row whose owner is cut, as a browser pane check that pages to those rows shows. The legend under the table says that the count comes from GitHub, that the default order comes from that count, and that neither is a review by the index.
 - [x] AC4: `pnpm site` writes `404.html` at the top of the site. Its main content says that no page is at that address and links to the home page and the About page by addresses that start with `BASE`. It has a `robots` meta tag with `noindex`, no canonical link, and no `og:url` tag. A test in `test/site.test.ts` reads the built file.
 - [x] AC5: GitHub Discussions is on for the repository: `gh repo view --json hasDiscussionsEnabled` reads true. The top bar of every built page, as a test in `test/site.test.ts` reads it, links to `https://github.com/jmgirard/zotero-plugin-index/discussions` as "Feedback". At 375 px with the deployed data, the home page has no page overflow.
 - [x] AC6: `pnpm site` writes `sitemap.xml` at the top of the site in the sitemaps.org `urlset` form, with one `<loc>` for the home page, one for the About page, and one for each record in the data, each equal to that page's canonical address, and no other `<loc>`. Each built page's head has a `<link rel="sitemap">` to it. A test in `test/site.test.ts` compares the `<loc>` list with the canonical links of the built pages and reads the head link.
@@ -81,6 +81,7 @@ Help a first-time visitor find established plugins and find their way around the
 - 2026-11-05: review return 1: AC3 failed: the star icon on home rows takes `--star` through `[data-repo-stars] .icon`, not `--muted`, as the browser pane read rgb(227,179,65); fix the icon and the fix-now findings listed in the Review section.
 - 2026-11-05: T8 added and done for review return 1: `.row-stars .icon` fills with the count's color, and home rows no longer carry `data-repo-stars`; going back to Stars restores the built rows instead of sorting again; two blind tests replaced or removed; comments, titles, DESIGN, and the ROADMAP row corrected.
 - 2026-11-05: return 1 fixed: `pnpm test` and `pnpm check` pass; the browser pane read the icon fill equal to the count's color and the built order restored; status set to review.
+- 2026-11-05: review pass 2 fixes landed on the branch; `pnpm test` passed 2429 and `pnpm check` passed.
 
 ## Decisions
 
@@ -90,7 +91,7 @@ Help a first-time visitor find established plugins and find their way around the
 
 - AC1: `pnpm test` passed 2427 tests, 6 skipped, on the branch at 87de578f. `test/home-filter.test.ts` `sortOrder` covers higher stars, 0 before no count, ties in Name order, later date first, missing and unreadable dates last, and Name by case and accent then id. `test/site.test.ts` "the sort menu" tests and "gives each row its record's star count and release date" cover built values, the parameter on load and Back, removal of `stars`, `x`, and empty, the order, and page 1. The browser pane on the deployed data also ran Latest release, Name, Next, Back, and Stars.
 - AC2: the built home page from the deployed data lists 736 rows with stars in descending order and the 2 rows with no count last, and holds `<p class="sort-menu" hidden>`; the site tests cover the order, the wrapper, and `.sort-menu[hidden]`. `PRE_PAINT_CASES` keeps its earlier cases and passes the six new `?sort=` cases in both the unit test and the built classic script.
-- AC3 (unticked at review return 1, the icon is gold): site tests cover the count, its words, and `--muted`. In the browser pane at 375 px with data generated 2026-11-05T04:33:03Z, all 15 pages and 736 rows read page overflow 0 and table card overflow 0; 734 rows have a count, and none reaches past its cell. The two longest owners (`lelelelelelelelelelelelele`, 11 stars, page 4; `CentreForDigitalHumanities`, 1 star, page 9) are the only cut rows, so they are also the most-starred cut row, and both counts show whole. The legend text is tested.
+- AC3: after review return 1, the browser pane reads the row and legend icon fill and the count's color both as rgb(163, 163, 156), which is dark `--muted`; site tests cover the count, its words, and `--muted`. In the browser pane at 375 px with data generated 2026-11-05T04:33:03Z, all 15 pages and 736 rows read page overflow 0 and table card overflow 0; 734 rows have a count, and none reaches past its cell. The two longest owners (`lelelelelelelelelelelelele`, 11 stars, page 4; `CentreForDigitalHumanities`, 1 star, page 9) are the only cut rows, so they are also the most-starred cut row, and both counts show whole. The legend text is tested.
 - AC4: `test/site.test.ts` reads the built `404.html`: the main content says no page is at the address, links home and to About under `BASE`, has `noindex`, and has no canonical link or `og:url`. The file built from the deployed data reads the same. GitHub serving it for a missing address waits for a deploy.
 - AC5: `gh repo view --json hasDiscussionsEnabled` reads true. The top-bar test reads the exact link on every built page, and a scan of the deployed-data build found it on all pages. At 375 px the home page reads overflow 0 on all 15 pages.
 - AC6: `test/site.test.ts` compares the `urlset` `<loc>` list with the canonical links of the built pages and reads each head's link. The deployed-data build has 738 `<loc>` lines for 736 records plus 2.
@@ -125,3 +126,35 @@ Help a first-time visitor find established plugins and find their way around the
 - ripple #2: DESIGN's `--faint` owner line entry — reject, false: the owner's text still takes `--faint`, and the entry stays true
 - ripple #3: three test titles omit the sort menu, `[data-sort]`, or the new files — fix now
 - ripple #4: the row "Test the home page script in a browser" omits the sort menu — fix now
+
+### Findings, pass 2
+
+- spawned: diff-bug, blame-history, prior-review, ripple
+- diff-bug #1: `built.toSorted` throws in browsers before about Chrome 110, Firefox 115, and Safari 16, and on `?sort=name` leaves them with every row and no controls — fix now, `[...built].sort`; no criterion fails, and such a browser still reads every row, so no floor return
+- blame-history #1: the same `toSorted` finding — fix now, as diff-bug #1
+- diff-bug #2: "the filters pass rows in the chosen order" misses a plant that pages in built order — fix now, added "pages the rows in the chosen order"
+- diff-bug #3: the star color test reads one selector, so another rule could bring gold back — follow-up, held by the row "Test the home page script in a browser", which says such checks need a CSS engine; the browser pane read is this criterion's evidence
+- diff-bug #4: the home star lost `vertical-align: -0.125em` and sits about 1.5 px high — fix now
+- diff-bug #5: two `existsSync` lines are weaker than the exact reads — fix now, removed
+- diff-bug #6: the first `expect` of the filter test repeats another — reject, style: it is the contrast for the next line
+- diff-bug #7: a test comment restates the next line — fix now, removed
+- diff-bug #8: "going back to Stars" uses rows the build cannot produce — reject, false: it fails on the old code, and the browser pane shows the real case
+- diff-bug #9: AC3 still unticked — fix now, ticked with fresh evidence above
+- diff-bug #10: the `astro.config.ts` comment names only imported assets — fix now
+- diff-bug #11: `Icon.astro`'s "elsewhere it draws as an outline" has no case — fix now
+- diff-bug #12: short wrapped lines — fix now in `home-filter.ts` and `Icon.astro`; the DESIGN line is reject, style
+- diff-bug #13: "Going back to Stars" reads as part of the no-JavaScript case — fix now
+- diff-bug #14: the legend star is smaller than the lock beside it — reject, style: it matches the row star
+- blame-history #2: the home star lost `white-space: nowrap` — reject, false: `.owner` sets it
+- blame-history #3: the home star is not gold — reject, planned change: AC3 asks for `--muted`
+- prior-review #1: the home star lost M064's forced-colors rule — reject, false: the diff-bug lens read the fill equal to the text color with forced colors on
+- prior-review #2: the star can wrap from its count — reject, false: as blame-history #2
+- prior-review #3: DESIGN says the star fills only inside `[data-repo-stars]` — fix now
+- ripple #1: the same DESIGN line — fix now, as prior-review #3
+- ripple #2: `Icon.astro` says "the text color" where the rule gives the count's color — fix now
+- ripple #3: the same outline clause — fix now, as diff-bug #11
+- ripple #4 and #5: README and DESIGN say ties keep Name order, while the build's and a browser's collation can differ — reject, false: built ties follow Name order by the build's `localeCompare`, and a Name sort follows the browser's
+- ripple #6: the search claim lost a test — reject, false: the exact-cell test holds it
+- ripple #7 to #12: lines that agree — noted
+- snapshot files changed: none
+- PR conversation: no PR exists yet, so no read ran; the Copilot round is off
