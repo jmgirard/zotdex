@@ -1168,8 +1168,8 @@ reused._
   text is written while hidden, so screen readers miss it, a same-count change
   writes the same text, and since M053 the search box rewrites it per key. The
   rows of controls appear after first paint and move the table, which M060's
-  pre-paint style misses (M044, M053 reviews). (5) The language and category menus set
-  `appearance: none` and draw their arrow with two CSS gradients, seen only in
+  pre-paint style misses (M044, M053 reviews). (5) The language and category
+  menus set `appearance: none` and draw their arrow with two CSS gradients, seen only in
   Chromium at 1280 and 375 px, never in Safari, Firefox, or forced colors. A
   seam may show at a root font size other than 16 px (M049, M063, M066
   reviews). (6) "Page p of P" is a second polite live region, first written

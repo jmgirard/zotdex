@@ -413,7 +413,7 @@ const themeButton = `(${wireThemeButton})();`;
       .pager[hidden] {
         display: none;
       }
-      /* max-content, so larger browser text cannot make the rounded corners cut off a button. */
+      /* max-content, so at larger browser text the overflow rule that holds the corners cuts off no button. */
       [data-version-filter] {
         display: flex;
         min-width: max-content;
@@ -711,7 +711,7 @@ const themeButton = `(${wireThemeButton})();`;
           grid-column: 1 / -1;
         }
       }
-      /* The two menus and the version buttons no longer fit on one row at their natural widths. */
+      /* About here, the two menus and the version buttons stop fitting on one row at natural widths. */
       @media (max-width: 47.5rem) {
         .controls {
           grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -720,8 +720,8 @@ const themeButton = `(${wireThemeButton})();`;
           grid-column: 1 / -1;
         }
       }
-      /* Side by side, the menus would cut "All categories". */
-      @media (max-width: 22.5rem) {
+      /* Below this, side by side, the menus near the width that cuts "All categories". */
+      @media (max-width: 21.25rem) {
         .controls {
           grid-template-columns: minmax(0, 1fr);
         }
