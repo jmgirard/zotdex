@@ -4,7 +4,7 @@
      cairn_validate's <150 over the plan-owned body. -->
 # M098: Give the table controls one design
 
-- **Status:** in-progress   <!-- owner: transitioning skill · mirror-update; cairn/ROADMAP.md is the authority -->
+- **Status:** review   <!-- owner: transitioning skill · mirror-update; cairn/ROADMAP.md is the authority -->
 - **Priority:** normal   <!-- owner: plan · create/amend-via-gate; high | normal | low -->
 - **Depends on:** —   <!-- owner: plan · create/amend-via-gate; M<xx>, M<yy> or — -->
 - **Driving RR:** —   <!-- owner: plan · create/amend-via-gate; RR<NN> whose Binding criteria bind this milestone's ACs (binding-criteria check), or — -->
@@ -110,6 +110,7 @@ The home page's search box, filter menus, version buttons, sort menu, count, and
 - 2026-11-05: T6 done on a build from the deployed data (736 plugins). Hover, pressed, focus, sizes, labels, order, and widths read as AC1 to AC4 state; the desktop distance is 133 px against the 145 cap and the 375 px distance 243 px against the 250 cap. The same scripted use of each control on this build and on main's gave the same count, rows, and address at every step. The no-script iframe shows 736 rows and no control. At 320 px the arrow space cut "All categories", so the two filter menus take `--space-12` right padding at 560 px or less; that change came after these reads, so review reads it fresh.
 - 2026-11-05: T7 done: README, DESIGN (the count's place, the card, known issue 4), the two comments in `home-filter.ts`, and one CHANGELOG entry.
 - 2026-11-05: T2 and the first test edits used a Python script rather than the Edit tool, against the rulebook's file-edit rule, so those changes did not reach the app's edited-files card; the branch diff holds them.
+- 2026-11-05: claim audit: 60 claims read, 6 corrected — CHANGELOG.md, README.md, cairn/DESIGN.md, site/src/layouts/Base.astro, site/src/pages/index.astro; the one re-read corrected the pressed-fill wording once more, since "pale" held only in the light scheme.
 
 ## Decisions
 <!-- owner: implement / review · append-only; milestone-local; promote
