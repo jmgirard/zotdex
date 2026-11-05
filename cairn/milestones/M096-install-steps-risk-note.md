@@ -1,13 +1,13 @@
 # M096: Say how to install a plugin and what it can reach
 
-- **Status:** planned
+- **Status:** in-progress
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — visitors read the new text on the site
-- **Branch/PR:** —
+- **Branch/PR:** m096-install-steps-risk-note
 
 ## Goal
 
@@ -39,7 +39,7 @@ A visitor can learn from the site how to install a plugin and what a plugin can 
 
 ## Tasks
 
-- [ ] T1: Save https://www.zotero.org/support/plugins to `cairn/references/sources/`. Write `cairn/references/zotero-plugins-page.md` and its `INDEX.md` line, with the install steps and the full-access warning. Record the Firefox evidence there: GitHub's `content-type: application/x-xpinstall` answer and the Firefox notes in the READMEs of Better Notes and PDF Translate.
+- [x] T1: Save https://www.zotero.org/support/plugins to `cairn/references/sources/`. Write `cairn/references/zotero-plugins-page.md` and its `INDEX.md` line, with the install steps and the full-access warning. Record the Firefox evidence there: GitHub's `content-type: application/x-xpinstall` answer and the Firefox notes in the READMEs of Better Notes and PDF Translate.
 - [ ] T2: In `test/site.test.ts`, write the tests for AC1 to AC4 first and see them fail. Change the tests that the new intro and section replace: "the About and home intros say who reads the paid service fact" (line 765, About only), "opens the home intro with the disclaimer, above the table" (line 1779, the disclaimer stays in the intro, above the table), and the section list (line 775).
 - [ ] T3: Add the note after `.page-head` in `site/src/pages/plugins/[id]/index.astro`, only when the download link shows, with its style in `site/src/layouts/Base.astro`. The `.actions` markup stays as `test/site.test.ts:438` reads it. Write `{" "}` before the link (lesson M021).
 - [ ] T4: Add the `installing` section to `site/src/pages/about.astro`, before `not-vetted`. Add a sentence on it to the About intro. Read the built text for dropped spaces.
@@ -60,6 +60,7 @@ A visitor can learn from the site how to install a plugin and what a plugin can 
 - 2026-11-05: plan gate chose to state the bot's role on About only over also on the plugin page, because the note is already four sentences above the compatibility table; falsified by a visitor who reads the note and takes a listing as a human check.
 - 2026-11-05: plan chose Zotero's own steps and warning over a menu path from memory, because the index should match Zotero's documented words; falsified by a change to that page.
 - 2026-11-05: question set: start the build workflow by hand after the merge — yes, `gh workflow run build.yml --ref main`.
+- 2026-11-05: T1 done: source note and INDEX line; the page also says that an official plugin directory is planned, which the close names for the user.
 
 ## Decisions
 
