@@ -124,6 +124,51 @@ describe("pnpm site", () => {
   });
 });
 
+describe("how to install a plugin", () => {
+  const INSTALL_NOTE =
+    "To install, save the .xpi file and drag it onto the Plugins window in Zotero (Tools → Plugins). " +
+    "In Firefox, right-click the download link and choose Save Link As. " +
+    "A plugin has full access to your Zotero and your computer, and the index does not review its code before listing it, " +
+    "so install only plugins from developers you trust. More about installing";
+  const noteOf = (html: string) => [...html.matchAll(/<p class="install-note" data-fact="install-note">(.*?)<\/p>/gs)].map(([, text]) => text!);
+  // Tags go with no space added, so a space that the template drops before a link shows here.
+  const textOf = (html: string) => unescaped(html.replace(/<[^>]+>/g, "")).replace(/\s+/g, " ").trim();
+
+  test("each plugin page with a download link has one note after its page head, and a page with none has no note", () => {
+    const pages = htmlFiles(join(out, "plugins")).map((file) => readFileSync(join(out, "plugins", file), "utf8"));
+    const withLink = pages.filter((html) => html.includes('data-link="download"'));
+    expect(withLink.length).toBeGreaterThan(0);
+    expect(withLink.length).toBeLessThan(pages.length);
+    for (const html of pages) {
+      const hasLink = html.includes('data-link="download"');
+      expect(noteOf(html)).toHaveLength(hasLink ? 1 : 0);
+      if (!hasLink) continue;
+      expect(html.replace(/>\s+</g, "><")).toMatch(/<\/div><\/div><p class="install-note" data-fact="install-note">/);
+      expect(noteOf(html)[0]).toMatch(/<a href="\/zotero-plugin-index\/about\/#installing">More about installing<\/a>/);
+    }
+  });
+
+  test("the note gives the steps, the Firefox step, and the risk", () => {
+    const html = htmlFiles(join(out, "plugins"))
+      .map((file) => readFileSync(join(out, "plugins", file), "utf8"))
+      .find((page) => page.includes('data-link="download"'))!;
+    expect(textOf(noteOf(html)[0]!)).toBe(INSTALL_NOTE);
+  });
+
+  test.each([
+    "To install a plugin, save its .xpi file to your computer. Then, in Zotero, go to Tools → Plugins and drag the file onto the Plugins window.",
+    "In Firefox, right-click the download link and choose Save Link As.",
+    "A plugin has full access to your Zotero and your computer, so install only plugins from developers you trust.",
+    "A bot adds new plugins on its own, and a maintainer decides only those that one of its checks holds.",
+    "A maintainer who decides a held plugin checks who makes it and what it claims to be, not its code.",
+    "The index does not review a plugin's code before listing it.",
+  ])("the About section says: %s", (sentence) => {
+    const about = readFileSync(join(out, "about/index.html"), "utf8");
+    const section = /<section class="card" id="installing" data-about="installing">(.*?)<\/section>/s.exec(about)![1]!;
+    expect(textOf(section)).toContain(sentence);
+  });
+});
+
 function fact(html: string, name: string): string | undefined {
   const match = new RegExp(`data-fact="${name}"[^>]*>(.*?)</(?:p|dd|li|span)>`).exec(html);
   return match?.[1]!.replace(/<[^>]+>/g, "");
@@ -762,12 +807,11 @@ describe("the About page", () => {
     expect(unescaped(section).replace(/\s+/g, " ")).toContain(claim);
   });
 
-  test("the About and home intros say who reads the paid service fact", () => {
-    const claim = "A maintainer reads the paid service fact by hand, and the build reads the others";
-    for (const html of [about(), home()]) {
-      const intro = /<p class="intro">([\s\S]*?)<\/p>/.exec(html)![1]!;
-      expect(unescaped(intro).replace(/\s+/g, " ")).toContain(claim);
-    }
+  test("the About intro says who reads the paid service fact, and the Start test section says when a plugin starts again", () => {
+    const intro = /<p class="intro">([\s\S]*?)<\/p>/.exec(about())![1]!;
+    expect(unescaped(intro).replace(/\s+/g, " ")).toContain("A maintainer reads the paid service fact by hand, and the build reads the others");
+    const start = /<section class="card" id="start-test"[\s\S]*?<\/section>/.exec(about())![0];
+    expect(unescaped(start).replace(/\s+/g, " ")).toContain("It also starts each plugin again on one day of each week");
   });
 
   test("has one section for each part of the method, each under its h2", () => {
@@ -781,6 +825,7 @@ describe("the About page", () => {
       ["source", "Source code"],
       ["paid-service", "Paid service"],
       ["removing", "Removing a plugin"],
+      ["installing", "Installing a plugin"],
       ["not-vetted", "What the index does not do"],
       ["license", "License"],
     ]);
@@ -1776,9 +1821,13 @@ describe("the built site", () => {
     for (const file of htmlFiles(out)) expect(readFileSync(join(out, file), "utf8"), file).not.toContain("does not vet");
   });
 
-  test("opens the home intro with the disclaimer, above the table", () => {
-    const intro = /<p class="intro">\s*(.*?)<\/p>/s.exec(home())?.[1];
-    expect(intro?.slice(0, DISCLAIMER_TEXT.length + 1)).toBe(`${DISCLAIMER_TEXT} `);
+  test("says what the site is for in the home intro, with the disclaimer and the install link, above the table", () => {
+    const intro = /<p class="intro">(.*?)<\/p>/s.exec(home())![1]!;
+    // Tags go with no space added, so a space that the template drops before the link shows here.
+    expect(unescaped(intro.replace(/<[^>]+>/g, "")).replace(/\s+/g, " ").trim()).toBe(
+      `See which Zotero versions each plugin declares, whether it starts, and what users report. ${DISCLAIMER_TEXT} How to install a plugin.`,
+    );
+    expect(intro).toMatch(/<a href="\/zotero-plugin-index\/about\/#installing">How to install a plugin<\/a>\./);
     expect(home().indexOf('<p class="intro">')).toBeLessThan(home().indexOf('<table class="plugins">'));
   });
 

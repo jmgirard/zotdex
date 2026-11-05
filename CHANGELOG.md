@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Each plugin page with a download link now has a note on how to install the
+  file in Zotero, with a step for Firefox. The note says that a plugin has
+  full access to Zotero and the computer, and that the index does not review
+  its code before listing it. A new "Installing a plugin" section on the About
+  page gives the same steps and says how a bot and a maintainer add plugins.
+  The home page's intro now says what the site shows, keeps the disclaimer,
+  and links to that section. The details of how the build reads plugins stay
+  on the About page.
 - The repository now states its terms. The code is under the MIT License, except
   the third-party parts of the files that README's License section names. The
   facts that the index gathers, its categories, and text that a maintainer wrote

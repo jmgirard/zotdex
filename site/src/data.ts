@@ -158,6 +158,9 @@ export function overrideUsed(record: PluginRecord, override: Override): boolean 
 // What every page's footer and the home page's intro say about the index itself.
 export const DISCLAIMER = "This index is unofficial and not affiliated with or endorsed by Zotero, and it cannot vet the plugins it lists.";
 
+// The About page's section on installing a plugin.
+export const INSTALL_HREF = `${BASE}about/#installing`;
+
 // The License section of the index repo's README.
 export const LICENSE_HREF = "https://github.com/jmgirard/zotero-plugin-index#license";
 

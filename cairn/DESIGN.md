@@ -158,7 +158,12 @@ D-052). A home row and a plugin page show a card icon for a record with
 its note, source link, and read date (M082, D-054). Each page's footer and the home page's intro say: "This index
 is unofficial and not affiliated with or endorsed by Zotero, and it cannot vet
 the plugins it lists." (`DISCLAIMER`, M080, D-051). The holds and the start
-tests screen in part, and neither is a review of plugin code.
+tests screen in part, and neither is a review of plugin code. The home intro
+also says what the site shows, and it links to About's `#installing` section,
+which gives Zotero's install steps, a step for Firefox, Zotero's full-access
+warning, and how a bot and a maintainer add plugins (M096, D-064). A plugin page
+with a download link has an install note after its page head, with the same
+steps and warning and a link to that section (`data-fact="install-note"`, M096).
 
 Each plugin page's table shows one row, and the home table one declared
 mark, for each Zotero major version in `ZOTERO_MAJORS` (7 to 10). A

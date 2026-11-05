@@ -9,6 +9,7 @@ import {
   BASE,
   categoryOptions,
   DISCLAIMER,
+  INSTALL_HREF,
   PAID_SERVICE_TEXT,
   displayName,
   githubRepo,
@@ -55,9 +56,8 @@ const prePaint = `if ("noModule" in HTMLScriptElement.prototype) {
   <div class="hero">
     <h1>Plugins for Zotero 7 and later</h1>
     <p class="intro">
-      {DISCLAIMER} A daily build reads the facts below from each plugin's GitHub repository and releases. A maintainer
-      reads the paid service fact by hand, and the build reads the others. The build starts each plugin once in each tested Zotero release that its manifest's range covers, and starts it again for a new plugin
-      file, after a failed start, and once a week.
+      See which Zotero versions each plugin declares, whether it starts, and what users report. {DISCLAIMER}{" "}
+      <a href={INSTALL_HREF}>How to install a plugin</a>.
     </p>
   </div>
   <div class="toolbar">

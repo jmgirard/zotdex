@@ -20,7 +20,8 @@ const offered = new Set(categoryOptions(plugins).map(({ value }) => value));
       Each day, a build reads every listed plugin's GitHub repository and releases. A plugin page shows the facts that
       the build found for one release, the release the index read. A maintainer reads the paid service fact by hand, and
       the build reads the others. This page says where the main facts come from and what they
-      do not show. It ends with the license terms.
+      do not show. It also says how to install a plugin, and it ends with the license
+      terms.
     </p>
   </div>
   <section class="card" id="declared" data-about="declared">
@@ -226,6 +227,19 @@ const offered = new Set(categoryOptions(plugins).map(({ value }) => value));
       A removed plugin stays off the index, and the bot does not propose it again. A list names its repository and, when
       a maintainer judges it unique, its plugin id, so a copy under a new name is covered only if it keeps a listed id. The
       index still cannot vet plugins, and it does not review their code.
+    </p>
+  </section>
+  <section class="card" id="installing" data-about="installing">
+    <h2>Installing a plugin</h2>
+    <p>
+      To install a plugin, save its .xpi file to your computer. Then, in Zotero, go to Tools → Plugins and drag the file
+      onto the Plugins window. In Firefox, right-click the download link and choose Save Link As.
+    </p>
+    <p>
+      A plugin has full access to your Zotero and your computer, so install only plugins from developers you trust. A bot
+      adds new plugins on its own, and a maintainer decides only those that one of its checks holds. A maintainer who
+      decides a held plugin checks who makes it and what it claims to be, not its code. The index does not review a
+      plugin's code before listing it.
     </p>
   </section>
   <section class="card" id="not-vetted" data-about="not-vetted">

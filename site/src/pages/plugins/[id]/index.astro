@@ -34,6 +34,7 @@ import {
   supportText,
   upstreamLines,
   type PluginRecord,
+  INSTALL_HREF,
 } from "../../../data.ts";
 
 export function getStaticPaths() {
@@ -149,6 +150,17 @@ const { min, max } = declaredRange(record);
       }
     </div>
   </div>
+  {
+    upstream && xpiHref && (
+      <p class="install-note" data-fact="install-note">
+        To install, save the .xpi file and drag it onto the Plugins window in Zotero (Tools → Plugins). In Firefox,
+        right-click the download link and choose Save Link As. A plugin has full access to your Zotero and your computer,
+        and the index does not review its code before listing it, so install only plugins from developers you
+        trust.{" "}
+        <a href={INSTALL_HREF}>More about installing</a>
+      </p>
+    )
+  }
   <section class="card compat" data-section="compatibility">
     <h2>Zotero compatibility</h2>
     {
