@@ -882,7 +882,7 @@ describe("the About page", () => {
     expect(link?.[1]).toBe("https://github.com/jmgirard/zotero-plugin-index#license");
     const text = unescaped(section.replace(/<[^>]+>/g, "")).replace(/\s+/g, " ");
     expect(text).toContain("The index's code is under the MIT License, except the third-party parts of the files that the README names.");
-    expect(text).toContain("The line icons on these pages come from Lucide, under the ISC License, and from Feather, under the MIT License.");
+    expect(text).toContain("The icons on these pages come from Lucide, under the ISC License, and from Feather, under the MIT License.");
     expect(text).toContain("The facts that the index gathers, its categories, and text that a maintainer wrote are under CC0 1.0.");
     expect(text).toContain("All other text keeps its author's terms: plugin names and descriptions, GitHub About text, and text that an owner asked for.");
   });

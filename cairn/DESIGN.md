@@ -567,9 +567,10 @@ user reports. The exception is a report that is abuse.
   `majorStart`, `shortLanguages`, and `monthYear` for the home table, and
   `compatMajors`, `majorReport`, and `startWords` for the plugin page's
   table (M054). `site/src/components/Icon.astro` draws the line icons, the lock
-  (M081), the card (M082), and the star, which `Base.astro` fills with `--star`
+  (M081), the card (M082), the star, which `Base.astro` fills with `--star`
   inside `[data-repo-stars]` (M064) and with the count's color in `.row-stars`
-  (M097).
+  (M097), and the puzzle piece, which `Base.astro` fills with `--accent` inside
+  `.brand` (M099).
   `site/src/layouts/Base.astro` holds the color and size tokens for both
   color schemes, the shared rules, the top bar, and the footer. Added M007;
   pills and descriptions M015; languages M024; version buttons M037; status
@@ -1045,9 +1046,10 @@ reused._
   tags, and for a page with a `path` its canonical link and `og:url`, from its
   `description` and `path` props and from
   `ORIGIN` in `site/src/base.ts`, and Astro copies `site/public/favicon.svg`
-  to the output (M094). The favicon and the top bar's logo draw one path,
-  `puzzle` in `Icon.astro`, in `--accent` (M099). `--accent` is the site's blue,
-  so that it stays apart from the red of `--bad` (M099).
+  to the output (M094). The top bar's logo draws `puzzle` from `Icon.astro` in
+  `--accent`, and `favicon.svg` holds a copy of that path with the same colors,
+  which tests keep equal (M099). `--accent` has the values of `--link`, the
+  site's blue, so that it stays apart from the red of `--bad` (M099).
   `build.yml`'s site job runs `pnpm site`
   after the build job (M047), so a failed site build also deploys nothing.
   `tsconfig.json` includes `site/`, so `pnpm test` type-checks its `.ts`

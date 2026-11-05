@@ -100,6 +100,7 @@ The site's logo no longer looks like an error, and red on the site means only a 
 - 2026-11-05: T4: viewed on localhost with the deployed data: home and a plugin page at 375 and 1280 px in both schemes; logo 16 px, `#1d5fb8` and `#7fb0ff`, name on one line, no horizontal scroll; `favicon.svg` shows the blue piece in both schemes.
 - 2026-11-05: T5: `pnpm test` and `pnpm check` passed before the last test edit; run again below.
 - 2026-11-05: claim audit: 28 claims read, 1 corrected — `test/site.test.ts`: the test name said "before the site's name" with no assertion on order; added one, and the reader's re-read holds.
+- 2026-11-05: review: T3's line that About's license text stays is corrected: the review fixed it to "The icons on these pages", as every icon now comes from Lucide or Feather.
 
 ## Decisions
 <!-- owner: implement / review · append-only; milestone-local; promote
@@ -122,4 +123,26 @@ The site's logo no longer looks like an error, and red on the site means only a 
 - AC6 evidence: `README.md:336` and `CHANGELOG.md:41` name the blue puzzle piece; "filled square" count 0 in `README.md`, `CHANGELOG.md`, and `cairn/DESIGN.md`, on line-joined copies too; `README.md:1924` names `site/public/favicon.svg`, whose comment points to `Icon.astro`; `Icon.astro:9` names `puzzle` as unchanged from lucide-static 1.68.0.
 - AC7 evidence: `pnpm test` exit 0, 2433 passed, 6 skipped; `pnpm check` exit 0, 736 entries, 0 problems.
 - Consistency gate: `cairn_validate.py` exit 0; no principle changed, so no impact run; the generic profile's slot names no toolchain checks.
-
+- spawned: diff-bug, blame-history, prior-review, ripple
+- prior-review #1: About's "line icons" no longer covers the filled logo, and M095's review chose those words to leave out the favicon — fix now.
+- diff-bug #2: same About sentence — fix now, as prior-review #1.
+- ripple #3: same About sentence — fix now, as prior-review #1.
+- ripple #1: DESIGN's list of what `Icon.astro` draws omits the puzzle piece — fix now.
+- ripple #2: `Icon.astro`'s opening comment names only the star as filled — fix now.
+- blame-history #2: DESIGN omits that `--accent` now matches `--link` — fix now.
+- diff-bug #10: DESIGN's "draw one path" overstates it, as the favicon holds a copy that tests keep equal — fix now.
+- diff-bug #9: short README line after the edit — fix now.
+- blame-history #4: same README line — fix now, as diff-bug #9.
+- prior-review #3: same README line — fix now, as diff-bug #9.
+- diff-bug #1: the new `htmlFiles` loop repeats the exact top-bar test — reject, planned change: AC3 names that loop.
+- diff-bug #3: AC5 evidence does not show the favicon at 16 px — reject, false: the top bar zooms show that same path at 16 px in both schemes.
+- diff-bug #4: a focused pressed button's bar and focus ring share one blue — reject, planned change: the user asked for the blue bar, and a 2 px offset keeps them apart.
+- diff-bug #5: a blue bar can read as a link underline — reject, planned change: the user asked for it, and it sits at the button's edge.
+- diff-bug #6: `--accent` and `--link` repeat one hex — reject, planned change: AC2 states the literals.
+- diff-bug #7: in forced colors the mark is `CanvasText` and the link text is likely `LinkText` — reject, planned change: AC3 states `CanvasText`, as the star rule does.
+- diff-bug #8: the forced-colors test's regex depends on indentation and order — reject, style: it copies the star test.
+- blame-history #1: `--accent` now equals `--link` — reject, planned change: AC2 states it.
+- blame-history #3: the M098 bar changes from red to blue — reject, planned change: the user asked for it.
+- blame-history #5: the favicon's dark fill and the forced-colors rule — reject, false: the reviewer reports no regression.
+- prior-review #2: `favicon.svg` carries a Lucide path with its notice in `Icon.astro` — reject, false: M095's known issue already covers it.
+- ripple #4: DESIGN's known issue on Lucide paths — reject, false: its words still hold with the favicon among the built files.

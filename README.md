@@ -334,8 +334,8 @@ because the site cannot have a `robots.txt` at the top of its host.
 
 Each page has a favicon, the icon that a browser shows for the page. It is a
 blue puzzle piece, and the top bar shows the same piece beside the site's name.
-Each page also has tags for link
-previews. The tags are a meta description, Open Graph tags, a Twitter card tag,
+Each page also has tags for link previews. The tags are a meta description,
+Open Graph tags, a Twitter card tag,
 and a canonical link. A shared link can show the page's title and
 description, with no picture. A plugin page uses its shown description. The
 page cuts a description of more than 200 characters at the last space in its
