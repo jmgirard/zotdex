@@ -227,6 +227,12 @@ user accounts, and a combined compatibility verdict. A plain link to the
 author's own `.xpi` file (the data's `xpiUrl`, M052) is not an install
 button: it downloads the file and installs nothing (D-029).
 
+A maintainer can remove a listed plugin for its repository's owner, for spam,
+for an entry that misleads about what the plugin is or who makes it, or for
+harm that a report shows with evidence a reader can check. `delisted.json`
+keeps it off the index. This does not make the index a reviewer of plugin code
+(D-051, D-062, M093).
+
 ## Data sources and contribution
 
 Five sources feed each plugin entry. The index keeps the sources apart and
