@@ -78,3 +78,47 @@ A shared link to any index page shows its own title and description, the page ha
 - AC5 evidence (head 19d2dfea): CHANGELOG's Unreleased section has one entry for the previews and one for the icon; README's "The site" section names both in its last paragraph; `pnpm test` exits 0 (2384 passed, 6 skipped), and `pnpm check` exits 0 (736 entries, 0 problems).
 - Consistency gate: `cairn_validate.py` exits 0 at head 19d2dfea; no DESIGN principle changed; the generic profile names no toolchain check.
 - spawned: diff-bug, blame-history, prior-review, ripple
+- diff-bug #1: 101 of 736 real previews end mid-sentence with no mark — follow-up, parked row "Tighten link previews and the icon".
+- diff-bug #2: the only icon is SVG, with no PNG or ICO fallback, and the hand check used one browser — follow-up, same row.
+- diff-bug #3: the About intro change is outside Scope and absent from CHANGELOG — follow-up, same row, for the facts About does not source; the sentence stays, because the audit found the old one false.
+- diff-bug #4: `rx="3"` drew a rounded square where AC3 says a filled square — fix now, fixed c0bca21e; the agent judged this no criterion failure, as the shape was one filled square, and removed the rounding so the words match exactly.
+- diff-bug #5: the `og:description` check repeated across the rows — fix now, fixed c0bca21e.
+- diff-bug #6: the encoded-address test repeated the walk — fix now, fixed c0bca21e.
+- diff-bug #7: a row pinned 200 spaces, which no page shows — fix now, fixed c0bca21e; the code guard behind it did nothing and went too.
+- diff-bug #8: the one-space row ran the same branch as the two-space row — fix now, fixed c0bca21e.
+- diff-bug #9: the newline row runs the same branch as the no-space row — reject, false: it pins that only U+0020 counts, which AC2 states.
+- diff-bug #10: the favicon test's regexes bind one form of the file — reject, style.
+- diff-bug #11: the contrast checks sit apart from `PAIRS` and use `--bg` for the tab strip — reject, style.
+- diff-bug #12: built rows overlap `cutDescription` rows — reject, false: the built rows test code points and the build, and the unit rows test the 200 boundary.
+- diff-bug #13: three rows expect the same sentence — reject, false: each reaches it by a different route.
+- diff-bug #14: DESIGN omits `cutDescription` and `ORIGIN` — fix now, fixed c0bca21e.
+- diff-bug #15: each page passes `path` by hand — reject, style; AC1's walk catches a wrong path.
+- diff-bug #16: the public address is hard-coded again in `ORIGIN` — follow-up, same row.
+- diff-bug #17: "Zotero plugin index" is a literal in several places — reject, style.
+- diff-bug #18: a cut can keep stray whitespace — follow-up, same row.
+- diff-bug #19: a cut can leave a short or name-only preview — follow-up, same row.
+- diff-bug #20: over 200 opening spaces drops the text for the sentence — follow-up, same row.
+- diff-bug #21: AC2 is scoped to the test's records and had no third reader — reject, planned change: the bound follows the audit, and the user left the wording to the agent.
+- diff-bug #22: the home preview omits the hand-read fact and the cannot-vet line — reject, false: it says "facts that" a build reads, not all facts, and it says "unofficial".
+- diff-bug #23: the title check does not trim, and `tagsOf` is a hand parser — reject, style.
+- diff-bug #24: some comments restate the code — reject, style.
+- diff-bug #25: an added DESIGN line runs past the wrap — fix now, fixed c0bca21e.
+- diff-bug #26: "characters" stands for code points — reject, style: plain wording for readers.
+- blame-history #1: the About intro softens a promise and leaves stars unsourced — follow-up, same row.
+- blame-history #2: AC2 was rewritten to match the code — reject, planned change: logged, and the user left the wording to the agent.
+- blame-history #3: "characters" against code points — reject, style.
+- blame-history #4: plugin text reaches outside platforms — reject, false: the public page already shows that text.
+- blame-history #5: `ORIGIN` is hard-coded — follow-up, same row.
+- blame-history #6: no ellipsis at a cut — follow-up, same row.
+- blame-history #7: Safari may not apply an SVG icon or its media query, unverified — follow-up, same row.
+- prior-review #1: a text of only U+200B gives an invisible preview, as DESIGN's Known issues entry says for Details — follow-up, same row.
+- prior-review #2: a cut can leave trailing spaces — follow-up, same row.
+- prior-review #3: the DESIGN line runs past the wrap — fix now, fixed c0bca21e.
+- prior-review #4: the home preview paraphrases `DISCLAIMER` — reject, style.
+- ripple #1: README's list of `pnpm site` outputs omits the favicon — fix now, fixed c0bca21e.
+- ripple #2: DESIGN's list for `src/site/description.ts` omits `cutDescription` — fix now, fixed c0bca21e.
+- ripple #3: DESIGN does not say where the host comes from — fix now, fixed c0bca21e.
+- ripple #4: "the main facts" implies some are left out — reject, false: no line says About covers every fact.
+- ripple #5: lines on the discovery topics — reject, false: they describe plugin repos, not this repo.
+- ripple #6: "icon" names both the card mark and the favicon in README — fix now, fixed c0bca21e.
+- Evidence after the fixes (head c0bca21e): `pnpm test` exits 0 (2381 passed, 6 skipped), `pnpm check` exits 0; the 8 `cutDescription` rows and 7 built records pass; the rect has no `rx` in either scheme in the browser pane, fills rgb(181, 35, 47) and rgb(240, 113, 120). No snapshot files changed. Rejected 18, fixed 12, sent to the row 13; no finding moved the status back.
