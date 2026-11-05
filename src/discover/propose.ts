@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import process from "node:process";
 import { promisify } from "node:util";
+import type { Delisted } from "../check/delisted.ts";
 import type { Lookup } from "../upstream/host-guard.ts";
 import { type Fetch, githubClient, ReadFailure } from "../upstream/reader.ts";
 import { duration } from "../upstream/time-limit.ts";
@@ -91,6 +92,7 @@ export interface DiscoverReadOptions {
   fetch: Fetch;
   lookup?: Lookup;
   state: DiscoveryState;
+  delisted?: Delisted;
   limit: number;
   budget: number;
   now?: Date;

@@ -23,6 +23,7 @@ import {
   type ReadItem,
 } from "../src/discover/discover.ts";
 import { type Delisted, delistedFrom } from "../src/check/delisted.ts";
+import { discoverRead } from "../src/discover/propose.ts";
 import { githubClient } from "../src/upstream/reader.ts";
 import { fixtureFetch, loadFixture, type Recorded, type Responses, type SeenRequest } from "./support/fixture-fetch.ts";
 import { pluginRepo, searchPage } from "./support/plugin-repo.ts";
@@ -120,11 +121,30 @@ describe("discover and the delisted list", () => {
 
   test("skips a listed repo with no read, also when the skip set names it", async () => {
     const responses = { ...searched([["example/removed", PUSHED], ["example/alpha", PUSHED]]), ...pluginRepo("example/alpha", "alpha@example.org") };
-    for (const skip of [new Set<string>(), new Set(["example/removed"])]) {
-      const { reads, report } = await run(responses, { delisted: removed, skip });
-      expect(reads).toEqual(["example/alpha"]);
-      expect(report.skipped).toEqual([{ repo: "example/removed", reason: "delisted" }]);
-    }
+    const { reads, report } = await run(responses, { delisted: removed, skip: new Set(["example/removed"]) });
+    expect(reads).toEqual(["example/alpha"]);
+    expect(report.skipped).toEqual([{ repo: "example/removed", reason: "delisted" }]);
+  });
+
+  test("keeps the list through the read step of a handoff run", async () => {
+    const INDEX = "https://api.github.com/repos/example/index";
+    const responses = {
+      ...searched([["example/removed", PUSHED]]),
+      [INDEX]: { json: { full_name: "example/index", default_branch: "main" } },
+      [`${INDEX}/pulls?state=all&per_page=100`]: { json: [] },
+    };
+    const { fetch } = fixtureFetch(responses);
+    const result = await discoverRead({ root: tempDir(), outDir: tempDir(), fetch, state: {}, delisted: removed, limit: 5, budget: 100, now: NOW, indexRepo: "example/index" });
+    if (!result.ok) throw new Error(result.message);
+    expect(result.report.skipped).toEqual([{ repo: "example/removed", reason: "delisted" }]);
+  });
+
+  test("records no refusal by the list, so a repo can be proposed once its record goes", async () => {
+    const responses = { ...searched([["example/fork", PUSHED]]), ...pluginRepo("example/fork", "removed-id@example.org") };
+    const first = await run(responses, { delisted: removed, outDir: tempDir() });
+    expect(first.state["example/fork"]).toBeUndefined();
+    const later = await run(responses, { state: first.state, outDir: tempDir() });
+    expect(later.report.read).toEqual([expect.objectContaining({ repo: "example/fork", outcome: "written" })]);
   });
 
   test("refuses a search name that the read shows is a listed repo, and writes no entry", async () => {

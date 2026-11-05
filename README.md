@@ -235,7 +235,9 @@ GitHub with the plugin id and that version filled in. If the last build
 failed to read a plugin, the card shows the failure in place of the table,
 with no report buttons.
 
-An open "Details" card comes last. It lists the plugin id. For a plugin with
+An open "Details" card comes last. Its last lines link to the forms that ask
+to change the plugin's text and to remove the plugin or report harm. It lists
+the plugin id. For a plugin with
 the card icon, it then gives the paid service fact, whether or not the build
 read the plugin. If the build
 read the plugin, it also lists facts about the repository and the release
@@ -647,8 +649,8 @@ Otherwise it sends `GITHUB_TOKEN`. A repository that more than one
 source names counts once, by its lowercase owner/repo name after the
 lookup. The report names its source as the first of the topic search, the
 catalog, and the code search that names it.
-The command leaves out each repository that an entry already names. It
-reads the other repositories in the same way as `pnpm add-plugin`, the
+The command leaves out each repository that an entry already names or that
+`delisted.json` names (see "Removing a plugin"). It reads the other repositories in the same way as `pnpm add-plugin`, the
 newest pushed first. It writes the entries of at most 5 repositories that
 pass the inclusion bar under `plugins/`, and it reads at most 100
 repositories. To
@@ -719,7 +721,8 @@ only after a new push or after 30 days. The file does not record a GitHub API
 error, such as a rate limit, or a failed request. It also does not record an
 HTTP 429 or 5xx answer to the download of the XPI or the `update.json`, after
 any redirects. Nor does it record a 403 answer to a download that requested
-a GitHub release download URL, as "Building the data" defines it. Such a
+a GitHub release download URL, as "Building the data" defines it. Nor does it
+record a refusal by `delisted.json`. Such a
 repository is read again on the next run. If a run does not find a refused
 repository, the file still keeps its record until 30 days after the
 refusal. So a failed catalog read or code search loses no record that makes
@@ -1071,9 +1074,10 @@ same way as for `Discover plugins`. The body of the pull request contains
 `Closes #<issue>`. Thus a merge of the pull request closes the issue. The bot
 comments the link to the pull request on the issue.
 
-The bot can also find no URL in the issue body. It can find that an entry or
-an open bot pull request already has the plugin's id, or that the id cannot
-name a directory. Its read of the repository can also fail for a reason
+The bot can also find no URL in the issue body. It can find that
+`delisted.json` names the repository or the plugin's id. It can find that an
+entry or an open bot pull request already has the plugin's id, or that the id
+cannot name a directory. Its read of the repository can also fail for a reason
 that is not build-level. Then it comments the failure name and its message,
 and it closes the issue as not planned. A failed read includes a GitHub API
 answer of HTTP 404, which a repository that does not exist or is private
@@ -1288,6 +1292,9 @@ A maintainer removes a plugin for any of four reasons:
 
 A claim with no evidence removes nothing. The index still cannot vet plugins,
 and it does not review their code.
+
+Before you act on an owner's request, make sure that the issue's author owns
+the repository, or ask the owner to confirm from the repository itself.
 
 To remove a plugin, do these steps on a branch:
 

@@ -1824,17 +1824,16 @@ describe("the built site", () => {
 
   test("links each plugin page to the remove-plugin form with its id, and no other page with an id", () => {
     const form = "https://github.com/jmgirard/zotero-plugin-index/issues/new?template=remove-plugin.yml";
-    const links = (html: string) => [...html.matchAll(/<a href="([^"]*remove-plugin\.yml[^"]*)"/g)].map((match) => match[1]!.replace(/&amp;|&#38;/g, "&"));
+    const links = (html: string) => [...html.matchAll(/<a href="([^"]*remove-plugin\.yml[^"]*)"[^>]*>([^<]*)<\/a>/g)].map((match) => [match[1]!.replace(/&amp;|&#38;/g, "&"), match[2]!]);
     const files = htmlFiles(out);
     expect(files).toHaveLength(ids.length + 2);
     for (const file of files) {
       const html = readFileSync(join(out, file), "utf8");
       const id = ids.find((each) => file === join("plugins", each, "index.html"));
       if (id) {
-        expect(links(html), id).toEqual([`${form}&plugin=${encodeURIComponent(id)}`]);
-        expect(mainText(html), id).toContain("Ask to remove this plugin or report harm.");
+        expect(links(html), id).toEqual([[`${form}&plugin=${encodeURIComponent(id)}`, "Ask to remove this plugin or report harm"]]);
       } else {
-        expect(links(html).filter((href) => href.includes("plugin=")), file).toEqual([]);
+        expect(links(html).filter(([href]) => href!.includes("plugin=")), file).toEqual([]);
       }
     }
   });

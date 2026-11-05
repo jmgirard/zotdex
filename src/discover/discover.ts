@@ -73,8 +73,9 @@ export type DiscoveryFailure = Failure | Extract<WriteResult, { ok: false }>["fa
 // the next run reads the repo again. Nor is a failure the reader marks build-level, such
 // as an HTTP 429 or 5xx answer for the XPI or the update.json; draftEntry checks that
 // mark, since the same failure name can be either kind. Nor is an entry that writeEntry
-// could not write to outDir (`entry-exists` there, `write-failed`).
-const NOT_RECORDED = new Set<DiscoveryFailure>(["github-http-error", "request-failed", "unexpected-error"]);
+// could not write to outDir (`entry-exists` there, `write-failed`). Nor is a refusal by
+// `delisted.json`, so a repo can be proposed in the first run after its record goes.
+const NOT_RECORDED = new Set<DiscoveryFailure>(["github-http-error", "request-failed", "unexpected-error", "delisted", "delisted-id"]);
 
 // A repo that was read and refused. `pushedAt` is the repo's pushed_at at that read.
 export interface StateRecord {
@@ -336,7 +337,8 @@ export interface DraftOptions {
   issueRun?: boolean;
 }
 
-// Reads one repo and writes its entry to outDir, unless the index or an open pull
+// Reads one repo and writes its entry to outDir, unless `delisted.json` names the repo or
+// its plugin id, or the index or an open pull
 // request already has its plugin id. A repo with a `replaces-entry` hold is the exception
 // for an id that the index has. `repoUrl` in the result is the URL GitHub gives
 // for the repo. A read that passes `readMs` fails as request-failed, marked build-level.

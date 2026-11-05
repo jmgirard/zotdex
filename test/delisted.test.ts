@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "nod
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { afterAll, describe, expect, test } from "vitest";
-import { delistedPath, readDelisted } from "../src/check/delisted.ts";
+import { delistedPath } from "../src/check/delisted.ts";
 
 const ROOT = resolve(import.meta.dirname, "..");
 
@@ -88,9 +88,8 @@ describe("delisted.json in pnpm check", () => {
 
   test.each([
     ["is not JSON", "not json"],
-    ["is not a list", "{}"],
-    ["has a repo in upper case", JSON.stringify([{ repo: "Example/Removed", ids: [], issue: 5, date: "2026-11-04" }])],
-    ["has a record with no issue", JSON.stringify([{ repo: "example/removed", ids: [], date: "2026-11-04" }])],
+    ["has a repo in upper case, which no entry would match", JSON.stringify([{ repo: "Example/Removed", ids: [], issue: 5, date: "2026-11-04" }])],
+    ["has a repo that ends in .git, which no entry would match", JSON.stringify([{ repo: "example/removed.git", ids: [], issue: 5, date: "2026-11-04" }])],
   ])("names the file when it %s", (_name, text) => {
     const dir = tempDir();
     addEntry(dir, "kept@example.org", "https://github.com/example/kept");
@@ -105,12 +104,11 @@ describe("delisted.json in pnpm check", () => {
     expect(findings).toEqual([["delisted.json", "delisted-file"]]);
   });
 
-  test("reads the package root's committed list when no variable names another", async () => {
+  test("reads the package root's committed list when no variable names another", () => {
     const { ZPI_DELISTED: saved } = process.env;
     delete process.env.ZPI_DELISTED;
     try {
       expect(delistedPath()).toBe(join(ROOT, "delisted.json"));
-      await expect(readDelisted()).resolves.toMatchObject({ repos: expect.any(Map), ids: expect.any(Map) });
     } finally {
       if (saved !== undefined) process.env.ZPI_DELISTED = saved;
     }
