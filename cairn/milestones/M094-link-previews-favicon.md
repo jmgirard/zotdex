@@ -66,6 +66,7 @@ A shared link to any index page shows its own title and description, the page ha
 - 2026-11-04: re-audit: AC2 (full) — second draft: 0 differences from the code on 400,000 generated texts, but "meta description" read two ways, sentences 1 and 4 conflict on whitespace-only text, and no procedure bounds the claims; comments and README now say whitespace, and a test row uses mixed whitespace; further wording goes to the user, the stop for a second re-audit.
 - 2026-11-04: at that stop the user said they do not care about this level of detail and asked the agent to make the wording change carefully on its own; the agent took the text it had recommended, with no third reader.
 - 2026-11-04: amendment return: AC2 — "On each plugin page built from the records of the test `the plugin page's preview description`, the `meta name="description"` value is one of these. With no shown description (`shownDescription`), or when the cut below leaves only whitespace (what JavaScript's `\s` matches), it is a sentence that holds the plugin's `displayName`. Otherwise it is the shown description, whole at 200 code points or fewer, and above that cut at the last U+0020 in its first 200 code points that has a non-whitespace code point before it, or at 200 when that part has no such U+0020. The records include a text with `"` and `<` and a text of unbroken CJK."
+- 2026-11-04: step-7 approval: m094-link-previews-favicon approved for merge
 
 ## Decisions
 
