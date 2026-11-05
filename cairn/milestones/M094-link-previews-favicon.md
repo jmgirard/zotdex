@@ -1,6 +1,6 @@
 # M094: Add link previews and a favicon
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
@@ -22,7 +22,7 @@ A shared link to any index page shows its own title and description, the page ha
 ## Acceptance criteria
 
 - [ ] AC1: On every HTML page built from the fixture data, `meta name="description"`, `og:title`, `og:description`, `og:type`, `og:site_name`, `og:url`, `twitter:card`, and `link rel="canonical"` each appear exactly once. `og:title` equals `<title>`, `og:description` equals the meta description, and both are non-empty and differ across the home, About, and plugin pages. `og:url` equals the canonical address, which is the page's own public address under `https://jmgirard.github.io/zotero-plugin-index/`, encoded as `pluginHref` encodes it. A test walks every built page and asserts this.
-- [ ] AC2: A plugin page's description is the shown description (`shownDescription`), cut at the last space in its first 200 code points, or at 200 when that part has no space. A record with no shown description gets a fixed sentence that names the plugin. A description that holds `"` and `<` has a parsed attribute value equal to the text. A test asserts the four cases, one with unbroken CJK text.
+- [ ] AC2: On each plugin page built from the records of the test `the plugin page's preview description`, the `meta name="description"` value is one of these. With no shown description (`shownDescription`), or when the cut below leaves only whitespace (what JavaScript's `\s` matches), it is a sentence that holds the plugin's `displayName`. Otherwise it is the shown description, whole at 200 code points or fewer, and above that cut at the last U+0020 in its first 200 code points that has a non-whitespace code point before it, or at 200 when that part has no such U+0020. The records include a text with `"` and `<` and a text of unbroken CJK.
 - [ ] AC3: Each built page links `favicon.svg` under the base path, and the file is in the site's output. The file draws one filled square in the accent color that shows on light and dark backgrounds, and it holds no Zotero logo. A test asserts the link, the file, and the one shape, and a hand check opens the file in both schemes.
 - [ ] AC4: `gh api repos/jmgirard/zotero-plugin-index/topics` lists `zotero`, `zotero-plugins`, and `plugin-directory`, and lists neither `zotero-plugin` nor `zotero-addon`, the two topics that discovery searches.
 - [ ] AC5: CHANGELOG's Unreleased section has an entry for the previews and the icon, and README's site section names them. `pnpm test` and `pnpm check` exit 0.
@@ -64,6 +64,8 @@ A shared link to any index page shows its own title and description, the page ha
 - 2026-11-04: amendment routed: AC2 — as written it cuts every description at a space, even one of 200 code points or fewer, and it gives a blank preview for a text whose first 200 code points hold only opening spaces and a space; the code keeps short text whole and does not cut at opening spaces, so the wording, not the work, is wrong.
 - 2026-11-04: re-audit: AC2 (full) — 14 findings on the first draft: "space" had no meaning that fit the code, a short whitespace-only text stayed blank, and the attribute sentence was false for carriage return, NUL, and lone surrogates; the test sentence bound an instrument; the draft was rewritten, 3 test rows and a README sentence added; code unchanged; the cut's odd but valid results (a one-letter preview, a split combining mark) were left as they are.
 - 2026-11-04: re-audit: AC2 (full) — second draft: 0 differences from the code on 400,000 generated texts, but "meta description" read two ways, sentences 1 and 4 conflict on whitespace-only text, and no procedure bounds the claims; comments and README now say whitespace, and a test row uses mixed whitespace; further wording goes to the user, the stop for a second re-audit.
+- 2026-11-04: at that stop the user said they do not care about this level of detail and asked the agent to make the wording change carefully on its own; the agent took the text it had recommended, with no third reader.
+- 2026-11-04: amendment return: AC2 — "On each plugin page built from the records of the test `the plugin page's preview description`, the `meta name="description"` value is one of these. With no shown description (`shownDescription`), or when the cut below leaves only whitespace (what JavaScript's `\s` matches), it is a sentence that holds the plugin's `displayName`. Otherwise it is the shown description, whole at 200 code points or fewer, and above that cut at the last U+0020 in its first 200 code points that has a non-whitespace code point before it, or at 200 when that part has no such U+0020. The records include a text with `"` and `<` and a text of unbroken CJK."
 
 ## Decisions
 
