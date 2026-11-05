@@ -1206,3 +1206,11 @@ reused._
 - A change of the home page's sort menu changes no live region's text on page 1,
   so a screen reader announces only the menu's own value. Accepted at the M097
   gate
+- The home page's rows of controls appear after first paint and move the table
+  by 124 px at 1200 px wide and 234 px at 375 px on the data of 2026-11-05,
+  against 74 px and 257 px before the card, which M060's pre-paint style misses.
+  Accepted at the M098 gate
+- At 341 to about 690 px wide at the default text size, the home page's two
+  filter menus sit side by side, so a closed menu cuts a long name: 12 of 16
+  categories and 2 of 50 languages at 375 px on the data of 2026-11-05. The open
+  list shows each name whole. Accepted at the M098 gate
