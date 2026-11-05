@@ -110,6 +110,7 @@ A plugin that a build cannot read for a build-level reason keeps its last read f
 - 2026-11-05: implement complete; status → review.
 - 2026-11-05: review: evidence recorded and every criterion ticked; consistency gate: `cairn_validate` all checks passed, the generic profile names no toolchain checks, no principle changed; four-lens review running.
 - 2026-11-05: four-lens review: 38 findings, 26 fixed on the branch in e717cc28, 10 rejected, 1 known issue, 1 follow-up row (filed at hygiene, where the graduated M100 row frees ROADMAP bytes); no floor return.
+- 2026-11-05: step-7 approval: m100-keep-last-good-record approved for merge
 ## Decisions
 <!-- owner: implement / review · append-only; milestone-local; promote
      cross-cutting ones to cairn/DECISIONS.md.
