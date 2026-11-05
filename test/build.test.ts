@@ -97,6 +97,7 @@ interface Output {
     paidService?: unknown;
     upstream?: Record<string, unknown>;
     reports?: unknown[];
+    kept?: { readAt: string; failure: { name: string; message: string } };
     failure?: { name: string; message: string };
     overrides: unknown[];
   }[];
@@ -1399,6 +1400,148 @@ describe("buildData", () => {
       const result = await build({ ...responses(), [ZOTERO_RELEASE_URL]: { json: { "linux-x86_64": "9.0.6" } } });
       expect(result.releaseWarnings).toEqual([]);
     });
+  });
+});
+
+describe("buildData with the deployed data", () => {
+  const PREVIOUS = "https://example.org/v1/plugins.json";
+  const READ_AT = "2026-11-04T06:00:00.000Z";
+  const NOW = new Date("2026-11-05T06:00:00.000Z");
+  const DAY = 24 * 60 * 60 * 1000;
+  const SECOND_FAILURE = { name: "update-json-http-error", message: `the update.json at ${SECOND_UPDATE} returned HTTP 503` };
+  type Deployed = { generatedAt: unknown; plugins: Record<string, unknown>[] };
+  let built: PluginsFile;
+  beforeAll(async () => {
+    const result = await buildData(TREE, fixtureFetch(responses()).fetch, new Date(READ_AT));
+    if (!result.ok) throw new Error(result.problems.join("\n"));
+    built = result.data;
+    built.plugins.find((plugin) => plugin.id === SECOND)!.startTests = [{ zotero: "10.0.6", result: "timed-out" }];
+  });
+  // A copy of the deployed data that a test may change.
+  const deployed = (): Deployed => structuredClone(built) as unknown as Deployed;
+  const deployedRecord = (data: Deployed, id: string) => data.plugins.find((plugin) => plugin.id === id)!;
+  // The responses in which SECOND's update.json answers 503, a build-level failure.
+  const failing = () => ({ ...responses(), [SECOND_UPDATE]: { status: 503, text: "Service Unavailable" } });
+
+  async function rebuild(recorded: Responses, earlier: Recorded | undefined, now = NOW, limits: Parameters<typeof buildData>[4] = {}) {
+    const { fetch, requests } = fixtureFetch(earlier ? { ...recorded, [PREVIOUS]: earlier } : recorded);
+    const result = await buildData(TREE, fetch, now, undefined, { previous: PREVIOUS, ...limits });
+    if (!result.ok) throw new Error(result.problems.join("\n"));
+    return { result, output: JSON.parse(result.text) as Output, previousReads: requests.filter(({ url }) => url === PREVIOUS).length };
+  }
+
+  // The kept record of SECOND: the deployed facts, this build's reports and overrides, and kept.
+  const keptSecond = (data: Deployed, readAt: string, failure: { name: string; message: string }) => {
+    const { upstream, startTests, overrides } = deployedRecord(data, SECOND);
+    const reports = [{ zoteroMajor: 7, works: 0, broken: 1 }];
+    return { id: SECOND, repoUrl: "https://github.com/example/second-plugin", upstream, reports, startTests, kept: { readAt, failure }, overrides };
+  };
+
+  test("keeps the deployed facts of a record whose read fails with a 5xx answer, which stays build-level", async () => {
+    const data = deployed();
+    const { result, output } = await rebuild(failing(), { json: data });
+    expect(record(output, SECOND)).toEqual(keptSecond(data, READ_AT, SECOND_FAILURE));
+    expect(record(output, SECOND)).not.toHaveProperty("failure");
+    expect(result.buildLevel).toEqual([SECOND]);
+    expect(result.kept).toEqual([SECOND]);
+    expect(result.previousProblem).toBeUndefined();
+    expect(checkOutput(output)).toEqual([]);
+    // A kept record has no start plan item.
+    expect(result.plan.plugins.map(({ entry }) => entry)).toEqual([BETTER_NOTES]);
+  });
+
+  test("counts this build's reports on a kept record's version, and keeps its upstream's sourceInRepo", async () => {
+    const data = deployed();
+    const second = deployedRecord(data, SECOND);
+    (second.upstream as Record<string, unknown>).sourceInRepo = false;
+    second.reports = [];
+    const { output } = await rebuild(failing(), { json: data });
+    expect(record(output, SECOND)?.upstream?.sourceInRepo).toBe(false);
+    expect(record(output, SECOND)?.reports).toEqual([{ zoteroMajor: 7, works: 0, broken: 1 }]);
+  });
+
+  test("keeps the deployed facts of each record that the time limit leaves not-read, and not of one with no upstream", async () => {
+    const data = deployed();
+    const { result, output } = await rebuild(responses(), { json: data }, NOW, { buildMs: 0 });
+    const notRead = { name: "not-read", message: "the build reads no plugin after 0 minutes, its time limit" };
+    expect(result.kept).toEqual([BETTER_NOTES, SECOND]);
+    expect(record(output, BETTER_NOTES)?.upstream).toEqual(deployedRecord(data, BETTER_NOTES).upstream);
+    expect(record(output, BETTER_NOTES)).toMatchObject({ kept: { readAt: READ_AT, failure: notRead } });
+    expect(record(output, SECOND)).toEqual(keptSecond(data, READ_AT, notRead));
+    expect(record(output, FORKED)).toEqual({ id: FORKED, repoUrl: expect.any(String), failure: notRead, overrides: [] });
+    expect(result.buildLevel).toEqual([BETTER_NOTES, FORKED, SECOND]);
+  });
+
+  test("keeps the deployed facts of a record whose read passes its time limit as request-failed", async () => {
+    const data = deployed();
+    const { output } = await rebuild({ ...responses(), [SECOND_UPDATE]: { stall: "headers" } }, { json: data }, NOW, { readMs: 300 });
+    expect(record(output, SECOND)?.kept?.failure.name).toBe("request-failed");
+    expect(record(output, SECOND)?.upstream).toEqual(deployedRecord(data, SECOND).upstream);
+  });
+
+  test("keeps facts read exactly 7 days before generatedAt, and not 1 ms more", async () => {
+    const at = new Date(Date.parse(READ_AT) + 7 * DAY);
+    expect(record((await rebuild(failing(), { json: deployed() }, at)).output, SECOND)?.kept?.readAt).toBe(READ_AT);
+    const late = await rebuild(failing(), { json: deployed() }, new Date(at.getTime() + 1));
+    expect(record(late.output, SECOND)?.failure).toEqual(SECOND_FAILURE);
+    expect(late.result.kept).toEqual([]);
+  });
+
+  test("keeps the first readAt when it keeps an already kept record again", async () => {
+    const first = await rebuild(failing(), { json: deployed() });
+    const again = await rebuild(failing(), { json: JSON.parse(first.result.text) }, new Date(NOW.getTime() + DAY));
+    expect(record(again.output, SECOND)?.kept).toEqual({ readAt: READ_AT, failure: SECOND_FAILURE });
+    // The first readAt also sets the 7 days.
+    const late = await rebuild(failing(), { json: JSON.parse(first.result.text) }, new Date(Date.parse(READ_AT) + 7 * DAY + 1));
+    expect(record(late.output, SECOND)?.failure).toEqual(SECOND_FAILURE);
+  });
+
+  test.each<[string, (data: Deployed) => void]>([
+    ["has no upstream", (data) => (data.plugins = data.plugins.map((p) => (p.id === SECOND ? { id: SECOND, repoUrl: p.repoUrl, failure: { name: "fork", message: "" }, overrides: [] } : p)))],
+    ["has another repoUrl", (data) => (deployedRecord(data, SECOND).repoUrl = "https://github.com/example/other-plugin")],
+    ["fails the record schema", (data) => ((deployedRecord(data, SECOND).upstream as Record<string, unknown>).stars = -1)],
+    ["is named twice", (data) => data.plugins.push(structuredClone(deployedRecord(data, SECOND)))],
+    ["is more than 7 days old", (data) => (data.generatedAt = new Date(NOW.getTime() - 7 * DAY - 1).toISOString())],
+    ["is read after generatedAt", (data) => (data.generatedAt = new Date(NOW.getTime() + 1).toISOString())],
+    ["has a readAt that Date.parse cannot read", (data) => (deployedRecord(data, SECOND).kept = { readAt: "2026-13-01T00:00:00Z", failure: SECOND_FAILURE })],
+  ])("keeps nothing when the deployed record %s", async (_case, edit) => {
+    const data = deployed();
+    edit(data);
+    const { result, output } = await rebuild(failing(), { json: data });
+    expect(record(output, SECOND)).toEqual({ id: SECOND, repoUrl: "https://github.com/example/second-plugin", failure: SECOND_FAILURE, overrides: [] });
+    expect(result.kept).toEqual([]);
+    expect(result.previousProblem).toBeUndefined();
+  });
+
+  test("keeps nothing for a failure that is not build-level, and reads no deployed data when no failure is build-level", async () => {
+    const { result, output, previousReads } = await rebuild({ ...responses(), [SECOND_UPDATE]: { status: 404, text: "Not Found" } }, { json: deployed() });
+    expect(record(output, SECOND)?.failure?.name).toBe("update-json-http-error");
+    expect(record(output, SECOND)).not.toHaveProperty("upstream");
+    expect(result.kept).toEqual([]);
+    expect(previousReads).toBe(0);
+  });
+
+  test("keeps nothing and reads no deployed data with no previous address", async () => {
+    const { fetch, requests } = fixtureFetch({ ...failing(), [PREVIOUS]: { json: deployed() } });
+    const result = await buildData(TREE, fetch, NOW);
+    if (!result.ok) throw new Error(result.problems.join("\n"));
+    expect(record(JSON.parse(result.text), SECOND)?.failure).toEqual(SECOND_FAILURE);
+    expect(result.kept).toEqual([]);
+    expect(requests.some(({ url }) => url === PREVIOUS)).toBe(false);
+  });
+
+  test.each<[string, Recorded | undefined, string]>([
+    ["an answer other than 200", { status: 404, text: "Not Found" }, `GET ${PREVIOUS} returned HTTP 404`],
+    ["a body over 16 MiB", { chunks: { size: 1024 * 1024, count: 17 } }, `the body of ${PREVIOUS} is over 16777216 bytes`],
+    ["a read past its time limit", { stall: "headers" }, `cannot read ${PREVIOUS}: the read passed its time limit of 50 ms`],
+    ["a body that is not JSON", { text: "<html>" }, `${PREVIOUS} is not JSON`],
+    ["a body with no plugins list", { json: { generatedAt: READ_AT } }, `${PREVIOUS} has no plugins list`],
+    ["a generatedAt that does not parse", { json: { generatedAt: "yesterday", plugins: [] } }, `${PREVIOUS} has no readable generatedAt`],
+  ])("keeps nothing and names the problem after %s", async (_case, earlier, problem) => {
+    const { result, output } = await rebuild(failing(), earlier, NOW, { previousMs: 50 });
+    expect(result.previousProblem).toEqual(expect.stringContaining(problem));
+    expect(record(output, SECOND)?.failure).toEqual(SECOND_FAILURE);
+    expect(result.kept).toEqual([]);
   });
 });
 

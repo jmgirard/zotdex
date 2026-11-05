@@ -4,14 +4,14 @@
      cairn_validate's <150 over the plan-owned body. -->
 # M100: Keep a plugin's last good record
 
-- **Status:** planned   <!-- owner: transitioning skill · mirror-update; cairn/ROADMAP.md is the authority -->
+- **Status:** in-progress   <!-- owner: transitioning skill · mirror-update; cairn/ROADMAP.md is the authority -->
 - **Priority:** high   <!-- owner: plan · create/amend-via-gate; high | normal | low -->
 - **Depends on:** —   <!-- owner: plan · create/amend-via-gate; M<xx>, M<yy> or — -->
 - **Driving RR:** —   <!-- owner: plan · create/amend-via-gate; RR<NN> whose Binding criteria bind this milestone's ACs (binding-criteria check), or — -->
 - **Principles touched:** —   <!-- owner: plan · create/amend-via-gate; comma-separated IPn/GPn ids this milestone touches, or — -->
 - **Resolves:** —   <!-- owner: plan · create/amend-via-gate; comma-separated GitHub issues the scope absorbs, each `#N closes` (the PR closes it at merge) or `#N partial` (the remainder gets a candidate row), or — ; skill conduct only — no validate check parses it -->
 - **Surface tier:** user-facing — visitors and data users see the kept facts, the badge, and the new data field   <!-- owner: plan · create/amend-via-gate; user-facing | internal — <one-clause reason>; skill conduct only — no validate check parses it -->
-- **Branch/PR:** —   <!-- owner: implement (branch) / review (PR URL) · create; a companion checkout the milestone also works in is one further entry per checkout, `companion: <abs-path> <branch>` (implement), its PR URL appended by review — /milestone-review merges companions first, in listed order -->
+- **Branch/PR:** m100-keep-last-good-record   <!-- owner: implement (branch) / review (PR URL) · create; a companion checkout the milestone also works in is one further entry per checkout, `companion: <abs-path> <branch>` (implement), its PR URL appended by review — /milestone-review merges companions first, in listed order -->
 
 ## Goal
 <!-- owner: plan · create; a wrong goal returns to plan, never edited in place -->
@@ -65,7 +65,7 @@ A plugin that a build cannot read for a build-level reason keeps its last read f
      cites; an insertion, removal, or reorder renumbers the labels and the
      Coverage lines together. -->
 
-- [ ] T1: Tests first in `test/build.test.ts` for AC1 and AC2. Export the deployed-data read from `src/start-test/carry.ts` (`readPrevious`, 60 s, 16 MiB) or move it to a shared module. Add the keep step to `buildData` in `src/build/build.ts` after the source read (build.ts:260-264) and before `countReports` (build.ts:266), read the deployed data there only when a build-level failure exists, and keep `kept` and `startTests` through the record map at build.ts:267. New fixture fields are optional (lesson M075).
+- [x] T1: Tests first in `test/build.test.ts` for AC1 and AC2. Export the deployed-data read from `src/start-test/carry.ts` (`readPrevious`, 60 s, 16 MiB) or move it to a shared module. Add the keep step to `buildData` in `src/build/build.ts` after the source read (build.ts:260-264) and before `countReports` (build.ts:266), read the deployed data there only when a build-level failure exists, and keep `kept` and `startTests` through the record map at build.ts:267. New fixture fields are optional (lesson M075).
 - [ ] T2: Tests first for AC3. `src/build/cli.ts`: parse `--previous`, update `USAGE`, print the kept lines with `oneLine` and the kept count, count kept records in `failed` and in both bars (cli.ts:70-90), and print the read warning.
 - [ ] T3: Tests first for AC4. Guard the `startTests` replacement in `src/start-test/add-results.ts` (around line 139) for kept records, and skip deployed records with `kept` in `carryResults` (`src/start-test/carry.ts`).
 - [ ] T4: Tests first for AC5. Add `kept` to `schemas/plugins.v1.schema.json` with the `oneOf` and a dependency on `upstream`, update the `upstream` and `startTests` descriptions, README "Using the data" (near line 62 and the start-result text near lines 505-516) and "Building the data" (near line 1511), and add a CHANGELOG entry.
@@ -96,6 +96,7 @@ A plugin that a build cannot read for a build-level reason keeps its last read f
 - 2026-11-05: plan gate chose the keep step inside `buildData` over a separate command after `pnpm build` because the report counts and both deploy bars are decided there; falsified by a kept record whose reports or bar count differ from a read record's.
 - 2026-11-05: criteria audit (full) by a fresh Opus reader: 19 findings, all applied: the splice point after the source read and before the report count; a D-entry for D-011, D-015, D-023, and D-035; the failed-read cases, a parse-failing or future `readAt`, a duplicate id, and the exact 7-day edge; the bar wording; `oneLine` for kept lines; no carry from a kept record, so results do not age past one keep; the schema, README, About, and footer texts that the change makes false; the row compared by HTML in place of "sorts and filters"; the branch run moved from AC7 to T7, since one run records an event; the time-budget comment; the pinned workflow line.
 
+- 2026-11-05: T1 done: `src/build/keep.ts` (`keptFacts`, `KEEP_MS`) and the keep step in `buildData` after the source read and before `countReports`; `readPrevious` moved to `src/build/previous.ts`, which `carry.ts` imports and re-exports. Minor amendment: the schema's `kept` definition lands here, not in T4, since the keep step validates each kept record against it; T4 keeps its schema tests and docs. 21 new tests; removing each of four keep rules fails at least one. `pnpm test` 2454 passed, `pnpm check` 0 problems.
 ## Decisions
 <!-- owner: implement / review · append-only; milestone-local; promote
      cross-cutting ones to cairn/DECISIONS.md.
