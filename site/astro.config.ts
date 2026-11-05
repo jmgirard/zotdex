@@ -10,4 +10,6 @@ export default defineConfig({
   trailingSlash: "always",
   // Each page carries its styles, so it needs no request for a stylesheet.
   build: { format: "directory", inlineStylesheets: "always" },
+  // The home page's module script stays in the page, also past Vite's default limit of 4 KiB.
+  vite: { build: { assetsInlineLimit: 32768 } },
 });

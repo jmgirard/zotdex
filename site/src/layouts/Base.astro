@@ -308,7 +308,8 @@ const themeButton = `(${wireThemeButton})();`;
       /* The edges of the controls take --faint, which the color test holds at 3:1 on --surface. */
       .search input,
       [data-language-filter],
-      [data-category-filter] {
+      [data-category-filter],
+      [data-sort] {
         height: 2rem;
         border: 1px solid var(--faint);
         border-radius: var(--radius-m);
@@ -324,7 +325,8 @@ const themeButton = `(${wireThemeButton})();`;
       /* The page draws each menu's arrow in place of the browser's: two triangles in currentColor
          make one down arrow, inset from the right edge by the left padding. */
       [data-language-filter],
-      [data-category-filter] {
+      [data-category-filter],
+      [data-sort] {
         max-width: 100%;
         padding: 0 var(--space-14) 0 var(--space-4);
         appearance: none;
@@ -338,14 +340,16 @@ const themeButton = `(${wireThemeButton})();`;
       /* Forced colors drop gradients, so each menu keeps the browser's own arrow there. */
       @media (forced-colors: active) {
         [data-language-filter],
-        [data-category-filter] {
+        [data-category-filter],
+        [data-sort] {
           padding-right: var(--space-4);
           appearance: auto;
         }
       }
       .language-filter,
       .category-filter,
-      .version-filter {
+      .version-filter,
+      .sort-menu {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
@@ -359,6 +363,7 @@ const themeButton = `(${wireThemeButton})();`;
       .language-filter[hidden],
       .category-filter[hidden],
       .version-filter[hidden],
+      .sort-menu[hidden],
       .filter-status[hidden],
       .pager[hidden] {
         display: none;
@@ -392,6 +397,7 @@ const themeButton = `(${wireThemeButton})();`;
       .search input:focus-visible,
       [data-language-filter]:focus-visible,
       [data-category-filter]:focus-visible,
+      [data-sort]:focus-visible,
       [data-version-filter] button:focus-visible {
         outline: 2px solid var(--link);
         outline-offset: 2px;

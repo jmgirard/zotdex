@@ -1222,6 +1222,27 @@ describe("the home page", () => {
     ]);
   });
 
+  test("gives each row its record's star count and release date, and neither to a record without them", () => {
+    const value = (attributes: string, name: string) => new RegExp(`\\s${name}="([^"]*)"`).exec(attributes)?.[1];
+    const facts = Object.fromEntries(rows().map(({ id, attributes }) => [id, [value(attributes, "data-stars"), value(attributes, "data-released")]]));
+    expect(facts).toEqual(
+      Object.fromEntries(records.map(({ id, upstream }) => [id, [upstream?.stars?.toString(), upstream?.latestReleaseDate]])),
+    );
+    // A count of 0 is written, and a failed read writes neither.
+    expect(facts["{c2a6e4c8-1b7d-4f3a-9e2b-5d8f0a1c3e7b}"]![0]).toBe("0");
+    expect(facts["broken-plugin@example.org"]).toEqual([undefined, undefined]);
+  });
+
+  test("holds a hidden sort menu whose first option is Stars", () => {
+    const menu = /<p class="sort-menu" hidden><label for="sort">Sort by<\/label> <select id="sort" data-sort autocomplete="off">(.*?)<\/select><\/p>/.exec(home());
+    expect(menu).not.toBeNull();
+    expect([...menu![1]!.matchAll(/<option value="([^"]*)">([^<]*)<\/option>/g)].map(([, value, text]) => [value, text])).toEqual([
+      ["", "Stars"],
+      ["name", "Name"],
+      ["latest", "Latest release"],
+    ]);
+  });
+
   test("gives each row the language subtags it applies", () => {
     expect(Object.fromEntries(rows().map(({ id, attributes }) => [id, /\sdata-languages="([^"]*)"/.exec(attributes)?.[1]]))).toEqual(Object.fromEntries([
       ["_x-y+z.w@{v}", ""],
@@ -1324,9 +1345,10 @@ describe("the home page", () => {
     expect(toolbar).toMatch(/<p class="category-filter" hidden><label[^>]*>[^<]*<\/label> <select[^>]*>(?:<option[^>]*>[^<]*<\/option>)+<\/select><\/p>/);
     expect(toolbar).toMatch(/<p class="language-filter" hidden><label[^>]*>[^<]*<\/label> <select[^>]*>(?:<option[^>]*>[^<]*<\/option>)+<\/select><\/p>/);
     expect(toolbar).toMatch(/<div class="version-filter" hidden><span[^>]*>[^<]*<\/span><div role="group"[^>]*>(?:<button[^>]*>[^<]*<\/button>)+<\/div><\/div>/);
+    expect(toolbar).toMatch(/<p class="sort-menu" hidden><label[^>]*>[^<]*<\/label> <select[^>]*>(?:<option[^>]*>[^<]*<\/option>)+<\/select><\/p>/);
     expect(toolbar).toMatch(/<p class="filter-status" role="status" data-filter-status hidden><\/p>$/);
     expect(html.match(/<input[\s>]/g)).toHaveLength(1);
-    expect(html.match(/<select[\s>]/g)).toHaveLength(2);
+    expect(html.match(/<select[\s>]/g)).toHaveLength(3);
     expect(html.match(/<button[\s>]/g)).toHaveLength(ZOTERO_MAJORS.length + 4);
     expect(html.match(/\sdata-filter-status/g)).toHaveLength(1);
     expect(html).toContain(
@@ -1339,7 +1361,7 @@ describe("the home page", () => {
       declarations.some(([property, value]) => property === "display" && value === "none"),
     );
     const selectors = hiding.flatMap(({ selector }) => selector.split(",").map((part) => part.trim()));
-    for (const control of ["[data-theme-toggle][hidden]", ".search[hidden]", ".category-filter[hidden]", ".language-filter[hidden]", ".version-filter[hidden]", ".filter-status[hidden]", ".pager[hidden]"]) {
+    for (const control of ["[data-theme-toggle][hidden]", ".search[hidden]", ".category-filter[hidden]", ".language-filter[hidden]", ".sort-menu[hidden]", ".version-filter[hidden]", ".filter-status[hidden]", ".pager[hidden]"]) {
       expect(selectors, control).toContain(control);
     }
   });
@@ -1355,7 +1377,7 @@ function generatedRow(n: number) {
   const fields: Record<string, string> = { name: `Bulk ${String(n).padStart(3, "0")}`, description: tags };
   return {
     hidden: false,
-    dataset: { plugin: `gen-${n}@example.org`, languages: "", zotero: "", categories: "translation" },
+    dataset: { plugin: `gen-${n}@example.org`, languages: "", zotero: "", categories: "translation", stars: undefined as string | undefined, released: undefined as string | undefined },
     querySelector: (selector: string) => {
       const field = fields[selector.slice(6, -1)];
       return field ? { textContent: field } : null;
@@ -1363,7 +1385,7 @@ function generatedRow(n: number) {
   };
 }
 
-function homeScript(href: string, generated = 0, missing?: "search" | "category" | "menu" | "buttons") {
+function homeScript(href: string, generated = 0, missing?: "search" | "category" | "menu" | "buttons" | "sort") {
   const html = home();
   const script = /<script type="module">(.*?)<\/script>/s.exec(html)![1]!;
   const shown = new Set<string>();
@@ -1383,6 +1405,7 @@ function homeScript(href: string, generated = 0, missing?: "search" | "category"
     addEventListener: listen("category"),
     closest: () => wrapper("category"),
   };
+  const sortSelect = { value: "", options: optionsOf("data-sort"), addEventListener: listen("sort"), closest: () => wrapper("sort") };
   const buttons = [...html.matchAll(/<button type="button"(?: value="([^"]*)")? aria-pressed="[^"]*">/g)].map(([, value]) => ({
     value: value ?? "",
     addEventListener: () => {},
@@ -1392,19 +1415,21 @@ function homeScript(href: string, generated = 0, missing?: "search" | "category"
   const status = { textContent: "", removeAttribute: () => shown.add("count") };
   const body = html.slice(html.indexOf("<tbody>"), html.indexOf("</tbody>"));
   const tableRows = [
-    ...body.matchAll(/<tr data-plugin="([^"]*)" data-languages="([^"]*)" data-zotero="([^"]*)" data-categories="([^"]*)">(.*?)<\/tr>/gs),
-  ].map(([, plugin, languages, zotero, categories, inner]) => {
+    ...body.matchAll(/<tr data-plugin="([^"]*)" data-languages="([^"]*)" data-zotero="([^"]*)" data-categories="([^"]*)"(?: data-stars="([^"]*)")?(?: data-released="([^"]*)")?>(.*?)<\/tr>/gs),
+  ].map(([, plugin, languages, zotero, categories, stars, released, inner]) => {
     const text = (attribute: string) => {
       const found = new RegExp(`\\s${attribute}>([^<]*)<`).exec(inner!);
       return found ? { textContent: unescaped(found[1]!) } : null;
     };
     return {
       hidden: false,
-      dataset: { plugin: unescaped(plugin!), languages, zotero, categories },
+      dataset: { plugin: unescaped(plugin!), languages, zotero, categories, stars: stars as string | undefined, released: released as string | undefined },
       querySelector: (selector: string) => text(selector.slice(1, -1)),
     };
   });
   tableRows.push(...Array.from({ length: generated }, (_, i) => generatedRow(i + 1)));
+  // Appending rows that the body holds moves them, in that order.
+  const tbody = { append: (...moved: typeof tableRows) => tableRows.splice(0, tableRows.length, ...moved) };
   const pager = { hidden: true };
   const pageStatus = { textContent: "" };
   const steps = [
@@ -1431,6 +1456,8 @@ function homeScript(href: string, generated = 0, missing?: "search" | "category"
     "input[data-search]": missing === "search" ? null : search,
     "select[data-category-filter]": missing === "category" ? null : categorySelect,
     "select[data-language-filter]": missing === "menu" ? null : select,
+    "select[data-sort]": missing === "sort" ? null : sortSelect,
+    tbody,
     "[data-filter-status]": status,
     "[data-pager]": pager,
     "[data-page-status]": pageStatus,
@@ -1475,6 +1502,7 @@ function homeScript(href: string, generated = 0, missing?: "search" | "category"
     search,
     select,
     categorySelect,
+    sortSelect,
     status,
     location,
     shown,
@@ -1503,7 +1531,81 @@ describe("the home page script", () => {
     expect(page.search.value).toBe("TOOLS");
     expect(page.visible()).toEqual(["a-cafe@example.org", "b-cafe@example.org"]);
     expect(page.status.textContent).toBe(`2 of ${ids.length} plugins`);
-    expect([...page.shown].sort()).toEqual(["buttons", "category", "count", "menu", "search"]);
+    expect([...page.shown].sort()).toEqual(["buttons", "category", "count", "menu", "search", "sort"]);
+  });
+
+  describe("the sort menu", () => {
+    const built = homeOrder(fixture.plugins as PluginRecord[]);
+    const named = [
+      "_x-y+z.w@{v}",
+      "broken-plugin@example.org",
+      "a-cafe@example.org",
+      "b-cafe@example.org",
+      "first-plugin@example.org",
+    ];
+
+    test("leaves the built order and the address alone by default", () => {
+      const page = homeScript(PAGE);
+      expect(page.sortSelect.value).toBe("");
+      expect(page.all()).toEqual(built.map(({ id }) => id));
+      expect(page.location.href).toBe(PAGE);
+    });
+
+    test("reads sort=name and sort=latest on load, and each gives its order", () => {
+      const byName = homeScript(`${PAGE}?sort=name`);
+      expect(byName.sortSelect.value).toBe("name");
+      expect(byName.all().slice(0, named.length)).toEqual(named);
+      expect(byName.location.href).toBe(`${PAGE}?sort=name`);
+      const byDate = homeScript(`${PAGE}?sort=latest`);
+      const dates = byDate.all().map((id) => built.find((record) => record.id === id)!.upstream?.latestReleaseDate);
+      const known = dates.filter((date) => date !== undefined);
+      expect(known.length).toBeGreaterThan(1);
+      expect(known).toEqual(known.toSorted().toReversed());
+      expect(dates.slice(0, known.length)).toEqual(known);
+      expect(byDate.location.href).toBe(`${PAGE}?sort=latest`);
+    });
+
+    test.each(["stars", "x", ""])("removes sort=%s and keeps the built order", (value) => {
+      const page = homeScript(`${PAGE}?sort=${value}&zotero=7`);
+      expect(page.sortSelect.value).toBe("");
+      expect(page.location.href).toBe(`${PAGE}?zotero=7`);
+      expect(page.all()).toEqual(built.map(({ id }) => id));
+    });
+
+    test("a change reorders the rows, shows page 1, and writes the address, and Stars removes the parameter", () => {
+      const page = homeScript(`${PAGE}?page=2`, 60);
+      expect(page.pageStatus.textContent).toMatch(/^Page 2 /);
+      page.sortSelect.value = "name";
+      page.fire("sort:change");
+      expect(page.pageStatus.textContent).toMatch(/^Page 1 /);
+      expect(page.location.href).toBe(`${PAGE}?sort=name`);
+      // "Bulk 001" sorts after "Broken", so the generated rows follow.
+      expect(page.visible().slice(0, 3)).toEqual(["_x-y+z.w@{v}", "broken-plugin@example.org", "gen-1@example.org"]);
+      page.sortSelect.value = "";
+      page.fire("sort:change");
+      expect(page.location.href).toBe(PAGE);
+      expect(page.visible()[0]).toBe(built[0]!.id);
+    });
+
+    test("Back and Forward read the order from the address", () => {
+      const page = homeScript(PAGE);
+      page.location.href = `${PAGE}?sort=name`;
+      page.fire("window:popstate");
+      expect(page.sortSelect.value).toBe("name");
+      expect(page.all().slice(0, named.length)).toEqual(named);
+      page.location.href = PAGE;
+      page.fire("window:popstate");
+      expect(page.sortSelect.value).toBe("");
+      expect(page.all().slice(0, built.length)).toEqual(built.map(({ id }) => id));
+    });
+
+    test("the filters pass rows in the chosen order", () => {
+      expect(homeScript(`${PAGE}?q=TOOLS&sort=name`).visible()).toEqual(["a-cafe@example.org", "b-cafe@example.org"]);
+    });
+
+    test("wires no control when the menu is missing", () => {
+      expect([...homeScript(PAGE, 0, "sort").shown]).toEqual([]);
+    });
   });
 
   test("matches a row on its name but not on its owner's text alone", () => {
@@ -2313,7 +2415,7 @@ describe("the site styles", () => {
   });
 
   test("draws the language and category menus' arrow in currentColor, inset from the right by the left padding", () => {
-    const menu = cssRules(layout).filter(({ selector }) => selector === "[data-language-filter], [data-category-filter]");
+    const menu = cssRules(layout).filter(({ selector }) => selector === "[data-language-filter], [data-category-filter], [data-sort]");
     const drawn = new Map(menu.find(({ declarations }) => declarations.some(([property]) => property === "appearance"))!.declarations);
     expect(drawn.get("appearance")).toBe("none");
     const gradients = drawn.get("background-image")!.match(/linear-gradient\([^)]*\)/g)!;
@@ -2323,7 +2425,7 @@ describe("the site styles", () => {
     // The last layer is the arrow's right half, so its offset is the arrow's inset.
     expect(drawn.get("background-position")!.split(",").at(-1)!.trim()).toBe(`right ${left} top 50%`);
     // Forced colors drop gradients, so there the browser draws its own arrow.
-    expect(layout).toMatch(/@media \(forced-colors: active\) \{\s*\[data-language-filter\],\s*\[data-category-filter\] \{[^}]*appearance: auto;/);
+    expect(layout).toMatch(/@media \(forced-colors: active\) \{\s*\[data-language-filter\],\s*\[data-category-filter\],\s*\[data-sort\] \{[^}]*appearance: auto;/);
   });
 
   test("leaves styles out of every other .astro file", () => {
@@ -2510,7 +2612,7 @@ describe("the site colors", () => {
         .map(([, value]) => ({ selector, token: /var\((--[\w-]+)\)/.exec(value)?.[1] })),
     );
     expect(edges.map(({ selector }) => selector)).toEqual([
-      ".search input, [data-language-filter], [data-category-filter]",
+      ".search input, [data-language-filter], [data-category-filter], [data-sort]",
       "[data-version-filter]",
       "[data-version-filter] button",
       ".pager button",

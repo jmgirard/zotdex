@@ -93,6 +93,14 @@ const prePaint = `if ("noModule" in HTMLScriptElement.prototype) {
         }
       </div>
     </div>
+    <p class="sort-menu" hidden>
+      <label for="sort">Sort by</label>{" "}
+      <select id="sort" data-sort autocomplete="off">
+        <option value="">Stars</option>
+        <option value="name">Name</option>
+        <option value="latest">Latest release</option>
+      </select>
+    </p>
     <p class="filter-status" role="status" data-filter-status hidden></p>
   </div>
   <script is:inline set:html={prePaint} />
@@ -149,6 +157,8 @@ const prePaint = `if ("noModule" in HTMLScriptElement.prototype) {
                 data-languages={rowLanguagesAttribute(record)}
                 data-zotero={rowMajorsAttribute(record, zoteroRelease)}
                 data-categories={rowCategoriesAttribute(record)}
+                data-stars={upstream?.stars}
+                data-released={upstream?.latestReleaseDate}
               >
                 <th scope="row" class="name">
                   <a href={pluginHref(record.id)} data-name>{name}</a>
@@ -272,34 +282,50 @@ const prePaint = `if ("noModule" in HTMLScriptElement.prototype) {
     PAGE_SIZE,
     pageCount,
     rowShows,
+    sortOrder,
   } from "../../../src/site/home-filter.ts";
 
-  // The search box, the menus, the buttons, the count, and the pager are hidden in the HTML,
+  // The search box, the menus, the buttons, the sort menu, the count, and the pager are hidden in the HTML,
   // so a page without JavaScript shows every row and no control.
   const search = document.querySelector<HTMLInputElement>("input[data-search]");
   const categorySelect = document.querySelector<HTMLSelectElement>("select[data-category-filter]");
   const select = document.querySelector<HTMLSelectElement>("select[data-language-filter]");
   const buttons = [...document.querySelectorAll<HTMLButtonElement>("[data-version-filter] button")];
+  const sortSelect = document.querySelector<HTMLSelectElement>("select[data-sort]");
+  const tbody = document.querySelector<HTMLElement>("tbody");
   const status = document.querySelector<HTMLElement>("[data-filter-status]");
   const pager = document.querySelector<HTMLElement>("[data-pager]");
   const pageStatus = document.querySelector<HTMLElement>("[data-page-status]");
   const steps = [...document.querySelectorAll<HTMLButtonElement>("[data-pager] button")];
   const table = document.querySelector<HTMLElement>(".table-card");
-  if (search && categorySelect && select && buttons.length > 0) {
+  if (search && categorySelect && select && buttons.length > 0 && sortSelect && tbody) {
     const slugs = [...categorySelect.options].map((option) => option.value);
     const languages = [...select.options].map((option) => option.value);
     // The "Any" button has no value attribute, so its value is "".
     const majors = buttons.map((button) => button.value);
+    const sorts = [...sortSelect.options].map((option) => option.value);
     let major = "";
     let page = 1;
     const rows = [...document.querySelectorAll<HTMLElement>("tbody tr[data-plugin]")].map((row) => ({
       row,
+      id: row.dataset.plugin ?? "",
+      stars: row.dataset.stars === undefined ? undefined : Number(row.dataset.stars),
+      released: row.dataset.released,
       languages: row.dataset.languages ?? "",
       zotero: row.dataset.zotero ?? "",
       categories: row.dataset.categories ?? "",
       name: row.querySelector("[data-name]")?.textContent ?? "",
       description: row.querySelector("[data-description]")?.textContent ?? "",
     }));
+    // The built rows are in the order of the sort menu's first option, so the first pass moves
+    // nothing unless the address asks for another order.
+    let sorted = "";
+    const sort = () => {
+      if (sortSelect.value === sorted) return;
+      sorted = sortSelect.value;
+      rows.sort(sortOrder(sorted));
+      tbody.append(...rows.map((entry) => entry.row));
+    };
     const language = () => ({ value: select.value, options: languages });
     const zotero = () => ({ value: major, options: majors });
     const category = () => ({ value: categorySelect.value, options: slugs });
@@ -326,9 +352,10 @@ const prePaint = `if ("noModule" in HTMLScriptElement.prototype) {
     };
     const address = () => {
       const filtered = filterHref(filterHref(location.href, "q", search.value.trim()), "category", categorySelect.value);
-      return filterHref(filterHref(filterHref(filtered, "language", select.value), "zotero", major), "page", page > 1 ? String(page) : "");
+      const sortedHref = filterHref(filtered, "sort", sortSelect.value);
+      return filterHref(filterHref(filterHref(sortedHref, "language", select.value), "zotero", major), "page", page > 1 ? String(page) : "");
     };
-    // Reads the parameters into the search box, the menus, the buttons, and the page, on load
+    // Reads the parameters into the search box, the menus, the buttons, the order, and the page, on load
     // and when Back or Forward changes the address in the same page. A parameter that names
     // no option, or no page after 1, leaves the address.
     // Typing writes the address once the visitor stops for half a second, so a burst of keys
@@ -347,6 +374,8 @@ const prePaint = `if ("noModule" in HTMLScriptElement.prototype) {
       categorySelect.value = chosenValue(params.get("category"), slugs);
       select.value = chosenValue(params.get("language"), languages);
       major = chosenValue(params.get("zotero"), majors);
+      sortSelect.value = chosenValue(params.get("sort"), sorts);
+      sort();
       page = chosenPage(params.get("page"), pageCount(passed().length));
       show();
       const href = address();
@@ -368,6 +397,10 @@ const prePaint = `if ("noModule" in HTMLScriptElement.prototype) {
     });
     categorySelect.addEventListener("change", update);
     select.addEventListener("change", update);
+    sortSelect.addEventListener("change", () => {
+      sort();
+      update();
+    });
     for (const button of buttons) {
       button.addEventListener("click", () => {
         major = button.value;
@@ -390,6 +423,7 @@ const prePaint = `if ("noModule" in HTMLScriptElement.prototype) {
     categorySelect.closest("[hidden]")?.removeAttribute("hidden");
     select.closest("[hidden]")?.removeAttribute("hidden");
     buttons[0]!.closest("[hidden]")?.removeAttribute("hidden");
+    sortSelect.closest("[hidden]")?.removeAttribute("hidden");
     status?.removeAttribute("hidden");
   }
   // Each row's hidden now says what shows, so the style that the classic script added goes,
