@@ -509,7 +509,7 @@ user reports. The exception is a report that is abuse.
   home page, the About page (M054), and one page per record into `dist/`,
   or `<dir>`, from the data file there. `src/site/version.ts` holds the version and range functions
   that the templates use, `majorSupport` and `ZOTERO_MAJORS` among them, and
-  `src/site/description.ts` holds `shownDescription` and `cjkShare`.
+  `src/site/description.ts` holds `shownDescription`, `cjkShare`, and `cutDescription`.
   `pnpm description-gaps <data file>` (`src/site/description-gaps.ts`)
   lists the records whose shown description, with the checkout's overrides,
   is missing, has a CJK share of 0.5 or more, or has fewer than six words
@@ -1007,8 +1007,9 @@ reused._
   bar's button that wires and shows it. The templates take the Pages path
   from `site/src/base.ts`, because a `BASE_URL` environment variable replaces
   Astro's `import.meta.env.BASE_URL`. `Base.astro` writes each page's preview
-  tags and canonical link from its `description` and `path` props, and Astro
-  copies `site/public/favicon.svg` to the output (M094). `build.yml`'s site job runs `pnpm site`
+  tags and canonical link from its `description` and `path` props and from
+  `ORIGIN` in `site/src/base.ts`, and Astro copies `site/public/favicon.svg`
+  to the output (M094). `build.yml`'s site job runs `pnpm site`
   after the build job (M047), so a failed site build also deploys nothing.
   `tsconfig.json` includes `site/`, so `pnpm test` type-checks its `.ts`
   files; the `.astro` templates

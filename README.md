@@ -291,9 +291,10 @@ trial. The name on the home page and on the plugin page shows the icon. The
 Details card shows "Needs a paid service from its maker" with a note, a link to
 the source, and the date of the read. A plugin with no mark can still cost money.
 
-Each page has an icon, a filled square in the site's accent color, and tags
-for link previews. The tags are a meta description, Open Graph tags, a Twitter
-card tag, and a canonical link. A shared link can show the page's title and
+Each page has a favicon, the icon that a browser shows for the page. It is a
+filled square in the site's accent color. Each page also has tags for link
+previews. The tags are a meta description, Open Graph tags, a Twitter card tag,
+and a canonical link. A shared link can show the page's title and
 description, with no picture. A plugin page uses its shown description. The
 page cuts a description of more than 200 characters at the last space in its
 first 200 characters. A space with only whitespace before it does not count. If
@@ -1710,10 +1711,11 @@ pnpm site
 ```
 
 The command reads `dist/v1/plugins.json`. It writes the home page,
-`dist/index.html`, the About page, `dist/about/index.html`, and one page
-for each record, `dist/plugins/<id>/index.html`. It does not change the
-data file or the schemas. It replaces the `index.html`, `about/`, and
-`plugins/` of an earlier run. So a page for a plugin that the data no
+`dist/index.html`, the About page, `dist/about/index.html`, one page
+for each record, `dist/plugins/<id>/index.html`, and the favicon,
+`dist/favicon.svg`. It does not change the data file or the schemas. It
+replaces the `index.html`, `about/`, `plugins/`, and `favicon.svg` of an
+earlier run. So a page for a plugin that the data no
 longer lists goes away. Links between the pages, and to the data file, start
 with `/zotero-plugin-index/`, the path of the site on GitHub Pages.
 

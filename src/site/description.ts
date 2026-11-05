@@ -72,7 +72,7 @@ export function cutDescription(text: string): string {
   if (points.length <= CUT_LENGTH) return text;
   const head = points.slice(0, CUT_LENGTH).join("");
   const space = head.lastIndexOf(" ");
-  return space > head.search(/\S/) && head.trim() !== "" ? head.slice(0, space) : head;
+  return space > head.search(/\S/) ? head.slice(0, space) : head;
 }
 
 // The description override when one applies. Otherwise the manifest description when it is

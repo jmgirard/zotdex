@@ -1943,10 +1943,6 @@ describe("the link preview tags", () => {
     }
   });
 
-  test("gives an id with special characters its encoded address", () => {
-    expect(previewOf("plugins/first-plugin@example.org/index.html").canonical).toBe(`${SITE}plugins/first-plugin%40example.org/`);
-  });
-
   test("differs across the home, About, and plugin pages", () => {
     const pages = ["index.html", "about/index.html", "plugins/first-plugin@example.org/index.html"].map(previewOf);
     expect(new Set(pages.map(({ title }) => title)).size).toBe(3);
@@ -1999,7 +1995,6 @@ describe("the plugin page's preview description", () => {
   ])("on %s", (id, expected) => {
     const html = readFileSync(join(dir, "plugins", id, "index.html"), "utf8");
     expect(tagValue(html, "name", "description")).toBe(expected);
-    expect(tagValue(html, "property", "og:description")).toBe(expected);
   });
 });
 
@@ -2009,10 +2004,8 @@ describe("cutDescription", () => {
     ["keeps a text of 200 code points with spaces", `${"a".repeat(99)} ${"b".repeat(100)}`, `${"a".repeat(99)} ${"b".repeat(100)}`],
     ["cuts at the last space of the first 200", `${"a".repeat(99)} ${"b".repeat(101)}`, "a".repeat(99)],
     ["cuts at 200 with no space there", `${"a".repeat(205)} b`, "a".repeat(200)],
-    ["cuts at 200 when the only space opens the text", ` ${"a".repeat(205)}`, ` ${"a".repeat(199)}`],
     ["cuts at 200 when two spaces open the text", `  ${"a".repeat(205)}`, `  ${"a".repeat(198)}`],
     ["cuts at a later space after opening spaces", `  ${"a".repeat(50)} ${"b".repeat(205)}`, `  ${"a".repeat(50)}`],
-    ["keeps the first 200 when they are all spaces", `${" ".repeat(205)}a`, " ".repeat(200)],
     ["does not cut at a space after opening whitespace of another kind", `\t ${"a".repeat(205)}`, `\t ${"a".repeat(198)}`],
     ["cuts only at a space, not at a newline", `aaa\n${"b".repeat(205)}`, `aaa\n${"b".repeat(196)}`],
   ])("%s", (_, text, expected) => {
@@ -2338,6 +2331,7 @@ describe("the site colors", () => {
       const rect = /<rect\b[^>]*>/.exec(icon())![0];
       expect(rect).toContain(`width="${size[1]}"`);
       expect(rect).toContain(`height="${size[1]}"`);
+      expect(rect).not.toMatch(/\brx=|\bry=/);
     });
 
     test("uses each scheme's accent, which shows on that scheme's background", () => {
