@@ -62,6 +62,19 @@ function latinPart(text: string | undefined, name: Set<string>): string | undefi
   return informative(pieces.join(" "), name) ?? text;
 }
 
+const CUT_LENGTH = 200;
+
+// A text for a link preview: whole up to 200 code points, and otherwise cut at the last space
+// in its first 200, or at 200 when that part has no space to cut at, as with Chinese text.
+// A space with only whitespace before it does not count, since a cut there leaves only whitespace.
+export function cutDescription(text: string): string {
+  const points = [...text];
+  if (points.length <= CUT_LENGTH) return text;
+  const head = points.slice(0, CUT_LENGTH).join("");
+  const space = head.lastIndexOf(" ");
+  return space > head.search(/\S/) ? head.slice(0, space) : head;
+}
+
 // The description override when one applies. Otherwise the manifest description when it is
 // informative and under half CJK; else the GitHub description when it is informative and the
 // manifest one is not, or has a higher CJK share; else the informative manifest description.

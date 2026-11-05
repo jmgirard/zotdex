@@ -6,6 +6,7 @@ import NoSourceMark from "../components/NoSourceMark.astro";
 import PaidServiceMark from "../components/PaidServiceMark.astro";
 import Base from "../layouts/Base.astro";
 import {
+  BASE,
   categoryOptions,
   DISCLAIMER,
   PAID_SERVICE_TEXT,
@@ -46,7 +47,11 @@ const prePaint = `if ("noModule" in HTMLScriptElement.prototype) {
 }`;
 ---
 
-<Base title="Zotero plugin index">
+<Base
+  title="Zotero plugin index"
+  description="An unofficial community index of plugins for Zotero 7 and later, with facts that a daily build reads from each plugin's GitHub repository and releases."
+  path={BASE}
+>
   <div class="hero">
     <h1>Plugins for Zotero 7 and later</h1>
     <p class="intro">

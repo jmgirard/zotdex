@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import type { Override, PluginRecord, PluginsFile, StartTestRecord } from "../../src/build/build.ts";
 import { CATEGORIES, categories, categoryOptions } from "../../src/site/categories.ts";
-import { shownDescription } from "../../src/site/description.ts";
+import { cutDescription, shownDescription } from "../../src/site/description.ts";
 import { appliedLanguages, languageName, languageOptions, listedSubtags, rowLanguages } from "../../src/site/languages.ts";
 import {
   appliedValue,
@@ -41,6 +41,13 @@ export function pluginHref(id: string): string {
 // The name after overrides, or the id when neither the manifest nor an override gives one.
 export function displayName(record: PluginRecord): string {
   return appliedValue(record, "name", record.upstream?.name) ?? record.id;
+}
+
+// A plugin page's link preview text: its shown description, cut to length, or a sentence that
+// names the plugin when it has none or when the cut leaves only whitespace.
+export function previewDescription(record: PluginRecord): string {
+  const cut = cutDescription(shownDescription(record) ?? "");
+  return cut.trim() === "" ? `${displayName(record)} is a plugin listed in the Zotero plugin index.` : cut;
 }
 
 // The records in the home table's order: by display name, ignoring letter case and accents,

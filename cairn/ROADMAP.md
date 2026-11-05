@@ -7,7 +7,7 @@ _Last hygiene check: 2026-11-04 (M093 archived; one row new; 25 lessons, 6 marke
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M094 | Add link previews and a favicon | planned | — | high | milestones/M094-link-previews-favicon.md |
+| M094 | Add link previews and a favicon | review | — | high | milestones/M094-link-previews-favicon.md |
 | M095 | Publish a license | planned | — | high | milestones/M095-publish-license.md |
 | M093 | Let people ask to remove a plugin | done | — | high | milestones/archive/M093-remove-plugin-path.md |
 | M092 | Tighten the ai and attachments rules | done | — | normal | milestones/archive/M092-ai-attachments-rules.md |
@@ -52,4 +52,5 @@ _Last hygiene check: 2026-11-04 (M093 archived; one row new; 25 lessons, 6 marke
 - [parked] Drop excludes left by removed overrides: M067, M089, and M090 add `exclude` entries in `src/site/categories.ts` because of an override's wording, and they stay if an owner removes or replaces that override (D-049, D-050), so they can block a later right match in the upstream text; parked, as no documented or common use has reached this; promote when a user reports it (M089 review) — added 2026-11-03 — M067, M089, M090, D-049, D-050
 - [parked] Close gaps in the delisted list reads: a queued discover run can read an older list; a held pull request gets no check before a hand merge, so the next build fails; impossible dates and duplicate records pass (M093 review); promote when a removed plugin returns — added 2026-11-04 — M093, D-062
 - [parked] Add a picture to link previews: M094 ships text only, as the user chose; promote when the user asks — added 2026-11-04 — M094
+- [parked] Tighten link previews and the icon: no PNG icon for a browser that shows no SVG icon; no mark at a cut; a cut can keep stray spaces or leave a short or U+200B-only text; over 200 opening spaces drops the text; `ORIGIN` repeats the address; About gives no source for stars and other facts (M094 review); promote when a user reports it — added 2026-11-04 — M094
 <!-- one line per idea, high → normal → low → parked: `- [token] short title: detail — added YYYY-MM-DD — links`; tracking-rules "Candidate priority token" and "Candidate short title" have the rules -->
