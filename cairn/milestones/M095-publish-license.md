@@ -114,3 +114,16 @@ The repository states the terms for reusing its code and its data.
 - ripple #4: DESIGN says Icon.astro "draws" the icons — reject, false: as ripple #3.
 - ripple #5: ROADMAP's row on `discover.yml` against DESIGN's "a group of its own" — reject, false: `discover.yml` has one fixed group, and that DESIGN line is about `add-plugin-issue.yml`.
 - ripple aside: `v1/plugins.json` reads as a repo path — fix now, same as diff-bug #12, fixed db616aee.
+- Second pass: after the AC2 amendment, one fresh Opus reader read only `37ef2755..HEAD`, not the four lenses again, because the only new work was the fixes above and the amendment; the merge question says so.
+- spawned: diff-bug
+- diff-bug #1: README's field list omits an override's `reason`, which quotes author text — fix now, fixed 92471200.
+- diff-bug #2: "A code comment counts as code" reads as putting Lucide's and Feather's notices under MIT — reject, false: README names those notices as the sources' own.
+- diff-bug #3: the sentence covers only comments and sits in a paragraph about `categories.ts` — fix now for its place, moved to the MIT paragraph, fixed 92471200; the remaining MIT and CC0 overlap on the maintainer's page text stays — reject, planned change: AC2 and D-063 word the term this way.
+- diff-bug #4: `Icon.astro`'s list of paths that follow 0.400.0 is no real test, since `releases` is the same in both versions — fix now, it names the four paths that differ from 1.68.0, fixed 92471200; this replaces the first pass's fix of its #10.
+- diff-bug #5: `mdn-nth-child.md` also rewords a sentence closely — fix now, README says so, fixed 92471200.
+- diff-bug #6: the known-issue lines say "Accepted" before the gate — reject, false: that is the line's required shape, and step 9 writes them after approval.
+- diff-bug #7: the first pass's blame-history #1 reason is stale — fix now: its reject stands for `zotero-changelogs.md`, the category ledgers, and `repeat-id-ledger.md`, while `microsoft-naming-a-file.md` and `mdn-nth-child.md` are now named.
+- diff-bug #8: the test title says "three license terms" while the test also checks the icons — fix now, fixed 92471200.
+- diff-bug #9: "can also hold or quote it" leaves out the ledgers — reject, false: "can" gives no full list, and the third-party list names them.
+- diff-bug #10: "The icons on these pages" could include the favicon — fix now, it says "line icons", fixed 92471200.
+- Evidence at 92471200: `pnpm check` exits 0 with 736 entries and 0 problems; `pnpm test` shows 2382 passed, 6 skipped, 0 failed, including the About license test. The diff changes no snapshot file. The open-PR read found 0 open PRs of the user's, under the cap of 1.
