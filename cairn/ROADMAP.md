@@ -7,7 +7,7 @@ _Last hygiene check: 2026-11-05 (M099 archived; M096 row left the table; validat
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M100 | Keep a plugin's last good record | in-progress | — | high | milestones/M100-keep-last-good-record.md |
+| M100 | Keep a plugin's last good record | review | — | high | milestones/M100-keep-last-good-record.md |
 | M099 | Replace the red logo with a blue puzzle piece | done | — | normal | milestones/archive/M099-puzzle-piece-logo.md |
 | M098 | Give the table controls one design | done | — | normal | milestones/archive/M098-table-controls-design.md |
 | M097 | Get the site ready for first visitors | done | — | high | milestones/archive/M097-first-visitors.md |

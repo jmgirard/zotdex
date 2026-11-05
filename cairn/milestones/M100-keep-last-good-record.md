@@ -4,7 +4,7 @@
      cairn_validate's <150 over the plan-owned body. -->
 # M100: Keep a plugin's last good record
 
-- **Status:** in-progress   <!-- owner: transitioning skill · mirror-update; cairn/ROADMAP.md is the authority -->
+- **Status:** review   <!-- owner: transitioning skill · mirror-update; cairn/ROADMAP.md is the authority -->
 - **Priority:** high   <!-- owner: plan · create/amend-via-gate; high | normal | low -->
 - **Depends on:** —   <!-- owner: plan · create/amend-via-gate; M<xx>, M<yy> or — -->
 - **Driving RR:** —   <!-- owner: plan · create/amend-via-gate; RR<NN> whose Binding criteria bind this milestone's ACs (binding-criteria check), or — -->
@@ -71,7 +71,7 @@ A plugin that a build cannot read for a build-level reason keeps its last read f
 - [x] T4: Tests first for AC5. Add `kept` to `schemas/plugins.v1.schema.json` with the `oneOf` and a dependency on `upstream`, update the `upstream` and `startTests` descriptions, README "Using the data" (near line 62 and the start-result text near lines 505-516) and "Building the data" (near line 1511), and add a CHANGELOG entry.
 - [x] T5: Tests first for AC6. The badge in `site/src/pages/index.astro` beside `data-archived` (line 169), the legend, the plugin page note in `site/src/pages/plugins/[id]/index.astro`, an About section in `site/src/pages/about.astro` (start-result text near lines 73-78 and the "Not read" text near line 168), and the footer in `site/src/layouts/Base.astro` (line 1082; `test/site.test.ts` pins it near line 2016). Add a kept record to the site fixture and to the three id lists (lesson M061). Check the home row and plugin page in the browser pane at 375 px and desktop in both color schemes (lessons M015, M035).
 - [x] T6: Tests first for AC7. `.github/workflows/build.yml`: pass `--previous https://jmgirard.github.io/zotero-plugin-index/v1/plugins.json` to `pnpm build`, and update the time comment (lines 21-28) for the 60-second read. Update `test/workflows.test.ts` (the pinned line near 93). DESIGN.md's build paragraph and Known issues, and D-066 annotating D-011, D-012, D-015, D-023, and D-035.
-- [ ] T7: Hand checks. Run `buildData` on a saved copy of the deployed data with reads that fail, and check the output against the schema. Then run `build.yml` on the branch, which cannot deploy, and record the build step's time, its kept count, and that the data passes the schema (lesson M087 on reading a job's log).
+- [x] T7: Hand checks. Run `buildData` on a saved copy of the deployed data with reads that fail, and check the output against the schema. Then run `build.yml` on the branch, which cannot deploy, and record the build step's time, its kept count, and that the data passes the schema (lesson M087 on reading a job's log).
 
 ## Work log
 <!-- owner: any skill · append-only; one line per entry; absolute dates.
@@ -106,6 +106,8 @@ A plugin that a build cannot read for a build-level reason keeps its last read f
 - 2026-11-05: substantive amendment: AC6's footer sentence becomes "The data comes from the build of <day>." in place of "The last build ran on <day>.", the legend and the plugin page name the build of the data in place of the last build, and the badge follows any "Archived" badge; no change to what the user chose at the question set.
 - 2026-11-05: re-audit: AC6 (full) — the footer fix left "the last build could not read" in the plugin page note and the legend, false after a build that deploys nothing, and "where Archived sits" was unclear; both applied in the wording above.
 - 2026-11-05: re-audit: AC6 (full) — when the data's build and the kept read fall on one UTC day, "the build of <day>" names two builds; met within the cleared wording: the page says "The build that wrote this page, on <day>, could not read this plugin" and "These facts come from an earlier build, on <day>", and the badge title says "Facts from an earlier build, on <day>". This is AC6's second re-audit line, so a further change to its wording goes to the user.
+- 2026-11-05: T7 done: `buildData` over all 736 entries with `buildMs: 0` against a saved copy of the deployed data of 2026-11-05 15:22 UTC kept 502 of 502 records with deployed facts, each `upstream` unchanged, 0 schema problems, an empty start plan. Branch run 42110419077 of `build.yml` (granted at the question set) passed with deploy skipped: the build step took 4:51, the run 26:18; 1 build-level failure (`zotero-pdf2md@yyds.dev`, HTTP 500) kept nothing, since the deployed record had no `upstream`; the `plugins-data` artifact passes the schema.
+- 2026-11-05: implement complete; status → review.
 ## Decisions
 <!-- owner: implement / review · append-only; milestone-local; promote
      cross-cutting ones to cairn/DECISIONS.md.
