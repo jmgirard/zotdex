@@ -333,8 +333,9 @@ its canonical address. A maintainer submits it to a search engine by hand,
 because the site cannot have a `robots.txt` at the top of its host.
 
 Each page has a favicon, the icon that a browser shows for the page. It is a
-filled square in the site's accent color. Each page also has tags for link
-previews. The tags are a meta description, Open Graph tags, a Twitter card tag,
+blue puzzle piece, and the top bar shows the same piece beside the site's name.
+Each page also has tags for link previews. The tags are a meta description,
+Open Graph tags, a Twitter card tag,
 and a canonical link. A shared link can show the page's title and
 description, with no picture. A plugin page uses its shown description. The
 page cuts a description of more than 200 characters at the last space in its
@@ -1920,12 +1921,12 @@ or quote it.
 These files hold parts from a third party. Those parts keep their source's
 terms, and the rest of each file follows the terms above:
 
-- `site/src/components/Icon.astro`, `test/site.test.ts`,
-  `cairn/mockups/redesign-2026-10-29/mockup.js`, and
+- `site/src/components/Icon.astro`, `site/public/favicon.svg`,
+  `test/site.test.ts`, `cairn/mockups/redesign-2026-10-29/mockup.js`, and
   `cairn/mockups/redesign-2026-10-29/index.html`: icon paths from
   [Lucide](https://lucide.dev), under the ISC License, and from the Feather
   icons that Lucide includes, under the MIT License. `Icon.astro` holds both
-  notices, and the other three files point to it.
+  notices, and the other four files point to it.
 - `test/fixtures/upstream/better-notes.json`,
   `test/fixtures/build/plugins/Knowledge4Zotero@windingwind.com/meta.json`,
   `test/add-plugin.test.ts`, and `test/upstream.test.ts`: data or text recorded

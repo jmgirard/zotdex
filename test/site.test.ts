@@ -220,6 +220,9 @@ const NO_SOURCE_TEXT = "No source code at the top level of the repository";
 // The icon paths in this file come from Lucide and Feather. site/src/components/Icon.astro holds the notices.
 const LOCK_SVG =
   '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 11h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2z"></path><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
+// The `puzzle` path of lucide-static 1.68.0, unchanged.
+const PUZZLE_PATH =
+  "M15.39 4.39a1 1 0 0 0 1.68-.474 2.5 2.5 0 1 1 3.014 3.015 1 1 0 0 0-.474 1.68l1.683 1.682a2.414 2.414 0 0 1 0 3.414L19.61 15.39a1 1 0 0 1-1.68-.474 2.5 2.5 0 1 0-3.014 3.015 1 1 0 0 1 .474 1.68l-1.683 1.682a2.414 2.414 0 0 1-3.414 0L8.61 19.61a1 1 0 0 0-1.68.474 2.5 2.5 0 1 1-3.014-3.015 1 1 0 0 0 .474-1.68l-1.683-1.682a2.414 2.414 0 0 1 0-3.414L4.39 8.61a1 1 0 0 1 1.68.474 2.5 2.5 0 1 0 3.014-3.015 1 1 0 0 1-.474-1.68l1.683-1.682a2.414 2.414 0 0 1 3.414 0z";
 const noSourceMark = (icon: string) => `<span class="no-source" data-no-source><span aria-hidden="true" title="${NO_SOURCE_TEXT}">${icon}</span><span class="visually-hidden">${NO_SOURCE_TEXT}</span></span>`;
 const PAID_TEXT = "Needs a paid service from its maker";
 const STAR_SVG =
@@ -879,7 +882,7 @@ describe("the About page", () => {
     expect(link?.[1]).toBe("https://github.com/jmgirard/zotero-plugin-index#license");
     const text = unescaped(section.replace(/<[^>]+>/g, "")).replace(/\s+/g, " ");
     expect(text).toContain("The index's code is under the MIT License, except the third-party parts of the files that the README names.");
-    expect(text).toContain("The line icons on these pages come from Lucide, under the ISC License, and from Feather, under the MIT License.");
+    expect(text).toContain("The icons on these pages come from Lucide, under the ISC License, and from Feather, under the MIT License.");
     expect(text).toContain("The facts that the index gathers, its categories, and text that a maintainer wrote are under CC0 1.0.");
     expect(text).toContain("All other text keeps its author's terms: plugin names and descriptions, GitHub About text, and text that an owner asked for.");
   });
@@ -2001,7 +2004,7 @@ describe("the built site", () => {
       const html = readFileSync(join(out, path), "utf8");
       const bar = /<body><header class="topbar"><div class="topbar-inner">(.*?)<\/div><\/header><main>/s.exec(html)?.[1];
       expect(bar?.replace(/<button .*<\/script>/s, ""), path).toBe(
-        '<a class="brand" href="/zotero-plugin-index/">Zotero plugin index</a><nav aria-label="Site">' +
+        `<a class="brand" href="/zotero-plugin-index/"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="${PUZZLE_PATH}"></path></svg>Zotero plugin index</a><nav aria-label="Site">` +
           '<a href="/zotero-plugin-index/about/">About</a>' +
           '<a href="https://github.com/jmgirard/zotero-plugin-index/issues/new?template=add-plugin.yml" data-add-plugin>Add a plugin</a>' +
           '<a href="https://github.com/jmgirard/zotero-plugin-index/discussions" data-feedback>Feedback</a>' +
@@ -2575,6 +2578,7 @@ describe("the site colors", () => {
     ["--none", "--surface", 3],
     ["--star", "--bg", 3],
     ["--star", "--surface", 3],
+    ["--accent", "--surface", 3],
     ["--accent", "--hover", 3],
   ];
 
@@ -2588,24 +2592,55 @@ describe("the site colors", () => {
       }
     });
 
-    test("draws one square that fills the view box", () => {
-      expect(icon().match(/<(?:rect|path|circle|ellipse|polygon|polyline|line|image|text|use)\b/g)).toEqual(["<rect"]);
-      const size = /viewBox="0 0 (\d+) (\d+)"/.exec(icon())!;
-      expect(size[1]).toBe(size[2]);
-      const rect = /<rect\b[^>]*>/.exec(icon())![0];
-      expect(rect).toContain(`width="${size[1]}"`);
-      expect(rect).toContain(`height="${size[1]}"`);
-      expect(rect).not.toMatch(/\brx=|\bry=/);
+    test("draws one shape, the puzzle piece, in Lucide's 24 by 24 view box", () => {
+      expect(icon().match(/<(?:rect|path|circle|ellipse|polygon|polyline|line|image|text|use)\b/g)).toEqual(["<path"]);
+      expect(icon()).toContain('viewBox="0 0 24 24"');
+      expect(/<path\b[^>]*\bd="([^"]+)"/.exec(icon())![1]).toBe(PUZZLE_PATH);
     });
 
     test("uses each scheme's accent, which shows on that scheme's background", () => {
-      const lightFill = /<rect\b[^>]*fill="(#[0-9a-f]{6})"/.exec(icon())![1]!;
-      const darkFill = /@media \(prefers-color-scheme: dark\)\s*\{\s*rect\s*\{\s*fill:\s*(#[0-9a-f]{6})/.exec(icon())![1]!;
+      const lightFill = /<path\b[^>]*fill="(#[0-9a-f]{6})"/.exec(icon())![1]!;
+      const darkFill = /@media \(prefers-color-scheme: dark\)\s*\{\s*path\s*\{\s*fill:\s*(#[0-9a-f]{6})/.exec(icon())![1]!;
       expect(lightFill).toBe(light.get("--accent"));
       expect(darkFill).toBe(dark.get("--accent"));
       expect(contrast(lightFill, light.get("--bg")!)).toBeGreaterThanOrEqual(3);
       expect(contrast(darkFill, dark.get("--bg")!)).toBeGreaterThanOrEqual(3);
     });
+
+    test("names the file that holds the icon's license notice", () => {
+      expect(icon()).toContain("site/src/components/Icon.astro");
+    });
+  });
+
+  describe("the logo", () => {
+    test("is the favicon's shape, hidden from screen readers, before the site's name on every page", () => {
+      const favicon = readFileSync(join(out, "favicon.svg"), "utf8");
+      const drawn = /<path\b[^>]*\bd="([^"]+)"/.exec(favicon)![1];
+      for (const file of htmlFiles(out)) {
+        const brand = /<a class="brand"[^>]*>(.*?)<\/a>/s.exec(readFileSync(join(out, file), "utf8"))![1]!;
+        const icons = brand.match(/<svg\b.*?<\/svg>/gs);
+        expect(icons, file).toHaveLength(1);
+        expect(icons![0], file).toContain('aria-hidden="true"');
+        expect(/<path\b[^>]*\bd="([^"]+)"/.exec(icons![0]!)?.[1], file).toBe(drawn);
+        expect(brand.startsWith(icons![0]!), file).toBe(true);
+        expect(brand.replace(icons![0]!, ""), file).toBe("Zotero plugin index");
+      }
+    });
+
+    test("fills with --accent and no stroke, with CanvasText in forced colors, and leaves no square behind", () => {
+      const base = /\n {6}\.brand \.icon \{[^}]*fill: var\(--accent\);[^}]*stroke: none;/.exec(layout);
+      const forced = /@media \(forced-colors: active\) \{\s*\.brand \.icon \{\s*fill: CanvasText;/.exec(layout);
+      expect(base).not.toBeNull();
+      expect(forced).not.toBeNull();
+      // Both rules have one specificity, so the forced-colors fill wins only when it comes later.
+      expect(forced!.index).toBeGreaterThan(base!.index);
+      expect(layout).not.toContain(".brand::before");
+    });
+  });
+
+  test("sets --accent to the site's blue in the light block and both dark blocks, and the pressed version button's bar draws from it", () => {
+    expect(layout.match(/--accent: #[0-9a-f]{6};/g)).toEqual(["--accent: #1d5fb8;", "--accent: #7fb0ff;", "--accent: #7fb0ff;"]);
+    expect(layout).toMatch(/\[data-version-filter\] button\[aria-pressed="true"\] \{[^}]*box-shadow: inset 0 -2px 0 var\(--accent\);/);
   });
 
   test.each([

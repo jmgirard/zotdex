@@ -8,8 +8,8 @@
   row. The pager sits at the foot of the card. The controls have one height,
   text size, and edge. Each one changes on hover, except the pressed version
   button and a pager button at its end. The pressed version button now has the
-  hover fill and a thin bar in the site's accent color. Before, it had a fill in
-  the text color. What each control does did not change.
+  hover fill and a thin blue bar. Before, it had a fill in the text color. What
+  each control does did not change.
 - The home table now opens with the most GitHub stars first. A new "Sort by"
   menu also offers Name and Latest release, and the page keeps a choice other
   than Stars in the `sort` query parameter. A home row with a star count shows
@@ -38,7 +38,9 @@
   Graph tags, a Twitter card tag, and a canonical link. A plugin page uses its
   shown description, cut to at most 200 characters. If a plugin has no shown
   description, its page uses a sentence that names the plugin.
-- Each page now has an icon: a filled square in the site's accent color.
+- Each page now has an icon: a blue puzzle piece. The top bar shows the same
+  piece beside the site's name, in place of a red square that looked like an
+  error.
 - A new issue form asks to remove a plugin or reports harm. Each plugin page
   and the About page link to it. The form is public, and a maintainer reads
   each request. About states the four reasons for a removal.
