@@ -25,7 +25,6 @@ Zotero's page does not settle the Firefox step, so these do, observed 2026-11-05
 
 - `curl -sIL` on `https://github.com/windingwind/zotero-better-notes/releases/download/v3.3.3/better-notes-for-zotero.xpi` ends in `content-type: application/x-xpinstall` and `content-disposition: inline`. That content type is the one for a browser add-on install.
 - README of `windingwind/zotero-better-notes`, line 95, and README of `windingwind/zotero-pdf-translate`, line 21, each tell a Firefox user to right-click the `.xpi` and save it.
-
 - Firefox 158.0, installed on the maintainer's machine: `localization/en-US/browser/browserContext.ftl` in `omni.ja` gives `main-context-menu-save-link` the label "Save Link As…".
 
 No one clicked an `.xpi` link in Firefox for M096. The site text gives the step and states no reason for it.

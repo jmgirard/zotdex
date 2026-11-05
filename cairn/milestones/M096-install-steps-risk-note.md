@@ -83,29 +83,31 @@ A visitor can learn from the site how to install a plugin and what a plugin can 
 - spawned: diff-bug, blame-history, prior-review, ripple
 - diff-bug #1: "the bot waits" implies that an unflagged plugin has no wait — reject, false: the sentence says that the bot waits for a maintainer, which a held pull request does (D-033), and it does not state the unheld wait.
 - diff-bug #2: "what users report" sits above a table with no reports — reject, planned change: AC3's text, which the user approved; plugin pages show the reports.
-- diff-bug #3: `.install-note` has no `max-width`, so lines run long on desktop — fix now.
-- diff-bug #4: the one warning on a plugin page is in the smallest muted text, and nothing caps its 7 lines at 375 px — fix now for the color, which is now the page's text color; the length is a planned change.
+- diff-bug #3: `.install-note` has no `max-width`, so lines run long on desktop — fix now, fixed e97c4692.
+- diff-bug #4: the one warning on a plugin page is in the smallest muted text, and nothing caps its 7 lines at 375 px — fix now, fixed e97c4692 for the color, which is now the page's text color; the length is a planned change.
 - diff-bug #5: "before listing it" can suggest a later review, and "does not review the code" is unqualified — reject, false: the sentences describe a listing decision, and D-062's read of code applies only to a report's evidence.
 - diff-bug #6: the listing section names three kinds of misleading entry and Removing names two — reject, planned change: D-053 and D-062 differ, and each section states its own.
 - diff-bug #7: About's description and h1 do not mention installing — reject, style: both stay true, and the link lands on the section.
 - diff-bug #8: the home description names repository facts only, and the intro names reports — reject, false: what it says stays true (M094).
-- diff-bug #9: the evidence supports saving but not the label "Save Link As" — fix now: read from the installed Firefox 158's text and recorded in `zotero-plugins-page.md`.
+- diff-bug #9: the evidence supports saving but not the label "Save Link As" — fix now, fixed e97c4692: read from the installed Firefox 158's text and recorded in `zotero-plugins-page.md`.
 - diff-bug #10: "the download link" names a button, and the Firefox step comes after the drag step — reject, style.
-- diff-bug #11: DESIGN's walkthrough says the card follows the links, and its About list omits installing — fix now.
-- diff-bug #12: T7 asked for both color schemes at each size, and the log records two of the four views — fix now: the other views ran after these fixes.
+- diff-bug #11: DESIGN's walkthrough says the card follows the links, and its About list omits installing — fix now, fixed e97c4692.
+- diff-bug #12: T7 asked for both color schemes at each size, and the log records two of the four views — fix now, fixed e97c4692: the other views ran after these fixes.
 - diff-bug #13: two sentences both say that code is not reviewed, under an install heading — reject, planned change: AC2's text, approved by the user.
 - diff-bug #14: `INSTALL_HREF` import order, and the rule's place in `Base.astro` — reject, style.
 - diff-bug #15: one link ends with a period and one does not — reject, planned change: AC1 and AC3 say so.
-- diff-bug #16: the note's position test never names the page head — fix now.
-- diff-bug #17: About intro's new sentence has no test — fix now.
+- diff-bug #16: the note's position test never names the page head — fix now, fixed e97c4692.
+- diff-bug #17: About intro's new sentence has no test — fix now, fixed e97c4692.
 - diff-bug #18: tag stripping appears twice in `test/site.test.ts` — reject, style.
-- blame-history #1: the home intro drops M082's paid-service sentence, and D-064 omits it — fix now: D-064 names it; the cut is a planned change.
-- blame-history #2: the home intro drops M059's start rule — fix now in the same D-064 sentence; AC4 keeps it on About.
+- blame-history #1: the home intro drops M082's paid-service sentence, and D-064 omits it — fix now, fixed e97c4692: D-064 names it; the cut is a planned change.
+- blame-history #2: the home intro drops M059's start rule — fix now, fixed e97c4692 in the same D-064 sentence; AC4 keeps it on About.
 - blame-history #3: the disclaimer no longer opens the intro, against M080 — reject, planned change: D-064 records it.
-- blame-history #4: the home intro no longer says where the facts come from — fix now in the same D-064 sentence; About keeps it.
-- prior-review #1: the same M082 AC5 cut, not named in the plan's collision check — fix now through D-064, as blame-history #1.
+- blame-history #4: the home intro no longer says where the facts come from — fix now, fixed e97c4692 in the same D-064 sentence; About keeps it.
+- prior-review #1: the same M082 AC5 cut, not named in the plan's collision check — fix now, fixed e97c4692 through D-064, as blame-history #1.
 - prior-review #2: the plan's claim on M080's disclaimer place — reject, false: M080's summary says that the user "did not choose a place".
 - prior-review #3: a second About link on a plugin page, against M054's one line — reject, planned change: AC1 calls for the link, and M054's line is for the compatibility section, which keeps one.
-- ripple #1: `CHANGELOG.md` says that the home intro links to the "Add a plugin" form, which it does not — fix now: sentence removed.
-- ripple #2: DESIGN's About list omits installing — fix now, as diff-bug #11.
+- ripple #1: `CHANGELOG.md` says that the home intro links to the "Add a plugin" form, which it does not — fix now, fixed e97c4692: sentence removed.
+- ripple #2: DESIGN's About list omits installing — fix now, fixed e97c4692, as diff-bug #11.
 - ripple #3: the home description is now the only home text on the daily read — reject, false: it stays true.
+- Re-verify after the fixes: `pnpm test` first failed 2 tests in `test/registry-schema.test.ts` with `RegistrySchemaUnavailable`, a read of raw.githubusercontent.com that reached its 10 s limit, code this branch does not touch and that the candidate "Steady the time-limit tests under load" names; a rerun gave 2393 passed and 6 skipped, exit 0; `pnpm check` 736 entries, 0 problems.
+- T7 views after the fixes: a plugin page and About, in light and dark, at 375 px and desktop; the note takes 7 lines at 375 px and 4 on desktop, with no side scrolling.
