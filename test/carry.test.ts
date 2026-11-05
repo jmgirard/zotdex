@@ -56,6 +56,12 @@ describe("carryResults", () => {
     ]);
   });
 
+  test("carries nothing from a record with kept, whose results an earlier build wrote", () => {
+    const kept = { readAt: "2026-10-27T06:17:00.000Z", failure: { name: "not-read", message: "" } };
+    expect(carried({ ...earlier("alpha"), kept })).toBeUndefined();
+    expect(carried(earlier("alpha"))).toEqual([{ zotero: "7.0.32", result: "started" }]);
+  });
+
   test("carries only the started items of a record that mixes results across versions", () => {
     const tests = [
       { zotero: "7.0.32", result: "started" },

@@ -86,7 +86,7 @@ async function readEntry(path: string): Promise<string | undefined> {
 // carries for a `tested` version in its range, and drops a job result for that entry and
 // version as `carried`, since no job started it. Each record's results are ordered by Zotero
 // version; a record with none gets no field, and any `startTests` the data already has is
-// replaced.
+// replaced, except on a kept record, which keeps its own.
 export function addResults(data: PluginsFile, plan: StartPlan, files: ResultsFile[], tested: string[]): AddResultsOutcome {
   const items = new Map<string, StartPlanItem>(plan.plugins.map((item) => [item.entry, item]));
   const read = new Set(data.plugins.filter((record) => record.upstream).map((record) => record.id));
@@ -136,7 +136,11 @@ export function addResults(data: PluginsFile, plan: StartPlan, files: ResultsFil
     byEntry.set(candidate.entry, list);
   }
   let kept = 0;
-  const plugins = data.plugins.map(({ startTests: _old, ...record }) => {
+  // A kept record holds the start results of the build that read its facts, and no plan item,
+  // so it keeps them as they are (D-066).
+  const plugins = data.plugins.map((full) => {
+    if (full.kept) return full;
+    const { startTests: _old, ...record } = full;
     const tests = byEntry.get(record.id);
     if (!tests) return record;
     kept += tests.length;

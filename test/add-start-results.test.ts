@@ -221,6 +221,36 @@ describe("addResults", () => {
   });
 });
 
+describe("addResults and a kept record", () => {
+  const keptData = (): PluginsFile => {
+    const file = data();
+    file.plugins[1] = {
+      ...file.plugins[1],
+      startTests: [{ zotero: "8.0.5", result: "timed-out" }],
+      kept: { readAt: "2026-10-27T06:17:00.000Z", failure: { name: "not-read", message: "the build reads no plugin after 18 minutes, its time limit" } },
+    };
+    return file;
+  };
+
+  test("leaves a kept record's startTests as the build wrote them, with no plan item and a forged result", async () => {
+    const plan: StartPlan = { plugins: PLAN.plugins.filter(({ entry }) => entry !== "beta") };
+    const files = await readResultsDir(resultsDir({ "start-results-7.0.32": [alpha("7.0.32"), beta("7.0.32")] }));
+    const outcome = addResults(keptData(), plan, files, TESTED);
+    expect(outcome.data.plugins[1]).toEqual(keptData().plugins[1]);
+    expect(outcome.dropped).toEqual([{ file: "start-results-7.0.32/start-results.json", index: 1, reason: "unknown-entry" }]);
+    expect(outcome.data.plugins[0].startTests).toEqual([{ zotero: "7.0.32", result: "started" }]);
+    expect(checkOutput(outcome.data)).toEqual([]);
+  });
+
+  test("still replaces the startTests of a record with no kept", async () => {
+    const file = data();
+    file.plugins[0] = { ...file.plugins[0], startTests: [{ zotero: "8.0.5", result: "timed-out" }] };
+    const files = await readResultsDir(resultsDir({ "start-results-7.0.32": [alpha("7.0.32")] }));
+    expect(addResults(file, PLAN, files, TESTED).data.plugins[0].startTests).toEqual([{ zotero: "7.0.32", result: "started" }]);
+    expect(addResults(file, PLAN, [], TESTED).data.plugins[0]).not.toHaveProperty("startTests");
+  });
+});
+
 describe("the startTests schema", () => {
   const withTests = (startTests: unknown) => {
     const file = data();

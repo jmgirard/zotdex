@@ -28,7 +28,8 @@ export function isRetestDay(entry: string, nowMs: number): boolean {
 // have an upstream with the item's plugin id and version and an xpiSha256 equal to its sha256.
 // Earlier data can hold any shape, so a record, a startTests list, or an item of another shape
 // carries nothing. A Zotero version that a record names twice, and an entry id that two records
-// name, carry nothing. Each item's earlier `carried` list is replaced.
+// name, carry nothing, and so does a record with `kept`. Each item's earlier `carried` list is
+// replaced.
 export function carryResults(plan: StartPlan, earlier: unknown[], nowMs: number): StartPlan {
   const records = new Map<string, unknown>();
   const twice = new Set<string>();
@@ -48,7 +49,10 @@ export function carryResults(plan: StartPlan, earlier: unknown[], nowMs: number)
 
 function startedResults(item: StartPlanItem, record: unknown): CarriedResult[] {
   if (typeof record !== "object" || record === null) return [];
-  const { upstream, startTests } = record as { upstream?: unknown; startTests?: unknown };
+  const { upstream, startTests, kept } = record as { upstream?: unknown; startTests?: unknown; kept?: unknown };
+  // A kept record's results come from an earlier build, so carrying them would let them pass the
+  // weekly re-test (D-066).
+  if (kept !== undefined) return [];
   if (typeof upstream !== "object" || upstream === null || !Array.isArray(startTests)) return [];
   const { id, version, xpiSha256 } = upstream as Record<string, unknown>;
   if (id !== item.id || version !== item.version || xpiSha256 !== item.sha256) return [];
