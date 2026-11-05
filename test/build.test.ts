@@ -576,6 +576,96 @@ describe("pnpm build", () => {
   });
 });
 
+describe("pnpm build with --previous", () => {
+  const PREVIOUS = "https://example.org/v1/plugins.json";
+  const COPY = "second-copy@example.org";
+  // TREE plus a copy of SECOND that reads the same repo, so both read the same 503.
+  const withCopy = () => {
+    const tree = tempDir();
+    cpSync(TREE, tree, { recursive: true });
+    cpSync(join(TREE, SECOND), join(tree, COPY), { recursive: true });
+    return tree;
+  };
+  // The data that a build of `tree` over the passing responses deploys now, so its readAt
+  // falls within 7 days of the spawned build.
+  async function deployedOf(tree: string) {
+    const result = await buildData(tree, fixtureFetch(responses()).fetch);
+    if (!result.ok) throw new Error(result.problems.join("\n"));
+    return result.data;
+  }
+  async function run(tree: string, recorded: Responses, earlier?: Recorded) {
+    const deployed = earlier ?? { json: await deployedOf(tree) };
+    const out = tempDir();
+    const result = pnpmBuild([tree, "--out", out, "--previous", PREVIOUS], writeFixture({ ...recorded, [PREVIOUS]: deployed }));
+    return { result, out, deployed };
+  }
+  const failing = () => ({ ...responses(), [SECOND_UPDATE]: { status: 503, text: "Service Unavailable" } });
+
+  test("prints a line for each kept record and the count, and exits 0 under both bars", async () => {
+    const { result, out, deployed } = await run(TREE, failing());
+    expect(result.status, result.stderr).toBe(0);
+    const readAt = (deployed.json as PluginsFile).generatedAt;
+    expect(`\n${result.stdout}`).toContain(
+      `\n${SECOND}: update-json-http-error: the update.json at ${SECOND_UPDATE} returned HTTP 503 (kept the facts read at ${readAt})\n`,
+    );
+    expect(summary(result.stdout)).toEqual(["failed with fork: 1", "failed with update-json-http-error: 1", "build-level failures: 1 of 3 records"]);
+    expect(`\n${result.stdout}`).toContain("\nkept earlier facts: 1 of 3 records\n");
+    expect(result.stdout).toMatch(/\nwrote 3 records to \S+, 2 with a failed upstream read, 1 of them with kept facts\n/);
+    expect(record(readOutput(out), SECOND)?.kept?.readAt).toBe(readAt);
+  });
+
+  test("exits 1 when build-level records, kept or not, are more than half of all records", async () => {
+    // 2 of 4 records are build-level, which is not more than half.
+    const half = await run(withCopy(), failing());
+    expect(half.result.status, half.result.stderr).toBe(0);
+    expect(`\n${half.result.stdout}`).toContain("\nkept earlier facts: 2 of 4 records\n");
+    // A second copy makes 3 of 5, while one record still reads.
+    const tree = withCopy();
+    cpSync(join(TREE, SECOND), join(tree, "second-copy-2@example.org"), { recursive: true });
+    const { result, out } = await run(tree, failing());
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain("3 of 5 records carry a build-level failure, more than half");
+    expect(result.stderr).not.toContain("records carry a failure");
+    expect(`\n${result.stdout}`).toContain("\nkept earlier facts: 3 of 5 records\n");
+    expect(record(readOutput(out), COPY)?.kept).toBeDefined();
+    expect(record(readOutput(out), BETTER_NOTES)?.kept).toBeUndefined();
+  });
+
+  test("exits 1 when every record is kept or has a failure, though most are not build-level", async () => {
+    const recorded = failing();
+    delete recorded["https://api.github.com/repos/windingwind/zotero-better-notes"];
+    const { result } = await run(TREE, recorded);
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain("all 3 records carry a failure");
+    expect(result.stderr).not.toContain("more than half");
+    expect(`\n${result.stdout}`).toContain("\nkept earlier facts: 1 of 3 records\n");
+  });
+
+  test("prints a kept record's failure message on one line, so upstream text cannot start a workflow command", async () => {
+    const recorded = { ...responses(), "https://api.github.com/repos/windingwind/zotero-better-notes": { unexpected: "planted\n::stop-commands::planted" } };
+    const { result } = await run(TREE, recorded);
+    expect(`\n${result.stdout}`).toContain(`\n${BETTER_NOTES}: unexpected-error: planted ::stop-commands::planted (kept the facts read at `);
+    const commands = result.stdout.split("\n").filter((line) => line.startsWith("::"));
+    expect(commands).toEqual(["::warning::1 of 3 records carry a build-level failure"]);
+  });
+
+  test("warns on one line and exits as before when it cannot read the deployed data", async () => {
+    const { result, out } = await run(TREE, failing(), { status: 503, text: "Service Unavailable" });
+    expect(result.status).toBe(0);
+    expect(`\n${result.stdout}`).toContain(
+      `\n::warning::cannot read the deployed data, so no record keeps earlier facts: GET ${PREVIOUS} returned HTTP 503\n`,
+    );
+    expect(`\n${result.stdout}`).toContain("\nkept earlier facts: 0 of 3 records\n");
+    expect(record(readOutput(out), SECOND)?.failure?.name).toBe("update-json-http-error");
+  });
+
+  test("prints the usage for --previous with no address", () => {
+    const result = pnpmBuild([TREE, "--previous"]);
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain("usage: pnpm build [<dir>] [--out <dir>] [--plan <file>] [--previous <url>]");
+  });
+});
+
 describe("pnpm build with a timer still pending", () => {
   const PENDING = resolve(ROOT, "test/support/preload-pending-timer.ts");
 
