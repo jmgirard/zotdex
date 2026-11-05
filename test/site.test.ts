@@ -133,6 +133,7 @@ const page = (id: string) => readFileSync(join(out, "plugins", id, "index.html")
 const home = () => readFileSync(join(out, "index.html"), "utf8");
 const records = (fixture as unknown as PluginsFile).plugins;
 const NO_SOURCE_TEXT = "No source code at the top level of the repository";
+// The icon paths in this file come from Lucide and Feather. site/src/components/Icon.astro holds the notices.
 const LOCK_SVG =
   '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 11h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2z"></path><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
 const noSourceMark = (icon: string) => `<span class="no-source" data-no-source><span aria-hidden="true" title="${NO_SOURCE_TEXT}">${icon}</span><span class="visually-hidden">${NO_SOURCE_TEXT}</span></span>`;
@@ -781,7 +782,19 @@ describe("the About page", () => {
       ["paid-service", "Paid service"],
       ["removing", "Removing a plugin"],
       ["not-vetted", "What the index does not do"],
+      ["license", "License"],
     ]);
+  });
+
+  test("states the license terms and the icons' sources, and links to the README's License section", () => {
+    const section = /<section class="card" id="license" data-about="license">(.*?)<\/section>/s.exec(about())![1]!;
+    const link = /<a href="([^"]*)" data-license-link>([^<]*)<\/a>/.exec(section);
+    expect(link?.[1]).toBe("https://github.com/jmgirard/zotero-plugin-index#license");
+    const text = unescaped(section.replace(/<[^>]+>/g, "")).replace(/\s+/g, " ");
+    expect(text).toContain("The index's code is under the MIT License, except the third-party parts of the files that the README names.");
+    expect(text).toContain("The line icons on these pages come from Lucide, under the ISC License, and from Feather, under the MIT License.");
+    expect(text).toContain("The facts that the index gathers, its categories, and text that a maintainer wrote are under CC0 1.0.");
+    expect(text).toContain("All other text keeps its author's terms: plugin names and descriptions, GitHub About text, and text that an owner asked for.");
   });
 
   test("lists every category, links each that the home menu offers to the home page filtered by it, and says where categories come from", () => {

@@ -148,7 +148,7 @@ text-change form and the remove-plugin form (M079, M093). The About page
 and its marks, the start test, which reports count, and how overrides and
 the Used column work (M054), the categories, each with its `about`
 text (M066), what the source fact means (M081), what the paid service
-mark means (M082), and the grounds for removing a plugin (M093). The home table marks an archived plugin with
+mark means (M082), the grounds for removing a plugin (M093), and the license terms (M095, D-063). The home table marks an archived plugin with
 "Archived" after its name (M053), and the data carries the same `archived`
 fact (M013). A home row and a plugin page show a lock for a record with
 `sourceInRepo: false`, the fact that the top level of the repo's default branch

@@ -2,7 +2,7 @@
 import { knownRelease, ZOTERO_MAJORS } from "../../../src/site/version.ts";
 import { DESCRIPTION_MAX, DESCRIPTION_MIN_WORDS, NAME_MAX, NAME_MIN } from "../../../src/text-request/rules.ts";
 import Base from "../layouts/Base.astro";
-import { BASE, CATEGORIES, categoryOptions, loadData, REMOVE_PLUGIN_HREF, SUPPORT_MARKS as MARKS } from "../data.ts";
+import { BASE, CATEGORIES, categoryOptions, LICENSE_HREF, loadData, REMOVE_PLUGIN_HREF, SUPPORT_MARKS as MARKS } from "../data.ts";
 
 const { plugins, zoteroRelease } = loadData();
 // The categories that the home page's menu offers, the only ones a link can filter by.
@@ -20,7 +20,7 @@ const offered = new Set(categoryOptions(plugins).map(({ value }) => value));
       Each day, a build reads every listed plugin's GitHub repository and releases. A plugin page shows the facts that
       the build found for one release, the release the index read. A maintainer reads the paid service fact by hand, and
       the build reads the others. This page says where the main facts come from and what they
-      do not show.
+      do not show. It ends with the license terms.
     </p>
   </div>
   <section class="card" id="declared" data-about="declared">
@@ -236,6 +236,16 @@ const offered = new Set(categoryOptions(plugins).map(({ value }) => value));
       plugin code: it shows only whether a plugin starts. The index does not endorse plugins. It does not host plugin
       files: the download link on a plugin page goes to the author's own file, which the index does
       not copy.
+    </p>
+  </section>
+  <section class="card" id="license" data-about="license">
+    <h2>License</h2>
+    <p>
+      The index's code is under the MIT License, except the third-party parts of the files that the README names. The
+      line icons on these pages come from Lucide, under the ISC License, and from Feather, under the MIT License. The facts
+      that the index gathers, its categories, and text that a maintainer wrote are under CC0 1.0. All other text keeps its
+      author's terms: plugin names and descriptions, GitHub About text, and text that an owner asked for. The{" "}
+      <a href={LICENSE_HREF} data-license-link>README's License section</a> gives the details.
     </p>
   </section>
 </Base>

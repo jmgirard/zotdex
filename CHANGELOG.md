@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- The repository now states its terms. The code is under the MIT License, except
+  the third-party parts of the files that README's License section names. The
+  facts that the index gathers, its categories, and text that a maintainer wrote
+  are under CC0 1.0. All other text keeps its author's terms: plugin names and
+  descriptions, GitHub About text, and text that an owner asked for. The About
+  page states these terms and links to that section.
 - A link to any page of the site can now show a preview with the page's title
   and description, with no picture. Each page has a meta description, Open
   Graph tags, a Twitter card tag, and a canonical link. A plugin page uses its
