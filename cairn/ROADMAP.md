@@ -1,16 +1,15 @@
 # Roadmap
 
 _The only authority on milestone status. Grouped by status, not ID._
-_Last hygiene check: 2026-11-05 (M100 archived; M097 row left the table; validate green)_
+_Last hygiene check: 2026-11-05 (M101 archived; M098 row left the table; validate green)_
 
 ## Milestones
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M101 | Time each plugin read in the build log | review | — | normal | milestones/M101-time-each-read.md |
+| M101 | Time each plugin read in the build log | done | — | normal | milestones/archive/M101-time-each-read.md |
 | M100 | Keep a plugin's last good record | done | — | high | milestones/archive/M100-keep-last-good-record.md |
 | M099 | Replace the red logo with a blue puzzle piece | done | — | normal | milestones/archive/M099-puzzle-piece-logo.md |
-| M098 | Give the table controls one design | done | — | normal | milestones/archive/M098-table-controls-design.md |
 <!-- rows grouped by status, not by ID; keep the 3 most recent done/dropped rows; older ones: milestones/archive/ + git -->
 
 ## Candidates
@@ -53,4 +52,5 @@ _Last hygiene check: 2026-11-05 (M100 archived; M097 row left the table; validat
 - [parked] Tighten the home controls at larger text: the pager and sort menu wrap unevenly at 20 to 24 px text at 320 px; the version group and sort menu pass the card at 32 px text under 457 px; pressing a version button moves the row 1 px; a longer option can cut a menu at 761 or 1001 px; the table's px steps do not follow text size; `--faint` on `--hover` is 2.96:1 in dark on inner dividers; the card's corners and focus corners show slivers; `homeScript` stand-ins do not share a wrapper; Chromium only (M098 review); promote when a user reports it — added 2026-11-05 — M098
 - [parked] Tighten link previews and the icon: no PNG icon for a browser that shows no SVG icon; no mark at a cut; a cut can keep stray spaces or leave a short or U+200B-only text; over 200 opening spaces drops the text; `ORIGIN` repeats the address; About gives no source for stars and other facts (M094 review); promote when a user reports it — added 2026-11-04 — M094
 - [parked] Name the build on the failure page: an unread plugin's page says "The last build could not read this plugin", which is false after a build that deploys nothing, since the page then comes from an earlier build; M100 gave the kept note "The build that wrote this page, on <day>, …" (M100 review); promote when a user reports it — added 2026-11-05 — M100
+- [parked] Print entry ids on one line in the build log: `pnpm build` prints each failed record's entry id as it is, and no schema limits an id, so an id holding a line break can start a workflow command line; the timing lines already write one as a space (M101 review); promote when a user reports it — added 2026-11-05 — M101
 <!-- one line per idea, high → normal → low → parked: `- [token] short title: detail — added YYYY-MM-DD — links`; tracking-rules "Candidate priority token" and "Candidate short title" have the rules -->
