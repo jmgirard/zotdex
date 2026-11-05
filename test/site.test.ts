@@ -2707,13 +2707,11 @@ describe("the site colors", () => {
         .map(([, value]) => ({ selector, token: /var\((--[\w-]+)\)/.exec(value)?.[1] })),
     );
     expect(edges.map(({ selector }) => selector)).toEqual([
-      ".search input, [data-language-filter], [data-category-filter], [data-sort]",
-      "[data-version-filter]",
+      ".search input, [data-language-filter], [data-category-filter], [data-sort], [data-version-filter], .pager button",
       "[data-version-filter] button",
-      ".pager button",
       ".btn",
     ]);
-    // The controls sit on the page background and fill with the surface color.
+    // The home controls sit on the card and the plugin page links on the page background.
     for (const { selector, token } of edges) {
       for (const background of ["--surface", "--bg"]) {
         expect(contrast(scheme.get(token!)!, scheme.get(background)!), `${selector}: ${token} on ${background}`).toBeGreaterThanOrEqual(3);
