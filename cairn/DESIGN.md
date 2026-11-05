@@ -518,6 +518,17 @@ user reports. The exception is a report that is abuse.
   GraphQL batches of 40 after the plugin reads, within 3 minutes. A failure
   leaves `sourceInRepo` out and sets `sourceProblem`, which the CLI prints as a
   warning, and it never withholds a deploy (D-052).
+  After the source read and before the report count, a build given
+  `--previous` reads the deployed data with `readPrevious` in
+  `src/build/previous.ts`, once and only when a record has a build-level
+  failure. `keptFacts` in `src/build/keep.ts` then gives each such record the
+  deployed record's `upstream` and `startTests` with a `kept` field when the
+  deployed list names the id once, the `repoUrl` matches, the record passes
+  the schema, and its `readAt` is at most `KEEP_MS` (7 days) before
+  `generatedAt` and not after it. A kept record stays build-level, counts as
+  failed in both deploy bars, gets no start plan item, and keeps its start
+  results through `pnpm add-start-results`, and `pnpm carry-start-results`
+  carries none from it. A failed read keeps nothing and warns (D-066, M100).
   After the plugin reads, `readZoteroRelease` in
   `src/build/zotero-release.ts` reads the current Zotero release from
   zotero.org with no token and a 30 s limit, and the build writes it as the
@@ -1219,3 +1230,10 @@ reused._
   filter menus sit side by side, so a closed menu cuts a long name: 12 of 16
   categories and 2 of 50 languages at 375 px on the data of 2026-11-05. The open
   list shows each name whole. Accepted at the M098 gate
+- Kept facts can be older than 7 days on the site. The limit counts back
+  from each build, and a build that deploys nothing leaves the last deployed
+  kept facts in place. Recorded at M100, 2026-11-05 (D-066).
+- A build that GitHub's slow or 5xx answers cut still deploys fresh facts for
+  only the plugins it read, while the rest keep older facts or show "Not
+  read". Two of three builds on 2026-11-05 were cut this way. Recorded at
+  M100; the parked row "Retry build reads GitHub refuses" holds the retry.

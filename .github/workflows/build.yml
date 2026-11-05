@@ -21,7 +21,9 @@ jobs:
     # The time limits in src/build/build.ts end the report issue read at 3
     # minutes and start no plugin read after 18 minutes, a read that started
     # by then takes at most 3 minutes more, the top-level name read
-    # after the plugin reads takes at most 3 minutes, the Zotero release
+    # after the plugin reads takes at most 3 minutes, the read of the deployed
+    # data after it, made only when a record's read failed for a build-level
+    # reason, takes at most 60 seconds, the Zotero release
     # and changelog reads after it run at the same time and take
     # at most 30 seconds, and `pnpm
     # carry-start-results` reads for at most 60 seconds, which leaves time for
@@ -57,8 +59,12 @@ jobs:
       # issues, and when it cannot write the start plan after the data file. The steps
       # below without an `if:` are then skipped, and the jobs
       # after this one do not run, so nothing is deployed. The start plan names the URL
-      # and SHA-256 of each XPI the build read, and no artifact holds an XPI.
-      - run: pnpm build --plan start-plan.json
+      # and SHA-256 of each XPI the build read, and no artifact holds an XPI. With
+      # --previous, a record whose read fails for a build-level reason keeps the deployed
+      # record's facts for up to 7 days, and still counts as a failure (D-066).
+      - run: >-
+          pnpm build --plan start-plan.json
+          --previous https://jmgirard.github.io/zotero-plugin-index/v1/plugins.json
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # Reuses the `started` results of the deployed data for each XPI whose SHA-256 is unchanged,

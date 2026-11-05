@@ -999,3 +999,28 @@ inclusion is no judgment of quality, and the index cannot vet plugins. The
 plain list order now favors older, known repos, and a new plugin starts far
 down. This choice is wrong if visitors read the order as the index's advice,
 or if star counts get inflated to reach the first page.
+
+### D-066: A record whose read fails for a build-level reason keeps the deployed record's facts for 7 days, annotating D-011, D-012, D-015, D-023, and D-035
+
+2026-11-05, M100 plan. A build that its time limit or a host cuts left each unread
+plugin with no facts, since the build restored no earlier data (D-015), and such a
+build deploys when at most half of its records are build-level. With `--previous`,
+`pnpm build` now gives a record whose read fails for a build-level reason the
+`upstream` and `startTests` of the deployed record, with a new optional `kept` field
+that holds when those facts were read and this build's failure. It keeps them for at
+most 7 days after that read, and the site marks the row "Older data". The user chose
+build-level failures only, the 7-day limit, the badge on the home row and a note on
+the plugin page, and keeping the deploy bars at more than half, over a bar at a
+quarter, which would hold back every plugin's fresh facts for one cut build.
+A kept record still counts as failed in both bars (D-011, D-012), so a kept record
+can never make a build deploy that would not deploy before. The build-level mark now
+reaches the data through `kept`, which narrows D-011's sentence that it never does.
+D-015's cost, no facts for an unread plugin, now holds only for a plugin with no
+deployed facts younger than 7 days. A kept record keeps every start result of the
+build that read it, which D-035 never reuses for a result other than `started`, and
+`pnpm carry-start-results` carries nothing from it, so a result ages at most one keep
+beyond D-035's week. That also lets a forged result (D-023) stay up to 7 days longer.
+The plan read the deployed data after the plugin reads, only when a build-level
+failure exists, so a normal build spends nothing on it. This choice is wrong if
+visitors read kept facts as current despite the badge, or if a kept record shows a
+release that its author withdrew.
