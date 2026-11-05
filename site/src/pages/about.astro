@@ -220,8 +220,8 @@ const offered = new Set(categoryOptions(plugins).map(({ value }) => value));
     </p>
     <p>
       A removed plugin stays off the index, and the bot does not propose it again. A list names its repository and, when
-      a maintainer judges it unique, its plugin id, so a copy under a new name and a new id is not covered. The index still
-      cannot vet plugins, and it does not review their code.
+      a maintainer judges it unique, its plugin id, so a copy under a new name is covered only if it keeps a listed id. The
+      index still cannot vet plugins, and it does not review their code.
     </p>
   </section>
   <section class="card" id="not-vetted" data-about="not-vetted">

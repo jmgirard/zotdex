@@ -15,8 +15,8 @@ body:
         that a reader can check, such as a link to the code or a page that shows it.
 
         A removed plugin stays off the index. A list names its repository and, when a
-        maintainer judges it unique, its plugin id, so a copy under a new name and a
-        new id is not covered.
+        maintainer judges it unique, its plugin id, so a copy under a new name is
+        covered only if it keeps a listed id.
   - type: input
     id: plugin
     attributes:

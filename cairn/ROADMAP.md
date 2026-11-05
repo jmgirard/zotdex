@@ -7,7 +7,7 @@ _Last hygiene check: 2026-11-04 (M092 archived; one row graduated, one new; 25 l
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M093 | Let people ask to remove a plugin | in-progress | — | high | milestones/M093-remove-plugin-path.md |
+| M093 | Let people ask to remove a plugin | review | — | high | milestones/M093-remove-plugin-path.md |
 | M094 | Add link previews and a favicon | planned | — | high | milestones/M094-link-previews-favicon.md |
 | M095 | Publish a license | planned | — | high | milestones/M095-publish-license.md |
 | M092 | Tighten the ai and attachments rules | done | — | normal | milestones/archive/M092-ai-attachments-rules.md |

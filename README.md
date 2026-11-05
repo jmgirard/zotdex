@@ -1325,12 +1325,9 @@ The list keeps a removed plugin off the index in three places:
   under 48 hours old. For any other, the job reports it as failed and exits 1
   each day until you close it.
 
-The list names a repo and the ids in its record, and nothing else. The bot can
-propose a repo again in these cases:
-
-- The repo moves to a new name, and its record has no id.
-- The repo moves to a new name, and the plugin changes its id.
-- A fork has a new id.
+The list names a repo and the ids in its record, and nothing else. If a repo
+moves to a new name, the bot can propose it again unless its id is listed. The
+same is true of a fork.
 
 To list a plugin again, remove its record. The bot can then propose it, unless
 a bot pull request for that repo was closed without a merge. In that case, add
