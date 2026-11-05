@@ -610,7 +610,8 @@ user reports. The exception is a report that is abuse.
   the reporter plugin of `src/start-test/reporter/`, and writes one of the
   four results, or exits 1 with a failure name (M046). `pnpm
   carry-start-results --plan --data [--previous]` (`carryPlan`,
-  `carryResults` in `src/start-test/carry.ts`, M059) reads the deployed
+  `carryResults` in `src/start-test/carry.ts`, M059; the read is
+  `readPrevious` in `src/build/previous.ts` since M100) reads the deployed
   `v1/plugins.json` within 60 s and 16 MiB and writes into each plan item
   a `carried` list of the earlier record's `started` results, when the
   record's upstream has the item's id, version, and `xpiSha256`, except on
@@ -988,8 +989,8 @@ reused._
   for that read, and `test/workflows.test.ts` checks both (M021). The reader
   marks a failure build-level beside its name, and `buildData` returns the
   marked ids outside the data, so the published file keeps its shape
-  (D-011). Since M047 the workflow has four jobs. The build job runs
-  `pnpm build --plan start-plan.json`, then since M059 `pnpm
+  (D-011); since M100 a kept record holds its failure in `kept` (D-066). Since M047 the workflow has four jobs. The build job runs
+  `pnpm build --plan start-plan.json`, with `--previous` since M100, then since M059 `pnpm
   carry-start-results` on the plan, gives the plan's SHA-256 as the job
   output `plan-sha256` and, since M069, the `pnpm data-digest --dir dist`
   value as `data-sha256`, and uploads `dist/` as `plugins-data` and the

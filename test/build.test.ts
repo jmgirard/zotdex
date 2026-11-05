@@ -1594,6 +1594,8 @@ describe("buildData with the deployed data", () => {
     ["is more than 7 days old", (data) => (data.generatedAt = new Date(NOW.getTime() - 7 * DAY - 1).toISOString())],
     ["is read after generatedAt", (data) => (data.generatedAt = new Date(NOW.getTime() + 1).toISOString())],
     ["has a readAt that Date.parse cannot read", (data) => (deployedRecord(data, SECOND).kept = { readAt: "2026-13-01T00:00:00Z", failure: SECOND_FAILURE })],
+    // Date.parse reads it, but the record written with it fails the schema's readAt pattern.
+    ["comes from a file whose generatedAt is not a UTC time ending in Z", (data) => (data.generatedAt = "2026-11-04T06:00:00+00:00")],
   ])("keeps nothing when the deployed record %s", async (_case, edit) => {
     const data = deployed();
     edit(data);
@@ -1601,6 +1603,16 @@ describe("buildData with the deployed data", () => {
     expect(record(output, SECOND)).toEqual({ id: SECOND, repoUrl: "https://github.com/example/second-plugin", failure: SECOND_FAILURE, overrides: [] });
     expect(result.kept).toEqual([]);
     expect(result.previousProblem).toBeUndefined();
+  });
+
+  test("keeps nothing for a failure that is not build-level in a build that reads the deployed data", async () => {
+    const recorded = { ...failing(), "https://api.github.com/repos/windingwind/zotero-better-notes": { status: 404, json: {} } };
+    const { result, output, previousReads } = await rebuild(recorded, { json: deployed() });
+    expect(previousReads).toBe(1);
+    expect(result.kept).toEqual([SECOND]);
+    expect(record(output, BETTER_NOTES)?.failure?.name).toBe("github-http-error");
+    expect(record(output, BETTER_NOTES)).not.toHaveProperty("kept");
+    expect(record(output, BETTER_NOTES)).not.toHaveProperty("upstream");
   });
 
   test("keeps nothing for a failure that is not build-level, and reads no deployed data when no failure is build-level", async () => {
@@ -1621,6 +1633,7 @@ describe("buildData with the deployed data", () => {
   });
 
   test.each<[string, Recorded | undefined, string]>([
+    ["a fetch that rejects", { error: "getaddrinfo ENOTFOUND" }, `cannot read ${PREVIOUS}: getaddrinfo ENOTFOUND`],
     ["an answer other than 200", { status: 404, text: "Not Found" }, `GET ${PREVIOUS} returned HTTP 404`],
     ["a body over 16 MiB", { chunks: { size: 1024 * 1024, count: 17 } }, `the body of ${PREVIOUS} is over 16777216 bytes`],
     ["a read past its time limit", { stall: "headers" }, `cannot read ${PREVIOUS}: the read passed its time limit of 50 ms`],

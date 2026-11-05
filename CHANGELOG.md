@@ -10,7 +10,8 @@
   record counts as failed in the build log and in both deploy limits. The
   data file has a new optional `kept` field on such a record, with
   `readAt` and this build's `failure`, and `pnpm build` has a new
-  `--previous <url>` option. A record with `kept` has no start test, and
+  `--previous <url>` option. A record with `kept` has no start test in that
+  build and keeps the start results published with its facts, and
   `pnpm carry-start-results` carries no result from one. The footer now
   names the day of the build that the data comes from.
 - The home page's search box, filters, sort menu, count, and pager now share

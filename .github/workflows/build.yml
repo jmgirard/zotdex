@@ -26,8 +26,9 @@ jobs:
     # reason, takes at most 60 seconds, the Zotero release
     # and changelog reads after it run at the same time and take
     # at most 30 seconds, and `pnpm
-    # carry-start-results` reads for at most 60 seconds, which leaves time for
-    # the other steps before this limit.
+    # carry-start-results` reads for at most 60 seconds: 26.5 minutes in all,
+    # which leaves time for the other steps before this limit (they took 10
+    # seconds in run 42110419077, 2026-11-05).
     timeout-minutes: 30
     # The site job checks the start plan and the data it downloads against these values. Plugin
     # code in a start-test job can upload artifacts, but it cannot change this job's outputs.

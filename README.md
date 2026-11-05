@@ -136,8 +136,8 @@ name. Apart from Other tools, the categories with the most plugins come
 first. Categories with the same number of plugins come in the order of the
 About page's list. The menu lists Other tools last, whatever its number.
 A plugin that fits no other category is under Other tools. A plugin that the
-latest build did not read has only the categories added by hand, so it often
-shows none. If you pick a category, the table shows only the plugins in it.
+latest build did not read, and that keeps no earlier facts, has only the
+categories added by hand, so it often shows none. If you pick a category, the table shows only the plugins in it.
 "All categories" passes every plugin. The page keeps your choice in the
 `category` query parameter of its address, such as `?category=translation`.
 If the parameter names no category in the menu, the page passes every
@@ -164,7 +164,8 @@ The home page also has "Declares Zotero" buttons: "Any" and one button for
 each Zotero major from 7 to 10. If you press a major, the table shows only
 the plugins whose declared range covers all or part of that version. These
 are the plugins with a ✓ or ◐ mark for it. A plugin with no declared range,
-or one that the last build failed to read, does not show. The page keeps
+or one that the last build failed to read and that keeps no earlier
+facts, does not show. The page keeps
 your choice in the `zotero` query parameter of its address, such as
 `?zotero=8`. If the parameter names no button, the page acts as if "Any" is
 pressed and removes the parameter.
@@ -266,7 +267,8 @@ declares a range, the declared range comes before that link. Then a line names t
 "Works" button and a "Broken" button. The buttons open the report forms on
 GitHub with the plugin id and that version filled in. If the last build
 failed to read a plugin, the card shows the failure in place of the table,
-with no report buttons.
+with no report buttons. A plugin that keeps earlier facts shows the table
+and the buttons for the version of those facts.
 
 An open "Details" card comes last. Its last lines link to the forms that ask
 to change the plugin's text and to remove the plugin or report harm. It lists
@@ -1515,11 +1517,13 @@ GitHub marks the release that the reader read as a prerelease. It also has
 a `languages` list and an `xpiUrl` field, which "Using the data"
 describes. Each record
 with an `upstream` block has a `reports` list, which "Using the data"
-describes. The command writes no `startTests` list. The daily build adds
-it with `pnpm add-start-results`, as "Starting plugins in Zotero" says.
+describes. The command writes no `startTests` list, except on a record
+that keeps earlier facts. The daily build adds it with
+`pnpm add-start-results`, as "Starting plugins in Zotero" says.
 
-If the read of a plugin fails, its record has no `upstream` block. The
-record has a `failure` block with the failure name and a message. If the
+If the read of a plugin fails, its record has no `upstream` block, unless
+it keeps earlier facts as `--previous` below says. The record has a
+`failure` block with the failure name and a message. If the
 read stops with an error that the reader does not name, the failure name is
 `unexpected-error`. If the read gives facts that the schema rejects, the
 failure name is `facts-invalid`. The command still writes the file.
@@ -1689,7 +1693,8 @@ To write the file under another directory, add `--out <dir>`. As with
 `pnpm add-plugin`, set `GITHUB_TOKEN` to get a higher GitHub API limit.
 
 To also write a start plan, add `--plan <file>`. The plan has one item for
-each record with an `upstream` block. Each item names the entry id, the
+each record whose `upstream` block this build read, so a record that keeps
+earlier facts has none. Each item names the entry id, the
 plugin id and version, and the manifest's `strict_min_version` and
 `strict_max_version`. It also names the URL of the XPI that the build read
 and the SHA-256 of the bytes that it got. The data's `xpiUrl` and
@@ -1732,7 +1737,8 @@ The command reads the data file at `--previous`, which is the published
 finds the earlier record with the item's entry id. That record's
 `upstream` can have the item's plugin id and version, and the item's
 SHA-256 as `xpiSha256`. If so, the command copies the record's `started`
-results into the item as a `carried` list. An item gets no `carried` list
+results into the item as a `carried` list. It copies nothing from a
+record with a `kept` block. An item gets no `carried` list
 on its entry's re-test day. The command counts the day from `generatedAt`
 in the `--data` file, which is the data file that `pnpm build` wrote. It
 then writes the plan in place and prints how many results it carried.

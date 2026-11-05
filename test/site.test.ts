@@ -2331,7 +2331,8 @@ describe("a kept record", () => {
     const text = /<section class="card" id="older-data" data-about="older-data">(.*?)<\/section>/s.exec(about)?.[1].replace(/\s+/g, " ");
     expect(text).toContain("<h2>Older data</h2>");
     expect(text).toContain("a problem with the build or a host");
-    expect(text).toContain("If an earlier build read the plugin at most 7 days before, the site then keeps the facts of that read.");
+    expect(text).toContain("If the published data holds facts about the plugin that a build read at most 7 days before, the site keeps them.");
+    expect(text).toContain("A plugin with older data gets no start test, and it keeps the start results published with its facts.");
     expect(text).toContain('A plugin that the build cannot read for another reason, such as a deleted repository, shows "Not read".');
   });
 
