@@ -68,6 +68,7 @@ A visitor can learn from the site how to install a plugin and what a plugin can 
 - 2026-11-05: re-audit: AC2 (full) — five wording findings: `mainly` for two hold reasons, an unclear `its` and process words, `stop` could read as turning a plugin off, three senses of `check`, and a citation that covered all sentences; all five fixed.
 - 2026-11-05: re-audit: AC2 (full) — nothing; `most` holds, with 648 unheld bot merges, 73 held merges, and 15 by hand of 736 entries; no one ran Firefox, and the sentence rests on the reference's evidence.
 - 2026-11-05: home intro's "what users report" kept: the plugin pages show reports, but the home table has none; the claim audit read this as holding, and it is text the user approved.
+- 2026-11-05: step-7 approval: m096-install-steps-risk-note approved for merge
 
 ## Decisions
 
