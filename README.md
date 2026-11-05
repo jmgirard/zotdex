@@ -1854,7 +1854,8 @@ ZOTERO_BIN=<binary> pnpm exec vitest run test/start-test-zotero.test.ts
 ## License
 
 The code in this repository is under the [MIT License](LICENSE), except the
-third-party parts of the files that this section names.
+third-party parts of the files that this section names. A code comment counts
+as code.
 
 The facts that the index gathers are under
 [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/). So are its
@@ -1862,7 +1863,7 @@ categories and the text that a maintainer wrote. The facts, the override text,
 and the paid-service notes are in the published data file, `v1/plugins.json`,
 and in the entries under `plugins/`. The categories are in
 `src/site/categories.ts` and on the site. The code of that file stays under the
-MIT License. A code comment counts as code.
+MIT License.
 
 A maintainer can translate, condense, or copy a description override from an
 author's text. CC0 then covers only the maintainer's own part of that override.
@@ -1872,7 +1873,7 @@ All other text keeps its author's terms. That text is plugin names and
 descriptions, GitHub About text, and text that an owner asked for. The index
 gives no license for it. In the data file, this text is in `upstream.name`,
 `upstream.description`, and `upstream.repoDescription`, and an override's
-`value` can hold it. The entries, the test files, and this README can also hold
+`value` and `reason` can hold it. The entries, the test files, and this README can also hold
 or quote it.
 
 These files hold parts from a third party. Those parts keep their source's
@@ -1895,7 +1896,7 @@ terms, and the rest of each file follows the terms above:
   page. The first file also quotes sentences from that page.
 - `cairn/references/microsoft-naming-a-file.md` and
   `cairn/references/mdn-nth-child.md`: short examples from the Microsoft and MDN
-  pages that each file cites.
+  pages that each file cites. The MDN file also rewords a sentence closely.
 - `test/build.test.ts`: part of a paragraph from Zotero's changelog pages, such
   as the [Zotero 9.0 Changelog](https://www.zotero.org/support/9.0_changelog).
 - `cairn/references/description-ledger.md`,
