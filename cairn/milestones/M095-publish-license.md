@@ -69,6 +69,7 @@ The repository states the terms for reusing its code and its data.
 - 2026-11-04: the second AC2 re-audit is a stop on the rulebook's list, and this run took the audited text with no chip, because the memory `criterion-wording-is-agents-call` records that the user does not want fine criterion wording raised when users see no change; the merge question shows the text and the instrument finding.
 - 2026-11-04: amendment return: AC2 — "except the third-party parts of each file that it names"; "The section names each file that a sweep of `git ls-files`, less `plugins/`, finds to hold third-party parts other than a plugin's name or description, which the other-text term covers wherever it sits. It can name others. The sweep reads `cairn/references/` and `site/src/components/Icon.astro`, and the milestone's Review section records the sweep."
 - 2026-11-04: this session ran the amendment in place, with the implement skill already loaded, in place of a second Skill call.
+- 2026-11-04: step-7 approval: m095-publish-license approved for merge
 
 ## Decisions
 
