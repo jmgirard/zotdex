@@ -1893,6 +1893,9 @@ terms, and the rest of each file follows the terms above:
   examples from MDN's
   [Legacy Version Formats](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/version/format)
   page. The first file also quotes sentences from that page.
+- `cairn/references/microsoft-naming-a-file.md` and
+  `cairn/references/mdn-nth-child.md`: short examples from the Microsoft and MDN
+  pages that each file cites.
 - `test/build.test.ts`: part of a paragraph from Zotero's changelog pages, such
   as the [Zotero 9.0 Changelog](https://www.zotero.org/support/9.0_changelog).
 - `cairn/references/description-ledger.md`,

@@ -1,6 +1,6 @@
 # M095: Publish a license
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
@@ -22,7 +22,7 @@ The repository states the terms for reusing its code and its data.
 ## Acceptance criteria
 
 - [x] AC1: `LICENSE` holds the MIT text of `gh api licenses/mit --jq .body`, with `[year]` and `[fullname]` filled so that it has the line `Copyright (c) 2026 Jeffrey Girard`, and `package.json` has `"license": "MIT"`.
-- [ ] AC2: README has a License section. It says that the code is under MIT, except each third-party file that it names, and that the facts the index gathers, its categories, and text the maintainer wrote are under CC0 1.0. It says that all other text keeps its author's terms: plugin names and descriptions, GitHub About text, and text that an owner asked for. "Using the data" links to it. The named files are those that a sweep of `git ls-files`, less `plugins/`, finds to come from a third party, with `cairn/references/` and `site/src/components/Icon.astro` read in that sweep, and the milestone's Review section records the sweep.
+- [ ] AC2: README has a License section. It says that the code is under MIT, except the third-party parts of each file that it names, and that the facts the index gathers, its categories, and text the maintainer wrote are under CC0 1.0. It says that all other text keeps its author's terms: plugin names and descriptions, GitHub About text, and text that an owner asked for. "Using the data" links to it. The section names each file that a sweep of `git ls-files`, less `plugins/`, finds to hold third-party parts other than a plugin's name or description, which the other-text term covers wherever it sits. It can name others. The sweep reads `cairn/references/` and `site/src/components/Icon.astro`, and the milestone's Review section records the sweep.
 - [x] AC3: The built About page states the same three terms in one short section, with a link to README's License section. A test reads the built page's text and asserts the three terms.
 - [x] AC4: CHANGELOG's Unreleased section has an entry. `pnpm test` and `pnpm check` exit 0.
 
@@ -64,11 +64,17 @@ The repository states the terms for reusing its code and its data.
 - 2026-11-04: re-audit: AC1 (full) — state reachable now, byte-identical by `cmp`; finding: a pre-merge check of root names no longer sits in a criterion; moved to T1 rather than AC1, the narrower promise; finding: T1 was stale, reworded; note: `--jq .body` prints one extra newline, so review compares the JSON body or expects that one-line `diff`.
 - 2026-11-04: T1 done: `LICENSE` matches GitHub's MIT body; `git ls-tree --name-only` of the branch root lists only `LICENSE` among names that could read as a license.
 - 2026-11-04: amendment routed: AC2 — it says "except each third-party file", while README correctly excepts only the third-party parts of each named file; AC2's box is unticked until the amended wording has fresh evidence.
+- 2026-11-04: re-audit: AC2 (full) — the first clause holds, but the last sentence kept the whole-file reading and "are those that" was too exact; last sentence reworded as a lower bound that leaves out a plugin's name or description.
+- 2026-11-04: re-audit: AC2 (full) — two reference pages hold short source examples, so README now names them; the sweep clause binds an instrument, as the plan's wording did.
+- 2026-11-04: the second AC2 re-audit is a stop on the rulebook's list, and this run took the audited text with no chip, because the memory `criterion-wording-is-agents-call` records that the user does not want fine criterion wording raised when users see no change; the merge question shows the text and the instrument finding.
+- 2026-11-04: amendment return: AC2 — "except the third-party parts of each file that it names"; "The section names each file that a sweep of `git ls-files`, less `plugins/`, finds to hold third-party parts other than a plugin's name or description, which the other-text term covers wherever it sits. It can name others. The sweep reads `cairn/references/` and `site/src/components/Icon.astro`, and the milestone's Review section records the sweep."
+- 2026-11-04: this session ran the amendment in place, with the implement skill already loaded, in place of a second Skill call.
 
 ## Decisions
 
 - 2026-11-04: T2 sweep of `git ls-files` less `plugins/` (284 paths on the default branch). Method: a word search for license, copyright, and copied-from words; a read of every page in `cairn/references/`, of the fixtures' `source` fields, of `Icon.astro`, of the mockups, and of `favicon.svg`; and a compare of icon paths with `lucide-static` 0.300.0, 0.400.0, and 1.68.0 and with `feather-icons` 4.29.2. Named: `Icon.astro`, `cairn/mockups/redesign-2026-10-29/mockup.js`, and its `index.html` (`download`, `arrow-left`, `check`, `x`, and `info` match Lucide exactly, `search` matches 0.400.0, `github` differs by one rounded number, `tag` is 0.400.0's rounded, `moon` is Feather's rounded, and `star`, `lock`, `credit-card`, and `sun` are drawn the same with shapes written as paths); `test/fixtures/upstream/better-notes.json` and `test/fixtures/build/plugins/Knowledge4Zotero@windingwind.com/meta.json` (recorded from Better Notes, AGPL-3.0 by the GitHub API); `test/version.test.ts` and `cairn/references/mozilla-toolkit-version.md` (MDN's examples and sentences); `test/build.test.ts` (Zotero's changelog paragraph); `cairn/references/description-ledger.md`, `description-ledger-2026-11-03.md`, and `paid-service-sweep.md` (plugin descriptions and a README quote). Read and not named: `microsoft-naming-a-file.md`, `mdn-nth-child.md`, and `zotero-changelogs.md` (facts and paraphrase), `category-ledger*.md` and `repeat-id-ledger.md` (ids, marks, counts, and test sentences of their own), `favicon.svg` (a filled square), `pnpm-lock.yaml` (generated names and hashes), and the fixtures whose `source` says written by hand. A plugin name or description in a test is covered by the README's text term.
 - 2026-11-04: the sweep above missed files that the claim audit and a follow-up search found, and these are now named as well: `test/site.test.ts` (lock, card, and star icon paths), and `test/add-plugin.test.ts` and `test/upstream.test.ts` (Better Notes' name and description). `test/version.test.ts` holds MDN's examples only, and `test/build.test.ts` holds part of a paragraph. A search for the icon paths and for Better Notes' description over the same files finds no other file.
+- 2026-11-04: the sweep's "not named" list above changes for two pages: `microsoft-naming-a-file.md` and `mdn-nth-child.md` hold short source examples, so README names them too. `zotero-changelogs.md` stays unnamed, as it holds version headings only.
 
 ## Review
 
