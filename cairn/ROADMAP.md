@@ -7,6 +7,7 @@ _Last hygiene check: 2026-11-05 (M095 archived; its license row graduated; 2 kno
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
+| M096 | Say how to install a plugin and what it can reach | planned | — | high | milestones/M096-install-steps-risk-note.md |
 | M095 | Publish a license | done | — | high | milestones/archive/M095-publish-license.md |
 | M094 | Add link previews and a favicon | done | — | high | milestones/archive/M094-link-previews-favicon.md |
 | M093 | Let people ask to remove a plugin | done | — | high | milestones/archive/M093-remove-plugin-path.md |
