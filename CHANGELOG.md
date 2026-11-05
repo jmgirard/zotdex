@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- A link to any page of the site can now show a preview with the page's title
+  and description, with no picture. Each page has a meta description, Open
+  Graph tags, a Twitter card tag, and a canonical link. A plugin page uses its
+  shown description, cut to at most 200 characters. If a plugin has no shown
+  description, its page uses a sentence that names the plugin.
+- Each page now has an icon: a filled square in the site's accent color.
 - A new issue form asks to remove a plugin or reports harm. Each plugin page
   and the About page link to it. The form is public, and a maintainer reads
   each request. About states the four reasons for a removal.

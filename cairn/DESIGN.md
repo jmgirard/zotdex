@@ -1006,7 +1006,9 @@ reused._
   sets the saved scheme before the body parses, and one right after the top
   bar's button that wires and shows it. The templates take the Pages path
   from `site/src/base.ts`, because a `BASE_URL` environment variable replaces
-  Astro's `import.meta.env.BASE_URL`. `build.yml`'s site job runs `pnpm site`
+  Astro's `import.meta.env.BASE_URL`. `Base.astro` writes each page's preview
+  tags and canonical link from its `description` and `path` props, and Astro
+  copies `site/public/favicon.svg` to the output (M094). `build.yml`'s site job runs `pnpm site`
   after the build job (M047), so a failed site build also deploys nothing.
   `tsconfig.json` includes `site/`, so `pnpm test` type-checks its `.ts`
   files; the `.astro` templates

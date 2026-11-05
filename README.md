@@ -291,6 +291,14 @@ trial. The name on the home page and on the plugin page shows the icon. The
 Details card shows "Needs a paid service from its maker" with a note, a link to
 the source, and the date of the read. A plugin with no mark can still cost money.
 
+Each page has an icon, a filled square in the site's accent color, and tags
+for link previews. The tags are a meta description, Open Graph tags, a Twitter
+card tag, and a canonical link. A shared link can show the page's title and
+description, with no picture. A plugin page uses its shown description, cut at
+the last space in its first 200 characters. If that part has no space, the page
+cuts the description at 200 characters. If a plugin has no shown description,
+its page uses a sentence that names the plugin.
+
 ## Using the data
 
 The index publishes its data file on GitHub Pages:

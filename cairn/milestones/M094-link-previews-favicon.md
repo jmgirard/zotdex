@@ -39,8 +39,8 @@ A shared link to any index page shows its own title and description, the page ha
 
 - [x] T1: Give `Base.astro` (`site/src/layouts/Base.astro:7`) `description` and path props, write the tags, and pass them from the three pages, with a helper for the cut. Test on built pages in `test/site.test.ts`.
 - [x] T2: Add `site/public/favicon.svg`, which Astro copies to the output, and the link, and test them.
-- [ ] T3: Add the three topics with `gh repo edit --add-topic` after reading the current list.
-- [ ] T4: Update README and CHANGELOG, and run `pnpm test` and `pnpm check`.
+- [x] T3: Add the three topics with `gh repo edit --add-topic` after reading the current list.
+- [x] T4: Update README and CHANGELOG, and run `pnpm test` and `pnpm check`.
 
 ## Work log
 
@@ -57,6 +57,8 @@ A shared link to any index page shows its own title and description, the page ha
 - 2026-11-04: T1 and T2: one commit, as their tests share one test file. `cutDescription` went in `src/site/description.ts`, `previewDescription` in `site/src/data.ts`, and `ORIGIN` in `site/src/base.ts`.
 - 2026-11-04: T1: a space that opens a long text does not count as the cut point, because a cut there would leave an empty description, which AC1 forbids. twitter:card is `summary`, the text-only card; og:type is `website`.
 - 2026-11-04: T2: the icon uses each scheme's accent through a media query, because the light accent gives under 3:1 on the dark background and the dark accent under 3:1 on the light one; a test asserts at least 3:1 for each pair. Hand check on the fixture site at 2026-11-04: opened in the light and dark schemes in the browser pane, fill rgb(181, 35, 47) and rgb(240, 113, 120); the home page link answered 200.
+- 2026-11-04: T3: the repo had no topics; added `zotero`, `zotero-plugins`, and `plugin-directory` with `gh repo edit`, as the question set allowed; the topics read back as those three.
+- 2026-11-04: T4: README and CHANGELOG lines added, and a DESIGN.md sentence on the props and the icon file; `pnpm test` and `pnpm check` exit 0. The prose hook's hits on these two files are all on older lines, so they stay as they are.
 
 ## Decisions
 
