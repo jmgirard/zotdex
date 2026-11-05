@@ -192,6 +192,12 @@ function expectSchemaCopies(out: string) {
   }
 }
 
+// The timing lines name times that differ from run to run, so two runs' stdout is compared
+// without them, and by how many there are.
+const TIMING_LINE = /^(plugin reads took \d+\.\d s|\S+: \d+ reads, \d+\.\d s in all|slow read: .*)$/;
+const untimed = (stdout: string) => stdout.split("\n").filter((line) => !TIMING_LINE.test(line));
+const timedCount = (stdout: string) => stdout.split("\n").filter((line) => TIMING_LINE.test(line)).length;
+
 // The lines from the first failure-name line through the build-level line.
 function summary(stdout: string): string[] {
   const lines = stdout.trim().split("\n");
@@ -501,6 +507,18 @@ describe("pnpm build", () => {
     expect(commands).toEqual(["::warning::1 of 3 records carry a build-level failure"]);
   });
 
+  test("prints the timing lines just before the failed-record lines, outside the summary block", () => {
+    const result = pnpmBuild([TREE, "--out", tempDir()], writeFixture(responses()));
+    expect(result.status).toBe(0);
+    const lines = result.stdout.trim().split("\n");
+    const first = lines.findIndex((line) => line.startsWith("plugin reads took "));
+    expect(lines[first]).toMatch(/^plugin reads took \d+\.\d s$/);
+    expect(lines.slice(first + 1, first + 3)).toEqual([expect.stringMatching(/^fork: 1 reads, \d+\.\d s in all$/), expect.stringMatching(/^read: 2 reads, \d+\.\d s in all$/)]);
+    expect(lines.slice(first + 3, first + 6).every((line) => /^slow read: \S+: \d+\.\d s \((read|fork)\)$/.test(line))).toBe(true);
+    expect(lines[first + 6]).toMatch(new RegExp(`^${FORKED}: fork: `));
+    expect(summary(result.stdout)).toEqual(["failed with fork: 1", "build-level failures: 0 of 3 records"]);
+  });
+
   test("prints no warning when only a fork fails", () => {
     const result = pnpmBuild([TREE, "--out", tempDir()], writeFixture(responses()));
     expect(result.status).toBe(0);
@@ -695,7 +713,8 @@ describe("pnpm build with a timer still pending", () => {
     expect(pending.error).toBeUndefined();
     expect(seconds).toBeLessThan(30);
     expect(pending.status).toBe(plain.status);
-    expect(pending.stdout).toBe(plain.stdout);
+    expect(untimed(pending.stdout)).toEqual(untimed(plain.stdout));
+    expect(timedCount(pending.stdout)).toBe(timedCount(plain.stdout));
     expect(pendingData).toEqual(plainData);
   }
 
@@ -748,7 +767,9 @@ describe("pnpm build with a timer still pending", () => {
     clearTimeout(timer);
     expect((performance.now() - started) / 1000).toBeLessThan(30);
     expect(status).toBe(plain.status);
-    expect(stdout).toBe(plain.stdout);
+    expect(untimed(stdout)).toEqual(untimed(plain.stdout));
+    expect(timedCount(stdout)).toBe(timedCount(plain.stdout));
+    expect(timedCount(plain.stdout)).toBe(12);
     expect(takeData(out)).toEqual(plainData);
   }, 120_000);
 });
@@ -1490,6 +1511,33 @@ describe("buildData", () => {
       const result = await build({ ...responses(), [ZOTERO_RELEASE_URL]: { json: { "linux-x86_64": "9.0.6" } } });
       expect(result.releaseWarnings).toEqual([]);
     });
+  });
+});
+
+describe("buildData read timings", () => {
+  test("times each read it starts, in id order, with readRecord's result, and the whole read phase", async () => {
+    // An odd UTC day starts the reads in reverse id order, so id order is not the start order.
+    const recorded = { ...responses(), [SECOND_UPDATE]: { stall: "headers" as const } };
+    const result = await buildData(TREE, fixtureFetch(recorded).fetch, new Date("2026-11-06T06:00:00Z"), undefined, { readMs: 3000 });
+    if (!result.ok) throw new Error(result.problems.join("\n"));
+    expect(result.timings.map(({ id, result: name }) => [id, name])).toEqual([
+      [BETTER_NOTES, "read"],
+      [FORKED, "fork"],
+      [SECOND, "request-failed"],
+    ]);
+    const second = result.timings.find(({ id }) => id === SECOND)!;
+    // A timer can fire up to 1 ms early by performance.now().
+    expect(second.ms).toBeGreaterThanOrEqual(2999);
+    expect(result.readsMs).toBeGreaterThanOrEqual(second.ms);
+    // The reads run at once, so the phase is shorter than their sum.
+    expect(result.readsMs).toBeLessThan(result.timings.reduce((sum, { ms }) => sum + ms, 0));
+  });
+
+  test("gives a not-read entry no timing, and no read phase when no read starts", async () => {
+    const result = await buildData(TREE, fixtureFetch(responses()).fetch, new Date("2026-11-05T06:00:00Z"), undefined, { buildMs: 0 });
+    if (!result.ok) throw new Error(result.problems.join("\n"));
+    expect(result.timings).toEqual([]);
+    expect(result).not.toHaveProperty("readsMs");
   });
 });
 

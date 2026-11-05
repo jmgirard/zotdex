@@ -1,6 +1,7 @@
 import { resolve } from "node:path";
 import process, { argv } from "node:process";
 import { buildData, writeData, writePlan } from "./build.ts";
+import { timingLines } from "./timing.ts";
 
 const USAGE = "usage: pnpm build [<dir>] [--out <dir>] [--plan <file>] [--previous <url>]";
 
@@ -80,6 +81,9 @@ async function main(): Promise<number> {
     const why = failure ?? kept?.failure;
     return why ? [{ id, failure: why, readAt: kept?.readAt }] : [];
   });
+  // How long the plugin reads took, so a build that its time limit cuts shows where the time
+  // went. These lines come before the failure lines, which the tests read as one block.
+  for (const line of timingLines(built.timings, built.readsMs)) console.log(line);
   for (const { id, failure, readAt } of failed) {
     const keptLine = readAt ? ` (kept the facts read at ${readAt})` : "";
     console.log(`${id}: ${failure.name}: ${oneLine(failure.message)}${keptLine}`);
