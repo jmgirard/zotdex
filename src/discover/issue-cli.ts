@@ -1,6 +1,7 @@
 import { resolve } from "node:path";
 import process, { argv } from "node:process";
-import { entriesDir, writePlan } from "./handoff.ts";
+import { readDelisted } from "../check/delisted.ts";
+import { entriesDir, type IssueOutcome, MESSAGE_MAX, writePlan } from "./handoff.ts";
 import { issueRead } from "./issue.ts";
 
 const USAGE = "usage: pnpm discover-issue --handoff <dir>, with ISSUE_NUMBER and GITHUB_REPOSITORY set";
@@ -29,13 +30,19 @@ async function main(): Promise<number> {
     return 1;
   }
   const handoff = resolve(process.env.INIT_CWD ?? process.cwd(), args[1]);
-  const outcome = await issueRead({
-    root: resolve(PACKAGE_ROOT, "plugins"),
-    outDir: entriesDir(handoff),
-    fetch: (url: string, init?: RequestInit) => fetch(url, init),
-    indexRepo,
-    issue: Number(issue),
-  });
+  // A list that cannot be read leaves the issue open for a maintainer, like any failed read.
+  const delisted = await readDelisted().catch((error: Error) => error);
+  const outcome: IssueOutcome =
+    delisted instanceof Error
+      ? { outcome: "failed", message: `delisted.json: ${delisted.message}`.slice(0, MESSAGE_MAX + 1) }
+      : await issueRead({
+          root: resolve(PACKAGE_ROOT, "plugins"),
+          outDir: entriesDir(handoff),
+          fetch: (url: string, init?: RequestInit) => fetch(url, init),
+          indexRepo,
+          issue: Number(issue),
+          delisted,
+        });
   try {
     await writePlan(handoff, { kind: "issue", ...outcome });
   } catch (error) {

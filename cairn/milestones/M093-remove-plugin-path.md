@@ -1,13 +1,13 @@
 # M093: Let people ask to remove a plugin
 
-- **Status:** planned
+- **Status:** in-progress
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — a new public form and About text, and a list that changes what the bot proposes
-- **Branch/PR:** —
+- **Branch/PR:** m093-remove-plugin-path
 
 ## Goal
 
@@ -43,13 +43,13 @@ A plugin's owner or any reader can ask from the site to remove a listed plugin, 
 
 ## Tasks
 
-- [ ] T1: Create the `remove-plugin` label, write `.github/ISSUE_TEMPLATE/remove-plugin.yml` on the shape of `text-change.yml`, and test the file in the shape of `test/text-request.test.ts:19`.
-- [ ] T2: Add `removeHref` beside `textChangeHref` (`site/src/data.ts:171`), the plugin page link (`site/src/pages/plugins/[id]/index.astro:354`), and the About section before "What the index does not do" (`site/src/pages/about.astro:213`), with tests in `test/site.test.ts:1805`'s shape. Read the built text, as Astro can drop a space.
-- [ ] T3: Add `delisted.json`, its schema under `schemas/`, the loader, and the three rules in `src/check/check.ts`, with `ZPI_DELISTED` for tests. Limit (b) to GitHub URLs, as `repoName` takes any host (`src/discover/discover.ts:714`).
-- [ ] T4: Pass the list from `src/discover/cli.ts` and `src/discover/propose.ts` to `discover()`. Test the list before the skip set (`discover.ts:201`, `:245`), and refuse in `draftEntry` after the read resolves the name (`discover.ts:349`).
-- [ ] T5: Answer in `src/discover/issue.ts` before `known` (`issue.ts:194`), and after the read for a redirected name (`issue.ts:111`).
-- [ ] T6: Test `mergeDiscover` with the real check runner and a planted list, and read how `src/discover/merge-cli.ts:46` reports the failure.
-- [ ] T7: Write the README section, update DESIGN and CHANGELOG, and run `pnpm test` and `pnpm check`.
+- [x] T1: Create the `remove-plugin` label, write `.github/ISSUE_TEMPLATE/remove-plugin.yml` on the shape of `text-change.yml`, and test the file in the shape of `test/text-request.test.ts:19`.
+- [x] T2: Add `removeHref` beside `textChangeHref` (`site/src/data.ts:171`), the plugin page link (`site/src/pages/plugins/[id]/index.astro:354`), and the About section before "What the index does not do" (`site/src/pages/about.astro:213`), with tests in `test/site.test.ts:1805`'s shape. Read the built text, as Astro can drop a space.
+- [x] T3: Add `delisted.json`, its schema under `schemas/`, the loader, and the three rules in `src/check/check.ts`, with `ZPI_DELISTED` for tests. Limit (b) to GitHub URLs, as `repoName` takes any host (`src/discover/discover.ts:714`).
+- [x] T4: Pass the list from `src/discover/cli.ts` and `src/discover/propose.ts` to `discover()`. Test the list before the skip set (`discover.ts:201`, `:245`), and refuse in `draftEntry` after the read resolves the name (`discover.ts:349`).
+- [x] T5: Answer in `src/discover/issue.ts` before `known` (`issue.ts:194`), and after the read for a redirected name (`issue.ts:111`).
+- [x] T6: Test `mergeDiscover` with the real check runner and a planted list, and read how `src/discover/merge-cli.ts:46` reports the failure.
+- [x] T7: Write the README section, update DESIGN and CHANGELOG, and run `pnpm test` and `pnpm check`.
 
 ## Work log
 
@@ -65,6 +65,10 @@ A plugin's owner or any reader can ask from the site to remove a listed plugin, 
 - 2026-11-04: plan chose one form with a reason dropdown over two forms because both requests end in the same maintainer steps; falsified by reports of harm needing a private channel.
 - 2026-11-04: full criteria audit returned 12 findings across the three milestones. Here: a shared id blocks forks (ids can be empty and hold unique ids only); merge and propose check temporary directories (package root list); the injected check stub (real runner); skip-set and redirect order (added cases); missing label and input id (added); unpinned grounds (named); link text (fixed). All fixed in the wording above.
 - 2026-11-04: the 8 criteria pass the split tripwire by one; kept, as the list's four enforcement points only protect a removal together.
+- 2026-11-04: created the `remove-plugin` label on GitHub, as the question set allowed.
+- 2026-11-04: implementation choices: a missing or refused list stops `pnpm discover` and fails the issue read, and `pnpm check` names it as `delisted-file`, so a lost list cannot readmit a plugin; a refusal for a listed repo or id is recorded in the discovery state, so a fork with a listed id does not spend a read each day; `pnpm propose` does not read the list, since its read steps and the merge job's check cover it; the plugin page puts the link in its own line, because "Is this your plugin?" misframed a reader's report.
+- 2026-11-04: T1 to T7 done in one checkpoint, as the tasks share the list module; `pnpm test` 2360 passed, 6 skipped; `pnpm check` 736 entries, 0 problems; a site built from the deployed data showed the About section and the link in the browser pane with no console error.
+- 2026-11-04: the simple-english hook reports older README and CHANGELOG sentences outside this change; left as they are, and this change's own sentence it flagged is split.
 
 ## Decisions
 

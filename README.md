@@ -1271,6 +1271,53 @@ or the owner is an organization, check the author by hand, then add
 the `--apply` run. Then read the text, answer the issue, and open a pull
 request with the change.
 
+## Removing a plugin
+
+Anyone can ask to remove a plugin with the "Remove a plugin or report harm"
+issue form. Each plugin page's Details card links to the form with the plugin
+filled in, and the About page links to it too. The form adds the label
+`remove-plugin` and opens a public issue. No bot answers it. A maintainer
+reads each request.
+
+A maintainer removes a plugin when its repository's owner asks, when it is
+spam, when its entry misleads people about what the plugin is or who makes it,
+or when a report shows harm with evidence that a reader can check. A claim with
+no evidence removes nothing. The index still cannot vet plugins, and it does
+not review their code.
+
+To remove a plugin, do these steps on a branch:
+
+1. Delete the entry's directory under `plugins/`.
+2. Add a record to `delisted.json` at the top of the repo.
+3. Run `pnpm check`, then merge the change.
+4. Close any open bot pull request for the repo.
+5. Answer the issue, then close it.
+
+A record has four fields:
+
+```json
+{ "repo": "owner/name", "ids": ["plugin@example.org"], "issue": 123, "date": "2026-11-04" }
+```
+
+Write `repo` in lowercase. `issue` is the number of the request, and `date` is
+the day of the removal. Put an id in `ids` only if you judged it unique to that
+repo, because a fork can keep its source's id, and a listed id blocks every
+repo that carries it. `ids` can be empty.
+
+The list keeps a removed plugin off the index in three places:
+
+- `pnpm discover` skips a listed repo with the reason `delisted`, and it does
+  not read that repo. If a read shows that a search name is a listed repo, it
+  refuses that repo as `delisted`. It refuses another repo that carries a
+  listed id as `delisted-id`.
+- An "Add a plugin" issue that names such a repo gets a comment that names the
+  removal. The bot closes the issue as not planned and opens no pull request.
+- `pnpm check` fails on an entry that the list names, so the merge job does not
+  merge a bot pull request for it. The job reports that pull request as failed
+  each day until you close it.
+
+To list a plugin again, remove its record. The bot can then propose it again.
+
 ## Checking entries
 
 To check every entry under `plugins/`, run:
@@ -1313,6 +1360,16 @@ without the mark. Besides `index-schema`, two rules check the overrides in
   not repeat each other. The line names the index of the repeat and the index
   of the first override with that field and version. The site never applies
   the repeat.
+
+Three rules read `delisted.json` at the top of the repo, whatever directory
+the command checks (see "Removing a plugin"):
+
+- `delisted-id`: an entry's directory name or `meta.json` id must not be on the
+  list, in any letter case.
+- `delisted-repo`: an entry's `repoUrl` on github.com must not name a repo on
+  the list, in any letter case and with or without `.git`.
+- `delisted-file`: the list must exist and match
+  `schemas/delisted.schema.json`.
 
 The first run downloads the registry schema into `.cache/`, so that run needs
 a network connection. The command refuses a downloaded or cached schema whose

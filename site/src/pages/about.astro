@@ -2,7 +2,7 @@
 import { knownRelease, ZOTERO_MAJORS } from "../../../src/site/version.ts";
 import { DESCRIPTION_MAX, DESCRIPTION_MIN_WORDS, NAME_MAX, NAME_MIN } from "../../../src/text-request/rules.ts";
 import Base from "../layouts/Base.astro";
-import { BASE, CATEGORIES, categoryOptions, loadData, SUPPORT_MARKS as MARKS } from "../data.ts";
+import { BASE, CATEGORIES, categoryOptions, loadData, REMOVE_PLUGIN_HREF, SUPPORT_MARKS as MARKS } from "../data.ts";
 
 const { plugins, zoteroRelease } = loadData();
 // The categories that the home page's menu offers, the only ones a link can filter by.
@@ -207,6 +207,20 @@ const offered = new Set(categoryOptions(plugins).map(({ value }) => value));
       A donation gets no mark. A plugin with no mark can still cost money, because the maintainer reads new plugins later
       and does not read every page about a plugin. A marked plugin stays listed, because the index states this as a fact
       and does not judge plugins by it. An author can open an issue to correct it.
+    </p>
+  </section>
+  <section class="card" id="removing" data-about="removing">
+    <h2>Removing a plugin</h2>
+    <p>
+      A maintainer removes a plugin from the index for any of four reasons: its repository's owner asks, it is spam, its
+      entry misleads people about what the plugin is or who makes it, or a report shows harm with evidence that a reader
+      can check. A claim with no evidence removes nothing. To ask, use the{" "}
+      <a href={REMOVE_PLUGIN_HREF} data-remove-form>form for removing a plugin or reporting harm</a>, or the link on the
+      plugin's page. The form opens a public GitHub issue, and a maintainer answers there.
+    </p>
+    <p>
+      A removed plugin stays off the index, and the bot does not propose it again. The index still cannot vet plugins, and
+      it does not review their code.
     </p>
   </section>
   <section class="card" id="not-vetted" data-about="not-vetted">

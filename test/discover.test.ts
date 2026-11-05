@@ -22,6 +22,7 @@ import {
   draftEntry,
   type ReadItem,
 } from "../src/discover/discover.ts";
+import { type Delisted, delistedFrom } from "../src/check/delisted.ts";
 import { githubClient } from "../src/upstream/reader.ts";
 import { fixtureFetch, loadFixture, type Recorded, type Responses, type SeenRequest } from "./support/fixture-fetch.ts";
 import { pluginRepo, searchPage } from "./support/plugin-repo.ts";
@@ -76,6 +77,7 @@ interface RunOptions {
   outDir?: string;
   state?: DiscoveryState;
   skip?: Set<string>;
+  delisted?: Delisted;
   limit?: number;
   budget?: number;
   now?: Date;
@@ -98,7 +100,7 @@ async function runResult(responses: Responses, options: RunOptions = {}) {
   const { readMs, runMs, startedAt = options.clock?.now() ?? performance.now(), refCheckMs, catalog, catalogMs, catalogMaxBytes, codeSearch, codeSearchMs, clock } = options;
   const { fetch, requests } = fixtureFetch(responses, options.onRequest);
   const limits = { readMs, runMs, startedAt, refCheckMs, catalog, catalogMs, catalogMaxBytes, codeSearch, codeSearchMs, clock };
-  const result = await discover({ root, outDir, fetch, lookup: publicLookup, state, skip, limit, budget, now, ...limits });
+  const result = await discover({ root, outDir, fetch, lookup: publicLookup, state, skip, delisted: options.delisted, limit, budget, now, ...limits });
   return { result, requests };
 }
 
@@ -111,6 +113,47 @@ async function run(responses: Responses, options: RunOptions = {}) {
     .filter((repo) => repo !== undefined);
   return { ...result, reads };
 }
+
+describe("discover and the delisted list", () => {
+  const removed = delistedFrom([{ repo: "example/removed", ids: ["removed-id@example.org"], issue: 5, date: "2026-11-04" }]);
+  const PUSHED = "2026-10-20T00:00:00Z";
+
+  test("skips a listed repo with no read, also when the skip set names it", async () => {
+    const responses = { ...searched([["example/removed", PUSHED], ["example/alpha", PUSHED]]), ...pluginRepo("example/alpha", "alpha@example.org") };
+    for (const skip of [new Set<string>(), new Set(["example/removed"])]) {
+      const { reads, report } = await run(responses, { delisted: removed, skip });
+      expect(reads).toEqual(["example/alpha"]);
+      expect(report.skipped).toEqual([{ repo: "example/removed", reason: "delisted" }]);
+    }
+  });
+
+  test("refuses a search name that the read shows is a listed repo, and writes no entry", async () => {
+    const renamed = pluginRepo("example/removed", "new-id@example.org");
+    const responses = {
+      ...searched([["example/old-name", PUSHED]]),
+      ...Object.fromEntries(Object.entries(renamed).map(([url, response]) => [url.replace("/repos/example/removed", "/repos/example/old-name"), response])),
+    };
+    const outDir = tempDir();
+    const { report } = await run(responses, { delisted: removed, outDir });
+    expect(report.read).toEqual([expect.objectContaining({ repo: "example/old-name", outcome: "refused", failure: "delisted", message: expect.stringContaining("issue #5") })]);
+    expect(readdirSync(outDir)).toEqual([]);
+  });
+
+  test("refuses an unlisted repo that carries a listed id in another letter case, and writes no entry", async () => {
+    const responses = { ...searched([["example/fork", PUSHED]]), ...pluginRepo("example/fork", "Removed-ID@example.org") };
+    const outDir = tempDir();
+    const { report } = await run(responses, { delisted: removed, outDir });
+    expect(report.read).toEqual([expect.objectContaining({ repo: "example/fork", outcome: "refused", failure: "delisted-id", message: expect.stringContaining("issue #5") })]);
+    expect(readdirSync(outDir)).toEqual([]);
+  });
+
+  test("reads an unlisted repo with an unlisted id when a listed record has no ids", async () => {
+    const noIds = delistedFrom([{ repo: "example/removed", ids: [], issue: 5, date: "2026-11-04" }]);
+    const responses = { ...searched([["example/fork", PUSHED]]), ...pluginRepo("example/fork", "removed-id@example.org") };
+    const { report } = await run(responses, { delisted: noIds, outDir: tempDir() });
+    expect(report.read).toEqual([expect.objectContaining({ repo: "example/fork", outcome: "written" })]);
+  });
+});
 
 describe("discover", () => {
   test("reads each repo of both topics' search pages once", async () => {
@@ -527,6 +570,14 @@ describe("the catalog", () => {
       expect(requests.map(({ url }) => url)).not.toContain("https://api.github.com/repos/example/listed");
       expect(lookups(requests)).toEqual([]);
       expect(result.report.skipped).toContainEqual({ repo: "example/listed", reason: "in-index" });
+    });
+
+    test("is skipped as delisted, with no lookup, when delisted.json names it", async () => {
+      const delisted = delistedFrom([{ repo: "example/listed", ids: [], issue: 5, date: "2026-11-04" }]);
+      const { result, requests } = await runResult(responses(), { ...withCatalog, delisted, skip: new Set(["example/listed"]) });
+      if (!result.ok) throw new Error(result.message);
+      expect(lookups(requests)).toEqual([]);
+      expect(result.report.skipped).toContainEqual({ repo: "example/listed", reason: "delisted" });
     });
 
     test("is skipped as in-skip-set, with no lookup, when the skip set names it", async () => {
@@ -1167,6 +1218,25 @@ function pnpmDiscover(args: string[], responses: Responses, cwd: string) {
 }
 
 describe("pnpm discover", () => {
+  test("passes the list that the variable names to the run, and stops on one it cannot read", () => {
+    const list = join(tempDir(), "list.json");
+    writeFileSync(list, JSON.stringify([{ repo: "example/alpha", ids: [], issue: 5, date: "2026-11-04" }]));
+    const saved = process.env.ZPI_DELISTED;
+    process.env.ZPI_DELISTED = list;
+    try {
+      const passed = pnpmDiscover(["--out", "out", "--state", "state.json", "--limit", "1"], recorded(), tempDir());
+      expect(passed.status).toBe(0);
+      expect(JSON.parse(passed.stdout).skipped).toContainEqual({ repo: "example/alpha", reason: "delisted" });
+      process.env.ZPI_DELISTED = join(tempDir(), "missing.json");
+      const stopped = pnpmDiscover(["--out", "out", "--state", "state.json"], recorded(), tempDir());
+      expect(stopped.status).toBe(1);
+      expect(stopped.stderr).toMatch(/^delisted\.json: cannot read the list: .*\nwrote no entry\n$/);
+    } finally {
+      if (saved === undefined) delete process.env.ZPI_DELISTED;
+      else process.env.ZPI_DELISTED = saved;
+    }
+  });
+
   test("writes entries and the state under the caller's directory and prints the report", () => {
     const cwd = tempDir();
     const result = pnpmDiscover(["--out", "out", "--state", "state.json", "--limit", "2"], recorded(), cwd);

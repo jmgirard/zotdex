@@ -359,16 +359,23 @@ refuses forks (corrected M002). An archived repository passes the bar, and
 the index shows that it is archived (D-006, M013). A repo with no source at its
 top level passes the bar too, and the index shows that fact (D-052, M081). So
 does a plugin that needs its maker's paid service (D-054, M082). The
-maintainer removes spam. Inclusion is not a judgment of
+removal rule below does not change this bar: inclusion is not a judgment of
 quality. The index does not list plugins for Zotero 5 or 6.
 
 A page whose declared compatibility and user reports disagree shows both
 (corrected M007, M021, M054). For example, the Zotero 8 row of the
 compatibility table shows "✓ Yes" beside "2 works 3 broken".
 
-An author can open an issue to be delisted or to correct a fact, and the
-index honors both requests. An author cannot remove user reports. The
-exception is a report that is abuse.
+An author can open an issue to correct a fact, and the index honors that
+request. Anyone can ask to remove a plugin through the public
+`remove-plugin.yml` form, linked from each plugin page and About. A maintainer
+removes a plugin for its repository's owner, for spam, for an entry that
+misleads about what the plugin is or who makes it, or for harm that a report
+shows with evidence a reader can check (D-062, M093). `delisted.json` names
+each removed repo, and its `ids` hold only ids judged unique to that repo. So
+`pnpm check`, discovery, and "Add a plugin" issues keep the plugin off the
+index, and a bot pull request for it does not merge. An author cannot remove
+user reports. The exception is a report that is abuse.
 
 ## Function Families
 
@@ -379,7 +386,10 @@ exception is a report that is abuse.
   only in case; `writeEntry` refuses the same ids (M031). It refuses an
   override reason of only JavaScript `\s` whitespace and Unicode format
   characters, two overrides with the same `field` and `version`, and names
-  a UTF-8 byte-order mark at the start of an entry file (M032).
+  a UTF-8 byte-order mark at the start of an entry file (M032). It reads the
+  package root's `delisted.json` (`src/check/delisted.ts`, or the file that
+  `ZPI_DELISTED` names) for any `dir`, and refuses a listed id, a listed
+  GitHub repo, and a list that `schemas/delisted.schema.json` refuses (M093).
 - Upstream reader (`src/upstream/`): `readUpstream(repoUrl, fetch, {
   lookup, signal })` returns the facts of one GitHub repo with the URL and
   SHA-256 of the XPI it read (M047), the repo's topics (M056), and each URL

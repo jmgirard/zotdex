@@ -1,0 +1,42 @@
+name: Remove a plugin or report harm
+description: Ask the index to stop listing a plugin. For its repository's owner, or for anyone who can show spam, a misleading entry, or harm.
+title: Remove a plugin
+labels: ["remove-plugin"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This issue is public. A maintainer reads each request and answers here.
+
+        The maintainer removes a plugin for its repository's owner, for spam, for an
+        entry that misleads people about what the plugin is or who makes it, and for
+        harm that the evidence shows. A claim with no evidence removes nothing.
+        The index cannot vet plugins and does not review their code, so give evidence
+        that a reader can check, such as a link to the code or a page that shows it.
+
+        A removed plugin stays off the index until a maintainer takes it off the list.
+  - type: input
+    id: plugin
+    attributes:
+      label: Plugin id
+      description: The plugin page's link fills this in.
+    validations:
+      required: true
+  - type: dropdown
+    id: reason
+    attributes:
+      label: Reason
+      options:
+        - I own this plugin's repository
+        - It is spam
+        - It misleads people about what it is or who makes it
+        - It does harm, and I can show it
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Links and facts that a reader can check. An owner can write that this account owns the repository.
+    validations:
+      required: true

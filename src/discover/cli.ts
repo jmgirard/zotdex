@@ -1,6 +1,7 @@
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import process, { argv } from "node:process";
+import { type Delisted, readDelisted } from "../check/delisted.ts";
 import { CATALOG_URL, CODE_SEARCHES, type DiscoverResult, type DiscoveryState, discover } from "./discover.ts";
 import { entriesDir, planned, writePlan } from "./handoff.ts";
 import { discoverRead, type Written } from "./propose.ts";
@@ -54,7 +55,14 @@ async function main(): Promise<number> {
     console.error(`${state}\nwrote no entry`);
     return 1;
   }
-  const options = { root, outDir, fetch: (url: string, init?: RequestInit) => fetch(url, init), state, limit, budget, catalog: CATALOG_URL, codeSearch: CODE_SEARCHES };
+  let delisted: Delisted;
+  try {
+    delisted = await readDelisted();
+  } catch (error) {
+    console.error(`delisted.json: ${(error as Error).message}\nwrote no entry`);
+    return 1;
+  }
+  const options = { root, outDir, fetch: (url: string, init?: RequestInit) => fetch(url, init), state, delisted, limit, budget, catalog: CATALOG_URL, codeSearch: CODE_SEARCHES };
   let result: DiscoverResult;
   if (handoff) {
     result = await discoverRead({ ...options, indexRepo: indexRepo! });
