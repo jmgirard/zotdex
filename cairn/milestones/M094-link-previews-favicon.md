@@ -1,6 +1,6 @@
 # M094: Add link previews and a favicon
 
-- **Status:** review
+- **Status:** in-progress
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
@@ -61,6 +61,7 @@ A shared link to any index page shows its own title and description, the page ha
 - 2026-11-04: T4: README and CHANGELOG lines added, and a DESIGN.md sentence on the props and the icon file; `pnpm test` and `pnpm check` exit 0. The prose hook's hits on these two files are all on older lines, so they stay as they are.
 - 2026-11-04: claim audit fixes: README now says a text of 200 characters or fewer is not cut; the `previewDescription` comment no longer says "fixed"; `cutDescription` no longer cuts at spaces that open a text, and `previewDescription` falls back to the sentence when the cut holds only spaces, so AC1's non-empty text holds (a small addition to AC2's cut rule, which it did not cover); the About preview text and the About intro now say "the main facts", because About gives no source for some facts, such as stars and open issues.
 - 2026-11-04: claim audit: 38 claims read, 4 corrected — README.md, site/src/data.ts, src/site/description.ts, site/src/pages/about.astro. The same reader re-read the 4 and found none wrong.
+- 2026-11-04: amendment routed: AC2 — as written it cuts every description at a space, even one of 200 code points or fewer, and it gives a blank preview for a text whose first 200 code points hold only opening spaces and a space; the code keeps short text whole and does not cut at opening spaces, so the wording, not the work, is wrong.
 
 ## Decisions
 
