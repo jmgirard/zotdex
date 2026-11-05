@@ -43,7 +43,7 @@ export function getStaticPaths() {
 
 const { record } = Astro.props as { record: PluginRecord };
 const { zoteroRelease } = loadData();
-const { upstream, failure, overrides, paidService } = record;
+const { upstream, failure, overrides, paidService, kept } = record;
 const paidHref = paidService && safeHref(paidService.source);
 const repoUrl = upstream?.repoUrl ?? record.repoUrl;
 const repoHref = safeHref(repoUrl);
@@ -69,6 +69,14 @@ const { min, max } = declaredRange(record);
         )
       }
       {
+        kept && (
+          <>
+            {" "}
+            <span class="badge" data-kept>Older data</span>
+          </>
+        )
+      }
+      {
         upstream?.sourceInRepo === false && (
           <>
             {" "}
@@ -85,6 +93,15 @@ const { min, max } = declaredRange(record);
         )
       }
     </h1>
+    {
+      kept && (
+        <p class="fineprint kept-note" data-fact="kept">
+          The last build could not read this plugin: <code>{kept.failure.name}</code>: {kept.failure.message}. These facts
+          come from the build of {day(kept.readAt)}.{" "}
+          <a href={`${BASE}about/#older-data`}>About older data</a>
+        </p>
+      )
+    }
     {
       github && repoHref && (
         <p class="repo-line" data-repo-line>

@@ -294,6 +294,8 @@ and the home page's intro say: "This index is unofficial and not affiliated
 with or endorsed by Zotero, and it cannot vet the plugins it lists." The About
 page gives the reason, and it says that the start test is not a review of
 plugin code. It also states the terms in "License" below, and it links there.
+Its "Older data" section says when a row shows the facts of an earlier
+build. Each page's footer also says on which day the last build ran.
 The home page's intro also says what the site shows, and it links to the About
 page's "Installing a plugin" section (`#installing`). That section gives
 Zotero's install steps, the step for Firefox, and Zotero's warning. It also

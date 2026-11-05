@@ -838,6 +838,10 @@ const themeButton = `(${wireThemeButton})();`;
         font-size: var(--text-s);
         color: var(--muted);
       }
+      .kept-note {
+        max-width: 68ch;
+        margin: 0 0 var(--space-4);
+      }
       .install-note {
         max-width: 68ch;
         margin: 0 0 var(--space-10);
@@ -1079,7 +1083,7 @@ const themeButton = `(${wireThemeButton})();`;
     <footer class="foot">
       <div class="foot-inner foot-rule">
         <p data-fact="disclaimer">{DISCLAIMER}</p>
-        <p>The build read each plugin's repository and releases on {day(generatedAt)}.</p>
+        <p>The last build ran on {day(generatedAt)}.</p>
         <p>Data file: <a href={`${BASE}v1/plugins.json`}>v1/plugins.json</a></p>
       </div>
     </footer>
