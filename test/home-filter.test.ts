@@ -10,6 +10,8 @@ import {
   passes,
   prePaintStyle,
   rowShows,
+  type SortRow,
+  sortOrder,
 } from "../src/site/home-filter.ts";
 import { PRE_PAINT_CASES } from "./support/pre-paint.ts";
 
@@ -188,6 +190,39 @@ describe("the home table's pages", () => {
     ["7", 6, 1],
   ])("reads the page parameter %j over %i pages as page %i", (asked, pages, page) => {
     expect(chosenPage(asked, pages)).toBe(page);
+  });
+});
+
+describe("sortOrder", () => {
+  const row = (id: string, name: string, stars?: number, released?: string): SortRow => ({ id, name, stars, released });
+  const order = (sort: string, rows: SortRow[]) => rows.toSorted(sortOrder(sort)).map(({ id }) => id);
+
+  test("Stars puts a higher count first, keeps 0 ahead of no count, and leaves ties in Name order", () => {
+    const rows = [
+      row("none", "A none"),
+      row("zero", "Zero", 0),
+      row("tie-b", "Beta", 5),
+      row("big", "Big", 12222),
+      row("tie-a", "Alpha", 5),
+    ];
+    expect(order("", rows)).toEqual(["big", "tie-a", "tie-b", "zero", "none"]);
+  });
+
+  test("Latest release puts a later date first and a missing or unreadable date last", () => {
+    const rows = [
+      row("none", "A none"),
+      row("bad", "B bad", 9, "not a date"),
+      row("old", "Old", 9, "2023-09-12T09:22:56Z"),
+      row("tie-b", "Beta", 1, "2026-11-03T11:25:45Z"),
+      row("new", "New", 0, "2026-11-04T00:00:00Z"),
+      row("tie-a", "Alpha", 2, "2026-11-03T11:25:45Z"),
+    ];
+    expect(order("latest", rows)).toEqual(["new", "tie-a", "tie-b", "old", "none", "bad"]);
+  });
+
+  test("Name ignores letter case and accents, then orders by id", () => {
+    const rows = [row("b", "Café", 9), row("a", "cafe", 1), row("c", "Apple")];
+    expect(order("name", rows)).toEqual(["c", "a", "b"]);
   });
 });
 

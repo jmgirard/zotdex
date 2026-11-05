@@ -996,22 +996,23 @@ describe("the home page", () => {
     return found!;
   }
 
-  test("holds one table whose body has one row per record, by name and then by id", () => {
+  test("holds one table whose body has one row per record, most stars first and then by name and id", () => {
     expect(home().match(/<table[\s>]/g)).toHaveLength(1);
     expect(rows().map(({ id }) => id)).toEqual([
+      "first-plugin@example.org",
+      "old-plugin@example.org",
+      // A count of 0 comes before the rows with no count.
+      "{c2a6e4c8-1b7d-4f3a-9e2b-5d8f0a1c3e7b}",
       "_x-y+z.w@{v}",
       "broken-plugin@example.org",
       // "Café Tools" and "cafe tools" compare equal, so their ids order them.
       "a-cafe@example.org",
       "b-cafe@example.org",
-      "first-plugin@example.org",
       "same-name-plugin@example.org",
-      "{c2a6e4c8-1b7d-4f3a-9e2b-5d8f0a1c3e7b}",
       "locale-plugin@example.org",
       "min-only-plugin@example.org",
       "next-plugin@example.org",
       "no-range-plugin@example.org",
-      "old-plugin@example.org",
       "repo-fragment@example.org",
       "repo-gitlab@example.org",
       "repo-http@example.org",
@@ -1222,7 +1223,7 @@ describe("the home page", () => {
   });
 
   test("gives each row the language subtags it applies", () => {
-    expect(rows().map(({ id, attributes }) => [id, /\sdata-languages="([^"]*)"/.exec(attributes)?.[1]])).toEqual([
+    expect(Object.fromEntries(rows().map(({ id, attributes }) => [id, /\sdata-languages="([^"]*)"/.exec(attributes)?.[1]]))).toEqual(Object.fromEntries([
       ["_x-y+z.w@{v}", ""],
       ["broken-plugin@example.org", ""],
       ["a-cafe@example.org", "de en fr it ja"],
@@ -1238,11 +1239,11 @@ describe("the home page", () => {
       ...NO_REPO_LINE_IDS.map((id) => [id, ""]),
       ["ssh-plugin@example.org", ""],
       ["zotero6-plugin@example.org", ""],
-    ]);
+    ]));
   });
 
   test("gives each row the Zotero majors it declares all or part of", () => {
-    expect(rows().map(({ id, attributes }) => [id, /\sdata-zotero="([^"]*)"/.exec(attributes)?.[1]])).toEqual([
+    expect(Object.fromEntries(rows().map(({ id, attributes }) => [id, /\sdata-zotero="([^"]*)"/.exec(attributes)?.[1]]))).toEqual(Object.fromEntries([
       ["_x-y+z.w@{v}", ""],
       ["broken-plugin@example.org", ""],
       ["a-cafe@example.org", "7 8 9"],
@@ -1258,7 +1259,7 @@ describe("the home page", () => {
       ...NO_REPO_LINE_IDS.map((id) => [id, ""]),
       ["ssh-plugin@example.org", ""],
       ["zotero6-plugin@example.org", ""],
-    ]);
+    ]));
   });
 
   test("holds hidden version buttons, Any pressed, then one for each major", () => {

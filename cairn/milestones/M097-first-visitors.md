@@ -1,13 +1,13 @@
 # M097: Get the site ready for first visitors
 
-- **Status:** planned
+- **Status:** in-progress
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — visitors see the sort menu, the star counts, the 404 page, and the Feedback link
-- **Branch/PR:** —
+- **Branch/PR:** m097-first-visitors
 
 ## Goal
 
@@ -41,7 +41,7 @@ Help a first-time visitor find established plugins and find their way around the
 
 ## Tasks
 
-- [ ] T1: In `src/site/home-filter.ts`, add the sort options and a row comparator, keeping the file free of imports, since the module script imports it and `site/src/data.ts` reads `node:fs`. Add the `sort` clause to `prePaintStyle`, with `%20` hiding every row. Have `homeOrder` in `site/src/data.ts` use the comparator, so the one rule orders the build and the script. Tests first in `test/home-filter.test.ts` and `test/support/pre-paint.ts`.
+- [x] T1: In `src/site/home-filter.ts`, add the sort options and a row comparator, keeping the file free of imports, since the module script imports it and `site/src/data.ts` reads `node:fs`. Add the `sort` clause to `prePaintStyle`, with `%20` hiding every row. Have `homeOrder` in `site/src/data.ts` use the comparator, so the one rule orders the build and the script. Tests first in `test/home-filter.test.ts` and `test/support/pre-paint.ts`.
 - [ ] T2: In `site/src/pages/index.astro`, give each row its stars and full release date as data attributes, and add the hidden "Sort by" menu. Reorder the rows in the script, read and write `sort`, and make a change show page 1. In `Base.astro`, style the menu with the other menus, including the forced-colors block and the `[hidden]` rule. Update `test/site.test.ts`: the row regex near line 1394, the selector stand-in near line 1447, the generated rows near line 1406, the order near line 1294, and the pre-paint tests near lines 999 to 1023.
 - [ ] T3: Show the count on the owner line, keeping it outside `[data-name]` and `[data-description]`, so the search does not read it. Cut only the owner with the ellipsis. Add the legend text. Add a fixture row with `LONG_OWNER` and a large count, by a text edit, and list it in the hand-kept fixture orders.
 - [ ] T4: Add `site/src/pages/404.astro`. Make `path` optional in `Base.astro`, with the canonical link and `og:url` left out without it and a `noindex` meta on this page. Update the page-count and head-tag tests that the new page reaches near `test/site.test.ts:1994`.
@@ -67,6 +67,8 @@ Help a first-time visitor find established plugins and find their way around the
 - 2026-11-05: collision sweep: no D-entry or archive rejects a sort, a 404 page, a sitemap, or Discussions; M053 set the name order that this replaces; D-006, D-026, D-037, D-051, and D-064 stand; no candidate row absorbed.
 - 2026-11-05: inbox sweep: 0 open issues; 9 open bot pull requests, none overlapping.
 - 2026-11-05: deploy: a merge deploys nothing (M066 lesson), so review offers `gh workflow run build.yml --ref main` and reads the live 404 page after that run, which a local server cannot show.
+- 2026-11-05: implement started on branch m097-first-visitors; `.claude/` is an untracked local folder and stays unstaged.
+- 2026-11-05: T1 done: `sortOrder` in `home-filter.ts` is the one rule, `homeOrder` uses it, and `prePaintStyle` hides every row for a sort value that is not empty; two site tests now compare rows by id, not by hand order.
 
 ## Decisions
 
