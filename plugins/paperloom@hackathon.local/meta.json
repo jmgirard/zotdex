@@ -1,0 +1,8 @@
+{
+  "id": "paperloom@hackathon.local",
+  "name": "PaperLoom (文脉)",
+  "description": "会记得你、也会记得你整个文献库的 Zotero 研究助手：对话 → 记忆/图谱 → 回注的闭环。",
+  "homepage": "https://github.com/Rsuiyi/Zotero_PaperLoom",
+  "repoUrl": "https://github.com/Rsuiyi/Zotero_PaperLoom",
+  "updateUrl": "https://raw.githubusercontent.com/Rsuiyi/Zotero_PaperLoom/main/updates.json"
+}
