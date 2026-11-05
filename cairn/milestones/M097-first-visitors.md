@@ -82,6 +82,7 @@ Help a first-time visitor find established plugins and find their way around the
 - 2026-11-05: T8 added and done for review return 1: `.row-stars .icon` fills with the count's color, and home rows no longer carry `data-repo-stars`; going back to Stars restores the built rows instead of sorting again; two blind tests replaced or removed; comments, titles, DESIGN, and the ROADMAP row corrected.
 - 2026-11-05: return 1 fixed: `pnpm test` and `pnpm check` pass; the browser pane read the icon fill equal to the count's color and the built order restored; status set to review.
 - 2026-11-05: review pass 2 fixes landed on the branch; `pnpm test` passed 2429 and `pnpm check` passed.
+- 2026-11-05: step-7 approval: m097-first-visitors approved for merge
 
 ## Decisions
 
