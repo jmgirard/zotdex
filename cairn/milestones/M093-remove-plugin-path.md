@@ -73,6 +73,7 @@ A plugin's owner or any reader can ask from the site to remove a listed plugin, 
 - 2026-11-04: the claim audit's one re-read held four corrections and narrowed the fifth, so the docs now say that a copy under a new name is covered only if it keeps a listed id; no second pass, by the step's rule.
 - 2026-11-04: amendment routed: AC5 — "the committed list" is empty, so no test can observe the CLI passing it; the wording binds what two tests together show.
 - 2026-11-04: re-audit: AC5 (full) — `discover()` takes a skip set and reads no pull requests, a run stops before candidates past its limits, and code search has no case of its own; wording narrowed to the skip set, candidates the run reaches, and the two tested sources.
+- 2026-11-04: re-audit: AC5 (full) — a read that fails first gives its own refusal, an entry-holding or unreached id-carrier is never refused, and the last sentence promises tests over a read of `delistedPath()`; second line on this criterion, so the wording goes to the user.
 - 2026-11-04: the simple-english hook reports older README and CHANGELOG sentences outside this change; left as they are, and this change's own sentence it flagged is split.
 
 ## Decisions
