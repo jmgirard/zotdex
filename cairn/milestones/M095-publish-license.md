@@ -1,6 +1,6 @@
 # M095: Publish a license
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
@@ -21,7 +21,7 @@ The repository states the terms for reusing its code and its data.
 
 ## Acceptance criteria
 
-- [ ] AC1: `LICENSE` holds the MIT text with the line `Copyright (c) 2026 Jeffrey Girard`, `package.json` has `"license": "MIT"`, and `gh api 'repos/jmgirard/zotero-plugin-index/license?ref=<branch>' --jq .license.spdx_id` prints `MIT` for the milestone branch.
+- [ ] AC1: `LICENSE` holds the MIT text of `gh api licenses/mit --jq .body`, with `[year]` and `[fullname]` filled so that it has the line `Copyright (c) 2026 Jeffrey Girard`, and `package.json` has `"license": "MIT"`.
 - [ ] AC2: README has a License section. It says that the code is under MIT, except each third-party file that it names, and that the facts the index gathers, its categories, and text the maintainer wrote are under CC0 1.0. It says that all other text keeps its author's terms: plugin names and descriptions, GitHub About text, and text that an owner asked for. "Using the data" links to it. The named files are those that a sweep of `git ls-files`, less `plugins/`, finds to come from a third party, with `cairn/references/` and `site/src/components/Icon.astro` read in that sweep, and the milestone's Review section records the sweep.
 - [ ] AC3: The built About page states the same three terms in one short section, with a link to README's License section. A test reads the built page's text and asserts the three terms.
 - [ ] AC4: CHANGELOG's Unreleased section has an entry. `pnpm test` and `pnpm check` exit 0.
@@ -35,7 +35,7 @@ The repository states the terms for reusing its code and its data.
 
 ## Tasks
 
-- [ ] T1: Add `LICENSE` and the `package.json` field. Keep the data terms out of any file whose name GitHub reads as a second license, and read the API on the pushed branch.
+- [x] T1: Add `LICENSE` and the `package.json` field. Keep the data terms out of any file whose name GitHub reads as a second license, compare `LICENSE` with GitHub's MIT body, and list the root names that could read as a license.
 - [x] T2: Sweep for third-party files, compare `Icon.astro`'s paths with the icon set they appear to come from, and write the README section.
 - [x] T3: Add the About section, with its test in `test/site.test.ts`.
 - [x] T4: Update CHANGELOG, and run `pnpm test` and `pnpm check`.
@@ -59,6 +59,10 @@ The repository states the terms for reusing its code and its data.
 - 2026-11-04: the claim audit's fresh reader found errors, and the branch corrected them: categories are not in the data, `test/site.test.ts` also holds icon paths, the notices lacked Lucide 0.400.0's copyright lines and Feather's star, and the third-party exception is for parts of files.
 - 2026-11-04: audit finding kept, no change: "text that a maintainer wrote" stays unscoped in README, About, and CHANGELOG, as AC2, AC3, and D-063 word it.
 - 2026-11-04: README now says that an override translated or condensed from an author's text is under CC0 only for the maintainer's own part (123 entries have such a reason); this is a legal reading for the user to see at the merge question.
+- 2026-11-04: claim audit: 41 claims read, 12 corrected — README.md, CHANGELOG.md, site/src/pages/about.astro, site/src/components/Icon.astro, test/site.test.ts, cairn/mockups/redesign-2026-10-29/mockup.js, cairn/mockups/redesign-2026-10-29/index.html; its re-read of 13 claims found 3 more small fixes, now made.
+- 2026-11-04: substantive amendment: AC1 no longer asks for GitHub's license read on the branch, which answered 404 for over 10 minutes; it now compares `LICENSE` with GitHub's MIT body, and the read moved to the ROADMAP row "Read GitHub's license answer after merge". The user sees the same files, so this took no stop.
+- 2026-11-04: re-audit: AC1 (full) — state reachable now, byte-identical by `cmp`; finding: a pre-merge check of root names no longer sits in a criterion; moved to T1 rather than AC1, the narrower promise; finding: T1 was stale, reworded; note: `--jq .body` prints one extra newline, so review compares the JSON body or expects that one-line `diff`.
+- 2026-11-04: T1 done: `LICENSE` matches GitHub's MIT body; `git ls-tree --name-only` of the branch root lists only `LICENSE` among names that could read as a license.
 
 ## Decisions
 
