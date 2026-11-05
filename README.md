@@ -9,17 +9,19 @@ affiliated with or endorsed by Zotero, and cannot vet the plugins it lists.
 
 The website <https://jmgirard.github.io/zotero-plugin-index/> shows the index.
 A top bar on every page links to the home page and to the About page. It
-also links to the "Add a plugin" issue form and to the data file. With
+also links to the "Add a plugin" issue form, to the repository's GitHub
+Discussions as "Feedback", and to the data file. With
 JavaScript, it also has a button that flips the page between the light and
 dark color schemes. The home
-page lists every plugin in one table, sorted by name. Without JavaScript the
-table shows every row. With it, the table shows 50 rows at a time, as the
-pager paragraph below says. The sort ignores letter case
-and accents, and names that are then equal sort by plugin id. Each row
-shows the plugin's name, the owner of its repository as `By <owner>`, and
+page lists every plugin in one table, with the most GitHub stars first, as
+the sort paragraph below says. Without JavaScript the
+table shows every row in that order. With it, the table shows 50 rows at a
+time, as the pager paragraph below says. Each row
+shows the plugin's name, the owner of its repository as `By <owner>`, the
+repository's GitHub star count if the data has one, and
 its description. If the repository address is not of the form
 `https://github.com/<owner>/<repo>`, with or without a trailing slash, the
-row shows no owner. If the plugin's GitHub
+row shows no owner and no star count. If the plugin's GitHub
 repository is archived, the row shows "Archived" after the name. If the index
 found no source code at the top level of the repository, the row shows a lock
 after the name. If a maintainer read that the plugin's main use needs a paid
@@ -54,7 +56,9 @@ one release of that major has a result, the cell shows the result of the
 newest release. A dot (●) means that the plugin started. A cross (✕) means
 that it failed at startup, did not install, or gave no answer in time. A
 cell with neither has no start result. A legend under the table names each
-mark. A plugin with no declared range shows no declared marks. If the last
+mark. It also says that the star count comes from GitHub, that the default
+order comes from that count, and that neither is a review by the index. A
+plugin with no declared range shows no declared marks. If the last
 build failed to read a plugin, its row shows "Not read" in place of the
 version cells.
 
@@ -72,7 +76,7 @@ can replace that file later. A link whose address does not start with
 On a screen 760 pixels wide or less, the table hides the languages and the
 release columns. At 560 pixels or less, it also hides the descriptions and
 the source links. An owner stays on one line, and an ellipsis cuts an owner
-that is too long for the cell.
+that is too long for the cell. The star count stays whole.
 
 The description comes from the plugin's manifest or from the About text of
 its GitHub repository. A manifest name or description of the form
@@ -160,8 +164,21 @@ your choice in the `zotero` query parameter of its address, such as
 `?zotero=8`. If the parameter names no button, the page acts as if "Any" is
 pressed and removes the parameter.
 
-The search box, the two menus, and the buttons work together: the table
-shows the plugins that pass all four. A count beside them reads "M plugins",
+The home page has a "Sort by" menu with the options Stars, Name, and Latest
+release. Stars is the default. It puts a higher GitHub star count first, and 0
+counts as a value. Latest release puts a later release date first, for the
+release that the index read. Name ignores letter case and accents, and names
+that are then equal sort by plugin id. Under Stars and Latest release, a
+plugin with no such value comes after every plugin that has one, and plugins
+that tie stay in Name order. A star count is a fact from GitHub. It is not a
+review. If you change the menu, the table shows page 1 in the new order. The
+page keeps your choice in the `sort` query parameter of its address, as
+`?sort=name` or `?sort=latest`. For Stars, or a value that names no other
+option, the page removes the parameter.
+
+The search box, the two filter menus, and the buttons work together: the table
+shows the plugins that pass all four, in the order of the sort menu. A count
+beside them reads "M plugins",
 where M is the number of plugins in the index. While a filter is on, it
 reads "N of M plugins", where N is the number that the filters pass. The
 count covers the plugins on every page. If the filters pass no plugin, the
@@ -180,9 +197,13 @@ A change to the search box, a menu, or the buttons shows page 1 at once.
 For the search box, the address takes the new text and drops `page` once
 typing stops for half a second.
 
-A script runs the search box, the menus, the buttons, the count, and the
-pager. Without JavaScript, the home page shows none of them and lists every
-plugin.
+A script runs the search box, the menus, the buttons, the sort menu, the
+count, and the pager. Without JavaScript, the home page shows none of them and
+lists every plugin.
+
+The "Feedback" link in the top bar opens the repository's GitHub
+Discussions. Posting there needs a GitHub account. A post there is not a
+compatibility report, and the report counts do not read it.
 
 The "Add a plugin" link in the top bar opens the issue form that
 "Proposing a plugin with an issue" describes. The form needs a GitHub
@@ -300,6 +321,15 @@ it when the plugin's main use stops without paying its maker, or stops after a
 trial. The name on the home page and on the plugin page shows the icon. The
 Details card shows "Needs a paid service from its maker" with a note, a link to
 the source, and the date of the read. A plugin with no mark can still cost money.
+
+An address on the site that has no page shows a "Page not found" page, with
+links to the home page and the About page. It asks search engines not to
+index it.
+
+The site has a sitemap at `sitemap.xml`, and the head of each page links to
+it. It lists the home page, the About page, and each plugin page, each at
+its canonical address. A maintainer submits it to a search engine by hand,
+because the site cannot have a `robots.txt` at the top of its host.
 
 Each page has a favicon, the icon that a browser shows for the page. It is a
 filled square in the site's accent color. Each page also has tags for link

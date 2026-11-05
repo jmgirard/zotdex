@@ -55,8 +55,16 @@ or an override (M055). A `languages` override records them for a plugin
 whose list is wrong or empty. Each plugin page shows them by name in the
 "Menus and settings in" fact of its Details card (M054). When no language
 is left, the fact reads "Unknown (no translations found)" (M036). The home
-page lists the plugins in one table, sorted by display name with
-`localeCompare` at base sensitivity and then by id (M053). Its script shows
+page lists the plugins in one table, built in the order of its "Sort by"
+menu's default: `sortOrder("")` in `src/site/home-filter.ts` puts a higher
+`upstream.stars` first, with 0 as a value, a record with no count after every
+record with one, and ties by display name with `localeCompare` at base
+sensitivity and then by id (M097, D-065). The menu's `name` value is that name
+order (M053), and its `latest` value puts a later `latestReleaseDate` first,
+with a missing or unreadable date last and ties in name order. The script
+reorders the rows on a change and shows page 1, keeps `name` or `latest` in
+`?sort=`, and removes any other value. Without JavaScript the menu stays
+hidden and the rows keep the built order. Its script shows
 the rows the filters pass 50 at a time, with a pager below the table, and
 keeps the page after 1 in `?page=`; Previous and Next add a history entry
 with `pushState`, the filters still replace the address, and a filter event
@@ -64,7 +72,9 @@ goes back to page 1 (M058). Without JavaScript every row shows. A classic
 script before the table runs before the rows parse. In a browser that runs
 module scripts, it adds a style that `prePaintStyle` writes from the
 address. The style hides the rows outside the asked page of the rows that
-`?language=`, `?zotero=`, and `?category=` pass (M066). So in a browser that reads
+`?language=`, `?zotero=`, and `?category=` pass (M066), and for a `?sort=`
+that is not empty it hides every row, as the rows parse in another order than
+the script shows (M097). So in a browser that reads
 `:nth-child(… of S)`, no row that the script hides paints while the page
 loads (see Known issues). A value that the script drops, or a page past the
 last one, also hides rows that the script then shows. For an address with
@@ -105,7 +115,8 @@ filters pass on every page while a filter is on, or that none match (M044,
 M053, M058). Typing writes `?q=`
 once the visitor stops for half a second (M053 review). A top bar on every
 page links to the home page, the About page (M054), the "Add a plugin"
-issue form, and the data file (M053). It also holds a button that flips the
+issue form, the repository's GitHub Discussions as "Feedback" (M097), and the
+data file (M053). It also holds a button that flips the
 page between the light and dark schemes and saves the choice in the
 browser's `localStorage` under `zotero-plugin-index-theme`; flipping back to
 the system's scheme clears the saved choice, so the page follows the system
@@ -187,7 +198,16 @@ finds an owner in `upstream?.repoUrl ?? record.repoUrl`, and no owner line
 otherwise, so plugins of one name can be told apart. The line sits outside
 `[data-name]` and `[data-description]`, so the search does not read it. It
 stays on one line, an ellipsis cuts a long owner, and `contain: inline-size`
-keeps it from widening the table (M076).
+keeps it from widening the table (M076). After the owner it shows the
+`upstream.stars` count with the star icon and `starsText`'s words in `--muted`,
+and only the owner is cut (M097). The legend says that the count comes from
+GitHub, that the default order comes from that count, and that neither is a
+review by the index (D-065).
+An address with no page shows `404.html`, whose main content says so and links
+to the home page and About, with `noindex` and no canonical link or `og:url`
+(M097). `sitemap.xml` lists the canonical address of the home page, About, and
+each plugin page, with a head link on each page; a maintainer submits it by
+hand, as a `robots.txt` cannot sit at the host's root (M097).
 A manifest `__MSG_` name or description takes its message from
 `_locales/en/`, `en_US/`, or `en_GB/` before the default locale (M055).
 The data also carries the GitHub repo's About text as `repoDescription`.
@@ -208,8 +228,9 @@ of those scripts, and each run of other letters as one unit
 read always shows (M015). The plugin page's Details card shows each
 description that is not blank (M055, M088).
 
-The index runs on GitHub only: GitHub Actions, GitHub Pages, and GitHub
-issues. It has no server, no database, and no paid service. Thus every
+The index runs on GitHub only: GitHub Actions, GitHub Pages, GitHub issues,
+and GitHub Discussions for feedback (M097), which no build reads. It has no
+server, no database, and no paid service. Thus every
 contributor needs a GitHub account.
 
 The generated JSON data is a public API at a stable URL, with a schema
@@ -524,7 +545,8 @@ user reports. The exception is a report that is abuse.
   `categoryOptions` (M066, M086).
   `src/site/languages.ts` holds the applied languages, their names, and the
   menu options. `src/site/home-filter.ts` holds `passes`, `rowShows`,
-  `chosenValue`, `filterHref`, `filterOn`, `filterStatus`, `PAGE_SIZE`,
+  `chosenValue`, `filterHref`, `filterOn`, `filterStatus`, `sortOrder`,
+  `PAGE_SIZE`,
   `pageCount`, `onPage`, and `chosenPage`, which the home page's script
   imports for the search box, the category and language menus, the version
   buttons, the count, and the pager (renamed from `language-filter.ts`, M037;

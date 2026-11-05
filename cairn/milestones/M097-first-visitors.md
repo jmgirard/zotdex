@@ -47,7 +47,7 @@ Help a first-time visitor find established plugins and find their way around the
 - [x] T4: Add `site/src/pages/404.astro`. Make `path` optional in `Base.astro`, with the canonical link and `og:url` left out without it and a `noindex` meta on this page. Update the page-count and head-tag tests that the new page reaches near `test/site.test.ts:1994`.
 - [x] T5: Turn on Discussions with `gh repo edit jmgirard/zotero-plugin-index --enable-discussions`, as the user chose, and read the setting back. Add the "Feedback" link to the top bar and update the exact-match link test near `test/site.test.ts:1807`.
 - [x] T6: Add an Astro endpoint, `site/src/pages/sitemap.xml.ts`, from `ORIGIN`, `BASE`, and `pluginHref`, with no new package (D-004). Add the head link in `Base.astro`. Add its tests.
-- [ ] T7: Update README (the site section and the top bar), `cairn/DESIGN.md` (lines near 58 and 106 and the GitHub-only line near 211), and CHANGELOG. Build the site from the deployed data and do the 375 px checks of AC3 and AC5 in the browser pane. Run `pnpm test` and `pnpm check`.
+- [x] T7: Update README (the site section and the top bar), `cairn/DESIGN.md` (lines near 58 and 106 and the GitHub-only line near 211), and CHANGELOG. Build the site from the deployed data and do the 375 px checks of AC3 and AC5 in the browser pane. Run `pnpm test` and `pnpm check`.
 
 ## Work log
 
@@ -74,6 +74,7 @@ Help a first-time visitor find established plugins and find their way around the
 - 2026-11-05: T4 done: `site/src/pages/404.astro` builds `404.html`; `path` in `Base.astro` is optional, and a page without one has no canonical link or `og:url` and a `noindex` tag. The live 404 read waits for a deploy after the merge.
 - 2026-11-05: T5 done: `gh repo edit --enable-discussions` ran and the setting reads true; the top bar links to Discussions as "Feedback". The 375 px check waits for T7.
 - 2026-11-05: T6 done: `site/src/pages/sitemap.xml.ts` writes `sitemap.xml` from the data with no new package, and every page's head links it.
+- 2026-11-05: T7 done: README, DESIGN, and CHANGELOG updated; the browser pane on the site built from the deployed data read no page or card overflow on all 15 pages at 375 px, a whole count on every row, both longest owners cut (the only cut rows, 11 and 1 stars), the three orders and Back working, and no console errors.
 
 ## Decisions
 
