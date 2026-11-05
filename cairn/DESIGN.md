@@ -1168,8 +1168,8 @@ reused._
   none. The build never writes one (M054 review). (4) The plugin count's first
   text is written while hidden, so screen readers miss it, a same-count change
   writes the same text, and since M053 the search box rewrites it per key. The
-  rows of controls appear after first paint and move the table, which M060's pre-paint
-  style misses (M044, M053 reviews). (5) The language and category menus set
+  rows of controls appear after first paint and move the table, which M060's
+  pre-paint style misses (M044, M053 reviews). (5) The language and category menus set
   `appearance: none` and draw their arrow with two CSS gradients, seen only in
   Chromium at 1280 and 375 px, never in Safari, Firefox, or forced colors. A
   seam may show at a root font size other than 16 px (M049, M063, M066
