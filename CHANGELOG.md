@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- The home table now opens with the most GitHub stars first. A new "Sort by"
+  menu also offers Name and Latest release, and the page keeps a choice other
+  than Stars in the `sort` query parameter. A home row with a star count shows
+  it after the owner. The legend says that the count comes from GitHub, that the
+  default order comes from that count, and that neither is a review by the index.
+- An address on the site with no page now shows a "Page not found" page with
+  links to the home page and the About page.
+- The top bar now links to the repository's GitHub Discussions as "Feedback".
+- The site now has a `sitemap.xml`, and each page's head links to it.
 - Each plugin page with a download link now has a note on how to install the
   file in Zotero, with a step for Firefox. The note says that a plugin has
   full access to Zotero and the computer, and that the index does not review

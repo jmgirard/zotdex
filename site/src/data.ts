@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import type { Override, PluginRecord, PluginsFile, StartTestRecord } from "../../src/build/build.ts";
 import { CATEGORIES, categories, categoryOptions } from "../../src/site/categories.ts";
+import { type SortRow, sortOrder } from "../../src/site/home-filter.ts";
 import { cutDescription, shownDescription } from "../../src/site/description.ts";
 import { appliedLanguages, languageName, languageOptions, listedSubtags, rowLanguages } from "../../src/site/languages.ts";
 import {
@@ -50,14 +51,23 @@ export function previewDescription(record: PluginRecord): string {
   return cut.trim() === "" ? `${displayName(record)} is a plugin listed in the Zotero plugin index.` : cut;
 }
 
-// The records in the home table's order: by display name, ignoring letter case and accents,
-// then by id in code-unit order for names that compare equal.
+// The records in the order of the built home table: the sort menu's Stars order.
 export function homeOrder(records: PluginRecord[]): PluginRecord[] {
-  return records.toSorted(
-    (a, b) =>
-      displayName(a).localeCompare(displayName(b), "en", { sensitivity: "base" }) ||
-      (a.id < b.id ? -1 : a.id > b.id ? 1 : 0),
-  );
+  const order = sortOrder("");
+  return records
+    .map((record) => ({ record, row: sortRow(record) }))
+    .toSorted((a, b) => order(a.row, b.row))
+    .map(({ record }) => record);
+}
+
+// What the sort menu's orders read from a record.
+export function sortRow(record: PluginRecord): SortRow {
+  return {
+    id: record.id,
+    name: displayName(record),
+    stars: record.upstream?.stars,
+    released: record.upstream?.latestReleaseDate,
+  };
 }
 
 export function rangeText(record: PluginRecord): string {
@@ -169,6 +179,9 @@ const NEW_ISSUE = "https://github.com/jmgirard/zotero-plugin-index/issues/new";
 
 // The new-issue page with the add-plugin.yml form, which proposes a plugin for the index.
 export const ADD_PLUGIN_HREF = `${NEW_ISSUE}?template=add-plugin.yml`;
+
+// Where the top bar sends general feedback.
+export const FEEDBACK_HREF = "https://github.com/jmgirard/zotero-plugin-index/discussions";
 
 // The new-issue page with the works.yml or broken.yml form, its plugin and version fields
 // filled in with the record's id and the version the index read.

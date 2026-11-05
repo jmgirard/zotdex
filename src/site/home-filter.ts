@@ -1,5 +1,5 @@
 // The home page's filters: the search box, the language menu, the Zotero version buttons,
-// the category menu, the plugin count beside them, and the pages below the table. The page's module script
+// the category menu, the sort menu, the plugin count beside them, and the pages below the table. The page's module script
 // imports it, so it has no imports. The page's classic script carries the source text of
 // prePaintStyle.
 
@@ -51,6 +51,40 @@ export function chosenValue(asked: string | null, options: readonly string[]): s
   return asked !== null && options.includes(asked) ? asked : "";
 }
 
+// What the home table's order reads from one row: the plugin id, its display name, and, when
+// the record has them, its star count and the date of the release the index read.
+export interface SortRow {
+  id: string;
+  name: string;
+  stars: number | undefined;
+  released: string | undefined;
+}
+
+function byName(a: SortRow, b: SortRow): number {
+  return a.name.localeCompare(b.name, "en", { sensitivity: "base" }) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
+}
+
+// Orders two values with the larger first, and a row with no value after every row with one.
+function byLarger(a: number | undefined, b: number | undefined): number {
+  if (a === undefined) return b === undefined ? 0 : 1;
+  if (b === undefined) return -1;
+  return b - a;
+}
+
+// A date's time, or undefined for a missing date or one that does not parse.
+function time(date: string | undefined): number | undefined {
+  const parsed = date === undefined ? NaN : Date.parse(date);
+  return Number.isNaN(parsed) ? undefined : parsed;
+}
+
+// The compare function for a value of the sort menu: "name", "latest", or "" for Stars, which
+// is also the order of the rows in the built page. Rows that tie keep Name order.
+export function sortOrder(sort: string): (a: SortRow, b: SortRow) => number {
+  if (sort === "name") return byName;
+  if (sort === "latest") return (a, b) => byLarger(time(a.released), time(b.released)) || byName(a, b);
+  return (a, b) => byLarger(a.stars, b.stars) || byName(a, b);
+}
+
 // The plugin count beside the filters: the table's total rows when no filter is on, else
 // how many of them the filters pass on every page, or that none match.
 export function filterStatus(shown: number, total: number, filtering: boolean): string {
@@ -88,9 +122,11 @@ export function chosenPage(asked: string | null, pages: number): number {
 // over the rows its chosen values pass and this CSS over the rows the asked values pass;
 // languageOptions, ZOTERO_MAJORS, and categoryOptions do so today. search is the
 // address's query string, read as the script reads it, and size is the page size. A non-blank
-// q, a language, zotero, or category value that is not letters, digits, and hyphens, or a page
-// of more than 6 digits hides every row. Otherwise the CSS shows the asked page of the rows
-// that the language, zotero, and category values pass. Each value gets its own :not() rule with one attribute
+// q, a sort value that is not empty, since name and latest show the rows in another order than
+// they parse and this function does not check the value, a language, zotero, or category value
+// that is not letters, digits, and hyphens, or a page of more than 6 digits hides every row.
+// Otherwise the CSS shows the asked page of the rows that the language, zotero, and category
+// values pass. Each value gets its own :not() rule with one attribute
 // selector, and each rule that uses :nth-child(… of S) stands alone, so a browser that cannot
 // read that form drops only those rules. The home page builds a classic script from this
 // function's source text, so it calls and reads nothing from outside its body except
@@ -99,6 +135,7 @@ export function prePaintStyle(search: string, size: number): string {
   const rows = ".plugins tbody tr";
   const params = new URLSearchParams(search);
   if ((params.get("q") ?? "").trim() !== "") return `${rows}{display:none}`;
+  if ((params.get("sort") ?? "") !== "") return `${rows}{display:none}`;
   const passing: string[] = [];
   for (const [name, attribute] of [
     ["language", "data-languages"],
@@ -128,8 +165,8 @@ export function prePaintStyle(search: string, size: number): string {
 // value is "". An address that already says so comes back unchanged. Otherwise the query is
 // written again, so the other parameters keep their values but not always their spelling,
 // such as %20 for +. The page writes the search box to q, the language menu to language,
-// the version buttons to zotero, the category menu to category, and the page number after 1
-// to page.
+// the version buttons to zotero, the category menu to category, the sort menu to sort, and the
+// page number after 1 to page.
 export function filterHref(href: string, name: string, value: string): string {
   const url = new URL(href);
   if (value ? url.searchParams.get(name) === value : !url.searchParams.has(name)) return href;

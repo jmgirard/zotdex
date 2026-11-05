@@ -105,13 +105,49 @@ describe("pnpm site", () => {
     for (const id of ids) expect(readdirSync(join(out, "plugins", id))).toEqual(["index.html"]);
   });
 
+  test("writes a 404 page at the top that says what happened, links home and to About, and asks not to be indexed", () => {
+    const html = readFileSync(join(out, "404.html"), "utf8");
+    const main = /<main>(.*?)<\/main>/s.exec(html)![1]!;
+    expect(main).toContain("<h1>Page not found</h1>");
+    expect(main).toContain("No page is at this address.");
+    expect(main).toContain('<a href="/zotero-plugin-index/">See all plugins</a>');
+    expect(main).toContain('<a href="/zotero-plugin-index/about/">About page</a>');
+    expect(html).toContain('<meta name="robots" content="noindex">');
+    expect(html).not.toMatch(/rel="canonical"|property="og:url"/);
+  });
+
+  test("asks only the 404 page not to be indexed", () => {
+    const indexed = htmlFiles(out).filter((file) => readFileSync(join(out, file), "utf8").includes('name="robots"'));
+    expect(indexed).toEqual(["404.html"]);
+  });
+
+  test("writes a sitemap in the urlset form that lists exactly the canonical address of each page", () => {
+    const xml = readFileSync(join(out, "sitemap.xml"), "utf8");
+    expect(xml).toMatch(/^<\?xml version="1\.0" encoding="UTF-8"\?>\n<urlset xmlns="http:\/\/www\.sitemaps\.org\/schemas\/sitemap\/0\.9">\n/);
+    expect(xml).toMatch(/<\/urlset>\n$/);
+    const locs = [...xml.matchAll(/<url><loc>([^<]*)<\/loc><\/url>/g)].map(([, loc]) => loc!);
+    const canonicals = htmlFiles(out).flatMap((file) => {
+      const canonical = /<link rel="canonical" href="([^"]*)"/.exec(readFileSync(join(out, file), "utf8"))?.[1];
+      return canonical ? [canonical] : [];
+    });
+    expect(locs).toHaveLength(ids.length + 2);
+    expect(locs.toSorted()).toEqual(canonicals.toSorted());
+  });
+
+  test("links the sitemap from the head of every page", () => {
+    for (const file of htmlFiles(out)) {
+      const head = /<head>(.*?)<\/head>/s.exec(readFileSync(join(out, file), "utf8"))![1]!;
+      expect(head, file).toContain('<link rel="sitemap" type="application/xml" href="/zotero-plugin-index/sitemap.xml">');
+    }
+  });
+
   test("leaves the data and schema files byte-identical", () => {
     for (const [file, bytes] of before) expect(readFileSync(join(out, file)).equals(bytes), file).toBe(true);
   });
 
   test("starts every link inside the site with the Pages path", () => {
     const files = htmlFiles(out);
-    expect(files).toHaveLength(ids.length + 2);
+    expect(files).toHaveLength(ids.length + 3);
     const inside = files.flatMap((file) =>
       [...readFileSync(join(out, file), "utf8").matchAll(/\s(?:href|src)="([^"]*)"/g)]
         .map((match) => match[1]!)
@@ -186,6 +222,8 @@ const LOCK_SVG =
   '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 11h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2z"></path><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
 const noSourceMark = (icon: string) => `<span class="no-source" data-no-source><span aria-hidden="true" title="${NO_SOURCE_TEXT}">${icon}</span><span class="visually-hidden">${NO_SOURCE_TEXT}</span></span>`;
 const PAID_TEXT = "Needs a paid service from its maker";
+const STAR_SVG =
+  '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>';
 const CARD_SVG =
   '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"></path><path d="M2 10h20"></path></svg>';
 const paidMark = (icon: string) => `<span class="paid-service" data-paid-service><span aria-hidden="true" title="${PAID_TEXT}">${icon}</span><span class="visually-hidden">${PAID_TEXT}</span></span>`;
@@ -996,22 +1034,23 @@ describe("the home page", () => {
     return found!;
   }
 
-  test("holds one table whose body has one row per record, by name and then by id", () => {
+  test("holds one table whose body has one row per record, most stars first and then by name and id", () => {
     expect(home().match(/<table[\s>]/g)).toHaveLength(1);
     expect(rows().map(({ id }) => id)).toEqual([
+      "same-name-plugin@example.org",
+      "first-plugin@example.org",
+      "old-plugin@example.org",
+      // A count of 0 comes before the rows with no count.
+      "{c2a6e4c8-1b7d-4f3a-9e2b-5d8f0a1c3e7b}",
       "_x-y+z.w@{v}",
       "broken-plugin@example.org",
       // "Café Tools" and "cafe tools" compare equal, so their ids order them.
       "a-cafe@example.org",
       "b-cafe@example.org",
-      "first-plugin@example.org",
-      "same-name-plugin@example.org",
-      "{c2a6e4c8-1b7d-4f3a-9e2b-5d8f0a1c3e7b}",
       "locale-plugin@example.org",
       "min-only-plugin@example.org",
       "next-plugin@example.org",
       "no-range-plugin@example.org",
-      "old-plugin@example.org",
       "repo-fragment@example.org",
       "repo-gitlab@example.org",
       "repo-http@example.org",
@@ -1034,12 +1073,18 @@ describe("the home page", () => {
         (record.upstream?.archived === true ? '<span class="badge" data-archived>Archived</span>' : "") +
         (record.upstream?.sourceInRepo === false ? ` ${noSourceMark(LOCK_SVG)}` : "") +
         (record.paidService ? ` ${paidMark(CARD_SVG)}` : "") +
-        (owner ? `<div class="owner" data-owner>By ${escaped(owner)}</div>` : "") +
+        (owner
+          ? `<div class="owner" data-owner><span class="owner-name">By ${escaped(owner)}</span> ` +
+            (record.upstream?.stars === undefined
+              ? ""
+              : `<span class="row-stars"><span aria-hidden="true" title="${starsText(record.upstream.stars)}">· ${STAR_SVG} ${record.upstream.stars.toLocaleString("en")}</span> <span class="visually-hidden">${starsText(record.upstream.stars)}</span></span>`) +
+            "</div>"
+          : "") +
         (description ? `<div class="desc" data-description>${escaped(description)}</div>` : ""),
     );
   });
 
-  const shownOwner = (id: string) => /<div class="owner" data-owner>By ([^<]*)<\/div>/.exec(row(id).cells[0]!.html)?.[1];
+  const shownOwner = (id: string) => /<div class="owner" data-owner><span class="owner-name">By ([^<]*)<\/span>/.exec(row(id).cells[0]!.html)?.[1];
 
   // same-name-plugin's two repo URLs name different owners, so its row also shows that the
   // upstream URL comes first.
@@ -1051,6 +1096,31 @@ describe("the home page", () => {
     ["ssh-plugin@example.org", undefined],
   ])("shows the owner of %s as %s", (id, owner) => {
     expect(shownOwner(id)).toBe(owner);
+  });
+
+  test("shows a record's star count after the owner, with the plugin page's words, and 0 as a count", () => {
+    const stars = (id: string) => /<span class="owner-name">[^<]*<\/span> (<span class="row-stars">.*?)<\/div>/s.exec(row(id).cells[0]!.html)?.[1];
+    const shown = (count: string, words: string) =>
+      new RegExp(`^<span class="row-stars"><span aria-hidden="true" title="${words}">· <svg [^]*?</svg> ${count}</span> <span class="visually-hidden">${words}</span></span>$`);
+    expect(stars("same-name-plugin@example.org")).toMatch(shown("98,765", starsText(98765)));
+    expect(stars("{c2a6e4c8-1b7d-4f3a-9e2b-5d8f0a1c3e7b}")).toMatch(shown("0", starsText(0)));
+    // A record with no count, and a failed read, show none.
+    expect(stars("next-plugin@example.org")).toBeUndefined();
+    expect(stars("broken-plugin@example.org")).toBeUndefined();
+  });
+
+  test("cuts only the owner's name, so a count stays whole", () => {
+    const rules = cssRules(readFileSync(resolve(ROOT, "site/src/layouts/Base.astro"), "utf8"));
+    const declared = (selector: string) => Object.fromEntries(rules.find((rule) => rule.selector === selector)?.declarations ?? []);
+    expect(declared(".owner-name")).toMatchObject({ "min-width": "0", overflow: "hidden", "text-overflow": "ellipsis" });
+    expect(declared(".row-stars")).toMatchObject({ flex: "none", color: "var(--muted)" });
+    expect(declared(".row-stars .icon")).toMatchObject({ fill: "currentColor", stroke: "none" });
+    expect(home()).not.toMatch(/class="row-stars"[^>]*data-repo-stars/);
+  });
+
+  test("says in the legend that the count comes from GitHub, that the default order comes from it, and that neither is a review", () => {
+    const item = /<li data-legend-stars>(.*?)<\/li>/s.exec(home())?.[1]?.replace(/\s+/g, " ");
+    expect(item).toContain("The count of stars that GitHub gives. The default order comes from this count, and neither is a review by the index.");
   });
 
   test("reads the owner of a repo URL with a trailing slash", () => {
@@ -1217,12 +1287,34 @@ describe("the home page", () => {
       `${CARD_SVG} ${PAID_TEXT}`,
       '<span class="start" data-start="started" aria-hidden="true">●</span> Started in the start test',
       '<span class="start" data-start="start-error" aria-hidden="true">✕</span> Failed to install, start, or answer in the start test',
+      expect.stringContaining("The count of stars that GitHub gives."),
       "A declared range comes from the plugin's manifest and the index's overrides, not from a test. A start test does not show that a plugin works.",
     ]);
   });
 
+  test("gives each row its record's star count and release date, and neither to a record without them", () => {
+    const value = (attributes: string, name: string) => new RegExp(`\\s${name}="([^"]*)"`).exec(attributes)?.[1];
+    const facts = Object.fromEntries(rows().map(({ id, attributes }) => [id, [value(attributes, "data-stars"), value(attributes, "data-released")]]));
+    expect(facts).toEqual(
+      Object.fromEntries(records.map(({ id, upstream }) => [id, [upstream?.stars?.toString(), upstream?.latestReleaseDate]])),
+    );
+    // A count of 0 is written, and a failed read writes neither.
+    expect(facts["{c2a6e4c8-1b7d-4f3a-9e2b-5d8f0a1c3e7b}"]![0]).toBe("0");
+    expect(facts["broken-plugin@example.org"]).toEqual([undefined, undefined]);
+  });
+
+  test("holds a hidden sort menu whose first option is Stars", () => {
+    const menu = /<p class="sort-menu" hidden><label for="sort">Sort by<\/label> <select id="sort" data-sort autocomplete="off">(.*?)<\/select><\/p>/.exec(home());
+    expect(menu).not.toBeNull();
+    expect([...menu![1]!.matchAll(/<option value="([^"]*)">([^<]*)<\/option>/g)].map(([, value, text]) => [value, text])).toEqual([
+      ["", "Stars"],
+      ["name", "Name"],
+      ["latest", "Latest release"],
+    ]);
+  });
+
   test("gives each row the language subtags it applies", () => {
-    expect(rows().map(({ id, attributes }) => [id, /\sdata-languages="([^"]*)"/.exec(attributes)?.[1]])).toEqual([
+    expect(Object.fromEntries(rows().map(({ id, attributes }) => [id, /\sdata-languages="([^"]*)"/.exec(attributes)?.[1]]))).toEqual(Object.fromEntries([
       ["_x-y+z.w@{v}", ""],
       ["broken-plugin@example.org", ""],
       ["a-cafe@example.org", "de en fr it ja"],
@@ -1238,11 +1330,11 @@ describe("the home page", () => {
       ...NO_REPO_LINE_IDS.map((id) => [id, ""]),
       ["ssh-plugin@example.org", ""],
       ["zotero6-plugin@example.org", ""],
-    ]);
+    ]));
   });
 
   test("gives each row the Zotero majors it declares all or part of", () => {
-    expect(rows().map(({ id, attributes }) => [id, /\sdata-zotero="([^"]*)"/.exec(attributes)?.[1]])).toEqual([
+    expect(Object.fromEntries(rows().map(({ id, attributes }) => [id, /\sdata-zotero="([^"]*)"/.exec(attributes)?.[1]]))).toEqual(Object.fromEntries([
       ["_x-y+z.w@{v}", ""],
       ["broken-plugin@example.org", ""],
       ["a-cafe@example.org", "7 8 9"],
@@ -1258,7 +1350,7 @@ describe("the home page", () => {
       ...NO_REPO_LINE_IDS.map((id) => [id, ""]),
       ["ssh-plugin@example.org", ""],
       ["zotero6-plugin@example.org", ""],
-    ]);
+    ]));
   });
 
   test("holds hidden version buttons, Any pressed, then one for each major", () => {
@@ -1313,7 +1405,7 @@ describe("the home page", () => {
     ]);
   });
 
-  test("holds every row without hidden, and the search box, the menus, the buttons, the count, and the pager inside hidden elements", () => {
+  test("holds every row without hidden, and the search box, the menus, the buttons, the sort menu, the count, and the pager inside hidden elements", () => {
     const html = home();
     expect(rows().length).toBe(ids.length);
     for (const { id, attributes } of rows()) expect(attributes, id).not.toMatch(/\shidden[\s=]|\shidden$/);
@@ -1323,9 +1415,10 @@ describe("the home page", () => {
     expect(toolbar).toMatch(/<p class="category-filter" hidden><label[^>]*>[^<]*<\/label> <select[^>]*>(?:<option[^>]*>[^<]*<\/option>)+<\/select><\/p>/);
     expect(toolbar).toMatch(/<p class="language-filter" hidden><label[^>]*>[^<]*<\/label> <select[^>]*>(?:<option[^>]*>[^<]*<\/option>)+<\/select><\/p>/);
     expect(toolbar).toMatch(/<div class="version-filter" hidden><span[^>]*>[^<]*<\/span><div role="group"[^>]*>(?:<button[^>]*>[^<]*<\/button>)+<\/div><\/div>/);
+    expect(toolbar).toMatch(/<p class="sort-menu" hidden><label[^>]*>[^<]*<\/label> <select[^>]*>(?:<option[^>]*>[^<]*<\/option>)+<\/select><\/p>/);
     expect(toolbar).toMatch(/<p class="filter-status" role="status" data-filter-status hidden><\/p>$/);
     expect(html.match(/<input[\s>]/g)).toHaveLength(1);
-    expect(html.match(/<select[\s>]/g)).toHaveLength(2);
+    expect(html.match(/<select[\s>]/g)).toHaveLength(3);
     expect(html.match(/<button[\s>]/g)).toHaveLength(ZOTERO_MAJORS.length + 4);
     expect(html.match(/\sdata-filter-status/g)).toHaveLength(1);
     expect(html).toContain(
@@ -1338,7 +1431,7 @@ describe("the home page", () => {
       declarations.some(([property, value]) => property === "display" && value === "none"),
     );
     const selectors = hiding.flatMap(({ selector }) => selector.split(",").map((part) => part.trim()));
-    for (const control of ["[data-theme-toggle][hidden]", ".search[hidden]", ".category-filter[hidden]", ".language-filter[hidden]", ".version-filter[hidden]", ".filter-status[hidden]", ".pager[hidden]"]) {
+    for (const control of ["[data-theme-toggle][hidden]", ".search[hidden]", ".category-filter[hidden]", ".language-filter[hidden]", ".sort-menu[hidden]", ".version-filter[hidden]", ".filter-status[hidden]", ".pager[hidden]"]) {
       expect(selectors, control).toContain(control);
     }
   });
@@ -1354,7 +1447,7 @@ function generatedRow(n: number) {
   const fields: Record<string, string> = { name: `Bulk ${String(n).padStart(3, "0")}`, description: tags };
   return {
     hidden: false,
-    dataset: { plugin: `gen-${n}@example.org`, languages: "", zotero: "", categories: "translation" },
+    dataset: { plugin: `gen-${n}@example.org`, languages: "", zotero: "", categories: "translation", stars: undefined as string | undefined, released: undefined as string | undefined },
     querySelector: (selector: string) => {
       const field = fields[selector.slice(6, -1)];
       return field ? { textContent: field } : null;
@@ -1362,7 +1455,7 @@ function generatedRow(n: number) {
   };
 }
 
-function homeScript(href: string, generated = 0, missing?: "search" | "category" | "menu" | "buttons") {
+function homeScript(href: string, generated = 0, missing?: "search" | "category" | "menu" | "buttons" | "sort" | "tbody") {
   const html = home();
   const script = /<script type="module">(.*?)<\/script>/s.exec(html)![1]!;
   const shown = new Set<string>();
@@ -1382,6 +1475,7 @@ function homeScript(href: string, generated = 0, missing?: "search" | "category"
     addEventListener: listen("category"),
     closest: () => wrapper("category"),
   };
+  const sortSelect = { value: "", options: optionsOf("data-sort"), addEventListener: listen("sort"), closest: () => wrapper("sort") };
   const buttons = [...html.matchAll(/<button type="button"(?: value="([^"]*)")? aria-pressed="[^"]*">/g)].map(([, value]) => ({
     value: value ?? "",
     addEventListener: () => {},
@@ -1391,19 +1485,21 @@ function homeScript(href: string, generated = 0, missing?: "search" | "category"
   const status = { textContent: "", removeAttribute: () => shown.add("count") };
   const body = html.slice(html.indexOf("<tbody>"), html.indexOf("</tbody>"));
   const tableRows = [
-    ...body.matchAll(/<tr data-plugin="([^"]*)" data-languages="([^"]*)" data-zotero="([^"]*)" data-categories="([^"]*)">(.*?)<\/tr>/gs),
-  ].map(([, plugin, languages, zotero, categories, inner]) => {
+    ...body.matchAll(/<tr data-plugin="([^"]*)" data-languages="([^"]*)" data-zotero="([^"]*)" data-categories="([^"]*)"(?: data-stars="([^"]*)")?(?: data-released="([^"]*)")?>(.*?)<\/tr>/gs),
+  ].map(([, plugin, languages, zotero, categories, stars, released, inner]) => {
     const text = (attribute: string) => {
       const found = new RegExp(`\\s${attribute}>([^<]*)<`).exec(inner!);
       return found ? { textContent: unescaped(found[1]!) } : null;
     };
     return {
       hidden: false,
-      dataset: { plugin: unescaped(plugin!), languages, zotero, categories },
+      dataset: { plugin: unescaped(plugin!), languages, zotero, categories, stars: stars as string | undefined, released: released as string | undefined },
       querySelector: (selector: string) => text(selector.slice(1, -1)),
     };
   });
   tableRows.push(...Array.from({ length: generated }, (_, i) => generatedRow(i + 1)));
+  // Appending rows that the body holds moves them, in that order.
+  const tbody = { append: (...moved: typeof tableRows) => tableRows.splice(0, tableRows.length, ...moved) };
   const pager = { hidden: true };
   const pageStatus = { textContent: "" };
   const steps = [
@@ -1430,6 +1526,8 @@ function homeScript(href: string, generated = 0, missing?: "search" | "category"
     "input[data-search]": missing === "search" ? null : search,
     "select[data-category-filter]": missing === "category" ? null : categorySelect,
     "select[data-language-filter]": missing === "menu" ? null : select,
+    "select[data-sort]": missing === "sort" ? null : sortSelect,
+    tbody: missing === "tbody" ? null : tbody,
     "[data-filter-status]": status,
     "[data-pager]": pager,
     "[data-page-status]": pageStatus,
@@ -1474,6 +1572,7 @@ function homeScript(href: string, generated = 0, missing?: "search" | "category"
     search,
     select,
     categorySelect,
+    sortSelect,
     status,
     location,
     shown,
@@ -1502,11 +1601,107 @@ describe("the home page script", () => {
     expect(page.search.value).toBe("TOOLS");
     expect(page.visible()).toEqual(["a-cafe@example.org", "b-cafe@example.org"]);
     expect(page.status.textContent).toBe(`2 of ${ids.length} plugins`);
-    expect([...page.shown].sort()).toEqual(["buttons", "category", "count", "menu", "search"]);
+    expect([...page.shown].sort()).toEqual(["buttons", "category", "count", "menu", "search", "sort"]);
+  });
+
+  describe("the sort menu", () => {
+    const built = homeOrder(fixture.plugins as PluginRecord[]);
+    const named = [
+      "_x-y+z.w@{v}",
+      "broken-plugin@example.org",
+      "a-cafe@example.org",
+      "b-cafe@example.org",
+      "first-plugin@example.org",
+    ];
+
+    test("leaves the built order and the address alone by default", () => {
+      const page = homeScript(PAGE);
+      expect(page.sortSelect.value).toBe("");
+      expect(page.all()).toEqual(built.map(({ id }) => id));
+      expect(page.location.href).toBe(PAGE);
+    });
+
+    test("reads sort=name and sort=latest on load, and each gives its order", () => {
+      const byName = homeScript(`${PAGE}?sort=name`);
+      expect(byName.sortSelect.value).toBe("name");
+      expect(byName.all().slice(0, named.length)).toEqual(named);
+      expect(byName.location.href).toBe(`${PAGE}?sort=name`);
+      const byDate = homeScript(`${PAGE}?sort=latest`);
+      const dates = byDate.all().map((id) => built.find((record) => record.id === id)!.upstream?.latestReleaseDate);
+      const known = dates.filter((date) => date !== undefined);
+      expect(known.length).toBeGreaterThan(1);
+      expect(known).toEqual(known.toSorted().toReversed());
+      expect(dates.slice(0, known.length)).toEqual(known);
+      expect(byDate.location.href).toBe(`${PAGE}?sort=latest`);
+    });
+
+    test.each(["stars", "x", ""])("removes sort=%s and keeps the built order", (value) => {
+      const page = homeScript(`${PAGE}?sort=${value}&zotero=7`);
+      expect(page.sortSelect.value).toBe("");
+      expect(page.location.href).toBe(`${PAGE}?zotero=7`);
+      expect(page.all()).toEqual(built.map(({ id }) => id));
+    });
+
+    test("a change reorders the rows, shows page 1, and writes the address, and Stars removes the parameter", () => {
+      const page = homeScript(`${PAGE}?page=2`, 60);
+      expect(page.pageStatus.textContent).toMatch(/^Page 2 /);
+      page.sortSelect.value = "name";
+      page.fire("sort:change");
+      expect(page.pageStatus.textContent).toMatch(/^Page 1 /);
+      expect(page.location.href).toBe(`${PAGE}?sort=name`);
+      // "Bulk 001" sorts after "Broken", so the generated rows follow.
+      expect(page.visible().slice(0, 3)).toEqual(["_x-y+z.w@{v}", "broken-plugin@example.org", "gen-1@example.org"]);
+      page.sortSelect.value = "";
+      page.fire("sort:change");
+      expect(page.location.href).toBe(PAGE);
+      expect(page.visible()[0]).toBe(built[0]!.id);
+    });
+
+    test("Back and Forward read the order from the address", () => {
+      const page = homeScript(PAGE);
+      page.location.href = `${PAGE}?sort=name`;
+      page.fire("window:popstate");
+      expect(page.sortSelect.value).toBe("name");
+      expect(page.all().slice(0, named.length)).toEqual(named);
+      page.location.href = PAGE;
+      page.fire("window:popstate");
+      expect(page.sortSelect.value).toBe("");
+      expect(page.all().slice(0, built.length)).toEqual(built.map(({ id }) => id));
+    });
+
+    test("the filters pass rows in the chosen order", () => {
+      // Stars puts same-name-plugin first, and Name ties them and orders by id.
+      expect(homeScript(`${PAGE}?q=first+plugin`).visible()).toEqual(["same-name-plugin@example.org", "first-plugin@example.org"]);
+      expect(homeScript(`${PAGE}?q=first+plugin&sort=name`).visible()).toEqual(["first-plugin@example.org", "same-name-plugin@example.org"]);
+    });
+
+    test("pages the rows in the chosen order", () => {
+      const first = homeScript(`${PAGE}?sort=name`, 60);
+      expect(first.visible()).toEqual(first.all().slice(0, 50));
+      const second = homeScript(`${PAGE}?sort=name&page=2`, 60);
+      expect(second.visible()).toEqual(second.all().slice(50, 100));
+      expect(second.all()).toEqual(first.all());
+    });
+
+    test("going back to Stars restores the built order, not a new sort", () => {
+      // The generated rows sit last in the page but would sort among the rows with no count.
+      const page = homeScript(PAGE, 3);
+      const before = page.all();
+      page.sortSelect.value = "name";
+      page.fire("sort:change");
+      expect(page.all()).not.toEqual(before);
+      page.sortSelect.value = "";
+      page.fire("sort:change");
+      expect(page.all()).toEqual(before);
+    });
+
+    test.each(["sort", "tbody"] as const)("wires no control when the %s is missing", (missing) => {
+      expect([...homeScript(PAGE, 0, missing).shown]).toEqual([]);
+    });
   });
 
   test("matches a row on its name but not on its owner's text alone", () => {
-    expect(homeScript(`${PAGE}?q=first+plugin`).visible()).toEqual(["first-plugin@example.org", "same-name-plugin@example.org"]);
+    expect(homeScript(`${PAGE}?q=first+plugin`).visible()).toEqual(["same-name-plugin@example.org", "first-plugin@example.org"]);
     expect(homeScript(`${PAGE}?q=${LONG_OWNER}`).visible()).toEqual([]);
   });
 
@@ -1801,7 +1996,7 @@ describe("the home page's classic script", () => {
 describe("the built site", () => {
   test("puts the top bar and the footer on every page", () => {
     const files = htmlFiles(out);
-    expect(files).toHaveLength(ids.length + 2);
+    expect(files).toHaveLength(ids.length + 3);
     for (const path of files) {
       const html = readFileSync(join(out, path), "utf8");
       const bar = /<body><header class="topbar"><div class="topbar-inner">(.*?)<\/div><\/header><main>/s.exec(html)?.[1];
@@ -1809,6 +2004,7 @@ describe("the built site", () => {
         '<a class="brand" href="/zotero-plugin-index/">Zotero plugin index</a><nav aria-label="Site">' +
           '<a href="/zotero-plugin-index/about/">About</a>' +
           '<a href="https://github.com/jmgirard/zotero-plugin-index/issues/new?template=add-plugin.yml" data-add-plugin>Add a plugin</a>' +
+          '<a href="https://github.com/jmgirard/zotero-plugin-index/discussions" data-feedback>Feedback</a>' +
           '<a href="/zotero-plugin-index/v1/plugins.json">Data</a></nav>',
       );
       const foot = /<\/main><footer class="foot"><div class="foot-inner foot-rule">(.*?)<\/div><\/footer><\/body>/s.exec(html)?.[1];
@@ -1855,7 +2051,7 @@ describe("the built site", () => {
 
   test("starts every page with no scheme on <html>, a theme script in <head>, and the hidden button before its script", () => {
     const files = htmlFiles(out);
-    expect(files).toHaveLength(ids.length + 2);
+    expect(files).toHaveLength(ids.length + 3);
     for (const file of files) {
       const html = readFileSync(join(out, file), "utf8");
       expect(html, file).toMatch(/^<!DOCTYPE html><html lang="en"><head>/);
@@ -1871,7 +2067,7 @@ describe("the built site", () => {
 
   test("links each plugin page's Details card to the text-change form, and no other page", () => {
     const files = htmlFiles(out);
-    expect(files).toHaveLength(ids.length + 2);
+    expect(files).toHaveLength(ids.length + 3);
     for (const id of ids) {
       const html = page(id);
       const links = [...html.matchAll(/<a href="([^"]*)" data-text-change>/g)];
@@ -1892,7 +2088,7 @@ describe("the built site", () => {
     const form = "https://github.com/jmgirard/zotero-plugin-index/issues/new?template=remove-plugin.yml";
     const links = (html: string) => [...html.matchAll(/<a href="([^"]*remove-plugin\.yml[^"]*)"[^>]*>([^<]*)<\/a>/g)].map((match) => [match[1]!.replace(/&amp;|&#38;/g, "&"), match[2]!]);
     const files = htmlFiles(out);
-    expect(files).toHaveLength(ids.length + 2);
+    expect(files).toHaveLength(ids.length + 3);
     for (const file of files) {
       const html = readFileSync(join(out, file), "utf8");
       const id = ids.find((each) => file === join("plugins", each, "index.html"));
@@ -1991,8 +2187,8 @@ describe("the link preview tags", () => {
     };
   };
 
-  test("puts each tag once on every page, with the page's own address and text", () => {
-    const files = htmlFiles(out);
+  test("puts each tag once on every page with an address, with the page's own address and text", () => {
+    const files = htmlFiles(out).filter((file) => file !== "404.html");
     expect(files).toHaveLength(ids.length + 2);
     for (const file of files) {
       const preview = previewOf(file);
@@ -2311,8 +2507,8 @@ describe("the site styles", () => {
     expect(html.match(/<t[dh][^>]* class="date"/g)).toHaveLength(ids.length + 2);
   });
 
-  test("draws the language and category menus' arrow in currentColor, inset from the right by the left padding", () => {
-    const menu = cssRules(layout).filter(({ selector }) => selector === "[data-language-filter], [data-category-filter]");
+  test("draws the language, category, and sort menus' arrow in currentColor, inset from the right by the left padding", () => {
+    const menu = cssRules(layout).filter(({ selector }) => selector === "[data-language-filter], [data-category-filter], [data-sort]");
     const drawn = new Map(menu.find(({ declarations }) => declarations.some(([property]) => property === "appearance"))!.declarations);
     expect(drawn.get("appearance")).toBe("none");
     const gradients = drawn.get("background-image")!.match(/linear-gradient\([^)]*\)/g)!;
@@ -2322,7 +2518,7 @@ describe("the site styles", () => {
     // The last layer is the arrow's right half, so its offset is the arrow's inset.
     expect(drawn.get("background-position")!.split(",").at(-1)!.trim()).toBe(`right ${left} top 50%`);
     // Forced colors drop gradients, so there the browser draws its own arrow.
-    expect(layout).toMatch(/@media \(forced-colors: active\) \{\s*\[data-language-filter\],\s*\[data-category-filter\] \{[^}]*appearance: auto;/);
+    expect(layout).toMatch(/@media \(forced-colors: active\) \{\s*\[data-language-filter\],\s*\[data-category-filter\],\s*\[data-sort\] \{[^}]*appearance: auto;/);
   });
 
   test("leaves styles out of every other .astro file", () => {
@@ -2501,7 +2697,7 @@ describe("the site colors", () => {
   test.each([
     ["light", light],
     ["dark", dark],
-  ])("gives the edges of the search box, the menus, the version buttons, the pager buttons, and the plugin page links a contrast of at least 3:1 with the surface and the page in the %s scheme", (_, scheme) => {
+  ])("gives the edges of the search box, the menus, including the sort menu, the version buttons, the pager buttons, and the plugin page links a contrast of at least 3:1 with the surface and the page in the %s scheme", (_, scheme) => {
     const edges = cssRules(layout).flatMap(({ selector, declarations }) =>
       declarations
         .filter(([property, value]) => (property === "border" || property === "border-left") && value.includes("var("))
@@ -2509,7 +2705,7 @@ describe("the site colors", () => {
         .map(([, value]) => ({ selector, token: /var\((--[\w-]+)\)/.exec(value)?.[1] })),
     );
     expect(edges.map(({ selector }) => selector)).toEqual([
-      ".search input, [data-language-filter], [data-category-filter]",
+      ".search input, [data-language-filter], [data-category-filter], [data-sort]",
       "[data-version-filter]",
       "[data-version-filter] button",
       ".pager button",

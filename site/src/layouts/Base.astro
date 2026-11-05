@@ -2,18 +2,19 @@
 import { applySavedTheme, wireThemeButton } from "../../../src/site/theme.ts";
 import { BASE, ORIGIN } from "../base.ts";
 import Icon from "../components/Icon.astro";
-import { ADD_PLUGIN_HREF, day, DISCLAIMER, loadData } from "../data.ts";
+import { ADD_PLUGIN_HREF, day, DISCLAIMER, FEEDBACK_HREF, loadData } from "../data.ts";
 
 interface Props {
   title: string;
   // The text of a shared link's preview and of search results.
   description: string;
-  // The page's address from the host on, encoded, such as pluginHref gives.
-  path: string;
+  // The page's address from the host on, encoded, such as pluginHref gives. The 404 page has
+  // no address of its own, so it leaves this out and asks search engines not to index it.
+  path?: string;
 }
 const { title, description, path } = Astro.props;
 const { generatedAt } = loadData();
-const address = `${ORIGIN}${path}`;
+const address = path === undefined ? undefined : `${ORIGIN}${path}`;
 
 const themeHead = `(${applySavedTheme})();`;
 const themeButton = `(${wireThemeButton})();`;
@@ -26,13 +27,14 @@ const themeButton = `(${wireThemeButton})();`;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={address} />
+    {address ? <link rel="canonical" href={address} /> : <meta name="robots" content="noindex" />}
     <link rel="icon" type="image/svg+xml" href={`${BASE}favicon.svg`} />
+    <link rel="sitemap" type="application/xml" href={`${BASE}sitemap.xml`} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Zotero plugin index" />
-    <meta property="og:url" content={address} />
+    {address && <meta property="og:url" content={address} />}
     <meta name="twitter:card" content="summary" />
     <script is:inline set:html={themeHead} />
     <style is:global>
@@ -308,7 +310,8 @@ const themeButton = `(${wireThemeButton})();`;
       /* The edges of the controls take --faint, which the color test holds at 3:1 on --surface. */
       .search input,
       [data-language-filter],
-      [data-category-filter] {
+      [data-category-filter],
+      [data-sort] {
         height: 2rem;
         border: 1px solid var(--faint);
         border-radius: var(--radius-m);
@@ -324,7 +327,8 @@ const themeButton = `(${wireThemeButton})();`;
       /* The page draws each menu's arrow in place of the browser's: two triangles in currentColor
          make one down arrow, inset from the right edge by the left padding. */
       [data-language-filter],
-      [data-category-filter] {
+      [data-category-filter],
+      [data-sort] {
         max-width: 100%;
         padding: 0 var(--space-14) 0 var(--space-4);
         appearance: none;
@@ -338,14 +342,16 @@ const themeButton = `(${wireThemeButton})();`;
       /* Forced colors drop gradients, so each menu keeps the browser's own arrow there. */
       @media (forced-colors: active) {
         [data-language-filter],
-        [data-category-filter] {
+        [data-category-filter],
+        [data-sort] {
           padding-right: var(--space-4);
           appearance: auto;
         }
       }
       .language-filter,
       .category-filter,
-      .version-filter {
+      .version-filter,
+      .sort-menu {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
@@ -359,6 +365,7 @@ const themeButton = `(${wireThemeButton})();`;
       .language-filter[hidden],
       .category-filter[hidden],
       .version-filter[hidden],
+      .sort-menu[hidden],
       .filter-status[hidden],
       .pager[hidden] {
         display: none;
@@ -392,6 +399,7 @@ const themeButton = `(${wireThemeButton})();`;
       .search input:focus-visible,
       [data-language-filter]:focus-visible,
       [data-category-filter]:focus-visible,
+      [data-sort]:focus-visible,
       [data-version-filter] button:focus-visible {
         outline: 2px solid var(--link);
         outline-offset: 2px;
@@ -462,14 +470,30 @@ const themeButton = `(${wireThemeButton})();`;
         text-decoration: underline;
       }
       /* contain adds nothing to the cell's minimum width, so a long owner is cut to the cell's
-         width and does not widen the table. */
+         width and does not widen the table. Only the owner is cut, so a star count stays whole. */
       .owner {
+        display: flex;
+        gap: var(--space-2);
         contain: inline-size;
-        overflow: hidden;
         font-size: var(--text-xs);
         color: var(--faint);
-        text-overflow: ellipsis;
         white-space: nowrap;
+      }
+      .owner-name {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .row-stars {
+        flex: none;
+        color: var(--muted);
+      }
+      .row-stars .icon {
+        width: 0.75rem;
+        height: 0.75rem;
+        fill: currentColor;
+        stroke: none;
+        vertical-align: -0.125em;
       }
       .desc {
         display: -webkit-box;
@@ -978,6 +1002,7 @@ const themeButton = `(${wireThemeButton})();`;
         <nav aria-label="Site">
           <a href={`${BASE}about/`}>About</a>
           <a href={ADD_PLUGIN_HREF} data-add-plugin>Add a plugin</a>
+          <a href={FEEDBACK_HREF} data-feedback>Feedback</a>
           <a href={`${BASE}v1/plugins.json`}>Data</a>
           <button type="button" data-theme-toggle hidden>
             <span data-theme-icon="moon"><Icon name="moon" /></span>
