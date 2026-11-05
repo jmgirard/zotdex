@@ -1,6 +1,6 @@
 # M097: Get the site ready for first visitors
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
@@ -33,7 +33,7 @@ Help a first-time visitor find established plugins and find their way around the
 
 - AC1 → T1, T2
 - AC2 → T1, T2
-- AC3 → T3, T7
+- AC3 → T3, T7, T8
 - AC4 → T4
 - AC5 → T5, T7
 - AC6 → T6
@@ -48,6 +48,7 @@ Help a first-time visitor find established plugins and find their way around the
 - [x] T5: Turn on Discussions with `gh repo edit jmgirard/zotero-plugin-index --enable-discussions`, as the user chose, and read the setting back. Add the "Feedback" link to the top bar and update the exact-match link test near `test/site.test.ts:1807`.
 - [x] T6: Add an Astro endpoint, `site/src/pages/sitemap.xml.ts`, from `ORIGIN`, `BASE`, and `pluginHref`, with no new package (D-004). Add the head link in `Base.astro`. Add its tests.
 - [x] T7: Update README (the site section and the top bar), `cairn/DESIGN.md` (lines near 58 and 106 and the GitHub-only line near 211), and CHANGELOG. Build the site from the deployed data and do the 375 px checks of AC3 and AC5 in the browser pane. Run `pnpm test` and `pnpm check`.
+- [x] T8: Fix review return 1: the home star icon takes the count's color, Stars restores the built order, and the fix-now findings of the Review section land.
 
 ## Work log
 
@@ -78,6 +79,8 @@ Help a first-time visitor find established plugins and find their way around the
 - 2026-11-05: claim audit: 120 claims read, 8 corrected — src/site/home-filter.ts, cairn/DESIGN.md, CHANGELOG.md, test/site.test.ts; also one stale `filterHref` comment; the live 404 read waits for a deploy.
 - 2026-11-05: claim audit re-read: all 8 corrections and the `filterHref` comment hold; `pnpm test` and `pnpm check` pass; status set to review.
 - 2026-11-05: review return 1: AC3 failed: the star icon on home rows takes `--star` through `[data-repo-stars] .icon`, not `--muted`, as the browser pane read rgb(227,179,65); fix the icon and the fix-now findings listed in the Review section.
+- 2026-11-05: T8 added and done for review return 1: `.row-stars .icon` fills with the count's color, and home rows no longer carry `data-repo-stars`; going back to Stars restores the built rows instead of sorting again; two blind tests replaced or removed; comments, titles, DESIGN, and the ROADMAP row corrected.
+- 2026-11-05: return 1 fixed: `pnpm test` and `pnpm check` pass; the browser pane read the icon fill equal to the count's color and the built order restored; status set to review.
 
 ## Decisions
 

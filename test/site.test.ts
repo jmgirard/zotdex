@@ -98,11 +98,13 @@ describe("pnpm site", () => {
     expect(result.status).toBe(0);
   });
 
-  test("writes the home page, the About page, and one page for each record under its raw id", () => {
+  test("writes the home page, the About page, and one page for each record under its raw id, beside the 404 page and the sitemap", () => {
     expect(existsSync(join(out, "index.html"))).toBe(true);
     expect(readdirSync(join(out, "about"))).toEqual(["index.html"]);
     expect(readdirSync(join(out, "plugins")).sort()).toEqual([...ids].sort());
     for (const id of ids) expect(readdirSync(join(out, "plugins", id))).toEqual(["index.html"]);
+    expect(existsSync(join(out, "404.html"))).toBe(true);
+    expect(existsSync(join(out, "sitemap.xml"))).toBe(true);
   });
 
   test("writes a 404 page at the top that says what happened, links home and to About, and asks not to be indexed", () => {
@@ -1077,7 +1079,7 @@ describe("the home page", () => {
           ? `<div class="owner" data-owner><span class="owner-name">By ${escaped(owner)}</span> ` +
             (record.upstream?.stars === undefined
               ? ""
-              : `<span class="row-stars" data-repo-stars><span aria-hidden="true" title="${starsText(record.upstream.stars)}">· ${STAR_SVG} ${record.upstream.stars.toLocaleString("en")}</span> <span class="visually-hidden">${starsText(record.upstream.stars)}</span></span>`) +
+              : `<span class="row-stars"><span aria-hidden="true" title="${starsText(record.upstream.stars)}">· ${STAR_SVG} ${record.upstream.stars.toLocaleString("en")}</span> <span class="visually-hidden">${starsText(record.upstream.stars)}</span></span>`) +
             "</div>"
           : "") +
         (description ? `<div class="desc" data-description>${escaped(description)}</div>` : ""),
@@ -1099,9 +1101,9 @@ describe("the home page", () => {
   });
 
   test("shows a record's star count after the owner, with the plugin page's words, and 0 as a count", () => {
-    const stars = (id: string) => /<span class="owner-name">[^<]*<\/span> (<span class="row-stars" data-repo-stars>.*?)<\/div>/s.exec(row(id).cells[0]!.html)?.[1];
+    const stars = (id: string) => /<span class="owner-name">[^<]*<\/span> (<span class="row-stars">.*?)<\/div>/s.exec(row(id).cells[0]!.html)?.[1];
     const shown = (count: string, words: string) =>
-      new RegExp(`^<span class="row-stars" data-repo-stars><span aria-hidden="true" title="${words}">· <svg [^]*?</svg> ${count}</span> <span class="visually-hidden">${words}</span></span>$`);
+      new RegExp(`^<span class="row-stars"><span aria-hidden="true" title="${words}">· <svg [^]*?</svg> ${count}</span> <span class="visually-hidden">${words}</span></span>$`);
     expect(stars("same-name-plugin@example.org")).toMatch(shown("98,765", starsText(98765)));
     expect(stars("{c2a6e4c8-1b7d-4f3a-9e2b-5d8f0a1c3e7b}")).toMatch(shown("0", starsText(0)));
     // A record with no count, and a failed read, show none.
@@ -1109,16 +1111,14 @@ describe("the home page", () => {
     expect(stars("broken-plugin@example.org")).toBeUndefined();
   });
 
-  test("keeps a star count out of what the search reads", () => {
-    const page = homeScript("https://jmgirard.github.io/zotero-plugin-index/?q=98,765");
-    expect(page.visible()).toEqual([]);
-  });
-
   test("cuts only the owner's name, so a count stays whole", () => {
     const rules = cssRules(readFileSync(resolve(ROOT, "site/src/layouts/Base.astro"), "utf8"));
     const declared = (selector: string) => Object.fromEntries(rules.find((rule) => rule.selector === selector)?.declarations ?? []);
     expect(declared(".owner-name")).toMatchObject({ "min-width": "0", overflow: "hidden", "text-overflow": "ellipsis" });
     expect(declared(".row-stars")).toMatchObject({ flex: "none", color: "var(--muted)" });
+    // The icon takes the count's color, not the plugin page's star color.
+    expect(declared(".row-stars .icon")).toMatchObject({ fill: "currentColor", stroke: "none" });
+    expect(home()).not.toMatch(/class="row-stars"[^>]*data-repo-stars/);
   });
 
   test("says in the legend that the count comes from GitHub, that the default order comes from it, and that neither is a review", () => {
@@ -1408,7 +1408,7 @@ describe("the home page", () => {
     ]);
   });
 
-  test("holds every row without hidden, and the search box, the menus, the buttons, the count, and the pager inside hidden elements", () => {
+  test("holds every row without hidden, and the search box, the menus, the buttons, the sort menu, the count, and the pager inside hidden elements", () => {
     const html = home();
     expect(rows().length).toBe(ids.length);
     for (const { id, attributes } of rows()) expect(attributes, id).not.toMatch(/\shidden[\s=]|\shidden$/);
@@ -1458,7 +1458,7 @@ function generatedRow(n: number) {
   };
 }
 
-function homeScript(href: string, generated = 0, missing?: "search" | "category" | "menu" | "buttons" | "sort") {
+function homeScript(href: string, generated = 0, missing?: "search" | "category" | "menu" | "buttons" | "sort" | "tbody") {
   const html = home();
   const script = /<script type="module">(.*?)<\/script>/s.exec(html)![1]!;
   const shown = new Set<string>();
@@ -1530,7 +1530,7 @@ function homeScript(href: string, generated = 0, missing?: "search" | "category"
     "select[data-category-filter]": missing === "category" ? null : categorySelect,
     "select[data-language-filter]": missing === "menu" ? null : select,
     "select[data-sort]": missing === "sort" ? null : sortSelect,
-    tbody,
+    tbody: missing === "tbody" ? null : tbody,
     "[data-filter-status]": status,
     "[data-pager]": pager,
     "[data-page-status]": pageStatus,
@@ -1673,11 +1673,25 @@ describe("the home page script", () => {
     });
 
     test("the filters pass rows in the chosen order", () => {
-      expect(homeScript(`${PAGE}?q=TOOLS&sort=name`).visible()).toEqual(["a-cafe@example.org", "b-cafe@example.org"]);
+      // Stars puts same-name-plugin first, and Name ties them and orders by id.
+      expect(homeScript(`${PAGE}?q=first+plugin`).visible()).toEqual(["same-name-plugin@example.org", "first-plugin@example.org"]);
+      expect(homeScript(`${PAGE}?q=first+plugin&sort=name`).visible()).toEqual(["first-plugin@example.org", "same-name-plugin@example.org"]);
     });
 
-    test("wires no control when the menu is missing", () => {
-      expect([...homeScript(PAGE, 0, "sort").shown]).toEqual([]);
+    test("going back to Stars restores the built order, not a new sort", () => {
+      // The generated rows sit last in the page but would sort among the rows with no count.
+      const page = homeScript(PAGE, 3);
+      const before = page.all();
+      page.sortSelect.value = "name";
+      page.fire("sort:change");
+      expect(page.all()).not.toEqual(before);
+      page.sortSelect.value = "";
+      page.fire("sort:change");
+      expect(page.all()).toEqual(before);
+    });
+
+    test.each(["sort", "tbody"] as const)("wires no control when the %s is missing", (missing) => {
+      expect([...homeScript(PAGE, 0, missing).shown]).toEqual([]);
     });
   });
 
@@ -2488,7 +2502,7 @@ describe("the site styles", () => {
     expect(html.match(/<t[dh][^>]* class="date"/g)).toHaveLength(ids.length + 2);
   });
 
-  test("draws the language and category menus' arrow in currentColor, inset from the right by the left padding", () => {
+  test("draws the language, category, and sort menus' arrow in currentColor, inset from the right by the left padding", () => {
     const menu = cssRules(layout).filter(({ selector }) => selector === "[data-language-filter], [data-category-filter], [data-sort]");
     const drawn = new Map(menu.find(({ declarations }) => declarations.some(([property]) => property === "appearance"))!.declarations);
     expect(drawn.get("appearance")).toBe("none");
@@ -2678,7 +2692,7 @@ describe("the site colors", () => {
   test.each([
     ["light", light],
     ["dark", dark],
-  ])("gives the edges of the search box, the menus, the version buttons, the pager buttons, and the plugin page links a contrast of at least 3:1 with the surface and the page in the %s scheme", (_, scheme) => {
+  ])("gives the edges of the search box, the menus, including the sort menu, the version buttons, the pager buttons, and the plugin page links a contrast of at least 3:1 with the surface and the page in the %s scheme", (_, scheme) => {
     const edges = cssRules(layout).flatMap(({ selector, declarations }) =>
       declarations
         .filter(([property, value]) => (property === "border" || property === "border-left") && value.includes("var("))

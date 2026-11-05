@@ -185,7 +185,7 @@ const prePaint = `if ("noModule" in HTMLScriptElement.prototype) {
                       <div class="owner" data-owner>
                         <span class="owner-name">By {owner}</span>{" "}
                         {upstream?.stars !== undefined && (
-                          <span class="row-stars" data-repo-stars>
+                          <span class="row-stars">
                             <span aria-hidden="true" title={starsText(upstream.stars)}>· <Icon name="star" /> {upstream.stars.toLocaleString("en")}</span>{" "}
                             <span class="visually-hidden">{starsText(upstream.stars)}</span>
                           </span>
@@ -277,7 +277,7 @@ const prePaint = `if ("noModule" in HTMLScriptElement.prototype) {
     <li><Icon name="card" /> {PAID_SERVICE_TEXT}</li>
     <li><span class="start" data-start="started" aria-hidden="true">●</span> Started in the start test</li>
     <li><span class="start" data-start="start-error" aria-hidden="true">✕</span> Failed to install, start, or answer in the start test</li>
-    <li data-legend-stars><span class="row-stars" data-repo-stars aria-hidden="true"><Icon name="star" /></span> The count of stars that GitHub gives. The default order comes from this count, and neither is a review by the index.</li>
+    <li data-legend-stars><span class="row-stars" aria-hidden="true"><Icon name="star" /></span> The count of stars that GitHub gives. The default order comes from this count, and neither is a review by the index.</li>
     <li data-legend-note>
       A declared range comes from the plugin's manifest and the index's overrides, not from a test. A start test does not
       show that a plugin works.
@@ -332,12 +332,14 @@ const prePaint = `if ("noModule" in HTMLScriptElement.prototype) {
       description: row.querySelector("[data-description]")?.textContent ?? "",
     }));
     // The built rows are in the order of the sort menu's first option, so the first pass moves
-    // nothing unless the address asks for another order.
+    // nothing unless the address asks for another order. Going back to that option restores the
+    // built rows' order, since the build's and a browser's localeCompare can differ on ties.
+    const built = [...rows];
     let sorted = "";
     const sort = () => {
       if (sortSelect.value === sorted) return;
       sorted = sortSelect.value;
-      rows.sort(sortOrder(sorted));
+      rows.splice(0, rows.length, ...(sorted === "" ? built : built.toSorted(sortOrder(sorted))));
       tbody.append(...rows.map((entry) => entry.row));
     };
     const language = () => ({ value: select.value, options: languages });

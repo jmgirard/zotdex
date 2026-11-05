@@ -64,7 +64,8 @@ order (M053), and its `latest` value puts a later `latestReleaseDate` first,
 with a missing or unreadable date last and ties in name order. The script
 reorders the rows on a change and shows page 1, keeps `name` or `latest` in
 `?sort=`, and removes any other value. Without JavaScript the menu stays
-hidden and the rows keep the built order. Its script shows
+hidden and the rows keep the built order. Going back to Stars restores the
+built order. The home page's script shows
 the rows the filters pass 50 at a time, with a pager below the table, and
 keeps the page after 1 in `?page=`; Previous and Next add a history entry
 with `pushState`, the filters still replace the address, and a filter event
@@ -1038,7 +1039,8 @@ reused._
   bar's button that wires and shows it. The templates take the Pages path
   from `site/src/base.ts`, because a `BASE_URL` environment variable replaces
   Astro's `import.meta.env.BASE_URL`. `Base.astro` writes each page's preview
-  tags and canonical link from its `description` and `path` props and from
+  tags, and for a page with a `path` its canonical link and `og:url`, from its
+  `description` and `path` props and from
   `ORIGIN` in `site/src/base.ts`, and Astro copies `site/public/favicon.svg`
   to the output (M094). `build.yml`'s site job runs `pnpm site`
   after the build job (M047), so a failed site build also deploys nothing.
