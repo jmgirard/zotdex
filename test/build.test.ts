@@ -632,7 +632,7 @@ describe("pnpm build with --previous", () => {
   });
 
   test("exits 1 when every record is kept or has a failure, though most are not build-level", async () => {
-    const recorded = failing();
+    const recorded: Responses = failing();
     delete recorded["https://api.github.com/repos/windingwind/zotero-better-notes"];
     const { result } = await run(TREE, recorded);
     expect(result.status).toBe(1);
