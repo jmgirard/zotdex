@@ -1,21 +1,19 @@
 # Roadmap
 
 _The only authority on milestone status. Grouped by status, not ID._
-_Last hygiene check: 2026-11-05 (M094 archived; one row new; 25 lessons, 4 marked used; validate green)_
+_Last hygiene check: 2026-11-05 (M095 archived; its license row graduated; 2 known issues new; 25 lessons, 2 marked used; validate green)_
 
 ## Milestones
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M095 | Publish a license | review | — | high | milestones/M095-publish-license.md |
+| M095 | Publish a license | done | — | high | milestones/archive/M095-publish-license.md |
 | M094 | Add link previews and a favicon | done | — | high | milestones/archive/M094-link-previews-favicon.md |
 | M093 | Let people ask to remove a plugin | done | — | high | milestones/archive/M093-remove-plugin-path.md |
-| M092 | Tighten the ai and attachments rules | done | — | normal | milestones/archive/M092-ai-attachments-rules.md |
 <!-- rows grouped by status, not by ID; keep the 3 most recent done/dropped rows; older ones: milestones/archive/ + git -->
 
 ## Candidates
 - Keep a plugin's last good record: a plugin whose read fails or is cut shows "Not read" with no facts until a later build reads it, since the build restores no earlier data (D-010, D-015), and run 41653526255 lost one this way to a failed gitee.com request; reuse the deployed record as `pnpm carry-start-results` reuses start results (D-035), which needs a mark on the site and a check that the XPI's facts are not stale (M087 plan) — added 2026-11-03 — M087, D-015, D-035
-- Read GitHub's license answer after merge: it answered 404 on the M095 branch; `gh api repos/jmgirard/zotero-plugin-index/license --jq .license.spdx_id` should print `MIT` on main, or GitHub counts a second license — added 2026-11-04 — M095, D-063
 - [low] Check categories on new plugins: M091 read the plugins in the data of 2026-11-03 (`generatedAt` 2026-11-03T22:05:15.306Z), and the bot adds up to 5 a run, so later plugins carry no marks; read them as `cairn/references/category-ledger-2026-11-03.md` does, with a held-out group (D-059); that data lacks M090's 6 overrides; "Note -" and "A Zotero translator" still match, since a plugin can be named Zotero Translator (M091 review); this read also gives the first rate of M092's rules on plugins that no read has seen (D-061); narrowed 2026-11-03 by M086 and M091; low, as About says a category can be wrong — added 2026-10-31 — M066, M086, M091, D-037, D-057, D-059, D-060
 - [low] Let a run by hand start every plugin: after a change to the start-test code, the reporter, or a Zotero pin, carried results stay up to 7 days, and nothing lets a maintainer skip the carry for one run (M059 review) — added 2026-10-30 — M059, D-035
 - [low] Read new plugins for paid services: M082 to M084 read the entries through `1b2cebf`, and the bot adds up to 5 a run, so later plugins carry no mark until someone reads them; repeat the word list and record in `cairn/references/paid-service-sweep.md`; a listing command waits for marks falling far behind the new plugins (M082 plan); narrowed 2026-11-03 by M083 and M084; also read the GitHub text of `zotero@wilddata.cn`, which names a free allowance for new users, and the maker's site of `zotbox@scigreat.com`, neither read for a mark (M089 review) — added 2026-11-02 — M082, M083, M084, M089, D-054

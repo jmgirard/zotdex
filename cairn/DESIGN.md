@@ -1157,3 +1157,9 @@ reused._
   blank to `trim`, so Details shows a row that looks empty and the Overrides
   cell shows a bare `Manifest:`. None of the 1,282 upstream texts read on
   2026-11-03 has no letter or digit. Accepted at the M088 gate
+- Built pages carry Lucide and Feather icon paths with a one-line credit on the
+  About page, and the full notices are only in the source of
+  `site/src/components/Icon.astro`. Accepted at the M095 gate
+- In the data, an override drawn from an author's text has no field that marks
+  the maintainer's part, so a data user cannot apply the CC0 boundary by script;
+  the override's `reason` says where the text came from. Accepted at the M095 gate
