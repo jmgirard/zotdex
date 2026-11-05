@@ -124,16 +124,16 @@ The site's logo no longer looks like an error, and red on the site means only a 
 - AC7 evidence: `pnpm test` exit 0, 2433 passed, 6 skipped; `pnpm check` exit 0, 736 entries, 0 problems.
 - Consistency gate: `cairn_validate.py` exit 0; no principle changed, so no impact run; the generic profile's slot names no toolchain checks.
 - spawned: diff-bug, blame-history, prior-review, ripple
-- prior-review #1: About's "line icons" no longer covers the filled logo, and M095's review chose those words to leave out the favicon — fix now.
-- diff-bug #2: same About sentence — fix now, as prior-review #1.
-- ripple #3: same About sentence — fix now, as prior-review #1.
-- ripple #1: DESIGN's list of what `Icon.astro` draws omits the puzzle piece — fix now.
-- ripple #2: `Icon.astro`'s opening comment names only the star as filled — fix now.
-- blame-history #2: DESIGN omits that `--accent` now matches `--link` — fix now.
-- diff-bug #10: DESIGN's "draw one path" overstates it, as the favicon holds a copy that tests keep equal — fix now.
-- diff-bug #9: short README line after the edit — fix now.
-- blame-history #4: same README line — fix now, as diff-bug #9.
-- prior-review #3: same README line — fix now, as diff-bug #9.
+- prior-review #1: About's "line icons" no longer covers the filled logo, and M095's review chose those words to leave out the favicon — fix now, fixed 96c416ca.
+- diff-bug #2: same About sentence — fix now, as prior-review #1, fixed 96c416ca.
+- ripple #3: same About sentence — fix now, as prior-review #1, fixed 96c416ca.
+- ripple #1: DESIGN's list of what `Icon.astro` draws omits the puzzle piece — fix now, fixed 96c416ca.
+- ripple #2: `Icon.astro`'s opening comment names only the star as filled — fix now, fixed 96c416ca.
+- blame-history #2: DESIGN omits that `--accent` now matches `--link` — fix now, fixed 96c416ca.
+- diff-bug #10: DESIGN's "draw one path" overstates it, as the favicon holds a copy that tests keep equal — fix now, fixed 96c416ca.
+- diff-bug #9: short README line after the edit — fix now, fixed 96c416ca.
+- blame-history #4: same README line — fix now, as diff-bug #9, fixed 96c416ca.
+- prior-review #3: same README line — fix now, as diff-bug #9, fixed 96c416ca.
 - diff-bug #1: the new `htmlFiles` loop repeats the exact top-bar test — reject, planned change: AC3 names that loop.
 - diff-bug #3: AC5 evidence does not show the favicon at 16 px — reject, false: the top bar zooms show that same path at 16 px in both schemes.
 - diff-bug #4: a focused pressed button's bar and focus ring share one blue — reject, planned change: the user asked for the blue bar, and a 2 px offset keeps them apart.
