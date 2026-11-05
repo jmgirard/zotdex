@@ -1654,6 +1654,16 @@ describe("checkOutput", () => {
     expect(checkOutput(file({ ...base, upstream: facts }))).toEqual([]);
   });
 
+  test("passes a record with upstream facts and kept, and reports kept beside a failure or with no upstream", () => {
+    const kept = { readAt: "2026-10-24T06:00:00.000Z", failure: { name: "not-read", message: "the build reads no plugin after 18 minutes, its time limit" } };
+    expect(checkOutput(file({ ...base, upstream: facts, kept }))).toEqual([]);
+    const both = checkOutput(file({ ...base, upstream: facts, kept, failure: kept.failure }));
+    expect(both.some((problem) => problem.startsWith("/plugins/0 "))).toBe(true);
+    expect(checkOutput(file({ ...base, failure: kept.failure, kept }))).toContain("/plugins/0 must have property upstream when property kept is present");
+    expect(checkOutput(file({ ...base, upstream: facts, kept: { ...kept, readAt: "yesterday" } })).some((p) => p.startsWith("/plugins/0/kept/readAt "))).toBe(true);
+    expect(pluginsSchema.properties.schemaVersion.const).toBe(1);
+  });
+
   test("reports a record that holds both upstream facts and a failure", () => {
     const problems = checkOutput(file({ ...base, upstream: facts, failure: { name: "fork", message: "" } }));
     expect(problems.some((problem) => problem.startsWith("/plugins/0 "))).toBe(true);
