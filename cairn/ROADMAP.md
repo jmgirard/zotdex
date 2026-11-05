@@ -1,18 +1,17 @@
 # Roadmap
 
 _The only authority on milestone status. Grouped by status, not ID._
-_Last hygiene check: 2026-11-04 (M092 archived; one row graduated, one new; 25 lessons, 6 marked used, 1 captured, 1 evicted; validate green)_
+_Last hygiene check: 2026-11-04 (M093 archived; one row new; 25 lessons, 6 marked used; validate green)_
 
 ## Milestones
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M093 | Let people ask to remove a plugin | review | — | high | milestones/M093-remove-plugin-path.md |
 | M094 | Add link previews and a favicon | planned | — | high | milestones/M094-link-previews-favicon.md |
 | M095 | Publish a license | planned | — | high | milestones/M095-publish-license.md |
+| M093 | Let people ask to remove a plugin | done | — | high | milestones/archive/M093-remove-plugin-path.md |
 | M092 | Tighten the ai and attachments rules | done | — | normal | milestones/archive/M092-ai-attachments-rules.md |
 | M091 | Check categories on new plugins | done | — | normal | milestones/archive/M091-check-categories-new-plugins.md |
-| M090 | Fill the six later description gaps | done | M089 | normal | milestones/archive/M090-six-later-description-gaps.md |
 <!-- rows grouped by status, not by ID; keep the 3 most recent done/dropped rows; older ones: milestones/archive/ + git -->
 
 ## Candidates
