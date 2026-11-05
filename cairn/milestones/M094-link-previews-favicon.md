@@ -1,13 +1,13 @@
 # M094: Add link previews and a favicon
 
-- **Status:** planned
+- **Status:** in-progress
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — tags and an icon on every public page, and the repo's public topics
-- **Branch/PR:** —
+- **Branch/PR:** m094-link-previews-favicon
 
 ## Goal
 
@@ -37,8 +37,8 @@ A shared link to any index page shows its own title and description, the page ha
 
 ## Tasks
 
-- [ ] T1: Give `Base.astro` (`site/src/layouts/Base.astro:7`) `description` and path props, write the tags, and pass them from the three pages, with a helper for the cut. Test on built pages in `test/site.test.ts`.
-- [ ] T2: Add `site/public/favicon.svg`, which Astro copies to the output, and the link, and test them.
+- [x] T1: Give `Base.astro` (`site/src/layouts/Base.astro:7`) `description` and path props, write the tags, and pass them from the three pages, with a helper for the cut. Test on built pages in `test/site.test.ts`.
+- [x] T2: Add `site/public/favicon.svg`, which Astro copies to the output, and the link, and test them.
 - [ ] T3: Add the three topics with `gh repo edit --add-topic` after reading the current list.
 - [ ] T4: Update README and CHANGELOG, and run `pnpm test` and `pnpm check`.
 
@@ -53,6 +53,10 @@ A shared link to any index page shows its own title and description, the page ha
 - 2026-11-04: question set: should a shared link show a picture — no, text only for now.
 - 2026-11-04: plan chose a static SVG over an inline data address because it is one reviewable file and pages stay smaller; falsified by a browser that the site supports showing no icon.
 - 2026-11-04: full criteria audit findings here: counts did not show a page's own text (equalities added); CJK has no word break (fallback cut added); the hand look bound a recording (file property instead); the goal omitted topics (added). All fixed in the wording above.
+- 2026-11-04: `.claude/` is untracked and unrelated, so it stays unstaged; it gained an `m094-look` server entry for the hand check.
+- 2026-11-04: T1 and T2: one commit, as their tests share one test file. `cutDescription` went in `src/site/description.ts`, `previewDescription` in `site/src/data.ts`, and `ORIGIN` in `site/src/base.ts`.
+- 2026-11-04: T1: a space that opens a long text does not count as the cut point, because a cut there would leave an empty description, which AC1 forbids. twitter:card is `summary`, the text-only card; og:type is `website`.
+- 2026-11-04: T2: the icon uses each scheme's accent through a media query, because the light accent gives under 3:1 on the dark background and the dark accent under 3:1 on the light one; a test asserts at least 3:1 for each pair. Hand check on the fixture site at 2026-11-04: opened in the light and dark schemes in the browser pane, fill rgb(181, 35, 47) and rgb(240, 113, 120); the home page link answered 200.
 
 ## Decisions
 

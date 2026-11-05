@@ -20,7 +20,7 @@ import {
 } from "../site/src/data.ts";
 import type { PluginsFile } from "../src/build/build.ts";
 import { CATEGORIES, categories } from "../src/site/categories.ts";
-import { shownDescription } from "../src/site/description.ts";
+import { cutDescription, shownDescription } from "../src/site/description.ts";
 import { PAGE_SIZE, prePaintStyle } from "../src/site/home-filter.ts";
 import { appliedLanguages, languageName } from "../src/site/languages.ts";
 import { START_LIMIT_MS } from "../src/start-test/start-test.ts";
@@ -1887,6 +1887,130 @@ describe("the built site", () => {
   });
 });
 
+// Each meta and link tag of a page, with its attribute values as a browser reads them.
+function tagsOf(html: string): Record<string, string>[] {
+  return [...html.matchAll(/<(?:meta|link)\b((?:[^>"]|"[^"]*")*)>/g)].map(
+    ([, attributes]) => Object.fromEntries([...attributes!.matchAll(/([\w:-]+)="([^"]*)"/g)].map(([, name, value]) => [name!, decoded(value!)])),
+  );
+}
+
+// One pass, so an escaped "&quot;" in the text stays as it is.
+function decoded(text: string): string {
+  const named: Record<string, string> = { lt: "<", gt: ">", quot: '"', amp: "&" };
+  return text.replace(/&(?:#(\d+)|(lt|gt|quot|amp));/g, (_, code, name) => (code ? String.fromCodePoint(Number(code)) : named[name]!));
+}
+
+// The one tag whose attribute has this value, as content or href.
+function tagValue(html: string, attribute: string, value: string): string {
+  const tags = tagsOf(html).filter((tag) => tag[attribute] === value);
+  expect(tags, value).toHaveLength(1);
+  return tags[0]!.content ?? tags[0]!.href!;
+}
+
+describe("the link preview tags", () => {
+  const SITE = "https://jmgirard.github.io/zotero-plugin-index/";
+  const read = (file: string) => readFileSync(join(out, file), "utf8");
+  const previewOf = (file: string) => {
+    const html = read(file);
+    return {
+      title: decoded(/<title>(.*?)<\/title>/s.exec(html)![1]!),
+      description: tagValue(html, "name", "description"),
+      ogTitle: tagValue(html, "property", "og:title"),
+      ogDescription: tagValue(html, "property", "og:description"),
+      ogType: tagValue(html, "property", "og:type"),
+      ogSiteName: tagValue(html, "property", "og:site_name"),
+      ogUrl: tagValue(html, "property", "og:url"),
+      twitterCard: tagValue(html, "name", "twitter:card"),
+      canonical: tagValue(html, "rel", "canonical"),
+    };
+  };
+
+  test("puts each tag once on every page, with the page's own address and text", () => {
+    const files = htmlFiles(out);
+    expect(files).toHaveLength(ids.length + 2);
+    for (const file of files) {
+      const preview = previewOf(file);
+      const address = SITE + file.replace(/index\.html$/, "").split("/").map(encodeURIComponent).join("/");
+      expect(preview.canonical, file).toBe(address);
+      expect(preview.ogUrl, file).toBe(address);
+      expect(preview.ogTitle, file).toBe(preview.title);
+      expect(preview.ogDescription, file).toBe(preview.description);
+      expect(preview.title, file).not.toBe("");
+      expect(preview.description.trim(), file).not.toBe("");
+      expect(preview.ogType, file).toBe("website");
+      expect(preview.ogSiteName, file).toBe("Zotero plugin index");
+      expect(preview.twitterCard, file).toBe("summary");
+    }
+  });
+
+  test("gives an id with special characters its encoded address", () => {
+    expect(previewOf("plugins/first-plugin@example.org/index.html").canonical).toBe(`${SITE}plugins/first-plugin%40example.org/`);
+  });
+
+  test("differs across the home, About, and plugin pages", () => {
+    const pages = ["index.html", "about/index.html", "plugins/first-plugin@example.org/index.html"].map(previewOf);
+    expect(new Set(pages.map(({ title }) => title)).size).toBe(3);
+    expect(new Set(pages.map(({ description }) => description)).size).toBe(3);
+  });
+});
+
+describe("the plugin page's preview description", () => {
+  const base = records.find((record) => record.id === "first-plugin@example.org")!;
+  const { description: _manifest, repoDescription: _github, ...upstream } = base.upstream!;
+  const withText = (id: string, description?: string): PluginRecord => ({
+    ...base,
+    id,
+    upstream: { ...upstream, id, name: "Tidy Notes", ...(description === undefined ? {} : { description }) },
+    reports: [],
+    overrides: [],
+  });
+  // Each 𝐀 and 𠮷 is one code point and two UTF-16 units, so a cut by units gives another text.
+  const spaced = `${"𝐀".repeat(150)} ${"b".repeat(30)}`;
+  const quoted = 'Reads "quoted" <tags> & more &quot; in notes.';
+  const plugins = [
+    withText("spaced@example.org", `${spaced} ${"c".repeat(100)}`),
+    withText("unbroken@example.org", "𠮷".repeat(250)),
+    withText("no-text@example.org"),
+    withText("quoted@example.org", quoted),
+    {
+      id: "failed-read@example.org",
+      repoUrl: "https://github.com/example/failed-read",
+      failure: { name: "no-xpi-release", message: "The repo has no release with an .xpi." },
+      overrides: [],
+    },
+  ];
+  let dir = "";
+  beforeAll(() => {
+    dir = outWith(JSON.stringify({ schemaVersion: 1, generatedAt: "2026-11-03T06:17:00.000Z", plugins }));
+    const run = pnpmSite(["--out", dir]);
+    if (run.status !== 0) throw new Error(run.stderr);
+  }, 120_000);
+
+  test.each<[string, string]>([
+    ["spaced@example.org", spaced],
+    ["unbroken@example.org", "𠮷".repeat(200)],
+    ["no-text@example.org", "Tidy Notes is a plugin listed in the Zotero plugin index."],
+    ["failed-read@example.org", "failed-read@example.org is a plugin listed in the Zotero plugin index."],
+    ["quoted@example.org", quoted],
+  ])("on %s", (id, expected) => {
+    const html = readFileSync(join(dir, "plugins", id, "index.html"), "utf8");
+    expect(tagValue(html, "name", "description")).toBe(expected);
+    expect(tagValue(html, "property", "og:description")).toBe(expected);
+  });
+});
+
+describe("cutDescription", () => {
+  test.each<[string, string, string]>([
+    ["keeps a text of 200 code points", "a".repeat(200), "a".repeat(200)],
+    ["keeps a text of 200 code points with spaces", `${"a".repeat(99)} ${"b".repeat(100)}`, `${"a".repeat(99)} ${"b".repeat(100)}`],
+    ["cuts at the last space of the first 200", `${"a".repeat(99)} ${"b".repeat(101)}`, "a".repeat(99)],
+    ["cuts at 200 with no space there", `${"a".repeat(205)} b`, "a".repeat(200)],
+    ["cuts at 200 when the only space opens the text", ` ${"a".repeat(205)}`, ` ${"a".repeat(199)}`],
+  ])("%s", (_, text, expected) => {
+    expect(cutDescription(text)).toBe(expected);
+  });
+});
+
 describe("the description facts", () => {
   // The shared fixture has no blank text, so these records get their own build.
   const base = records.find((record) => record.id === "first-plugin@example.org")!;
@@ -2187,6 +2311,35 @@ describe("the site colors", () => {
     ["--star", "--bg", 3],
     ["--star", "--surface", 3],
   ];
+
+  describe("the favicon", () => {
+    const icon = () => readFileSync(join(out, "favicon.svg"), "utf8");
+
+    test("is linked once from every page, under the base path", () => {
+      for (const file of htmlFiles(out)) {
+        const html = readFileSync(join(out, file), "utf8");
+        expect(tagValue(html, "rel", "icon"), file).toBe("/zotero-plugin-index/favicon.svg");
+      }
+    });
+
+    test("draws one square that fills the view box", () => {
+      expect(icon().match(/<(?:rect|path|circle|ellipse|polygon|polyline|line|image|text|use)\b/g)).toEqual(["<rect"]);
+      const size = /viewBox="0 0 (\d+) (\d+)"/.exec(icon())!;
+      expect(size[1]).toBe(size[2]);
+      const rect = /<rect\b[^>]*>/.exec(icon())![0];
+      expect(rect).toContain(`width="${size[1]}"`);
+      expect(rect).toContain(`height="${size[1]}"`);
+    });
+
+    test("uses each scheme's accent, which shows on that scheme's background", () => {
+      const lightFill = /<rect\b[^>]*fill="(#[0-9a-f]{6})"/.exec(icon())![1]!;
+      const darkFill = /@media \(prefers-color-scheme: dark\)\s*\{\s*rect\s*\{\s*fill:\s*(#[0-9a-f]{6})/.exec(icon())![1]!;
+      expect(lightFill).toBe(light.get("--accent"));
+      expect(darkFill).toBe(dark.get("--accent"));
+      expect(contrast(lightFill, light.get("--bg")!)).toBeGreaterThanOrEqual(3);
+      expect(contrast(darkFill, dark.get("--bg")!)).toBeGreaterThanOrEqual(3);
+    });
+  });
 
   test.each([
     ["light", light],
