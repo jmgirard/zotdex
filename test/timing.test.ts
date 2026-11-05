@@ -4,8 +4,8 @@ import { SLOW_READS, timingLines } from "../src/build/timing.ts";
 describe("timingLines", () => {
   test("gives the read phase, each result in code-unit order, and the slowest reads, slowest first and ties in id order", () => {
     const timings = [
-      { id: "b@example.org", ms: 1500, result: "read" },
-      { id: "a@example.org", ms: 1500, result: "read" },
+      { id: "b@example.org", ms: 1520, result: "read" },
+      { id: "a@example.org", ms: 1480, result: "read" },
       { id: "c@example.org", ms: 61_049, result: "xpi-unreadable" },
       { id: "d@example.org", ms: 250, result: "Read" },
     ];

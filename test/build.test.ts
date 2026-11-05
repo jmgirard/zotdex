@@ -192,13 +192,13 @@ function expectSchemaCopies(out: string) {
   }
 }
 
-// The lines from the first failure-name line through the build-level line.
 // The timing lines name times that differ from run to run, so two runs' stdout is compared
 // without them, and by how many there are.
 const TIMING_LINE = /^(plugin reads took \d+\.\d s|\S+: \d+ reads, \d+\.\d s in all|slow read: .*)$/;
 const untimed = (stdout: string) => stdout.split("\n").filter((line) => !TIMING_LINE.test(line));
 const timedCount = (stdout: string) => stdout.split("\n").filter((line) => TIMING_LINE.test(line)).length;
 
+// The lines from the first failure-name line through the build-level line.
 function summary(stdout: string): string[] {
   const lines = stdout.trim().split("\n");
   const start = lines.findIndex((line) => line.startsWith("failed with ") || line.startsWith("build-level failures: "));
@@ -1516,8 +1516,9 @@ describe("buildData", () => {
 
 describe("buildData read timings", () => {
   test("times each read it starts, in id order, with readRecord's result, and the whole read phase", async () => {
+    // An odd UTC day starts the reads in reverse id order, so id order is not the start order.
     const recorded = { ...responses(), [SECOND_UPDATE]: { stall: "headers" as const } };
-    const result = await buildData(TREE, fixtureFetch(recorded).fetch, new Date("2026-11-05T06:00:00Z"), undefined, { readMs: 3000 });
+    const result = await buildData(TREE, fixtureFetch(recorded).fetch, new Date("2026-11-06T06:00:00Z"), undefined, { readMs: 3000 });
     if (!result.ok) throw new Error(result.problems.join("\n"));
     expect(result.timings.map(({ id, result: name }) => [id, name])).toEqual([
       [BETTER_NOTES, "read"],
@@ -1528,6 +1529,8 @@ describe("buildData read timings", () => {
     // A timer can fire up to 1 ms early by performance.now().
     expect(second.ms).toBeGreaterThanOrEqual(2999);
     expect(result.readsMs).toBeGreaterThanOrEqual(second.ms);
+    // The reads run at once, so the phase is shorter than their sum.
+    expect(result.readsMs).toBeLessThan(result.timings.reduce((sum, { ms }) => sum + ms, 0));
   });
 
   test("gives a not-read entry no timing, and no read phase when no read starts", async () => {

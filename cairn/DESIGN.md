@@ -496,7 +496,10 @@ user reports. The exception is a report that is abuse.
   failure, whatever its name, and, after writing the data, when it cannot
   write the `--plan` file (M047). It prints a summary of failure
   names and a `::warning::` line for build-level failures, and a `::warning::`
-  line for a failed read of top-level names (M081). Before any plugin
+  line for a failed read of top-level names (M081). Since M101 it also prints
+  how long the plugin reads took, by result and for the 10 slowest reads
+  (`timingLines` in `src/build/timing.ts`), so a cut build shows where its
+  time went. Before any plugin
   read it reads the `report` label and the closed report issues of
   `GITHUB_REPOSITORY`, or of `INDEX_REPO`, and writes `reports` on each
   record that has `upstream`; a failed label or issue read, or a listed
