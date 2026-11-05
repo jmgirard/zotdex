@@ -286,7 +286,7 @@ const themeButton = `(${wireThemeButton})();`;
         margin: 0;
         color: var(--muted);
       }
-      /* One card holds the two rows of controls, the table, and the pager. */
+      /* One card holds the two groups of controls, the table, and the pager. */
       .table-panel {
         margin-top: var(--space-4);
         overflow: hidden;
@@ -302,7 +302,7 @@ const themeButton = `(${wireThemeButton})();`;
         grid-template-columns: minmax(0, 1fr) auto auto auto;
         align-items: end;
         gap: var(--space-6) var(--space-8);
-        /* The same side padding as the table's cells, so the left edges line up. */
+        /* Above 560 px, the same side padding as the table's cells, so the left edges line up. */
         padding: var(--space-6);
         border-bottom: 1px solid var(--line);
       }
@@ -394,7 +394,7 @@ const themeButton = `(${wireThemeButton})();`;
         color: var(--muted);
         overflow-wrap: normal;
       }
-      /* After .results p, which clears the margins of the row's paragraphs. */
+      /* Two classes outrank .results p, which clears the margins of the row's paragraphs. */
       .results .sort-menu {
         display: flex;
         align-items: center;

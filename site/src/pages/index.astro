@@ -303,7 +303,7 @@ const prePaint = `if ("noModule" in HTMLScriptElement.prototype) {
     sortOrder,
   } from "../../../src/site/home-filter.ts";
 
-  // The two rows that hold the search box, the menus, the buttons, the sort menu, and the count are
+  // The two groups that hold the search box, the menus, the buttons, the sort menu, and the count are
   // hidden in the HTML, as is the pager, so a page without JavaScript shows every row and no control.
   const search = document.querySelector<HTMLInputElement>("input[data-search]");
   const categorySelect = document.querySelector<HTMLSelectElement>("select[data-category-filter]");

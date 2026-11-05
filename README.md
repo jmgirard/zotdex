@@ -178,7 +178,7 @@ option, the page removes the parameter.
 
 The search box, the two filter menus, and the buttons work together: the table
 shows the plugins that pass all four, in the order of the sort menu. A count
-above the table, across from the sort menu, reads "M plugins",
+above the table reads "M plugins",
 where M is the number of plugins in the index. While a filter is on, it
 reads "N of M plugins", where N is the number that the filters pass. The
 count covers the plugins on every page. If the filters pass no plugin, the
