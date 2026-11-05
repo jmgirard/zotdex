@@ -4,14 +4,14 @@
      cairn_validate's <150 over the plan-owned body. -->
 # M099: Replace the red logo with a blue puzzle piece
 
-- **Status:** planned   <!-- owner: transitioning skill · mirror-update; cairn/ROADMAP.md is the authority -->
+- **Status:** in-progress   <!-- owner: transitioning skill · mirror-update; cairn/ROADMAP.md is the authority -->
 - **Priority:** normal   <!-- owner: plan · create/amend-via-gate; high | normal | low -->
 - **Depends on:** —   <!-- owner: plan · create/amend-via-gate; M<xx>, M<yy> or — -->
 - **Driving RR:** —   <!-- owner: plan · create/amend-via-gate; RR<NN> whose Binding criteria bind this milestone's ACs (binding-criteria check), or — -->
 - **Principles touched:** —   <!-- owner: plan · create/amend-via-gate; comma-separated IPn/GPn ids this milestone touches, or — -->
 - **Resolves:** —   <!-- owner: plan · create/amend-via-gate; comma-separated GitHub issues the scope absorbs, each `#N closes` (the PR closes it at merge) or `#N partial` (the remainder gets a candidate row), or — ; skill conduct only — no validate check parses it -->
 - **Surface tier:** user-facing — visitors see the logo on every page and in the browser tab   <!-- owner: plan · create/amend-via-gate; user-facing | internal — <one-clause reason>; skill conduct only — no validate check parses it -->
-- **Branch/PR:** —   <!-- owner: implement (branch) / review (PR URL) · create; a companion checkout the milestone also works in is one further entry per checkout, `companion: <abs-path> <branch>` (implement), its PR URL appended by review — /milestone-review merges companions first, in listed order -->
+- **Branch/PR:** m099-puzzle-piece-logo   <!-- owner: implement (branch) / review (PR URL) · create; a companion checkout the milestone also works in is one further entry per checkout, `companion: <abs-path> <branch>` (implement), its PR URL appended by review — /milestone-review merges companions first, in listed order -->
 
 ## Goal
 <!-- owner: plan · create; a wrong goal returns to plan, never edited in place -->
@@ -65,9 +65,9 @@ The site's logo no longer looks like an error, and red on the site means only a 
      cites; an insertion, removal, or reorder renumbers the labels and the
      Coverage lines together. -->
 
-- [ ] T1: Change `test/site.test.ts` first: the favicon tests (near line 2591), the top bar's exact HTML (near 2004), the `--accent` on `--surface` pair (near 2578), and a forced-colors test that matches the layout source (lesson M063).
-- [ ] T2: Set `--accent` in the three blocks, write `site/public/favicon.svg`, add `puzzle` to `Icon.astro`, put it in the `.brand` link in `Base.astro`, remove `.brand::before`, and add the forced-colors rule.
-- [ ] T3: Update `README.md` (lines 335 and 1923), `CHANGELOG.md` (lines 11 and 41), and any `cairn/DESIGN.md` line that describes the icon. Make sure that the README exception at `test/site.test.ts:881` still holds.
+- [x] T1: Change `test/site.test.ts` first: the favicon tests (near line 2591), the top bar's exact HTML (near 2004), the `--accent` on `--surface` pair (near 2578), and a forced-colors test that matches the layout source (lesson M063).
+- [x] T2: Set `--accent` in the three blocks, write `site/public/favicon.svg`, add `puzzle` to `Icon.astro`, put it in the `.brand` link in `Base.astro`, remove `.brand::before`, and add the forced-colors rule.
+- [x] T3: Update `README.md` (lines 335 and 1923), `CHANGELOG.md` (lines 11 and 41), and any `cairn/DESIGN.md` line that describes the icon. Make sure that the README exception at `test/site.test.ts:881` still holds.
 - [ ] T4: Build the site and view it as AC5 says, on localhost (lessons M015, M035).
 - [ ] T5: Run the checks of AC7, and send the output to a file (lesson M082).
 
@@ -95,6 +95,8 @@ The site's logo no longer looks like an error, and red on the site means only a 
 - 2026-11-05: question set: start a build after the merge so the logo goes live at once — yes, `gh workflow run build.yml --ref main`.
 - 2026-11-05: plan gate chose an inline SVG in the `.brand` link over an `<img>` of `favicon.svg` because the favicon's media query follows the system scheme and not the site's theme button; falsified by a theme-button read where an inline logo does not change.
 - 2026-11-05: criteria audit (full): 5 findings, all taken: README's Lucide file list gains `favicon.svg`; AC1 pins lucide-static 1.68.0; AC2 adds `--accent` on `--surface`; AC3 adds the forced-colors fill; AC5 views the favicon. Each changed criterion was checked again by the agent against the same questions.
+- 2026-11-05: T1, T2: tests first, seen failing on the old logo; `.brand .icon` fills `puzzle` from `Icon.astro` with `--accent`; `favicon.svg` uses the same path and an XML comment points to the notice; `--accent` now equals `--link`, as both are the site's blue.
+- 2026-11-05: T3: README, CHANGELOG, and DESIGN name the puzzle piece; README's Lucide list names `site/public/favicon.svg`; About's license text stays, as its words still hold.
 
 ## Decisions
 <!-- owner: implement / review · append-only; milestone-local; promote

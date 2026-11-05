@@ -1045,7 +1045,10 @@ reused._
   tags, and for a page with a `path` its canonical link and `og:url`, from its
   `description` and `path` props and from
   `ORIGIN` in `site/src/base.ts`, and Astro copies `site/public/favicon.svg`
-  to the output (M094). `build.yml`'s site job runs `pnpm site`
+  to the output (M094). The favicon and the top bar's logo draw one path,
+  `puzzle` in `Icon.astro`, in `--accent` (M099). `--accent` is the site's blue,
+  so that it stays apart from the red of `--bad` (M099).
+  `build.yml`'s site job runs `pnpm site`
   after the build job (M047), so a failed site build also deploys nothing.
   `tsconfig.json` includes `site/`, so `pnpm test` type-checks its `.ts`
   files; the `.astro` templates
