@@ -200,7 +200,8 @@ otherwise, so plugins of one name can be told apart. The line sits outside
 stays on one line, an ellipsis cuts a long owner, and `contain: inline-size`
 keeps it from widening the table (M076). After the owner it shows the
 `upstream.stars` count with the star icon in `--muted`, with `starsText`'s words
-as its `title` and for screen readers, and only the owner is cut (M097). The legend says that the count comes from
+as its `title` and for screen readers, and only the owner is cut (M097). The
+legend says that the count comes from
 GitHub, that the default order comes from that count, and that neither is a
 review by the index (D-065).
 An address with no page shows `404.html`, whose main content says so and links
