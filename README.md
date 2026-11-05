@@ -260,7 +260,7 @@ overrides and the Used column of the Overrides table work. Each page's footer
 and the home page's intro say: "This index is unofficial and not affiliated
 with or endorsed by Zotero, and it cannot vet the plugins it lists." The About
 page gives the reason, and it says that the start test is not a review of
-plugin code.
+plugin code. It also states the terms in "License" below, and it links there.
 
 The index lists a plugin whose GitHub repository is archived. Its row on the
 home page and the name on its page show "Archived". The Details card of its
@@ -311,6 +311,8 @@ The index publishes its data file on GitHub Pages:
   <https://jmgirard.github.io/zotero-plugin-index/schemas/plugins.v1.schema.json>
 - Schema for `index.json`:
   <https://jmgirard.github.io/zotero-plugin-index/schemas/index.v1.schema.json>
+
+[License](#license) gives the terms for reusing the data.
 
 A daily build updates the data. If more than half of the records carry a
 build-level failure, such as a rate limit or a network error, the build
@@ -1848,3 +1850,41 @@ job of `ci.yml` sets it. To run that file yourself, run:
 ```bash
 ZOTERO_BIN=<binary> pnpm exec vitest run test/start-test-zotero.test.ts
 ```
+
+## License
+
+The code in this repository is under the [MIT License](LICENSE), except the
+third-party files that this section names.
+
+The facts that the index gathers are under
+[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/). So are its
+categories and the text that a maintainer wrote. These terms apply in
+`v1/plugins.json` and in the entries under `plugins/`.
+
+All other text keeps its author's terms. That text is plugin names and
+descriptions, GitHub About text, and text that an owner asked for. The index
+gives no license for it, although the data file and the entries hold it.
+
+These files hold parts from a third party. Those parts keep their source's
+terms, and the rest of each file follows the terms above:
+
+- `site/src/components/Icon.astro`, `cairn/mockups/redesign-2026-10-29/mockup.js`,
+  and `cairn/mockups/redesign-2026-10-29/index.html`: icon paths from
+  [Lucide](https://lucide.dev), under the ISC License, and from the Feather
+  icons that Lucide includes, under the MIT License. `Icon.astro` holds both
+  notices.
+- `test/fixtures/upstream/better-notes.json` and
+  `test/fixtures/build/plugins/Knowledge4Zotero@windingwind.com/meta.json`:
+  data recorded from
+  [Better Notes](https://github.com/windingwind/zotero-better-notes), whose
+  repository is under AGPL-3.0.
+- `test/version.test.ts` and `cairn/references/mozilla-toolkit-version.md`:
+  sentences and examples from MDN's
+  [Legacy Version Formats](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/version/format)
+  page.
+- `test/build.test.ts`: a paragraph from Zotero's changelog pages, such as the
+  [Zotero 9.0 Changelog](https://www.zotero.org/support/9.0_changelog).
+- `cairn/references/description-ledger.md`,
+  `cairn/references/description-ledger-2026-11-03.md`, and
+  `cairn/references/paid-service-sweep.md`: quotes from plugin descriptions and
+  READMEs.

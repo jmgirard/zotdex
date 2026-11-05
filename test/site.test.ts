@@ -781,7 +781,18 @@ describe("the About page", () => {
       ["paid-service", "Paid service"],
       ["removing", "Removing a plugin"],
       ["not-vetted", "What the index does not do"],
+      ["license", "License"],
     ]);
+  });
+
+  test("states the three license terms and links to the README's License section", () => {
+    const section = /<section class="card" id="license" data-about="license">(.*?)<\/section>/s.exec(about())![1]!;
+    const link = /<a href="([^"]*)" data-license-link>([^<]*)<\/a>/.exec(section);
+    expect(link?.[1]).toBe("https://github.com/jmgirard/zotero-plugin-index#license");
+    const text = mainText(about());
+    expect(text).toContain("The index's code is under the MIT License, except the third-party files that the README names.");
+    expect(text).toContain("The facts that the index gathers, its categories, and text that a maintainer wrote are under CC0 1.0.");
+    expect(text).toContain("All other text keeps its author's terms: plugin names and descriptions, GitHub About text, and text that an owner asked for.");
   });
 
   test("lists every category, links each that the home menu offers to the home page filtered by it, and says where categories come from", () => {
