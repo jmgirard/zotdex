@@ -180,6 +180,9 @@ const NEW_ISSUE = "https://github.com/jmgirard/zotero-plugin-index/issues/new";
 // The new-issue page with the add-plugin.yml form, which proposes a plugin for the index.
 export const ADD_PLUGIN_HREF = `${NEW_ISSUE}?template=add-plugin.yml`;
 
+// Where the top bar sends general feedback.
+export const FEEDBACK_HREF = "https://github.com/jmgirard/zotero-plugin-index/discussions";
+
 // The new-issue page with the works.yml or broken.yml form, its plugin and version fields
 // filled in with the record's id and the version the index read.
 export function reportHref(record: PluginRecord, verdict: "works" | "broken"): string {

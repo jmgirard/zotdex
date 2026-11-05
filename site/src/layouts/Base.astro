@@ -2,7 +2,7 @@
 import { applySavedTheme, wireThemeButton } from "../../../src/site/theme.ts";
 import { BASE, ORIGIN } from "../base.ts";
 import Icon from "../components/Icon.astro";
-import { ADD_PLUGIN_HREF, day, DISCLAIMER, loadData } from "../data.ts";
+import { ADD_PLUGIN_HREF, day, DISCLAIMER, FEEDBACK_HREF, loadData } from "../data.ts";
 
 interface Props {
   title: string;
@@ -998,6 +998,7 @@ const themeButton = `(${wireThemeButton})();`;
         <nav aria-label="Site">
           <a href={`${BASE}about/`}>About</a>
           <a href={ADD_PLUGIN_HREF} data-add-plugin>Add a plugin</a>
+          <a href={FEEDBACK_HREF} data-feedback>Feedback</a>
           <a href={`${BASE}v1/plugins.json`}>Data</a>
           <button type="button" data-theme-toggle hidden>
             <span data-theme-icon="moon"><Icon name="moon" /></span>
