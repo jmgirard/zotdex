@@ -235,7 +235,9 @@ GitHub with the plugin id and that version filled in. If the last build
 failed to read a plugin, the card shows the failure in place of the table,
 with no report buttons.
 
-An open "Details" card comes last. It lists the plugin id. For a plugin with
+An open "Details" card comes last. Its last lines link to the forms that ask
+to change the plugin's text and to remove the plugin or report harm. It lists
+the plugin id. For a plugin with
 the card icon, it then gives the paid service fact, whether or not the build
 read the plugin. If the build
 read the plugin, it also lists facts about the repository and the release
@@ -647,8 +649,8 @@ Otherwise it sends `GITHUB_TOKEN`. A repository that more than one
 source names counts once, by its lowercase owner/repo name after the
 lookup. The report names its source as the first of the topic search, the
 catalog, and the code search that names it.
-The command leaves out each repository that an entry already names. It
-reads the other repositories in the same way as `pnpm add-plugin`, the
+The command leaves out each repository that an entry already names or that
+`delisted.json` names (see "Removing a plugin"). It reads the other repositories in the same way as `pnpm add-plugin`, the
 newest pushed first. It writes the entries of at most 5 repositories that
 pass the inclusion bar under `plugins/`, and it reads at most 100
 repositories. To
@@ -719,7 +721,8 @@ only after a new push or after 30 days. The file does not record a GitHub API
 error, such as a rate limit, or a failed request. It also does not record an
 HTTP 429 or 5xx answer to the download of the XPI or the `update.json`, after
 any redirects. Nor does it record a 403 answer to a download that requested
-a GitHub release download URL, as "Building the data" defines it. Such a
+a GitHub release download URL, as "Building the data" defines it. Nor does it
+record a refusal by `delisted.json`. Such a
 repository is read again on the next run. If a run does not find a refused
 repository, the file still keeps its record until 30 days after the
 refusal. So a failed catalog read or code search loses no record that makes
@@ -1071,9 +1074,10 @@ same way as for `Discover plugins`. The body of the pull request contains
 `Closes #<issue>`. Thus a merge of the pull request closes the issue. The bot
 comments the link to the pull request on the issue.
 
-The bot can also find no URL in the issue body. It can find that an entry or
-an open bot pull request already has the plugin's id, or that the id cannot
-name a directory. Its read of the repository can also fail for a reason
+The bot can also find no URL in the issue body. It can find that
+`delisted.json` names the repository or the plugin's id. It can find that an
+entry or an open bot pull request already has the plugin's id, or that the id
+cannot name a directory. Its read of the repository can also fail for a reason
 that is not build-level. Then it comments the failure name and its message,
 and it closes the issue as not planned. A failed read includes a GitHub API
 answer of HTTP 404, which a repository that does not exist or is private
@@ -1271,6 +1275,71 @@ or the owner is an organization, check the author by hand, then add
 the `--apply` run. Then read the text, answer the issue, and open a pull
 request with the change.
 
+## Removing a plugin
+
+Anyone can ask to remove a plugin with the "Remove a plugin or report harm"
+issue form. Each plugin page's Details card links to the form with the plugin
+filled in, and the About page links to it too. The form adds the label
+`remove-plugin` and opens a public issue. No bot answers it. A maintainer
+reads each request.
+
+A maintainer removes a plugin for any of four reasons:
+
+- Its repository's owner asks.
+- It is spam.
+- Its entry misleads people about what the plugin is or who makes it.
+- A report shows harm with evidence that a reader can check.
+
+A claim with no evidence removes nothing. The index still cannot vet plugins,
+and it does not review their code.
+
+Before you act on an owner's request, make sure that the issue's author owns
+the repository, or ask the owner to confirm from the repository itself.
+
+To remove a plugin, do these steps on a branch:
+
+1. Delete the entry's directory under `plugins/`.
+2. Add a record to `delisted.json` at the top of the repo.
+3. Run `pnpm check`, then merge the change.
+4. Close any open bot pull request for the repo or the id.
+5. Run `Build data` by hand. Otherwise, the plugin stays on the site until the
+   next daily build.
+6. Answer the issue, then close it.
+
+A record has four fields:
+
+```json
+{ "repo": "owner/name", "ids": ["plugin@example.org"], "issue": 123, "date": "2026-11-04" }
+```
+
+Write `repo` in lowercase. `issue` is the number of the request, and `date` is
+the day of the removal. Put an id in `ids` only if you judged it unique to that
+repo. A fork can keep its source's id, and a listed id blocks every repo that
+carries it. `ids` can be empty.
+
+The list keeps a removed plugin off the index in three places:
+
+- `pnpm discover` skips a listed repo with the reason `delisted`, and it does
+  not read that repo. If a read shows that a search name is a listed repo, it
+  refuses that repo as `delisted`. It refuses another repo that carries a
+  listed id as `delisted-id`.
+- An "Add a plugin" issue that names such a repo gets a comment that names the
+  removal. The bot closes the issue as not planned and opens no pull request.
+  The exception is an unlisted repo that carries a listed id and already has a
+  bot pull request. That issue gets the answer about the pull request.
+- `pnpm check` fails on an entry that the list names, so the merge job does not
+  merge a bot pull request for it. The job skips a held pull request and one
+  under 48 hours old. For any other, the job reports it as failed and exits 1
+  each day until you close it.
+
+The list names a repo and the ids in its record, and nothing else. If a repo
+moves to a new name, the bot can propose it again unless its id is listed. The
+same is true of a fork.
+
+To list a plugin again, remove its record. The bot can then propose it, unless
+a bot pull request for that repo was closed without a merge. In that case, add
+the entry by hand.
+
 ## Checking entries
 
 To check every entry under `plugins/`, run:
@@ -1313,6 +1382,16 @@ without the mark. Besides `index-schema`, two rules check the overrides in
   not repeat each other. The line names the index of the repeat and the index
   of the first override with that field and version. The site never applies
   the repeat.
+
+Three rules read `delisted.json` at the top of the repo, whatever directory
+the command checks (see "Removing a plugin"):
+
+- `delisted-id`: an entry's directory name or `meta.json` id must not be on the
+  list, in any letter case.
+- `delisted-repo`: an entry's `repoUrl` on github.com must not name a repo on
+  the list, in any letter case and with or without `.git`.
+- `delisted-file`: the list must exist and match
+  `schemas/delisted.schema.json`.
 
 The first run downloads the registry schema into `.cache/`, so that run needs
 a network connection. The command refuses a downloaded or cached schema whose

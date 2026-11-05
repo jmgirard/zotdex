@@ -3,6 +3,7 @@ import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, wr
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { afterAll, describe, expect, test } from "vitest";
+import { type Delisted, delistedFrom } from "../src/check/delisted.ts";
 import { entriesDir, readHandoff, writePlan } from "../src/discover/handoff.ts";
 import { issueAnswer, issueRead, parseIssueBody, URL_LABEL } from "../src/discover/issue.ts";
 import { fixtureFetch, loadFixture, type Responses } from "./support/fixture-fetch.ts";
@@ -53,7 +54,7 @@ const opened: Responses = { [`POST ${PULLS}`]: { status: 201, json: { html_url: 
 async function runIssue(
   body: string,
   responses: Responses,
-  options: { root?: string; outDir?: string; gitDir?: string; lookup?: () => Promise<string[]> } = {},
+  options: { root?: string; outDir?: string; gitDir?: string; lookup?: () => Promise<string[]>; delisted?: Delisted } = {},
 ) {
   const { fetch, requests } = fixtureFetch({ [ISSUE]: { json: { number: 7, body } }, ...responses });
   const root = options.root ?? tempDir();
@@ -65,6 +66,7 @@ async function runIssue(
     lookup: options.lookup ?? publicLookup,
     indexRepo: "example/index",
     issue: 7,
+    delisted: options.delisted,
   });
   await writePlan(handoff, { kind: "issue", ...outcome });
   const checked = await readHandoff(handoff, "issue", 1);
@@ -187,6 +189,27 @@ describe("an issue run", () => {
     expect(sent).toEqual([
       { method: "POST", url: COMMENTS, body: expect.stringContaining(named) },
       { method: "PATCH", url: ISSUE, state: "closed", state_reason: reason },
+    ]);
+  });
+});
+
+describe("an issue that names a plugin a maintainer removed", () => {
+  const renamed = pluginRepo("example/removed", "new-id@example.org");
+  const oldName = Object.fromEntries(Object.entries(renamed).map(([url, response]) => [url.replace("/repos/example/removed", "/repos/example/old-name"), response]));
+  const pulls = loadFixture(resolve(ROOT, "test/fixtures/discover/pulls.json")).responses;
+
+  test.each([
+    ["names a listed repo in another letter case", "https://github.com/Example/Removed", "example/removed", {}, "delisted", /the repo example\/removed/],
+    ["names a listed repo with a closed bot pull request", "https://github.com/example/closed-pr", "example/closed-pr", pulls, "delisted", /the repo example\/closed-pr/],
+    ["names an old name of a listed repo", "https://github.com/example/old-name", "example/removed", oldName, "delisted", /the repo example\/removed/],
+    ["names a repo that carries a listed id", "https://github.com/example/fork", "example/removed", pluginRepo("example/fork", "removed-id@example.org"), "delisted-id", /the plugin id removed-id@example\.org/],
+  ] as [string, string, string, Responses, string, RegExp][])("comments the removal, closes it as not planned, and opens no pull request when it %s", async (_name, url, repo, responses, failure, named) => {
+    const delisted = delistedFrom([{ repo, ids: ["removed-id@example.org"], issue: 5, date: "2026-11-04" }]);
+    const { result, sent } = await runIssue(rendered(url), { ...indexRepo, ...responses }, { root: tempDir(), delisted });
+    expect(result.status).toBe(0);
+    expect(sent).toEqual([
+      { method: "POST", url: COMMENTS, body: expect.stringMatching(new RegExp(`no pull request for this issue\\.\\n\\n\`${failure}\`: .*${named.source}.*issue #5`)) },
+      { method: "PATCH", url: ISSUE, state: "closed", state_reason: "not_planned" },
     ]);
   });
 });
@@ -475,6 +498,19 @@ describe("pnpm discover-issue --handoff then pnpm propose", () => {
     expect(result.stderr).toMatch(/git push failed: .*refused by the test hook/s);
     expect(result.status).toBe(1);
     expect(writes(requestLog)).toEqual([{ method: "POST", url: COMMENTS, body: expect.stringMatching(/git push failed: .*refused by the test hook/s) }]);
+  });
+
+  test("the read step refuses a repo on the list that the variable names, and fails on a list it cannot read", () => {
+    const list = join(tempDir(), "list.json");
+    writeFileSync(list, JSON.stringify([{ repo: "example/alpha", ids: [], issue: 5, date: "2026-11-04" }]));
+    const responses = { ...indexRepo, [ISSUE]: { json: { number: 7, body: rendered("https://github.com/example/alpha") } } };
+    const env = { GITHUB_REPOSITORY: "example/index", ISSUE_NUMBER: "7" };
+    const refused = pnpm("discover-issue", ["--handoff", join(tempDir(), "handoff")], responses, tempDir(), { ...env, ZPI_DELISTED: list });
+    expect(refused.status).toBe(0);
+    expect(JSON.parse(refused.stdout)).toMatchObject({ outcome: "refused", failure: "delisted" });
+    const failed = pnpm("discover-issue", ["--handoff", join(tempDir(), "handoff")], responses, tempDir(), { ...env, ZPI_DELISTED: join(tempDir(), "missing.json") });
+    expect(failed.status).toBe(0);
+    expect(JSON.parse(failed.stdout)).toMatchObject({ outcome: "failed", message: expect.stringContaining("delisted.json: cannot read the list") });
   });
 
   test("the read step writes the entry's hold reasons in the plan, and no source", () => {

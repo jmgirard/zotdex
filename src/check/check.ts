@@ -2,8 +2,12 @@ import { readdir, readFile, stat } from "node:fs/promises";
 import { join } from "node:path";
 import { Ajv, type ErrorObject, type ValidateFunction } from "ajv";
 import indexSchema from "../../schemas/index.v1.schema.json" with { type: "json" };
+import { type Delisted, githubRepoOf, NOTHING_DELISTED } from "./delisted.ts";
 
 export type Rule =
+  | "delisted-id"
+  | "delisted-repo"
+  | "delisted-file"
   | "files-present"
   | "registry-schema"
   | "index-schema"
@@ -52,7 +56,7 @@ export function entryNameProblem(name: string): string | undefined {
   return undefined;
 }
 
-export async function checkTree(root: string, validators: Validators): Promise<CheckResult> {
+export async function checkTree(root: string, validators: Validators, delisted: Delisted = NOTHING_DELISTED): Promise<CheckResult> {
   const entries = await listEntries(root);
   const findings: Finding[] = await strayFiles(root);
   for (const names of caseClashes(entries.map((entry) => entry.name))) {
@@ -65,7 +69,7 @@ export async function checkTree(root: string, validators: Validators): Promise<C
       findings.push({ entry: name, rule: "files-present", message: `cannot read the entry: ${readError}` });
       continue;
     }
-    findings.push(...(await checkEntry(join(root, name), name, validators)));
+    findings.push(...(await checkEntry(join(root, name), name, validators, delisted)));
   }
   return { checked: entries.length, findings };
 }
@@ -136,7 +140,7 @@ export async function listEntries(root: string): Promise<ListedEntry[]> {
   return entries;
 }
 
-async function checkEntry(dir: string, entry: string, validators: Validators): Promise<Finding[]> {
+async function checkEntry(dir: string, entry: string, validators: Validators, delisted: Delisted): Promise<Finding[]> {
   const findings: Finding[] = [];
   const add = (rule: Rule, message: string) => findings.push({ entry, rule, message });
 
@@ -159,6 +163,12 @@ async function checkEntry(dir: string, entry: string, validators: Validators): P
   if (typeof id === "string" && id !== entry) {
     add("id-matches-directory", `meta.json id "${id}" differs from the directory name`);
   }
+
+  const listedId = delisted.ids.get(entry.toLowerCase()) ?? (typeof id === "string" ? delisted.ids.get(id.toLowerCase()) : undefined);
+  if (listedId) add("delisted-id", `delisted.json lists this id, removed in issue #${listedId.issue}`);
+  const repo = githubRepoOf((meta.value as { repoUrl?: unknown } | undefined)?.repoUrl);
+  const listedRepo = repo ? delisted.repos.get(repo) : undefined;
+  if (listedRepo) add("delisted-repo", `delisted.json lists the repo ${repo}, removed in issue #${listedRepo.issue}`);
 
   const overrides = (index.value as { overrides?: unknown } | undefined)?.overrides;
   if (Array.isArray(overrides)) {

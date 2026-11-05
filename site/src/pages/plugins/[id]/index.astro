@@ -21,6 +21,7 @@ import {
   PAID_SERVICE_TEXT,
   rangeText,
   reportHref,
+  removeHref,
   textChangeHref,
   safeHref,
   shownDescription,
@@ -352,6 +353,9 @@ const { min, max } = declaredRange(record);
     }
     <p class="fineprint">
       Is this your plugin? <a href={textChangeHref(record)} data-text-change>Ask to change its name or description</a>.
+    </p>
+    <p class="fineprint">
+      <a href={removeHref(record)} data-remove-plugin>Ask to remove this plugin or report harm</a>.
     </p>
   </section>
 </Base>

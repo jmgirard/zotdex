@@ -142,12 +142,13 @@ failure and the About line. An open "Details" card (h2) lists the plugin
 id, the repository and release facts, and the "Menus and settings in"
 fact (M024, M033), with each override beside the upstream value it
 corrects under an h3 (M007, M015, M054), and a `description` override
-beside each upstream text that is not blank (M088). The About page
+beside each upstream text that is not blank (M088). It ends with links to the
+text-change form and the remove-plugin form (M079, M093). The About page
 (`site/src/pages/about.astro`) holds the method notes: the declared range
 and its marks, the start test, which reports count, and how overrides and
 the Used column work (M054), the categories, each with its `about`
-text (M066), what the source fact means (M081), and what the paid service
-mark means (M082). The home table marks an archived plugin with
+text (M066), what the source fact means (M081), what the paid service
+mark means (M082), and the grounds for removing a plugin (M093). The home table marks an archived plugin with
 "Archived" after its name (M053), and the data carries the same `archived`
 fact (M013). A home row and a plugin page show a lock for a record with
 `sourceInRepo: false`, the fact that the top level of the repo's default branch
@@ -226,6 +227,12 @@ Out of scope: install buttons, mirrors for regions that cannot reach GitHub,
 user accounts, and a combined compatibility verdict. A plain link to the
 author's own `.xpi` file (the data's `xpiUrl`, M052) is not an install
 button: it downloads the file and installs nothing (D-029).
+
+A maintainer can remove a listed plugin for its repository's owner, for spam,
+for an entry that misleads about what the plugin is or who makes it, or for
+harm that a report shows with evidence a reader can check. `delisted.json`
+keeps it off the index. This does not make the index a reviewer of plugin code
+(D-051, D-062, M093).
 
 ## Data sources and contribution
 
@@ -359,16 +366,24 @@ refuses forks (corrected M002). An archived repository passes the bar, and
 the index shows that it is archived (D-006, M013). A repo with no source at its
 top level passes the bar too, and the index shows that fact (D-052, M081). So
 does a plugin that needs its maker's paid service (D-054, M082). The
-maintainer removes spam. Inclusion is not a judgment of
+removal rule below does not change this bar: inclusion is not a judgment of
 quality. The index does not list plugins for Zotero 5 or 6.
 
 A page whose declared compatibility and user reports disagree shows both
 (corrected M007, M021, M054). For example, the Zotero 8 row of the
 compatibility table shows "✓ Yes" beside "2 works 3 broken".
 
-An author can open an issue to be delisted or to correct a fact, and the
-index honors both requests. An author cannot remove user reports. The
-exception is a report that is abuse.
+An author can open an issue to correct a fact, and the index honors that
+request. Anyone can ask to remove a plugin through the public
+`remove-plugin.yml` form, linked from each plugin page and About. A maintainer
+removes a plugin for its repository's owner, for spam, for an entry that
+misleads about what the plugin is or who makes it, or for harm that a report
+shows with evidence a reader can check (D-062, M093). `delisted.json` names
+each removed repo, and its `ids` hold only ids judged unique to that repo. So
+`pnpm check`, discovery, and "Add a plugin" issues keep the plugin off the
+index, and a bot pull request for it does not merge. A copy under a new name
+is covered only if it keeps a listed id. An author cannot remove
+user reports. The exception is a report that is abuse.
 
 ## Function Families
 
@@ -379,7 +394,10 @@ exception is a report that is abuse.
   only in case; `writeEntry` refuses the same ids (M031). It refuses an
   override reason of only JavaScript `\s` whitespace and Unicode format
   characters, two overrides with the same `field` and `version`, and names
-  a UTF-8 byte-order mark at the start of an entry file (M032).
+  a UTF-8 byte-order mark at the start of an entry file (M032). It reads the
+  package root's `delisted.json` (`src/check/delisted.ts`, or the file that
+  `ZPI_DELISTED` names) for any `dir`, and refuses a listed id, a listed
+  GitHub repo, and a list that `schemas/delisted.schema.json` refuses (M093).
 - Upstream reader (`src/upstream/`): `readUpstream(repoUrl, fetch, {
   lookup, signal })` returns the facts of one GitHub repo with the URL and
   SHA-256 of the XPI it read (M047), the repo's topics (M056), and each URL
@@ -398,7 +416,7 @@ exception is a report that is abuse.
   <dir>] [--state <file>] [--limit <n>] [--budget <n>]` searches the
   `zotero-plugin` and `zotero-addon` topics, adds the repos of the
   zotero-chinese catalog (M070) and of five code searches (M071), reads each
-  repo that no entry names, and
+  repo that no entry and no `delisted.json` record names (M093), and
   writes the entries of up to `limit` repos (5 by default) that
   pass the inclusion bar. It prints a JSON report of what it wrote, refused,
   and skipped. Added M008. With `--handoff <dir>`, it also skips the repos of
@@ -692,7 +710,7 @@ reused._
   requests. With the `catalog` option, which `pnpm discover` sets to
   `CATALOG_URL`, it also reads the zotero-chinese catalog's `plugins.json`
   through the contents API (`githubClient().raw`, 60 s, 8 MiB). A catalog
-  name that an entry or the skip set names is skipped there; each other
+  name that `delisted.json`, an entry, or the skip set names is skipped there; each other
   name that no earlier source returned and no earlier lookup gave
   (corrected M071) is looked up with one GraphQL request
   for each 100 names, the names sent as variables. A failed request ends
@@ -720,15 +738,18 @@ reused._
   lookup gives, a topic find before a catalog find before a code-search
   find, and reads the newest
   pushed repos first, at most `budget` (100 by default) per run. It leaves out
-  each repo whose owner/repo, ignoring case, an entry's `repoUrl` names,
-  and it refuses a plugin id that an entry directory already has, unless the
+  each repo on the `delisted.json` list, and each repo whose owner/repo,
+  ignoring case, an entry's `repoUrl` names. After a read, it refuses a repo on
+  the list as `delisted` and a listed id as `delisted-id` (M093). It also
+  refuses a plugin id that an entry directory already has, unless the
   repo gets a `replaces-entry` hold (corrected M085). A state
   file, `.cache/discovery-state.json` by default, keeps each refused repo's
   `pushed_at` and failure while the index lacks the repo and the run found
   it or the record is under 30 days old (corrected M070). A later run
   reads that repo again when its `pushed_at` changed or the record is 30
   days old. A `github-http-error`,
-  `request-failed`, or `unexpected-error` result is not kept, nor a write
+  `request-failed`, `unexpected-error`, `delisted`, or `delisted-id` result is
+  not kept, nor a write
   refused by the output directory (`entry-exists` there, `write-failed`),
   nor a refusal caused by an HTTP 429 or 5xx answer from a download host,
   or by a 403 to a download that requested a GitHub release URL, which the

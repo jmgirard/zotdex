@@ -171,6 +171,14 @@ export function textChangeHref(record: PluginRecord): string {
   return `${NEW_ISSUE}?template=text-change.yml&plugin=${encodeURIComponent(record.id)}`;
 }
 
+// The issue form that asks to remove a plugin or reports harm.
+export const REMOVE_PLUGIN_HREF = `${NEW_ISSUE}?template=remove-plugin.yml`;
+
+// That form with the plugin filled in.
+export function removeHref(record: PluginRecord): string {
+  return `${REMOVE_PLUGIN_HREF}&plugin=${encodeURIComponent(record.id)}`;
+}
+
 // Each start-test result in words.
 const START_WORDS: Record<StartTestRecord["result"], string> = {
   started: "started",

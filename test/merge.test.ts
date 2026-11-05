@@ -212,6 +212,22 @@ describe("pnpm merge-discover's check and merge failures", () => {
     expect(merges.map(({ url }) => url)).toEqual([`${INDEX}/pulls/2/merge`]);
   });
 
+  test("does not merge an entry on the delisted list, reports it as failed, and merges the next", async () => {
+    const list = join(tempDir(), "list.json");
+    writeFileSync(list, JSON.stringify([{ repo: "example/p1", ids: [], issue: 5, date: "2026-11-04" }]));
+    const saved = process.env.ZPI_DELISTED;
+    process.env.ZPI_DELISTED = list;
+    try {
+      const { result, merges } = await run({ [LIST]: { json: [pull(1), pull(2)] }, ...entry(1), ...entry(2) }, (dir) => pnpmCheck(dir));
+      expect(result.failed).toEqual([{ number: 1, message: expect.stringMatching(/^pnpm check exited with status 1:\n.*p1@example\.org: delisted-repo/s) }]);
+      expect(result.merged).toEqual([2]);
+      expect(merges.map(({ url }) => url)).toEqual([`${INDEX}/pulls/2/merge`]);
+    } finally {
+      if (saved === undefined) delete process.env.ZPI_DELISTED;
+      else process.env.ZPI_DELISTED = saved;
+    }
+  });
+
   test("does not merge an entry whose check passes its time limit, and merges the next", async () => {
     const shims = tempDir();
     // A pnpm whose check waits on a child that never exits while p1's entry is in the

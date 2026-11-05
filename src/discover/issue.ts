@@ -1,4 +1,5 @@
 import { rm } from "node:fs/promises";
+import { type Delisted, delistedMessage, githubRepoOf } from "../check/delisted.ts";
 import type { Lookup } from "../upstream/host-guard.ts";
 import { type Fetch, githubClient } from "../upstream/reader.ts";
 import { draftEntry, indexed, repoName } from "./discover.ts";
@@ -43,11 +44,15 @@ export interface IssueReadOptions {
   issue: number;
   // The time the owner's account age is measured to.
   now?: Date;
+  // The plugins that a maintainer removed, which `delisted.json` names.
+  delisted?: Delisted;
 }
 
 // The read step of an issue run, which makes no GitHub write. It reads the issue's body
 // from the API; if that read fails, the outcome is `failed`. If the body names a repo
-// that the index or a bot pull request already has, it reads nothing. If the parser or
+// that a maintainer removed, the outcome is `refused`, also when a bot pull request names
+// it. If the body names a repo that the index or a bot pull request already has, it reads
+// nothing. If the parser or
 // draftEntry refuses, the outcome names the failure; that includes a GitHub HTTP 404
 // for a repo that does not exist. If the read of the repo stops with a failure that the
 // reader marks build-level, such as a rate limit, or throws, or writeEntry cannot write
@@ -77,6 +82,9 @@ async function readOutcome(options: IssueReadOptions): Promise<IssueOutcome> {
   }
   const parsed = parseIssueBody(body);
   if (!parsed.ok) return { outcome: "refused", failure: parsed.problem, message: parsed.message };
+  const given = githubRepoOf(parsed.url);
+  const listed = given ? options.delisted?.repos.get(given) : undefined;
+  if (listed) return { outcome: "refused", failure: "delisted", message: delistedMessage(`the repo ${given}`, listed) };
   let index: Awaited<ReturnType<typeof indexed>>;
   try {
     index = await indexed(root);
@@ -95,7 +103,6 @@ async function readOutcome(options: IssueReadOptions): Promise<IssueOutcome> {
   // A name of a shape the handoff refuses is never `known`: the read goes on, and
   // draftEntry refuses such a repo as not-proposable.
   const known = (name: string | undefined) => !!name && plannableRepo(name) && (index.repos.has(name) || pulls.pulls.has(name));
-  const given = githubRepo(parsed.url);
   if (known(given)) return { outcome: "known", repo: given! };
 
   const drafted = await draftEntry(parsed.url, { ...options, ids: index.ids, names: index.names, pendingIds: pulls.ids, issueRun: true });
@@ -238,10 +245,4 @@ export async function issueAnswer(options: IssueAnswerOptions): Promise<IssueRun
 // the issue only when this comment holds the pull request's URL.
 function openedComment(url: string): string {
   return `The bot opened ${url}. This issue closes when that pull request merges. If that pull request is closed without a merge, the bot closes this issue as not planned.`;
-}
-
-// The lowercase owner/repo of a URL on github.com, which the reader would read.
-function githubRepo(url: string): string | undefined {
-  if (!URL.canParse(url) || !["github.com", "www.github.com"].includes(new URL(url).host)) return undefined;
-  return repoName(url);
 }

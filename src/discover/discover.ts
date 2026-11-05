@@ -2,6 +2,7 @@ import { readFile, rm } from "node:fs/promises";
 import { join } from "node:path";
 import { type WriteResult, writeEntry } from "../add-plugin/add-plugin.ts";
 import { listEntries } from "../check/check.ts";
+import { type Delisted, delistedMessage, NOTHING_DELISTED } from "../check/delisted.ts";
 import type { Lookup } from "../upstream/host-guard.ts";
 import { type Failure, type Fetch, githubClient, type RateLimit, ReadFailure, readUpstream } from "../upstream/reader.ts";
 import { duration, READ_LIMIT_MS, withinLimit } from "../upstream/time-limit.ts";
@@ -66,14 +67,15 @@ const realClock: Clock = { now: () => performance.now(), wall: () => Date.now(),
 // How a lookup warning names the source of a repo.
 const SOURCE_TEXT: Record<Source, string> = { topic: "a topic search", catalog: "the catalog", "code-search": "a code search" };
 
-export type DiscoveryFailure = Failure | Extract<WriteResult, { ok: false }>["failure"] | "not-proposable" | "unexpected-error";
+export type DiscoveryFailure = Failure | Extract<WriteResult, { ok: false }>["failure"] | "not-proposable" | "unexpected-error" | "delisted" | "delisted-id";
 
 // Failures that say nothing about the repo, such as a rate limit, are not recorded, so
 // the next run reads the repo again. Nor is a failure the reader marks build-level, such
 // as an HTTP 429 or 5xx answer for the XPI or the update.json; draftEntry checks that
 // mark, since the same failure name can be either kind. Nor is an entry that writeEntry
-// could not write to outDir (`entry-exists` there, `write-failed`).
-const NOT_RECORDED = new Set<DiscoveryFailure>(["github-http-error", "request-failed", "unexpected-error"]);
+// could not write to outDir (`entry-exists` there, `write-failed`). Nor is a refusal by
+// `delisted.json`, so a repo can be proposed in the first run after its record goes.
+const NOT_RECORDED = new Set<DiscoveryFailure>(["github-http-error", "request-failed", "unexpected-error", "delisted", "delisted-id"]);
 
 // A repo that was read and refused. `pushedAt` is the repo's pushed_at at that read.
 export interface StateRecord {
@@ -104,7 +106,7 @@ export type ReadItem =
 
 export interface SkippedItem {
   repo: string;
-  reason: "in-index" | "in-skip-set" | "refused-before";
+  reason: "delisted" | "in-index" | "in-skip-set" | "refused-before";
 }
 
 export interface Report {
@@ -125,6 +127,8 @@ export interface DiscoverOptions {
   state: DiscoveryState;
   // Lowercase owner/repo names that are not read.
   skip: Set<string>;
+  // The plugins that a maintainer removed, which `delisted.json` names.
+  delisted?: Delisted;
   // Lowercase plugin ids that an open pull request adds. A repo with one is refused,
   // and the refusal is not recorded, since it says nothing about the repo.
   pendingIds?: Set<string>;
@@ -171,7 +175,7 @@ interface Candidate {
 // refusal is under 30 days old, so a repo that one run does not find, such as one whose
 // source failed, keeps its record.
 export async function discover(options: DiscoverOptions): Promise<DiscoverResult> {
-  const { root, outDir, fetch, lookup, skip, limit, budget, now = new Date() } = options;
+  const { root, outDir, fetch, lookup, skip, delisted = NOTHING_DELISTED, limit, budget, now = new Date() } = options;
   const { readMs = READ_LIMIT_MS, runMs = RUN_LIMIT_MS, startedAt = 0, refCheckMs, clock = realClock } = options;
   const warnings: string[] = [];
   let candidates: Candidate[];
@@ -198,7 +202,8 @@ export async function discover(options: DiscoverOptions): Promise<DiscoverResult
       const repo = name.toLowerCase();
       if (known.has(repo)) continue;
       known.add(repo);
-      if (index.repos.has(repo)) skipped.push({ repo, reason: "in-index" });
+      if (delisted.repos.has(repo)) skipped.push({ repo, reason: "delisted" });
+      else if (index.repos.has(repo)) skipped.push({ repo, reason: "in-index" });
       else if (skip.has(repo)) skipped.push({ repo, reason: "in-skip-set" });
       else unknown.push(name);
     }
@@ -238,6 +243,10 @@ export async function discover(options: DiscoverOptions): Promise<DiscoverResult
       warnings.push(`the run reads no repo after ${duration(runMs)}, its time limit, so it did not reach ${report.unread} repos`);
       break;
     }
+    if (delisted.repos.has(repo)) {
+      report.skipped.push({ repo, reason: "delisted" });
+      continue;
+    }
     if (index.repos.has(repo)) {
       report.skipped.push({ repo, reason: "in-index" });
       continue;
@@ -260,6 +269,7 @@ export async function discover(options: DiscoverOptions): Promise<DiscoverResult
       ids: index.ids,
       names: index.names,
       pendingIds,
+      delisted,
       readMs,
       refCheckMs,
       now,
@@ -310,6 +320,9 @@ export interface DraftOptions {
   // requests add.
   ids: Set<string>;
   pendingIds?: Set<string>;
+  // The plugins that a maintainer removed. A read can show that a search name or an old
+  // name is a listed repo, or that an unlisted repo carries a listed id.
+  delisted?: Delisted;
   // The index's entries by owner, repo part, and name, for the `name-match` hold.
   names: IndexedName[];
   // The longest the read of the repo, and the branch-name check of its entry, may take.
@@ -324,7 +337,8 @@ export interface DraftOptions {
   issueRun?: boolean;
 }
 
-// Reads one repo and writes its entry to outDir, unless the index or an open pull
+// Reads one repo and writes its entry to outDir, unless `delisted.json` names the repo or
+// its plugin id, or the index or an open pull
 // request already has its plugin id. A repo with a `replaces-entry` hold is the exception
 // for an id that the index has. `repoUrl` in the result is the URL GitHub gives
 // for the repo. A read that passes `readMs` fails as request-failed, marked build-level.
@@ -347,6 +361,10 @@ export async function draftEntry(repoUrl: string, options: DraftOptions): Promis
   if (!read.ok) return refuse(read.failure, read.message, !read.buildLevel && !NOT_RECORDED.has(read.failure), read.buildLevel);
   const { id, version, strictMinVersion, strictMaxVersion } = read.facts;
   const repo = repoName(read.facts.repoUrl);
+  const listedRepo = repo ? options.delisted?.repos.get(repo) : undefined;
+  if (listedRepo) return refuse("delisted", delistedMessage(`the repo ${repo}`, listedRepo));
+  const listedId = options.delisted?.ids.get(id.toLowerCase());
+  if (listedId) return refuse("delisted-id", delistedMessage(`the plugin id ${id}`, listedId));
   const ownMeta = { createdAt: createdAtOf(read.facts.repoCreatedAt), stars: starsOf(read.facts.stars) };
   // Entry directories may be in another place than outDir, so writeEntry cannot see them.
   // A discover run still drafts a repo far larger and older than the one that lists its id,

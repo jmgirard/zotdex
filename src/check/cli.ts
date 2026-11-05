@@ -1,6 +1,7 @@
 import { join, resolve } from "node:path";
 import process, { argv } from "node:process";
-import { checkTree, compileValidators } from "./check.ts";
+import { checkTree, compileValidators, type Finding } from "./check.ts";
+import { type Delisted, readDelisted } from "./delisted.ts";
 import { loadRegistrySchema, RegistrySchemaUnavailable } from "./registry-schema.ts";
 
 const CACHE_DIR = join(import.meta.dirname, "..", "..", ".cache");
@@ -22,7 +23,17 @@ async function main(): Promise<number> {
     throw error;
   }
 
-  const { checked, findings } = await checkTree(root, compileValidators(registrySchema));
+  // The list is the package root's whatever <dir> is, since the bot checks temporary directories.
+  let delisted: Delisted | undefined;
+  const listFindings: Finding[] = [];
+  try {
+    delisted = await readDelisted();
+  } catch (error) {
+    listFindings.push({ entry: "delisted.json", rule: "delisted-file", message: (error as Error).message });
+  }
+
+  const { checked, findings: treeFindings } = await checkTree(root, compileValidators(registrySchema), delisted);
+  const findings = [...listFindings, ...treeFindings];
   for (const finding of findings) {
     console.log(`${finding.entry}: ${finding.rule}: ${finding.message}`);
   }
