@@ -76,6 +76,7 @@ A plugin's owner or any reader can ask from the site to remove a listed plugin, 
 - 2026-11-04: re-audit: AC5 (full) — a read that fails first gives its own refusal, an entry-holding or unreached id-carrier is never refused, and the last sentence promises tests over a read of `delistedPath()`; second line on this criterion, so the wording goes to the user.
 - 2026-11-04: amendment return: AC5 — "In `pnpm discover`, a topic-search or catalog candidate on the list that the run reaches appears in the report as skipped with the reason `delisted`, with no repo read sent for it, also when the skip set names it. A candidate whose read succeeds is refused as `delisted` when the read shows a listed repo, or as `delisted-id` when an unlisted repo carries a listed id, and neither writes an entry. Tests assert these on `discover()`. The CLI passes the list that `ZPI_DELISTED` names to the run, and `delistedPath()` defaults to the package root's `delisted.json`, and a test asserts each."
 - 2026-11-04: the user chose this AC5 wording at the stop; it changes no code, so no new reviewer pass ran on it, and the amendment ran in this session with the implement rules already loaded.
+- 2026-11-04: step-7 approval: m093-remove-plugin-path approved for merge
 - 2026-11-04: the simple-english hook reports older README and CHANGELOG sentences outside this change; left as they are, and this change's own sentence it flagged is split.
 
 ## Decisions
