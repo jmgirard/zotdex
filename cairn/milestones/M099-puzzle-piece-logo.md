@@ -101,6 +101,7 @@ The site's logo no longer looks like an error, and red on the site means only a 
 - 2026-11-05: T5: `pnpm test` and `pnpm check` passed before the last test edit; run again below.
 - 2026-11-05: claim audit: 28 claims read, 1 corrected — `test/site.test.ts`: the test name said "before the site's name" with no assertion on order; added one, and the reader's re-read holds.
 - 2026-11-05: review: T3's line that About's license text stays is corrected: the review fixed it to "The icons on these pages", as every icon now comes from Lucide or Feather.
+- 2026-11-05: step-7 approval: m099-puzzle-piece-logo approved for merge
 
 ## Decisions
 <!-- owner: implement / review · append-only; milestone-local; promote
