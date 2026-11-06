@@ -73,6 +73,7 @@ Give each listed plugin a README badge, labeled Zotdex, that says which Zotero m
 - 2026-11-05: T4 done: README's site section gains two badge paragraphs, and its `pnpm site` list names `dist/badges/<id>.json`; About gains a "README badge" section after "Installing a plugin", with tests for the section list and its address and four messages; DESIGN's Contract boundary names the badge path and its rules, and its site build line names the badge files; CHANGELOG has an Unreleased entry. No new plain-English hit in README, CHANGELOG, or DESIGN. pnpm test 2495 passed, pnpm check 0 problems.
 - 2026-11-05: claim audit: 44 claims read, 4 corrected — site/src/pages/about.astro, README.md, site/src/pages/plugins/[id]/index.astro, CHANGELOG.md: About's "no data" sentence gains the kept-facts exception; the cache sentence adds GitHub Pages' 10-minute copy of the badge file; the plugin page and the changelog say the badge names the versions or why it names none. Re-read: all four hold; GitHub's image proxy honoring shields' one-hour header stays unchecked.
 - 2026-11-05: implement done; status review.
+- 2026-11-05: step-7 approval: m105-author-badge approved for merge
 
 ## Decisions
 
