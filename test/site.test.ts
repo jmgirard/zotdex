@@ -19,6 +19,7 @@ import {
   type PluginRecord,
 } from "../site/src/data.ts";
 import type { PluginsFile } from "../src/build/build.ts";
+import { badgeFor } from "../src/site/badge.ts";
 import { CATEGORIES, categories } from "../src/site/categories.ts";
 import { cutDescription, shownDescription } from "../src/site/description.ts";
 import { PAGE_SIZE, prePaintStyle } from "../src/site/home-filter.ts";
@@ -132,6 +133,12 @@ describe("pnpm site", () => {
     });
     expect(locs).toHaveLength(ids.length + 2);
     expect(locs.toSorted()).toEqual(canonicals.toSorted());
+  });
+
+  test("writes one badge file for each record and no other", () => {
+    expect(readdirSync(join(out, "badges")).sort()).toEqual(ids.map((id) => `${id}.json`).sort());
+    for (const record of records) expect(JSON.parse(readFileSync(join(out, "badges", `${record.id}.json`), "utf8")), record.id).toEqual(badgeFor(record));
+    expect(JSON.parse(readFileSync(join(out, "badges", "no-range-plugin@example.org.json"), "utf8")).message).toBe("started in Zotero 7");
   });
 
   test("writes a robots.txt at the top that allows every path and names the sitemap", () => {
@@ -634,6 +641,7 @@ describe("the plugin page", () => {
     expect(found.map(({ name, heading }) => [name, heading])).toEqual([
       ["compatibility", "Zotero compatibility"],
       ["details", "Details"],
+      ["badge", "Badge for your README"],
     ]);
     const body = (name: string) => found.find((section) => section.name === name)!.body;
     const holds: [string, string[]][] = [
@@ -879,9 +887,18 @@ describe("the About page", () => {
       ["paid-service", "Paid service"],
       ["removing", "Removing a plugin"],
       ["installing", "Installing a plugin"],
+      ["badge", "README badge"],
       ["not-vetted", "What the index does not do"],
       ["license", "License"],
     ]);
+  });
+
+  test("names the badge file's address and each of the badge's four messages", () => {
+    const section = /<section class="card" id="badge" data-about="badge">(.*?)<\/section>/s.exec(about())![1]!;
+    const text = unescaped(section.replace(/<[^>]+>/g, "")).replace(/\s+/g, " ");
+    expect(text).toContain("https://zotdex.jmgirard.com/badges/<id>.json");
+    for (const message of ["started in Zotero 7 · 8 · 9", "no start in tests", "not start-tested", "no data"]) expect(text).toContain(`"${message}"`);
+    expect(text).toContain("A start does not show that a plugin works.");
   });
 
   test("states the license terms and the icons' sources, and links to the README's License section", () => {
@@ -2096,6 +2113,28 @@ describe("the built site", () => {
     }
     expect(home()).not.toContain("data-text-change");
     expect(readFileSync(join(out, "about/index.html"), "utf8")).not.toContain("data-text-change");
+  });
+
+  test("gives each built plugin page one badge snippet for its own badge file and page", () => {
+    for (const id of readdirSync(join(out, "plugins"))) {
+      const html = page(id);
+      const badge = sections(html).filter(({ name }) => name === "badge");
+      expect(badge.map(({ heading }) => heading), id).toEqual(["Badge for your README"]);
+      const codes = [...badge[0]!.body.matchAll(/<code\b[^>]*>(.*?)<\/code>/gs)];
+      expect(codes, id).toHaveLength(1);
+      const file = `https://zotdex.jmgirard.com/badges/${encodeURIComponent(id)}.json`;
+      const canonical = /<link rel="canonical" href="([^"]*)"/.exec(html)![1]!;
+      expect(decoded(codes[0]![1]!), id).toBe(`[![Zotdex](https://img.shields.io/endpoint?url=${encodeURIComponent(file)})](${canonical})`);
+    }
+  });
+
+  test("names img.shields.io only in code text, and loads nothing from it", () => {
+    for (const file of htmlFiles(out)) {
+      const html = readFileSync(join(out, file), "utf8");
+      expect(html.replace(/<code\b[^>]*>.*?<\/code>/gs, ""), file).not.toContain("img.shields.io");
+      const loads = [...html.matchAll(/\s(?:src|srcset)="([^"]*)"|url\(([^)]*)\)/g)].map((match) => match[1] ?? match[2]!);
+      expect(loads.filter((url) => url.includes("shields.io")), file).toEqual([]);
+    }
   });
 
   test("links each plugin page to the remove-plugin form with its id, and no other page with an id", () => {

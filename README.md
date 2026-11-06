@@ -271,8 +271,10 @@ failed to read a plugin, the card shows the failure in place of the table,
 with no report buttons. A plugin that keeps earlier facts shows the table
 and the buttons for the version of those facts.
 
-An open "Details" card comes last. Its last lines link to the forms that ask
-to change the plugin's text and to remove the plugin or report harm. It lists
+An open "Details" card comes next. Its last lines link to the forms that ask
+to change the plugin's text and to remove the plugin or report harm. A
+"Badge for your README" card comes last, with the plugin's badge Markdown. The
+Details card lists
 the plugin id. For a plugin with
 the card icon, it then gives the paid service fact, whether or not the build
 read the plugin. If the build
@@ -343,6 +345,29 @@ it. It lists the home page, the About page, and each plugin page, each at
 its canonical address. The site's `robots.txt`, at the top of its host, lets
 search engines read every page and names the sitemap. A maintainer can also
 submit the sitemap to a search engine by hand.
+
+Each plugin has a README badge file at
+`https://zotdex.jmgirard.com/badges/<id>.json`, with the plugin's id
+percent-encoded. The badge service shields.io draws a badge from it, labeled
+Zotdex. Each plugin page ends with a "Badge for your README" card that holds
+the Markdown to copy. The Markdown shows the badge through `img.shields.io` and
+links it to the plugin's page. The site shows the Markdown as text and loads
+nothing from shields.io.
+
+The badge names the Zotero majors whose newest start result is `started`,
+joined by " · ". An example is "started in Zotero 7 · 8 · 9". If no major
+started, the badge says "no start in tests". If the plugin has no start
+results, it says "not start-tested". If the last build failed to read the
+plugin and kept no earlier facts, it says "no data". A plugin that keeps
+earlier facts gets the badge of those facts. A start does not show that a
+plugin works.
+
+Only a build that deploys changes a badge. Start results come from each day's
+build. After a day whose start tests fail, a badge can name fewer majors or
+say "not start-tested" until a later build has results. GitHub Pages keeps the
+badge file for up to 10 minutes. shields.io and GitHub each keep a copy of the
+image for up to an hour. So a change can take a few hours to show. When the
+index removes a plugin, its badge shows an error badge from shields.io.
 
 Each page has a favicon, the icon that a browser shows for the page. It is a
 blue puzzle piece, and the top bar shows the same piece beside the site's name.
@@ -1842,7 +1867,8 @@ The command reads `dist/v1/plugins.json`. It writes these pages: the home
 page, `dist/index.html`, the About page, `dist/about/index.html`, one page
 for each record, `dist/plugins/<id>/index.html`, and the "Page not found"
 page, `dist/404.html`. It also writes the favicon, `dist/favicon.svg`,
-`dist/sitemap.xml`, and `dist/robots.txt`. It does not change the data file
+`dist/sitemap.xml`, `dist/robots.txt`, and one badge file for each record,
+`dist/badges/<id>.json`. It does not change the data file
 or the schemas. It
 replaces each of those files and folders of an earlier run. So a page for a
 plugin that the data no longer lists goes away. Links between the pages, and

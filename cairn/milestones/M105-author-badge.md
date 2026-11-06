@@ -1,13 +1,13 @@
 # M105: Offer plugin authors a README badge
 
-- **Status:** planned
+- **Status:** review
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — a public file per plugin that authors embed, and a new section on each plugin page
-- **Branch/PR:** —
+- **Branch/PR:** m105-author-badge
 
 ## Goal
 
@@ -29,12 +29,12 @@ Give each listed plugin a README badge, labeled Zotdex, that says which Zotero m
 
 ## Acceptance criteria
 
-- [ ] AC1: `badgeFor` in `src/site/badge.ts` returns `{ schemaVersion: 1, label: "Zotdex", message, color, cacheSeconds: 3600 }` for a record. Let the started majors be each major N that some `startTests` item names (its `zotero` up to the first dot) for which `majorStart(record, N).result` is `started`, sorted by `Number(N)`. `message` is "started in Zotero " followed by the started majors joined by " · " when there is at least one; "no start in tests" when the record has `startTests` and no started major; "not start-tested" when the record has `upstream` and no `startTests`; and "no data" when it has no `upstream`. A record with `kept` is read from its `upstream` and `startTests` like any other. `color` is `#1d5fb8` for a "started in" message and `lightgrey` for the others. `test/badge.test.ts` covers each of the four messages, a major whose older result started and whose newer result did not, a record whose only started result is 12.x (`started in Zotero 12`), started results in 7 and 10 (`started in Zotero 7 · 10`), and a record with `kept` and a started 8.x result (`started in Zotero 8`).
-- [ ] AC2: In the site that `test/site.test.ts` builds from its fixture, `badges/` holds one file `<id>.json` for each fixture record and no other file, each parsing to `badgeFor` of its record, and `badges/no-range-plugin@example.org.json` has the message `started in Zotero 7`. Shown by a site test that lists `badges/`.
-- [ ] AC3: Each page that the built `plugins/` folder holds has one section with `data-section="badge"`, headed "Badge for your README", holding exactly one `<code>` element whose text, with HTML escapes undone, is `[![Zotdex](https://img.shields.io/endpoint?url=<U>)](<P>)`, where `<U>` is `encodeURIComponent` of `ORIGIN` + `BASE` + `badges/` + `encodeURIComponent(id)` + `.json` and `<P>` is the page's canonical address. Shown by a site test that lists the built `plugins/` folder, the `_x-y+z.w@{v}` page included.
-- [ ] AC4: In each built HTML file, `img.shields.io` appears only inside `<code>` text, and no `src` or `srcset` value or CSS `url(` names it. Shown by a site test over every built HTML file.
-- [ ] AC5: README and About each describe the badge: its address `https://zotdex.jmgirard.com/badges/<id>.json` with the id percent-encoded as in the page's snippet; the four messages; that start results come from each day's build, so after a day whose start tests fail a badge can name fewer majors or say "not start-tested" until a later build has results; that shields.io and GitHub each cache the image for up to an hour, so a change can take a few hours to show; that a removed plugin's badge shows an error badge from shields.io; and that a start does not show that a plugin works. `cairn/DESIGN.md` names the badge files under its Contract boundary, and CHANGELOG has an Unreleased entry.
-- [ ] AC6: `pnpm test` and `pnpm check` pass.
+- [x] AC1: `badgeFor` in `src/site/badge.ts` returns `{ schemaVersion: 1, label: "Zotdex", message, color, cacheSeconds: 3600 }` for a record. Let the started majors be each major N that some `startTests` item names (its `zotero` up to the first dot) for which `majorStart(record, N).result` is `started`, sorted by `Number(N)`. `message` is "started in Zotero " followed by the started majors joined by " · " when there is at least one; "no start in tests" when the record has `startTests` and no started major; "not start-tested" when the record has `upstream` and no `startTests`; and "no data" when it has no `upstream`. A record with `kept` is read from its `upstream` and `startTests` like any other. `color` is `#1d5fb8` for a "started in" message and `lightgrey` for the others. `test/badge.test.ts` covers each of the four messages, a major whose older result started and whose newer result did not, a record whose only started result is 12.x (`started in Zotero 12`), started results in 7 and 10 (`started in Zotero 7 · 10`), and a record with `kept` and a started 8.x result (`started in Zotero 8`).
+- [x] AC2: In the site that `test/site.test.ts` builds from its fixture, `badges/` holds one file `<id>.json` for each fixture record and no other file, each parsing to `badgeFor` of its record, and `badges/no-range-plugin@example.org.json` has the message `started in Zotero 7`. Shown by a site test that lists `badges/`.
+- [x] AC3: Each page that the built `plugins/` folder holds has one section with `data-section="badge"`, headed "Badge for your README", holding exactly one `<code>` element whose text, with HTML escapes undone, is `[![Zotdex](https://img.shields.io/endpoint?url=<U>)](<P>)`, where `<U>` is `encodeURIComponent` of `ORIGIN` + `BASE` + `badges/` + `encodeURIComponent(id)` + `.json` and `<P>` is the page's canonical address. Shown by a site test that lists the built `plugins/` folder, the `_x-y+z.w@{v}` page included.
+- [x] AC4: In each built HTML file, `img.shields.io` appears only inside `<code>` text, and no `src` or `srcset` value or CSS `url(` names it. Shown by a site test over every built HTML file.
+- [x] AC5: README and About each describe the badge: its address `https://zotdex.jmgirard.com/badges/<id>.json` with the id percent-encoded as in the page's snippet; the four messages; that start results come from each day's build, so after a day whose start tests fail a badge can name fewer majors or say "not start-tested" until a later build has results; that shields.io and GitHub each cache the image for up to an hour, so a change can take a few hours to show; that a removed plugin's badge shows an error badge from shields.io; and that a start does not show that a plugin works. `cairn/DESIGN.md` names the badge files under its Contract boundary, and CHANGELOG has an Unreleased entry.
+- [x] AC6: `pnpm test` and `pnpm check` pass.
 
 ## Coverage
 
@@ -47,10 +47,10 @@ Give each listed plugin a README badge, labeled Zotdex, that says which Zotero m
 
 ## Tasks
 
-- [ ] T1: `src/site/badge.ts` with `badgeFor`, and `test/badge.test.ts` with AC1's cases.
-- [ ] T2: `site/src/pages/badges/[id].json.ts`; the site test of AC2.
-- [ ] T3: The badge section at the foot of `site/src/pages/plugins/[id]/index.astro`, its snippet built from `ORIGIN`, `BASE`, and `pluginHref`; the site tests of AC3 and AC4.
-- [ ] T4: README, About, `cairn/DESIGN.md`, and the CHANGELOG entry.
+- [x] T1: `src/site/badge.ts` with `badgeFor`, and `test/badge.test.ts` with AC1's cases.
+- [x] T2: `site/src/pages/badges/[id].json.ts`; the site test of AC2.
+- [x] T3: The badge section at the foot of `site/src/pages/plugins/[id]/index.astro`, its snippet built from `ORIGIN`, `BASE`, and `pluginHref`; the site tests of AC3 and AC4.
+- [x] T4: README, About, `cairn/DESIGN.md`, and the CHANGELOG entry.
 
 ## Work log
 
@@ -65,7 +65,52 @@ Give each listed plugin a README badge, labeled Zotdex, that says which Zotero m
 - 2026-11-05: question set: kept records — the same badge, no mark.
 - 2026-11-05: question set: after the merge, the agent runs the build and reads one badge through shields.io.
 - 2026-11-05: plan gate chose shields.io endpoint files over badge images the build draws, as shields renders text, width, and fonts and authors know its badges; falsified by shields.io refusing or long failing the endpoint reads.
+- 2026-11-05: implement started on m105-author-badge; untracked `.claude/` left unstaged.
+- 2026-11-05: implementation choice: `majorStart` moved from `site/src/data.ts` to `src/site/version.ts`, typed by shape so that file keeps no imports, and `data.ts` re-exports it, so `src/site/badge.ts` uses the same function the pages use without `src/` importing `site/`.
+- 2026-11-05: T1 done: `badgeFor` in `src/site/badge.ts`; `test/badge.test.ts` covers the four messages, an older start under a newer failure, a 12.x start, starts in 7 and 10, and a kept record with an 8.x start. Planting a string sort turned the 7 · 10 test red. pnpm test 2491 passed, pnpm check 0 problems.
+- 2026-11-05: T2 done: `site/src/pages/badges/[id].json.ts` writes `badges/<raw id>.json` from `badgeFor` for every record; the site test "writes one badge file for each record and no other" lists `badges/`, compares each file with `badgeFor`, and reads `started in Zotero 7` for no-range-plugin. pnpm test 2492 passed, pnpm check 0 problems.
+- 2026-11-05: T3 done: `badgeSnippet(id)` in `site/src/data.ts` builds the Markdown from `ORIGIN`, `BASE`, and `pluginHref`; each plugin page ends with a `data-section="badge"` card, "Badge for your README", one fineprint line, and the snippet in `<code class="badge-snippet">`, styled with `--space-4`, `--space-6`, `--radius-m`, and `--hover`. The section-order test now lists the badge card; new tests read every built `plugins/` page's snippet against its canonical address and check every HTML file for `img.shields.io` outside code text and in `src`, `srcset`, or `url(`. Planting an `<img>` from img.shields.io turned that test red. A real-data build wrote 736 badge files; the 375 px view shows the card with no sideways scroll. pnpm test 2494 passed, pnpm check 0 problems.
+- 2026-11-05: T4 done: README's site section gains two badge paragraphs, and its `pnpm site` list names `dist/badges/<id>.json`; About gains a "README badge" section after "Installing a plugin", with tests for the section list and its address and four messages; DESIGN's Contract boundary names the badge path and its rules, and its site build line names the badge files; CHANGELOG has an Unreleased entry. No new plain-English hit in README, CHANGELOG, or DESIGN. pnpm test 2495 passed, pnpm check 0 problems.
+- 2026-11-05: claim audit: 44 claims read, 4 corrected — site/src/pages/about.astro, README.md, site/src/pages/plugins/[id]/index.astro, CHANGELOG.md: About's "no data" sentence gains the kept-facts exception; the cache sentence adds GitHub Pages' 10-minute copy of the badge file; the plugin page and the changelog say the badge names the versions or why it names none. Re-read: all four hold; GitHub's image proxy honoring shields' one-hour header stays unchecked.
+- 2026-11-05: implement done; status review.
+- 2026-11-05: step-7 approval: m105-author-badge approved for merge
 
 ## Decisions
 
 ## Review
+
+Evidence at `a4b822ec`, 2026-11-05, re-verified at `17440872` after the fixes below.
+
+- AC1: `src/site/badge.ts` returns `schemaVersion` 1, label `Zotdex`, `cacheSeconds` 3600, color `#1d5fb8` or `lightgrey`; the seven `test/badge.test.ts` cases pass: starts in 7 and 10 (`started in Zotero 7 · 10`), an older 8.x start under a newer failure, a 12.x start, "no start in tests", "not start-tested", "no data", and a kept record with an 8.x start (`started in Zotero 8`).
+- AC2: "writes one badge file for each record and no other" passes: `badges/` lists exactly the fixture ids plus `.json`, each file equals `badgeFor`, and no-range-plugin's reads `started in Zotero 7`.
+- AC3: "gives each built plugin page one badge snippet for its own badge file and page" passes over every folder in the built `plugins/`, `_x-y+z.w@{v}` among them: one `data-section="badge"` card headed "Badge for your README", one `<code>`, whose decoded text is the Markdown with `https://zotdex.jmgirard.com/badges/<encoded id>.json` encoded again and the page's canonical address.
+- AC4: "names img.shields.io only in code text, and loads nothing from it" passes over every built HTML file; planting an `<img>` from img.shields.io turned it red (T3).
+- AC5: README's site section and About's "README badge" section give the address with the id percent-encoded, the four messages, that only a deploying build changes a badge, that a failed start-test day can drop majors or show "not start-tested", the Pages, shields.io, and GitHub caches and "a few hours", the shields.io error badge for a removed plugin, and that a start does not show a plugin works; the About test reads the address and four messages. DESIGN's Contract boundary names the badge path; CHANGELOG has an Unreleased entry.
+- AC6: `pnpm test` exits 0 with 36 files passed, 1 skipped, and 2495 tests passed, 6 skipped; `pnpm check` reads "checked 736 entries in plugins, 0 problems".
+- Gate: `cairn_validate.py` all checks passed; the generic profile names no toolchain checks; no DESIGN principle changed.
+- spawned: diff-bug, blame-history, prior-review, ripple
+- diff-bug #1: `compareVersions` became an unused import in `site/src/data.ts` — fix now, fixed 17440872.
+- diff-bug #2: the snippet test repeated the check that the built `plugins/` folder equals the fixture ids — fix now, fixed 17440872: it loops over the folder only.
+- diff-bug #3: the badge-file test parsed the fixture again — fix now, fixed 17440872: it uses the file's `records`.
+- diff-bug #4: AC2's explicit no-range-plugin message repeats the `badgeFor` loop — reject, planned change: AC2 names it as the independent fact.
+- diff-bug #5: a build with zero records writes no `badges/`, so old files stay — reject, edge: an empty data file is outside documented and common use, and `plugins/` behaves the same.
+- diff-bug #6: whether shields accepts `#1d5fb8` — noted: the read through shields.io after the merge checks it.
+- diff-bug #7: `startTests: []` gives "no start in tests" — reject, false: the schema sets `minItems: 1`.
+- diff-bug #8: the snippet block's edge contrast against the card is about 1.1:1 — noted: non-text, and the text contrast holds in both schemes.
+- diff-bug #9: no copy button; keyboard users select the text — noted: the plan shows the Markdown as text only.
+- diff-bug #10: About's "newest start test started" can read as newest in time — fix now, fixed 17440872: "each Zotero version whose start result for its newest tested release is started".
+- diff-bug #11: odd source wrapping in about.astro — reject, style.
+- diff-bug #12: GitHub's proxy honoring shields' one-hour header is unchecked — noted, as in the claim audit.
+- diff-bug #13: the endpoint's `Content-Type` is unused in a static build — reject, false as a defect: Pages serves `.json` as JSON.
+- blame-history #1: the badge card now follows Details, which M048 and DESIGN made the last card — reject, planned change: Scope puts the card at the page's foot; DESIGN updated with ripple #3.
+- blame-history #2: About's section order in DESIGN lacks the badge — fix now, fixed 17440872, with ripple #4.
+- blame-history #3: the unused import — as diff-bug #1.
+- blame-history #4: a kept record's badge has no mark — noted: D-071 records the user's choice.
+- prior-review #1: About's "no data" sentence read as contradicting the next sentence on kept facts — fix now, fixed 17440872: README and About say "If the last build failed to read the plugin and kept no earlier facts".
+- ripple #1: README said the Details card comes last — fix now, fixed 17440872: Details comes next, the badge card last.
+- ripple #2: DESIGN named `site/src/data.ts` as `majorStart`'s home — fix now, fixed 17440872.
+- ripple #3: DESIGN's plugin page walkthrough lacked the badge card — fix now, fixed 17440872.
+- ripple #4: DESIGN's About list lacked the badge section — fix now, fixed 17440872.
+- ripple #5: DESIGN's helper list lacked `badgeSnippet` — fix now, fixed 17440872.
+- ripple #6: the candidate row still reads as paused — reject, planned change: it carries ` — started M105`, and this milestone's hygiene removes it.
+- snapshot: no changed snapshot file.
