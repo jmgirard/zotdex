@@ -2015,7 +2015,7 @@ describe("the built site", () => {
       const html = readFileSync(join(out, path), "utf8");
       const bar = /<body><header class="topbar"><div class="topbar-inner">(.*?)<\/div><\/header><main>/s.exec(html)?.[1];
       expect(bar?.replace(/<button .*<\/script>/s, ""), path).toBe(
-        `<a class="brand" href="/"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="${PUZZLE_PATH}"></path></svg>Zotero plugin index</a><nav aria-label="Site">` +
+        `<a class="brand" href="/"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="${PUZZLE_PATH}"></path></svg>Zotdex</a><nav aria-label="Site">` +
           '<a href="/about/">About</a>' +
           '<a href="https://github.com/jmgirard/zotero-plugin-index/issues/new?template=add-plugin.yml" data-add-plugin>Add a plugin</a>' +
           '<a href="https://github.com/jmgirard/zotero-plugin-index/discussions" data-feedback>Feedback</a>' +
@@ -2214,8 +2214,23 @@ describe("the link preview tags", () => {
       expect(preview.title, file).not.toBe("");
       expect(preview.description.trim(), file).not.toBe("");
       expect(preview.ogType, file).toBe("website");
-      expect(preview.ogSiteName, file).toBe("Zotero plugin index");
+      expect(preview.ogSiteName, file).toBe("Zotdex");
       expect(preview.twitterCard, file).toBe("summary");
+    }
+  });
+
+  test("names the site Zotdex in every page's site name and title", () => {
+    const files = htmlFiles(out);
+    expect(files).toHaveLength(ids.length + 3);
+    for (const file of files) {
+      const page = read(file);
+      const title = decoded(/<title>(.*?)<\/title>/s.exec(page)![1]!);
+      const ogTitle = tagValue(page, "property", "og:title");
+      expect(tagValue(page, "property", "og:site_name"), file).toBe("Zotdex");
+      if (file === "index.html") expect([title, ogTitle], file).toEqual(["Zotdex: a Zotero plugin index", "Zotdex: a Zotero plugin index"]);
+      else expect(title, file).toMatch(/: Zotdex$/);
+      const html = page.replace(/<title>[^<]*<\/title>|<meta property="og:title" content="[^"]*">/g, "");
+      expect(html, file).not.toMatch(/zotero plugin index/i);
     }
   });
 
@@ -2263,11 +2278,11 @@ describe("the plugin page's preview description", () => {
   test.each<[string, string]>([
     ["spaced@example.org", spaced],
     ["unbroken@example.org", "𠮷".repeat(200)],
-    ["no-text@example.org", "Tidy Notes is a plugin listed in the Zotero plugin index."],
-    ["failed-read@example.org", "failed-read@example.org is a plugin listed in the Zotero plugin index."],
+    ["no-text@example.org", "Tidy Notes is a plugin listed in Zotdex."],
+    ["failed-read@example.org", "failed-read@example.org is a plugin listed in Zotdex."],
     ["quoted@example.org", quoted],
-    ["blank-head@example.org", "Tidy Notes is a plugin listed in the Zotero plugin index."],
-    ["blank-override@example.org", "Tidy Notes is a plugin listed in the Zotero plugin index."],
+    ["blank-head@example.org", "Tidy Notes is a plugin listed in Zotdex."],
+    ["blank-override@example.org", "Tidy Notes is a plugin listed in Zotdex."],
   ])("on %s", (id, expected) => {
     const html = readFileSync(join(dir, "plugins", id, "index.html"), "utf8");
     expect(tagValue(html, "name", "description")).toBe(expected);
@@ -2708,7 +2723,7 @@ describe("the site colors", () => {
         expect(icons![0], file).toContain('aria-hidden="true"');
         expect(/<path\b[^>]*\bd="([^"]+)"/.exec(icons![0]!)?.[1], file).toBe(drawn);
         expect(brand.startsWith(icons![0]!), file).toBe(true);
-        expect(brand.replace(icons![0]!, ""), file).toBe("Zotero plugin index");
+        expect(brand.replace(icons![0]!, ""), file).toBe("Zotdex");
       }
     });
 
