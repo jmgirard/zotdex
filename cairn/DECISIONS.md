@@ -1075,3 +1075,18 @@ same cost for a script in another site's page. `zotero-plugins.jmgirard.com` get
 no redirect, as it served the site for about two hours and was never announced.
 The GitHub repo keeps its name. This choice is wrong if readers do not connect
 Zotdex with Zotero plugins, or if a link to the old subdomain turns up in use.
+
+### D-070: The GitHub repo is renamed zotdex, and the old github.io address may stop forwarding, annotating D-068 and D-069
+
+2026-11-05, M104 plan. D-069 kept the repo's name. The user then chose to rename
+it to `jmgirard/zotdex` so that people who know the site as Zotdex find the repo
+by that name. GitHub forwards a renamed repo's web, issue, and git addresses, and
+the build reads the repo from `GITHUB_REPOSITORY`. The rename likely ends the
+forward from `https://jmgirard.github.io/zotero-plugin-index/`, which exists only
+because a repo of that name holds the custom domain. D-068 relied on that forward
+and had the README tell data users to switch. The user judged that address unused
+in its 11 days and chose to drop it from the README, with the changelog saying
+what it answers after the rename. Creating a new repo named `zotero-plugin-index`
+under the same account would end GitHub's forwards from the old repo name. This
+choice is wrong if a user reports a broken link to the old repo or old github.io
+address.
