@@ -1,20 +1,18 @@
 # Roadmap
 
 _The only authority on milestone status. Grouped by status, not ID._
-_Last hygiene check: 2026-11-05 (M103 review: site live as Zotdex at zotdex.jmgirard.com; 4 lessons marked used; caps and validate green)_
+_Last hygiene check: 2026-11-05 (M104 review: repo is jmgirard/zotdex and its first build deployed; 1 lesson in, 1 evicted; caps and validate green)_
 
 ## Milestones
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M104 | Rename the GitHub repo to zotdex | review | — | high | milestones/M104-rename-repo-zotdex.md |
+| M104 | Rename the GitHub repo to zotdex | done | — | high | milestones/archive/M104-rename-repo-zotdex.md |
 | M103 | Move the site to zotdex.jmgirard.com and name it Zotdex | done | — | high | milestones/archive/M103-move-to-zotdex.md |
 | M102 | Move the site to a jmgirard.com subdomain | done | — | high | milestones/archive/M102-move-to-subdomain.md |
-| M101 | Time each plugin read in the build log | done | — | normal | milestones/archive/M101-time-each-read.md |
 <!-- rows grouped by status, not by ID; keep the 3 most recent done/dropped rows; older ones: milestones/archive/ + git -->
 
 ## Candidates
-- [high] Rename the GitHub repo to zotdex: the site is named Zotdex, and the user wants the repo name and GitHub search to match; D-069 says the repo keeps its name, so the plan needs a decision entry annotating it; update the repo references in the site's issue, discussion, and license links, the build's issue reads (`INDEX_REPO`), README links, workflows, tests, and the README sentence on the github.io forward, which a rename ends since that forward follows the repo's path (the user judged that address unused); plan after M103 and before the author badge — added 2026-11-05 — M103, D-069 — started M104
 - [high] Offer plugin authors a README badge: a shields.io endpoint file per plugin from the site build, labeled Zotdex, and a copyable snippet; its planning paused at the question set for the Zotdex move; its draft's audit asked to count each major that `startTests` names, sorted by number, to say "started" and not "starts" or "works" (D-023), to give a `kept` record its kept facts, and to say "no data" for a failed read; plan after the repo rename — added 2026-11-05 — M103
 - [low] Let a run by hand start every plugin: after a change to the start-test code, the reporter, or a Zotero pin, carried results stay up to 7 days, and nothing lets a maintainer skip the carry for one run (M059 review) — added 2026-10-30 — M059, D-035
 - [low] Read new plugins for paid services: M082 to M084 read the entries through `1b2cebf`, and the bot adds up to 5 a run, so later plugins carry no mark; repeat the word list and record in `cairn/references/paid-service-sweep.md`; a listing command waits for marks falling far behind the new plugins (M082 plan); also read the GitHub text of `zotero@wilddata.cn`, which names a free allowance for new users, and the maker's site of `zotbox@scigreat.com` (M089 review) — added 2026-11-02 — M082, M083, M084, M089, D-054

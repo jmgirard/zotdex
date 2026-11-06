@@ -1,0 +1,11 @@
+# M104: Rename the GitHub repo to zotdex
+
+**Status:** done (2026-11-05, PR #848 https://github.com/jmgirard/zotdex/pull/848)
+
+**Goal:** Rename the GitHub repo `jmgirard/zotero-plugin-index` to `jmgirard/zotdex` so the repo, the site (Zotdex), and GitHub search match, with the code and docs naming the new repo (D-070).
+
+**Outcome:** During implementation, `gh repo rename zotdex` renamed the repo; `origin` is `https://github.com/jmgirard/zotdex.git`; the description is "Zotdex: a community index of Zotero 7+ plugins with tracked version compatibility" with a `zotdex` topic. GitHub answers 301 from the old repo's web, issue, and API addresses; Pages kept the custom domain `zotdex.jmgirard.com` with HTTPS; old `jmgirard.github.io/zotero-plugin-index/` addresses answer 404 once the edge cache's old 301 expired, about an hour after it was stored. `INDEX_REPO` is `jmgirard/zotdex`; the site's issue-form, Discussions, and license links, the user-agent, `package.json`'s name, and the schema titles name zotdex; README and CLAUDE.md are titled Zotdex, README drops the old github.io paragraph, and CHANGELOG has a repo bullet and one line on the old address's 404. DESIGN names the repository `jmgirard/zotdex`. Workflows read `GITHUB_REPOSITORY`, so none changed. The localStorage keys and the start-test reporter id keep the old name, unseen by users. Build run 42163328712, the first from the renamed repo, deployed, and the live pages link to `jmgirard/zotdex`.
+
+**Decisions:** D-070 (the rename, annotating D-068 and D-069; the old github.io address's forward ends, which the user accepted).
+
+**Review:** Criteria audit (full) 6 findings, then a re-audit of AC2 and AC4 after the question set, 4 findings, all applied. Claim audit 9 claims, 2 corrected (the repo forward lasts while no new repo takes the old name; the 404 line held after the cache expired). Four-lens review, 15 findings: 1 fixed (DESIGN says which decision named the site and which the repo), 6 rejected (an untested user-agent, the 404 line and a local build before the rename as false, the removed browser-script caveat and the candidate row as planned, the old-path guard as intended), 8 noted. Candidate row "Rename the GitHub repo to zotdex" graduated. Lesson 2026-11-03 (M085) evicted by rank for the new M104 lesson; M018, M036, and M066 marked used.
