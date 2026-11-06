@@ -120,11 +120,6 @@ describe("filterHref", () => {
     expect(filterHref(`${PAGE}?a=1&language=en`, "language", "zh")).toBe(`${PAGE}?a=1&language=zh`);
   });
 
-  test("keeps a path below the root", () => {
-    const page = "http://localhost:4321/sub/";
-    expect(filterHref(`${page}?language=en`, "language", "zh")).toBe(`${page}?language=zh`);
-  });
-
   test("removes the language parameter for All languages", () => {
     expect(filterHref(`${PAGE}?language=zh`, "language", "")).toBe(PAGE);
   });

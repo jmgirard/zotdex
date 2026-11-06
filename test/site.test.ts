@@ -162,8 +162,8 @@ describe("pnpm site", () => {
     );
     // Each plugin page links home, and the home page links each plugin page.
     expect(inside.length).toBeGreaterThanOrEqual(2 * ids.length);
-    // The second pattern is the site's old GitHub Pages path.
-    expect(inside.filter(({ url }) => !/^\/(?!\/)/.test(url) || /^\/zotero-plugin-index\//.test(url))).toEqual([]);
+    // The old Pages path is a pattern, not a string, so a repo search for that path skips this line.
+    expect(inside.filter(({ url }) => !/^\/(?!\/)/.test(url) || /^\/zotero-plugin-index(?:[/?#]|$)/.test(url))).toEqual([]);
   });
 });
 

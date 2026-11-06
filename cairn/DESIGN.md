@@ -211,7 +211,7 @@ to the home page and About, with `noindex` and no canonical link or `og:url`
 (M097). `sitemap.xml` lists the canonical address of the home page, About, and
 each plugin page, with a head link on each page (M097). The site is served at
 its host's root, so `robots.txt` there lets every crawler read every path and
-names the sitemap (M102; corrected M102).
+names the sitemap (M097, corrected M102).
 A manifest `__MSG_` name or description takes its message from
 `_locales/en/`, `en_US/`, or `en_GB/` before the default locale (M055).
 The data also carries the GitHub repo's About text as `repoDescription`.
@@ -248,8 +248,8 @@ saved copy must fetch the schema again after such a change. The URL is
 `https://zotero-plugins.jmgirard.com/v1/plugins.json`. The published schemas
 are under `https://zotero-plugins.jmgirard.com/schemas/`, and each schema's
 `$id` is its own URL (M006, moved by M102 under D-068). The site
-and data were first under `https://jmgirard.github.io/zotero-plugin-index/`,
-and GitHub forwards each old address to the same path and query under the new
+and data were first under `https://jmgirard.github.io/zotero-plugin-index/`.
+GitHub forwards each old address to the same path and query under the new
 host's root. A
 script in a web page on another site must fetch the new address. The forward
 lacks the header that a browser needs for that request. Each record that has
@@ -557,7 +557,9 @@ user reports. The exception is a report that is abuse.
   Zotero release read M062; release list warnings M068.
 - Site build (`src/site/`, `site/`): `pnpm site [--out <dir>]` writes the
   home page, the About page (M054), and one page per record into `dist/`,
-  or `<dir>`, from the data file there. `src/site/version.ts` holds the version and range functions
+  or `<dir>`, from the data file there. It also writes `404.html`,
+  `favicon.svg`, `sitemap.xml`, and `robots.txt` (M102).
+  `src/site/version.ts` holds the version and range functions
   that the templates use, `majorSupport` and `ZOTERO_MAJORS` among them, and
   `src/site/description.ts` holds `shownDescription`, `cjkShare`, and `cutDescription`.
   `pnpm description-gaps <data file>` (`src/site/description-gaps.ts`)
@@ -1060,8 +1062,9 @@ reused._
   before the table adds the pre-paint style. Since M078 every page carries
   two classic inline theme scripts, which D-026 allows: one in `<head>` that
   sets the saved scheme before the body parses, and one right after the top
-  bar's button that wires and shows it. The templates take the Pages path
-  from `site/src/base.ts`, because a `BASE_URL` environment variable replaces
+  bar's button that wires and shows it. The templates take the site's path
+  on its host, the root since M102, from `site/src/base.ts`, because a
+  `BASE_URL` environment variable replaces
   Astro's `import.meta.env.BASE_URL`. `Base.astro` writes each page's preview
   tags, and for a page with a `path` its canonical link and `og:url`, from its
   `description` and `path` props and from

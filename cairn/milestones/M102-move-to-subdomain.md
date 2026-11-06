@@ -108,3 +108,24 @@ Evidence at `619f8b36`, 2026-11-05.
 - Gate: `cairn_validate.py` all checks passed. The generic profile's consistency-gate slot names no toolchain checks. No DESIGN principle changed, so `cairn_impact` is skipped.
 - spawned: diff-bug, blame-history, prior-review, ripple
 - prior-review: no regression of a past review point; the PR comment probe returned none.
+- diff-bug #1: nothing in code stops a 06:17 UTC or hand-run build between the merge and the domain switch, which would deploy root-path links under the old path and fail the `--previous` reads — reject, planned change: Scope In's switch order sets the domain right after the merge, and the merge runs well clear of 06:17 UTC.
+- diff-bug #2: between setting the domain and the certificate, both addresses show the old deploy with broken links — reject, planned change: a window of minutes on a site not yet advertised; the data URL keeps working.
+- diff-bug #3: README, DESIGN, and CHANGELOG state the forward in the present tense, false until the switch — reject, planned change: the switch follows the merge at once.
+- diff-bug #4: DESIGN's robots sentence carried "(M102; corrected M102)" for text first written in M097 — fix now.
+- diff-bug #5: CHANGELOG.md line 10 ran to 98 columns — fix now.
+- diff-bug #6: short lines after rewrapping in README and DESIGN — reject, style.
+- diff-bug #7: `src/site/theme.ts` comment gave a reason that no longer holds — fix now.
+- diff-bug #8: the link sweep's escaped old-path pattern did not say why it is a pattern — fix now: its comment says so.
+- diff-bug #9: `robots.txt.ts`'s Content-Type header is dropped in a static build — reject, false as a defect: Pages serves `.txt` by its extension, as it does `sitemap.xml`.
+- diff-bug #10: README "publishes its data file on GitHub Pages" may not lead readers to the new host — reject, false: the sentence is true and the list under it names the new host.
+- diff-bug #11 (test question c): the new `filterHref` test "keeps a path below the root" probes behavior the change does not alter — fix now: removed; `PAGE` is now the root probe.
+- diff-bug #12 (test question c): the sweep's comment stated what the code shows — fix now, with #8.
+- blame-history #1: the merge-to-switch window for the `--previous` reads — reject, planned change, as diff-bug #1.
+- blame-history #2: the sweep missed a bare `/zotero-plugin-index` or one followed by `?` — fix now: the pattern is `/^\/zotero-plugin-index(?:[/?#]|$)/`.
+- blame-history #3: the theme comment no longer stated why the key names the site — fix now, with diff-bug #7.
+- blame-history #4: schema `$id`s change — noted, D-068 records it.
+- blame-history #5: robots.txt reverses M097's reason — noted, D-068 records it.
+- blame-history #6: `cairn/DESIGN.md:1063` still said "Pages path" — fix now.
+- ripple #1: `cairn/DESIGN.md:1063` "The templates take the Pages path" — fix now, with blame-history #6.
+- ripple #2: `cairn/DESIGN.md:558` listed only the pages `pnpm site` writes — fix now: it names `404.html`, `favicon.svg`, `sitemap.xml`, and `robots.txt`. A local build wrote no other top-level entry.
+- snapshot: no changed snapshot file (`git diff --name-only main...HEAD` lists no `_snaps` or `__snapshots__` path).

@@ -7,9 +7,10 @@
   `https://zotero-plugins.jmgirard.com/v1/plugins.json`, and each published
   schema's `$id` names its new address. GitHub forwards each address under
   `https://jmgirard.github.io/zotero-plugin-index/` to the same path and
-  query under the new host's root. A script in a web page on another site must fetch the data from
-  the new address. The forward lacks the header that a browser needs for
-  that request. The site now has a `robots.txt` that names its sitemap.
+  query under the new host's root. A script in a web page on another site
+  must fetch the data from the new address. The forward lacks the header
+  that a browser needs for that request. The site now has a `robots.txt`
+  that names its sitemap.
 - The `pnpm build` log now says how long the plugin reads took: the whole
   read phase, the reads and summed time for each result, and the 10 slowest
   reads.
