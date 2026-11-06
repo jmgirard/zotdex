@@ -67,6 +67,7 @@ Rename the GitHub repo `jmgirard/zotero-plugin-index` to `jmgirard/zotdex` so th
 - 2026-11-05: T3 done: README title `# Zotdex`, the build's default repo `jmgirard/zotdex`, and its old-address paragraph removed; `CLAUDE.md` title `# Zotdex`; CHANGELOG Unreleased drops the forward sentences and adds a repo bullet and one line that old github.io addresses answer 404; DESIGN's purpose line names `jmgirard/zotdex`, and its data paragraph says those addresses answer 404 since the rename. The plain `about/` address still gave an edge-cache 301 (age 779 s, `x-cache: HIT`), so a background read waits for it to expire. No new plain-English hit in README or CHANGELOG. pnpm test 2484 passed, pnpm check 0 problems.
 - 2026-11-05: claim audit: 9 claims read, 2 corrected — CHANGELOG.md: the repo forward lasts while no new repo takes the old name; the 404 line held once the edge cache's 301 expired, about one hour after it was stored. Re-read: both hold.
 - 2026-11-05: the plain `https://jmgirard.github.io/zotero-plugin-index/about/` now answers 404, as does the root. Implement done; status review.
+- 2026-11-05: step-7 approval: m104-rename-repo-zotdex approved for merge
 
 ## Decisions
 
