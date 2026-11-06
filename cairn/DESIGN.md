@@ -249,7 +249,8 @@ saved copy must fetch the schema again after such a change. The URL is
 are under `https://zotero-plugins.jmgirard.com/schemas/`, and each schema's
 `$id` is its own URL (M006, moved by M102 under D-068). The site
 and data were first under `https://jmgirard.github.io/zotero-plugin-index/`,
-and GitHub forwards each old address to the same path on the new host. A
+and GitHub forwards each old address to the same path and query under the new
+host's root. A
 script in a web page on another site must fetch the new address. The forward
 lacks the header that a browser needs for that request. Each record that has
 `upstream` carries the report counts in the optional `reports` field. The

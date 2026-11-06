@@ -367,8 +367,9 @@ The index publishes its data file on GitHub Pages:
 
 The site and the data were first published under
 `https://jmgirard.github.io/zotero-plugin-index/`. GitHub forwards each old
-address to the same path on the new host. So old links to the pages and to
-the data still work in a browser and in a client that follows redirects. A
+address to the same path and query under the new host's root. So old links to
+the pages and to the data still work in a browser and in most clients that
+follow redirects. A
 script in a web page on another site must fetch the data from the new
 address. The forward lacks the header that a browser needs for that request.
 
