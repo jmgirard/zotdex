@@ -1,6 +1,6 @@
 # M103: Move the site to zotdex.jmgirard.com and name it Zotdex
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
@@ -49,7 +49,7 @@ Serve the site and its data at `https://zotdex.jmgirard.com/` under the name Zot
 - [x] T1: Move the host in `site/src/base.ts`, `src/build/previous.ts`, `.github/workflows/build.yml`, both schemas, and the tests that name it (`test/site.test.ts`, `test/home-filter.test.ts`, `test/schemas.test.ts`, `test/workflows.test.ts`).
 - [x] T2: Rename the site to Zotdex in `site/src/layouts/Base.astro`, `site/src/pages/index.astro`, `about.astro`, `404.astro`, `plugins/[id]/index.astro`, and `site/src/data.ts`; widen the preview-tag test to `404.html` for `og:site_name`, and add the case-insensitive name sweep over every built HTML file.
 - [x] T3: README, the CHANGELOG Unreleased entry, `cairn/DESIGN.md`, and the M035 lesson, marked `corrected M103`.
-- [ ] T4: Once the user has added the CNAME record, read it with `dig`; if it is missing, stop for the user.
+- [x] T4: Once the user has added the CNAME record, read it with `dig`; if it is missing, stop for the user.
 
 ## Work log
 
@@ -70,6 +70,7 @@ Serve the site and its data at `https://zotdex.jmgirard.com/` under the name Zot
 - 2026-11-05: T3 done: README's first paragraph opens "Zotdex is a community index", and its site, data, schema, and `curl` addresses name zotdex; the CHANGELOG Unreleased entry from M102 now says the site is named Zotdex at `https://zotdex.jmgirard.com/`; DESIGN's data URLs and tag name M103 and D-069; the M035 lesson names the new data URL. The AC3 search lists only zotdex lines and the github.io forward text at CHANGELOG:9, README:370, and DESIGN:251. No new plain-English hit. pnpm test 2484 passed, pnpm check 0 problems.
 - 2026-11-05: claim audit: 24 claims read, 0 corrected — README.md, CHANGELOG.md, site/src/base.ts, site/src/data.ts, site/src/layouts/Base.astro, site/src/pages/*, test/*. Not checkable before the switch: zotdex serving the site and github.io forwarding there.
 - 2026-11-05: T4 in progress: 1.1.1.1 and 8.8.8.8 return the `zotdex` CNAME `jmgirard.github.io.`; this machine's resolver still holds an earlier empty answer, so a background read waits for it.
+- 2026-11-05: T4 done: `dig +short zotdex.jmgirard.com CNAME` on this machine prints `jmgirard.github.io.` once the router's empty answer expired; the custom domain is still `zotero-plugins.jmgirard.com`. Implement done; status review.
 
 ## Decisions
 
