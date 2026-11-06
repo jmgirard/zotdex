@@ -94,6 +94,14 @@ export const ZOTERO_MAJORS = ["7", "8", "9", "10"];
 
 export type MajorSupport = "all" | "some" | "none";
 
+// The start-test result for Zotero major N: the result whose Zotero release is N.x, the
+// newest release when several are.
+export function majorStart<T extends { zotero: string }>(record: { startTests?: T[] }, major: string): T | undefined {
+  return (record.startTests ?? [])
+    .filter(({ zotero }) => zotero.split(".")[0] === major)
+    .reduce<T | undefined>((newest, test) => (newest && compareVersions(newest.zotero, test.zotero) >= 0 ? newest : test), undefined);
+}
+
 // The newest release of each Zotero major before the current one, from the "Changes in"
 // headings of https://www.zotero.org/support/<N>.0_changelog on 2026-10-30
 // (cairn/references/zotero-changelogs.md). When Zotero ships a new major, add the major it

@@ -7,7 +7,7 @@ _Last hygiene check: 2026-11-05 (M104 review: repo is jmgirard/zotdex and its fi
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M105 | Offer plugin authors a README badge | planned | — | high | milestones/M105-author-badge.md |
+| M105 | Offer plugin authors a README badge | in-progress | — | high | milestones/M105-author-badge.md |
 | M104 | Rename the GitHub repo to zotdex | done | — | high | milestones/archive/M104-rename-repo-zotdex.md |
 | M103 | Move the site to zotdex.jmgirard.com and name it Zotdex | done | — | high | milestones/archive/M103-move-to-zotdex.md |
 | M102 | Move the site to a jmgirard.com subdomain | done | — | high | milestones/archive/M102-move-to-subdomain.md |

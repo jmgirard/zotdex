@@ -8,6 +8,7 @@ import {
   appliedValue,
   compareVersions,
   declaredRange,
+  majorStart,
   rowMajors,
   usedOverride,
   ZOTERO_MAJORS,
@@ -15,7 +16,7 @@ import {
 } from "../../src/site/version.ts";
 import { BASE } from "./base.ts";
 
-export { BASE, CATEGORIES, categories, categoryOptions, declaredRange, languageName, languageOptions, shownDescription };
+export { BASE, CATEGORIES, categories, categoryOptions, declaredRange, languageName, languageOptions, majorStart, shownDescription };
 export type { Override, PluginRecord };
 
 // The words of the paid service mark, its legend line, and its Details fact (D-054).
@@ -241,14 +242,6 @@ export function majorReport(record: PluginRecord, major: string): { works: numbe
   const items = (record.reports ?? []).filter(({ zoteroMajor }) => String(zoteroMajor) === major);
   if (items.length === 0) return undefined;
   return items.reduce((sum, { works, broken }) => ({ works: sum.works + works, broken: sum.broken + broken }), { works: 0, broken: 0 });
-}
-
-// The start-test result for Zotero major N: the result whose Zotero release is N.x, the
-// newest release when several are.
-export function majorStart(record: PluginRecord, major: string): StartTestRecord | undefined {
-  return (record.startTests ?? [])
-    .filter(({ zotero }) => zotero.split(".")[0] === major)
-    .reduce<StartTestRecord | undefined>((newest, test) => (newest && compareVersions(newest.zotero, test.zotero) >= 0 ? newest : test), undefined);
 }
 
 // Only an http or https URL becomes a link; repoUrl in meta.json is any string.

@@ -1,13 +1,13 @@
 # M105: Offer plugin authors a README badge
 
-- **Status:** planned
+- **Status:** in-progress
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — a public file per plugin that authors embed, and a new section on each plugin page
-- **Branch/PR:** —
+- **Branch/PR:** m105-author-badge
 
 ## Goal
 
@@ -47,7 +47,7 @@ Give each listed plugin a README badge, labeled Zotdex, that says which Zotero m
 
 ## Tasks
 
-- [ ] T1: `src/site/badge.ts` with `badgeFor`, and `test/badge.test.ts` with AC1's cases.
+- [x] T1: `src/site/badge.ts` with `badgeFor`, and `test/badge.test.ts` with AC1's cases.
 - [ ] T2: `site/src/pages/badges/[id].json.ts`; the site test of AC2.
 - [ ] T3: The badge section at the foot of `site/src/pages/plugins/[id]/index.astro`, its snippet built from `ORIGIN`, `BASE`, and `pluginHref`; the site tests of AC3 and AC4.
 - [ ] T4: README, About, `cairn/DESIGN.md`, and the CHANGELOG entry.
@@ -65,6 +65,9 @@ Give each listed plugin a README badge, labeled Zotdex, that says which Zotero m
 - 2026-11-05: question set: kept records — the same badge, no mark.
 - 2026-11-05: question set: after the merge, the agent runs the build and reads one badge through shields.io.
 - 2026-11-05: plan gate chose shields.io endpoint files over badge images the build draws, as shields renders text, width, and fonts and authors know its badges; falsified by shields.io refusing or long failing the endpoint reads.
+- 2026-11-05: implement started on m105-author-badge; untracked `.claude/` left unstaged.
+- 2026-11-05: implementation choice: `majorStart` moved from `site/src/data.ts` to `src/site/version.ts`, typed by shape so that file keeps no imports, and `data.ts` re-exports it, so `src/site/badge.ts` uses the same function the pages use without `src/` importing `site/`.
+- 2026-11-05: T1 done: `badgeFor` in `src/site/badge.ts`; `test/badge.test.ts` covers the four messages, an older start under a newer failure, a 12.x start, starts in 7 and 10, and a kept record with an 8.x start. Planting a string sort turned the 7 · 10 test red. pnpm test 2491 passed, pnpm check 0 problems.
 
 ## Decisions
 
