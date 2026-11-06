@@ -3,7 +3,8 @@
 ## Unreleased
 
 - Each plugin now has a README badge, labeled Zotdex, that names the Zotero
-  versions its release started in, such as "started in Zotero 7 · 8 · 9". The
+  versions it started in during the index's start tests, such as "started in
+  Zotero 7 · 8 · 9", or says why it names none. The
   site build writes one shields.io endpoint file per plugin at
   `https://zotdex.jmgirard.com/badges/<id>.json`. Each plugin page ends with a
   "Badge for your README" card that holds the Markdown to copy. README and

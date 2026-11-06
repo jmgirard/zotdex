@@ -269,13 +269,14 @@ const offered = new Set(categoryOptions(plugins).map(({ value }) => value));
     <p>
       The badge says "started in Zotero" and the Zotero versions whose newest start test started, such as "started in
       Zotero 7 · 8 · 9". If no version started, it says "no start in tests". If the plugin has no start results, it says
-      "not start-tested". If the last build failed to read the plugin, it says "no data". A start does not show that a
-      plugin works.
+      "not start-tested". If the last build failed to read the plugin, it says "no data". A plugin that keeps earlier
+      facts gets the badge of those facts. A start does not show that a plugin works.
     </p>
     <p>
       Only a build that deploys changes a badge. Start results come from each day's build. After a day whose start tests
-      fail, a badge can name fewer versions or say "not start-tested" until a later build has results. shields.io and
-      GitHub each keep a copy of the image for up to an hour. So a change can take a few hours to show. When the index
+      fail, a badge can name fewer versions or say "not start-tested" until a later build has results. GitHub Pages keeps
+      the badge file for up to 10 minutes, and shields.io and GitHub each keep a copy of the image for up to an hour. So a
+      change can take a few hours to show. When the index
       removes a plugin, its badge shows an error badge from shields.io.
     </p>
   </section>

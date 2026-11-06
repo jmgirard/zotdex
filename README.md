@@ -361,10 +361,10 @@ those facts. A start does not show that a plugin works.
 
 Only a build that deploys changes a badge. Start results come from each day's
 build. After a day whose start tests fail, a badge can name fewer majors or
-say "not start-tested" until a later build has results. shields.io and GitHub
-each keep a copy of the image for up to an hour. So a change can take a few
-hours to show. When the index removes a plugin, its badge shows an error badge
-from shields.io.
+say "not start-tested" until a later build has results. GitHub Pages keeps the
+badge file for up to 10 minutes. shields.io and GitHub each keep a copy of the
+image for up to an hour. So a change can take a few hours to show. When the
+index removes a plugin, its badge shows an error badge from shields.io.
 
 Each page has a favicon, the icon that a browser shows for the page. It is a
 blue puzzle piece, and the top bar shows the same piece beside the site's name.
