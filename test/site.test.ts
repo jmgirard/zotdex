@@ -478,7 +478,7 @@ describe("the report row", () => {
       for (const verdict of ["works", "broken"]) {
         const href = reportLink(page(id), verdict)!;
         const url = new URL(href);
-        expect(`${url.origin}${url.pathname}`).toBe("https://github.com/jmgirard/zotero-plugin-index/issues/new");
+        expect(`${url.origin}${url.pathname}`).toBe("https://github.com/jmgirard/zotdex/issues/new");
         expect([...url.searchParams.entries()]).toEqual([
           ["template", `${verdict}.yml`],
           ["plugin", id],
@@ -887,7 +887,7 @@ describe("the About page", () => {
   test("states the license terms and the icons' sources, and links to the README's License section", () => {
     const section = /<section class="card" id="license" data-about="license">(.*?)<\/section>/s.exec(about())![1]!;
     const link = /<a href="([^"]*)" data-license-link>([^<]*)<\/a>/.exec(section);
-    expect(link?.[1]).toBe("https://github.com/jmgirard/zotero-plugin-index#license");
+    expect(link?.[1]).toBe("https://github.com/jmgirard/zotdex#license");
     const text = unescaped(section.replace(/<[^>]+>/g, "")).replace(/\s+/g, " ");
     expect(text).toContain("The index's code is under the MIT License, except the third-party parts of the files that the README names.");
     expect(text).toContain("The icons on these pages come from Lucide, under the ISC License, and from Feather, under the MIT License.");
@@ -2017,8 +2017,8 @@ describe("the built site", () => {
       expect(bar?.replace(/<button .*<\/script>/s, ""), path).toBe(
         `<a class="brand" href="/"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="${PUZZLE_PATH}"></path></svg>Zotdex</a><nav aria-label="Site">` +
           '<a href="/about/">About</a>' +
-          '<a href="https://github.com/jmgirard/zotero-plugin-index/issues/new?template=add-plugin.yml" data-add-plugin>Add a plugin</a>' +
-          '<a href="https://github.com/jmgirard/zotero-plugin-index/discussions" data-feedback>Feedback</a>' +
+          '<a href="https://github.com/jmgirard/zotdex/issues/new?template=add-plugin.yml" data-add-plugin>Add a plugin</a>' +
+          '<a href="https://github.com/jmgirard/zotdex/discussions" data-feedback>Feedback</a>' +
           '<a href="/v1/plugins.json">Data</a></nav>',
       );
       const foot = /<\/main><footer class="foot"><div class="foot-inner foot-rule">(.*?)<\/div><\/footer><\/body>/s.exec(html)?.[1];
@@ -2087,7 +2087,7 @@ describe("the built site", () => {
       const links = [...html.matchAll(/<a href="([^"]*)" data-text-change>/g)];
       expect(links, id).toHaveLength(1);
       expect(links[0]![1]!.replace(/&amp;/g, "&").replace(/&#38;/g, "&"), id).toBe(
-        `https://github.com/jmgirard/zotero-plugin-index/issues/new?template=text-change.yml&plugin=${encodeURIComponent(id)}`,
+        `https://github.com/jmgirard/zotdex/issues/new?template=text-change.yml&plugin=${encodeURIComponent(id)}`,
       );
       const details = html.indexOf('data-section="details"');
       expect(links[0]!.index, id).toBeGreaterThan(details);
@@ -2099,7 +2099,7 @@ describe("the built site", () => {
   });
 
   test("links each plugin page to the remove-plugin form with its id, and no other page with an id", () => {
-    const form = "https://github.com/jmgirard/zotero-plugin-index/issues/new?template=remove-plugin.yml";
+    const form = "https://github.com/jmgirard/zotdex/issues/new?template=remove-plugin.yml";
     const links = (html: string) => [...html.matchAll(/<a href="([^"]*remove-plugin\.yml[^"]*)"[^>]*>([^<]*)<\/a>/g)].map((match) => [match[1]!.replace(/&amp;|&#38;/g, "&"), match[2]!]);
     const files = htmlFiles(out);
     expect(files).toHaveLength(ids.length + 3);
@@ -2118,7 +2118,7 @@ describe("the built site", () => {
     const html = readFileSync(join(out, "about/index.html"), "utf8");
     const start = html.indexOf('data-about="removing"');
     const section = html.slice(start, html.indexOf("</section>", start));
-    expect(section).toMatch(/<a href="https:\/\/github\.com\/jmgirard\/zotero-plugin-index\/issues\/new\?template=remove-plugin\.yml"/);
+    expect(section).toMatch(/<a href="https:\/\/github\.com\/jmgirard\/zotdex\/issues\/new\?template=remove-plugin\.yml"/);
     const text = unescaped(section.replace(/<[^>]+>/g, "")).replace(/\s+/g, " ");
     for (const words of [
       "Removing a plugin",

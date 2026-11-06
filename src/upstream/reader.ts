@@ -406,7 +406,7 @@ export function githubClient(fetch: Fetch, token = process.env.GITHUB_TOKEN) {
   const headers: Record<string, string> = {
     accept: "application/vnd.github+json",
     "x-github-api-version": "2022-11-28",
-    "user-agent": "zotero-plugin-index",
+    "user-agent": "zotdex",
   };
   if (token) headers.authorization = `Bearer ${token}`;
 

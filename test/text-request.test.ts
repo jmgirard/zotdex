@@ -131,7 +131,7 @@ describe("textProblems", () => {
 
 const ID = "first-plugin@example.org";
 const { generatedAt } = JSON.parse(readFileSync(resolve(ROOT, "test/fixtures/site/plugins.json"), "utf8")) as { generatedAt: string };
-const ISSUE_URL = "https://api.github.com/repos/jmgirard/zotero-plugin-index/issues/7";
+const ISSUE_URL = "https://api.github.com/repos/jmgirard/zotdex/issues/7";
 const REPO_URL = "https://api.github.com/repos/example/first-plugin";
 const temps: string[] = [];
 afterEach(() => {
@@ -159,7 +159,7 @@ function responses({ text = GOOD, field = "description", plugin = ID, author = "
 }
 
 function run(tree: ReturnType<typeof checkout>, answers: Responses, extra: Partial<RequestOptions> = {}) {
-  return textRequest({ root: tree.root, dataPath: tree.dataPath, fetch: fixtureFetch(answers).fetch, indexRepo: "jmgirard/zotero-plugin-index", issue: 7, ...extra });
+  return textRequest({ root: tree.root, dataPath: tree.dataPath, fetch: fixtureFetch(answers).fetch, indexRepo: "jmgirard/zotdex", issue: 7, ...extra });
 }
 
 describe("textRequest's report", () => {

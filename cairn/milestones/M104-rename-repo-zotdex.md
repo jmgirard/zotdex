@@ -1,13 +1,13 @@
 # M104: Rename the GitHub repo to zotdex
 
-- **Status:** planned
+- **Status:** in-progress
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — the repo URL, the links on every page, and the build's issue reads change
-- **Branch/PR:** —
+- **Branch/PR:** m104-rename-repo-zotdex
 
 ## Goal
 
@@ -44,7 +44,7 @@ Rename the GitHub repo `jmgirard/zotero-plugin-index` to `jmgirard/zotdex` so th
 
 ## Tasks
 
-- [ ] T1: Change the repo name in code, schemas, `package.json`, the user-agent, and the tests and fixtures that name it.
+- [x] T1: Change the repo name in code, schemas, `package.json`, the user-agent, and the tests and fixtures that name it.
 - [ ] T2: `gh repo rename zotdex --yes`; `git remote set-url origin` to the new URL; `gh repo edit` for the description and the `zotdex` topic; read the old repo URL, `https://jmgirard.github.io/zotero-plugin-index/about/`, and the Pages settings.
 - [ ] T3: README, `CLAUDE.md`, the CHANGELOG Unreleased section, and `cairn/DESIGN.md`, from T2's reads.
 
@@ -61,6 +61,8 @@ Rename the GitHub repo `jmgirard/zotero-plugin-index` to `jmgirard/zotdex` so th
 - 2026-11-05: question set: rename, remote, description, and topic — the agent runs them with gh during implementation.
 - 2026-11-05: question set: the old github.io address — README drops it; CHANGELOG keeps one line on what it answers after the rename.
 - 2026-11-05: plan gate chose renaming before the merge over after it, as GitHub forwards the old repo URLs the live site links to and the build reads the repo from `GITHUB_REPOSITORY`, so the read results can shape the docs before review; falsified by a renamed repo whose Pages deploy fails.
+- 2026-11-05: implement started on m104-rename-repo-zotdex; untracked `.claude/` left unstaged.
+- 2026-11-05: T1 done: `INDEX_REPO` `jmgirard/zotdex`; `LICENSE_HREF`, the issue-form base, and `FEEDBACK_HREF` under `https://github.com/jmgirard/zotdex`; user-agent `zotdex`; `package.json` name `zotdex`; schema titles `Zotdex entry fields` and `Zotdex published data`; the site, text-request, and build fixture URLs follow. pnpm test 2484 passed, pnpm check 0 problems.
 
 ## Decisions
 
