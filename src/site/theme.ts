@@ -1,6 +1,6 @@
 // The layout builds a classic script from each function's source text, so each one calls and
 // reads nothing from outside its body except built-ins and browser globals. The key names this
-// site, since the owner's other GitHub Pages sites share its origin's localStorage.
+// site, as it did when the site shared an origin's localStorage with other sites.
 
 // Sets the saved scheme on <html>. It runs in <head>, so the page first paints in that scheme.
 // With no saved scheme, or with blocked storage, the system setting decides.

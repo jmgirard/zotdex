@@ -7,7 +7,7 @@ _Last hygiene check: 2026-11-05 (status audit: "Check categories on new plugins"
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M102 | Move the site to a jmgirard.com subdomain | planned | — | high | milestones/M102-move-to-subdomain.md |
+| M102 | Move the site to a jmgirard.com subdomain | in-progress | — | high | milestones/M102-move-to-subdomain.md |
 | M101 | Time each plugin read in the build log | done | — | normal | milestones/archive/M101-time-each-read.md |
 | M100 | Keep a plugin's last good record | done | — | high | milestones/archive/M100-keep-last-good-record.md |
 | M099 | Replace the red logo with a blue puzzle piece | done | — | normal | milestones/archive/M099-puzzle-piece-logo.md |

@@ -2,8 +2,7 @@ import { defineConfig } from "astro/config";
 import { BASE } from "./src/base.ts";
 
 // pnpm site (src/site/site.ts) passes a temporary outDir, and the data file path through
-// ZPI_SITE_DATA. The site lives under the repo's GitHub Pages path, so every link inside
-// the site starts with BASE.
+// ZPI_SITE_DATA. Every link inside the site starts with BASE, the site's path on its host.
 export default defineConfig({
   output: "static",
   base: BASE,
