@@ -31,13 +31,13 @@ Serve the site and its data at `https://zotero-plugins.jmgirard.com/` before the
 
 ## Acceptance criteria
 
-- [ ] AC1: `site/src/base.ts` sets `BASE` to `/` and `ORIGIN` to `https://zotero-plugins.jmgirard.com`. In the site that `test/site.test.ts` builds from its fixture data, each double-quoted `href` and `src` value with no scheme, in every built HTML file with `404.html` included, starts with `/` and with neither `//` nor `/zotero-plugin-index/`.
-- [ ] AC2: In that built site, each page's canonical link and `og:url`, and each `<loc>` in `sitemap.xml`, start with `https://zotero-plugins.jmgirard.com/`, shown by the site tests' preview-tag and sitemap tests.
-- [ ] AC3: The built site holds `robots.txt` at its root, which allows every path and has the line `Sitemap: https://zotero-plugins.jmgirard.com/sitemap.xml`, shown by a test that reads the built file.
-- [ ] AC4: `PREVIOUS_URL` and both `--previous` arguments in `.github/workflows/build.yml` are `https://zotero-plugins.jmgirard.com/v1/plugins.json`, and each schema file that `writeData` in `src/build/build.ts` writes under `schemas/` has the `$id` `https://zotero-plugins.jmgirard.com/schemas/<its file name>`, shown by `test/workflows.test.ts` and a test that runs `writeData` into a temporary folder and reads the `$id` of every file it wrote under `schemas/`.
-- [ ] AC5: `git grep -nE 'jmgirard\.github\.io|(^|[^d])/zotero-plugin-index/'` outside `cairn/` lists only lines of `CHANGELOG.md` and README's text on the old address, which says that old page and data addresses forward to the new ones and that a script in a web page must use the new data address. The same search over `cairn/DESIGN.md` and `cairn/LESSONS.md` lists only DESIGN's text saying the same. A search for `robots` in README.md and `cairn/DESIGN.md` finds no line saying the site cannot have a `robots.txt`.
-- [ ] AC6: Before the merge, `dig +short zotero-plugins.jmgirard.com CNAME` prints `jmgirard.github.io.`.
-- [ ] AC7: `pnpm test` and `pnpm check` pass.
+- [x] AC1: `site/src/base.ts` sets `BASE` to `/` and `ORIGIN` to `https://zotero-plugins.jmgirard.com`. In the site that `test/site.test.ts` builds from its fixture data, each double-quoted `href` and `src` value with no scheme, in every built HTML file with `404.html` included, starts with `/` and with neither `//` nor `/zotero-plugin-index/`.
+- [x] AC2: In that built site, each page's canonical link and `og:url`, and each `<loc>` in `sitemap.xml`, start with `https://zotero-plugins.jmgirard.com/`, shown by the site tests' preview-tag and sitemap tests.
+- [x] AC3: The built site holds `robots.txt` at its root, which allows every path and has the line `Sitemap: https://zotero-plugins.jmgirard.com/sitemap.xml`, shown by a test that reads the built file.
+- [x] AC4: `PREVIOUS_URL` and both `--previous` arguments in `.github/workflows/build.yml` are `https://zotero-plugins.jmgirard.com/v1/plugins.json`, and each schema file that `writeData` in `src/build/build.ts` writes under `schemas/` has the `$id` `https://zotero-plugins.jmgirard.com/schemas/<its file name>`, shown by `test/workflows.test.ts` and a test that runs `writeData` into a temporary folder and reads the `$id` of every file it wrote under `schemas/`.
+- [x] AC5: `git grep -nE 'jmgirard\.github\.io|(^|[^d])/zotero-plugin-index/'` outside `cairn/` lists only lines of `CHANGELOG.md` and README's text on the old address, which says that old page and data addresses forward to the new ones and that a script in a web page must use the new data address. The same search over `cairn/DESIGN.md` and `cairn/LESSONS.md` lists only DESIGN's text saying the same. A search for `robots` in README.md and `cairn/DESIGN.md` finds no line saying the site cannot have a `robots.txt`.
+- [x] AC6: Before the merge, `dig +short zotero-plugins.jmgirard.com CNAME` prints `jmgirard.github.io.`.
+- [x] AC7: `pnpm test` and `pnpm check` pass.
 
 ## Coverage
 
@@ -95,3 +95,16 @@ Serve the site and its data at `https://zotero-plugins.jmgirard.com/` before the
 ## Decisions
 
 ## Review
+
+Evidence at `619f8b36`, 2026-11-05.
+
+- AC1: `site/src/base.ts:4` is `BASE = "/"` and `:7` is `ORIGIN = "https://zotero-plugins.jmgirard.com"`. "starts every link inside the site with the root path" passes. A one-off sweep with the same pattern over a `pnpm site --out` build of the deployed data read 739 HTML files and 9201 scheme-less `href`/`src` values: none fails to start with `/`, none starts with `//` or `/zotero-plugin-index/`. Planting the old `BASE` turned the test red on 232 links (T6).
+- AC2: "puts each tag once on every page with an address" (canonical and `og:url` equal `https://zotero-plugins.jmgirard.com/` plus the page path) and "writes a sitemap in the urlset form that lists exactly the canonical address of each page" pass. The real-data build has 1476 canonical and `og:url` values and 738 `<loc>` entries, all starting with the new host.
+- AC3: "writes a robots.txt at the top that allows every path and names the sitemap" passes, comparing the built file exactly with `User-agent: *`, `Allow: /`, and `Sitemap: https://zotero-plugins.jmgirard.com/sitemap.xml`. The real-data build's `robots.txt` holds the same text.
+- AC4: `src/build/previous.ts:6` and `.github/workflows/build.yml:69` and `:77` name `https://zotero-plugins.jmgirard.com/v1/plugins.json`. The two workflow tests on `--previous` and "gives each schema that the build publishes the $id of its own published address", which runs `writeData` into a temporary folder and reads each written schema, pass. The written files are `plugins.v1.schema.json` and `index.v1.schema.json`.
+- AC5: the sweep outside `cairn/` lists `CHANGELOG.md:9`, `:271`, `:272`, `:279`, and `README.md:369`, the README text saying old page and data addresses forward and a script in a web page must use the new data address. Over `cairn/DESIGN.md` and `cairn/LESSONS.md` it lists only `cairn/DESIGN.md:251`, the same text. `grep -n robots` in README.md and `cairn/DESIGN.md` finds lines 342 and 1852 and line 213, none saying the site cannot have one.
+- AC6: before any merge, `dig +short zotero-plugins.jmgirard.com CNAME` on the maintainer's machine prints `jmgirard.github.io.`; the custom domain is not set (`gh api repos/jmgirard/zotero-plugin-index/pages` reads `cname: null`).
+- AC7: `pnpm test` exits 0 with 35 files passed, 1 skipped, and 2484 tests passed, 6 skipped; `pnpm check` reads "checked 736 entries in plugins, 0 problems", exit 0.
+- Gate: `cairn_validate.py` all checks passed. The generic profile's consistency-gate slot names no toolchain checks. No DESIGN principle changed, so `cairn_impact` is skipped.
+- spawned: diff-bug, blame-history, prior-review, ripple
+- prior-review: no regression of a past review point; the PR comment probe returned none.
