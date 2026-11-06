@@ -8,8 +8,9 @@ _Architecture as it **is**, not as it will be. Future work lives in
 > Elicited by `/design-interview` Phase 1 on 2026-10-24, run on Opus 5.5.
 > Design Principles come from Phase 2.
 
-zotero-plugin-index is a community index of Zotero plugins for Zotero 7 and
-later. It answers one question for Zotero users first: does this plugin work
+Zotdex, kept in the repository zotero-plugin-index, is a community index of
+Zotero plugins for Zotero 7 and later (named by D-069). It answers one
+question for Zotero users first: does this plugin work
 on my version of Zotero? Zotero publishes no plugin list. Its support page
 says that an official directory is planned.
 

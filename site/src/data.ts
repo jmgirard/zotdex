@@ -48,7 +48,7 @@ export function displayName(record: PluginRecord): string {
 // names the plugin when it has none or when the cut leaves only whitespace.
 export function previewDescription(record: PluginRecord): string {
   const cut = cutDescription(shownDescription(record) ?? "");
-  return cut.trim() === "" ? `${displayName(record)} is a plugin listed in Zotdex.` : cut;
+  return cut.trim() === "" ? `${displayName(record)} is a Zotero plugin listed in Zotdex.` : cut;
 }
 
 // The records in the order of the built home table: the sort menu's Stars order.

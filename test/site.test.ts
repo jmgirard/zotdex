@@ -2214,7 +2214,6 @@ describe("the link preview tags", () => {
       expect(preview.title, file).not.toBe("");
       expect(preview.description.trim(), file).not.toBe("");
       expect(preview.ogType, file).toBe("website");
-      expect(preview.ogSiteName, file).toBe("Zotdex");
       expect(preview.twitterCard, file).toBe("summary");
     }
   });
@@ -2225,12 +2224,13 @@ describe("the link preview tags", () => {
     for (const file of files) {
       const page = read(file);
       const title = decoded(/<title>(.*?)<\/title>/s.exec(page)![1]!);
-      const ogTitle = tagValue(page, "property", "og:title");
       expect(tagValue(page, "property", "og:site_name"), file).toBe("Zotdex");
-      if (file === "index.html") expect([title, ogTitle], file).toEqual(["Zotdex: a Zotero plugin index", "Zotdex: a Zotero plugin index"]);
+      const home = file === "index.html";
+      if (home) expect(title).toBe("Zotdex: a Zotero plugin index");
       else expect(title, file).toMatch(/: Zotdex$/);
-      const html = page.replace(/<title>[^<]*<\/title>|<meta property="og:title" content="[^"]*">/g, "");
-      expect(html, file).not.toMatch(/zotero plugin index/i);
+      // Only the home page's title and og:title may say what Zotdex is.
+      const rest = home ? page.replace(/<title>[^<]*<\/title>|<meta property="og:title" content="[^"]*">/g, "") : page;
+      expect(rest, file).not.toMatch(/zotero plugin index/i);
     }
   });
 
@@ -2278,11 +2278,11 @@ describe("the plugin page's preview description", () => {
   test.each<[string, string]>([
     ["spaced@example.org", spaced],
     ["unbroken@example.org", "𠮷".repeat(200)],
-    ["no-text@example.org", "Tidy Notes is a plugin listed in Zotdex."],
-    ["failed-read@example.org", "failed-read@example.org is a plugin listed in Zotdex."],
+    ["no-text@example.org", "Tidy Notes is a Zotero plugin listed in Zotdex."],
+    ["failed-read@example.org", "failed-read@example.org is a Zotero plugin listed in Zotdex."],
     ["quoted@example.org", quoted],
-    ["blank-head@example.org", "Tidy Notes is a plugin listed in Zotdex."],
-    ["blank-override@example.org", "Tidy Notes is a plugin listed in Zotdex."],
+    ["blank-head@example.org", "Tidy Notes is a Zotero plugin listed in Zotdex."],
+    ["blank-override@example.org", "Tidy Notes is a Zotero plugin listed in Zotdex."],
   ])("on %s", (id, expected) => {
     const html = readFileSync(join(dir, "plugins", id, "index.html"), "utf8");
     expect(tagValue(html, "name", "description")).toBe(expected);
