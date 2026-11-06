@@ -8,10 +8,11 @@ _Architecture as it **is**, not as it will be. Future work lives in
 > Elicited by `/design-interview` Phase 1 on 2026-10-24, run on Opus 5.5.
 > Design Principles come from Phase 2.
 
-Zotdex, kept in the repository zotero-plugin-index, is a community index of
-Zotero plugins for Zotero 7 and later (named by D-069). It answers one
-question for Zotero users first: does this plugin work
-on my version of Zotero? Zotero publishes no plugin list. Its support page
+Zotdex, kept in the repository `jmgirard/zotdex`, is a community index of
+Zotero plugins for Zotero 7 and later (the site named by D-069, the
+repository by D-070). It answers one question for Zotero users first: does
+this plugin work on my version of Zotero? Zotero publishes no plugin list.
+Its support page
 says that an official directory is planned.
 
 Audience: Zotero users who look for plugins. Plugin authors benefit, but the
@@ -249,12 +250,9 @@ saved copy must fetch the schema again after such a change. The URL is
 `https://zotdex.jmgirard.com/v1/plugins.json`. The published schemas
 are under `https://zotdex.jmgirard.com/schemas/`, and each schema's
 `$id` is its own URL (M006, moved by M102 and M103 under D-068 and
-D-069). The site
-and data were first under `https://jmgirard.github.io/zotero-plugin-index/`.
-GitHub forwards each old address to the same path and query under the new
-host's root. A
-script in a web page on another site must fetch the new address. The forward
-lacks the header that a browser needs for that request. Each record that has
+D-069). The site and data were first under
+`https://jmgirard.github.io/zotero-plugin-index/`. Since the repo rename
+(M104, D-070), those addresses answer 404. Each record that has
 `upstream` carries the report counts in the optional `reports` field. The
 daily build counts them from its read of the index repo's closed report
 issues, and a build that cannot read those issues or their `report` label,

@@ -1,4 +1,4 @@
-# zotero-plugin-index
+# Zotdex
 
 Zotdex is a community index of plugins for Zotero 7 and later. The index
 lists plugins and links to the releases of each author. It does not host
@@ -365,14 +365,6 @@ The index publishes its data file on GitHub Pages:
   <https://zotdex.jmgirard.com/schemas/plugins.v1.schema.json>
 - Schema for `index.json`:
   <https://zotdex.jmgirard.com/schemas/index.v1.schema.json>
-
-The site and the data were first published under
-`https://jmgirard.github.io/zotero-plugin-index/`. GitHub forwards each old
-address to the same path and query under the new host's root. So old links to
-the pages and to the data still work in a browser and in most clients that
-follow redirects. A
-script in a web page on another site must fetch the data from the new
-address. The forward lacks the header that a browser needs for that request.
 
 [License](#license) gives the terms for reusing the data.
 
@@ -1504,7 +1496,7 @@ pnpm build
 The command reads each entry under `plugins/`. Then it reads the label
 `report` and every page of the closed issues with that label. It reads them
 from the repository that `GITHUB_REPOSITORY` names. If that variable is not
-set, it reads them from `jmgirard/zotero-plugin-index`. A fork that builds
+set, it reads them from `jmgirard/zotdex`. A fork that builds
 the data must have a label named `report`, or the build exits 1. Then it
 reads each plugin
 from GitHub in the same way as `pnpm add-plugin`. It writes one file,

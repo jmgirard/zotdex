@@ -129,7 +129,7 @@ const validatePlugins = ajv.compile(pluginsSchema);
 const validateRecord = ajv.getSchema(`${pluginsSchema.$id}#/definitions/record`)!;
 
 // The repo whose report issues the build counts, when GITHUB_REPOSITORY is unset.
-export const INDEX_REPO = "jmgirard/zotero-plugin-index";
+export const INDEX_REPO = "jmgirard/zotdex";
 
 // The time after which the build starts no plugin read. Each read also stops at
 // READ_LIMIT_MS. The build job stops at 30 minutes, so these leave time for the steps

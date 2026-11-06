@@ -172,16 +172,16 @@ export const DISCLAIMER = "This index is unofficial and not affiliated with or e
 export const INSTALL_HREF = `${BASE}about/#installing`;
 
 // The License section of the index repo's README.
-export const LICENSE_HREF = "https://github.com/jmgirard/zotero-plugin-index#license";
+export const LICENSE_HREF = "https://github.com/jmgirard/zotdex#license";
 
 // The index repo's page for a new issue, where the report forms live.
-const NEW_ISSUE = "https://github.com/jmgirard/zotero-plugin-index/issues/new";
+const NEW_ISSUE = "https://github.com/jmgirard/zotdex/issues/new";
 
 // The new-issue page with the add-plugin.yml form, which proposes a plugin for the index.
 export const ADD_PLUGIN_HREF = `${NEW_ISSUE}?template=add-plugin.yml`;
 
 // Where the top bar sends general feedback.
-export const FEEDBACK_HREF = "https://github.com/jmgirard/zotero-plugin-index/discussions";
+export const FEEDBACK_HREF = "https://github.com/jmgirard/zotdex/discussions";
 
 // The new-issue page with the works.yml or broken.yml form, its plugin and version fields
 // filled in with the record's id and the version the index read.
