@@ -9,9 +9,10 @@ _Architecture as it **is**, not as it will be. Future work lives in
 > Design Principles come from Phase 2.
 
 Zotdex, kept in the repository `jmgirard/zotdex`, is a community index of
-Zotero plugins for Zotero 7 and later (named by D-069, D-070). It answers one
-question for Zotero users first: does this plugin work
-on my version of Zotero? Zotero publishes no plugin list. Its support page
+Zotero plugins for Zotero 7 and later (the site named by D-069, the
+repository by D-070). It answers one question for Zotero users first: does
+this plugin work on my version of Zotero? Zotero publishes no plugin list.
+Its support page
 says that an official directory is planned.
 
 Audience: Zotero users who look for plugins. Plugin authors benefit, but the
