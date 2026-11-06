@@ -1,0 +1,8 @@
+{
+  "id": "fulltext-assistant@local.invalid",
+  "name": "全文助手",
+  "description": "批量从论文网页获取全文，跟踪科研通文献求助并将 PDF 保存到原条目。",
+  "homepage": "https://github.com/zhangyehao/zotero-fulltext-assistant",
+  "repoUrl": "https://github.com/zhangyehao/zotero-fulltext-assistant",
+  "updateUrl": "https://github.com/zhangyehao/zotero-fulltext-assistant/releases/latest/download/updates.json"
+}
