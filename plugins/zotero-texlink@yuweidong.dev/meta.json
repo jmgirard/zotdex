@@ -1,0 +1,8 @@
+{
+  "id": "zotero-texlink@yuweidong.dev",
+  "name": "TexLink",
+  "description": "Offline formula recognition and Zotero note anchoring. Turn PDF formula screenshots into LaTeX and write traceable formula blocks into literature notes.",
+  "homepage": "https://github.com/yuweidong/zotero-texlink",
+  "repoUrl": "https://github.com/yuweidong/zotero-texlink",
+  "updateUrl": "https://raw.githubusercontent.com/yuweidong/zotero-texlink/main/updates.json"
+}
