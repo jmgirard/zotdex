@@ -1,6 +1,6 @@
 # M102: Move the site to a jmgirard.com subdomain
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
@@ -55,7 +55,7 @@ Serve the site and its data at `https://zotero-plugins.jmgirard.com/` before the
 - [x] T2: Add `site/src/pages/robots.txt.ts`, built from `ORIGIN` as `sitemap.xml.ts` is, and a site test that reads the built `robots.txt`.
 - [x] T3: Move `PREVIOUS_URL`, the two `--previous` lines in `build.yml`, and the two schema `$id`s; update `test/workflows.test.ts:96` and add the `$id` test.
 - [x] T4: Update README (site address, data and schema URLs, the `curl` example, the Pages-path sentence at README.md:1846, the robots sentence near README.md:343, and the text on the old address), `cairn/DESIGN.md` (Contract boundary URLs and the forward, the robots sentence at lines 211 to 214), a CHANGELOG Unreleased entry, and the M015 and M035 lessons in `cairn/LESSONS.md`, marked `corrected M102`.
-- [ ] T5: Once the user has added the CNAME record, read it with `dig`; if it is missing, stop for the user.
+- [x] T5: Once the user has added the CNAME record, read it with `dig`; if it is missing, stop for the user.
 
 ## Work log
 
@@ -85,6 +85,8 @@ Serve the site and its data at `https://zotero-plugins.jmgirard.com/` before the
 - 2026-11-05: hand check: a local `pnpm site --out` build of the deployed data, served at a root path in the browser pane, loads the home page (736 rows), About, a plugin page, the data file, the favicon, the sitemap, and robots.txt, and answers a missing path with 404; every top bar link starts at `/`.
 - 2026-11-05: claim audit re-read: both corrections hold; the forward's first hop stays http even with HTTPS enforced, which "most clients" allows for.
 - 2026-11-05: stop at T5 for the user: `dig +short zotero-plugins.jmgirard.com CNAME` prints nothing, so the user's DNS record is not in place yet. T1 to T4 and the claim audit are done.
+- 2026-11-05: T5 done: the user added the CNAME record and the GitHub domain verification TXT record (`_github-pages-challenge-jmgirard.jmgirard.com` resolves). `dig +short zotero-plugins.jmgirard.com CNAME` prints `jmgirard.github.io.` at Cloudflare's nameserver `zelda.ns.cloudflare.com`, at 1.1.1.1, and at 8.8.8.8, and the A lookup gives GitHub Pages' four addresses, so the record is DNS only. The machine's own resolver still printed nothing, a cached answer from the earlier lookups.
+- 2026-11-05: implement done; status review.
 
 ## Decisions
 
