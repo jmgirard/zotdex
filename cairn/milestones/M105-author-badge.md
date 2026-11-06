@@ -48,7 +48,7 @@ Give each listed plugin a README badge, labeled Zotdex, that says which Zotero m
 ## Tasks
 
 - [x] T1: `src/site/badge.ts` with `badgeFor`, and `test/badge.test.ts` with AC1's cases.
-- [ ] T2: `site/src/pages/badges/[id].json.ts`; the site test of AC2.
+- [x] T2: `site/src/pages/badges/[id].json.ts`; the site test of AC2.
 - [ ] T3: The badge section at the foot of `site/src/pages/plugins/[id]/index.astro`, its snippet built from `ORIGIN`, `BASE`, and `pluginHref`; the site tests of AC3 and AC4.
 - [ ] T4: README, About, `cairn/DESIGN.md`, and the CHANGELOG entry.
 
@@ -68,6 +68,7 @@ Give each listed plugin a README badge, labeled Zotdex, that says which Zotero m
 - 2026-11-05: implement started on m105-author-badge; untracked `.claude/` left unstaged.
 - 2026-11-05: implementation choice: `majorStart` moved from `site/src/data.ts` to `src/site/version.ts`, typed by shape so that file keeps no imports, and `data.ts` re-exports it, so `src/site/badge.ts` uses the same function the pages use without `src/` importing `site/`.
 - 2026-11-05: T1 done: `badgeFor` in `src/site/badge.ts`; `test/badge.test.ts` covers the four messages, an older start under a newer failure, a 12.x start, starts in 7 and 10, and a kept record with an 8.x start. Planting a string sort turned the 7 · 10 test red. pnpm test 2491 passed, pnpm check 0 problems.
+- 2026-11-05: T2 done: `site/src/pages/badges/[id].json.ts` writes `badges/<raw id>.json` from `badgeFor` for every record; the site test "writes one badge file for each record and no other" lists `badges/`, compares each file with `badgeFor`, and reads `started in Zotero 7` for no-range-plugin. pnpm test 2492 passed, pnpm check 0 problems.
 
 ## Decisions
 

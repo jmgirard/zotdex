@@ -19,6 +19,7 @@ import {
   type PluginRecord,
 } from "../site/src/data.ts";
 import type { PluginsFile } from "../src/build/build.ts";
+import { badgeFor } from "../src/site/badge.ts";
 import { CATEGORIES, categories } from "../src/site/categories.ts";
 import { cutDescription, shownDescription } from "../src/site/description.ts";
 import { PAGE_SIZE, prePaintStyle } from "../src/site/home-filter.ts";
@@ -132,6 +133,13 @@ describe("pnpm site", () => {
     });
     expect(locs).toHaveLength(ids.length + 2);
     expect(locs.toSorted()).toEqual(canonicals.toSorted());
+  });
+
+  test("writes one badge file for each record and no other", () => {
+    const records = (JSON.parse(readFileSync(FIXTURE, "utf8")) as PluginsFile).plugins;
+    expect(readdirSync(join(out, "badges")).sort()).toEqual(ids.map((id) => `${id}.json`).sort());
+    for (const record of records) expect(JSON.parse(readFileSync(join(out, "badges", `${record.id}.json`), "utf8")), record.id).toEqual(badgeFor(record));
+    expect(JSON.parse(readFileSync(join(out, "badges", "no-range-plugin@example.org.json"), "utf8")).message).toBe("started in Zotero 7");
   });
 
   test("writes a robots.txt at the top that allows every path and names the sitemap", () => {
