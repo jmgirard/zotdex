@@ -1,0 +1,7 @@
+{
+  "id": "noctua-notes@noctua.app",
+  "name": "Noctua Notes",
+  "description": "Noctua's LaTeX, handwriting and image notes inside Zotero, with editable sources synced as attachments.",
+  "repoUrl": "https://github.com/takahashi-seiryu/noctua-zotero",
+  "updateUrl": "https://github.com/takahashi-seiryu/noctua-zotero/releases/latest/download/updates.json"
+}
