@@ -245,9 +245,10 @@ pattern that the published data already meets is not a breaking change
 either, and it stays in the current version (D-018). The v1 schema
 rejects fields it does not define, so a consumer that validates against a
 saved copy must fetch the schema again after such a change. The URL is
-`https://zotero-plugins.jmgirard.com/v1/plugins.json`. The published schemas
-are under `https://zotero-plugins.jmgirard.com/schemas/`, and each schema's
-`$id` is its own URL (M006, moved by M102 under D-068). The site
+`https://zotdex.jmgirard.com/v1/plugins.json`. The published schemas
+are under `https://zotdex.jmgirard.com/schemas/`, and each schema's
+`$id` is its own URL (M006, moved by M102 and M103 under D-068 and
+D-069). The site
 and data were first under `https://jmgirard.github.io/zotero-plugin-index/`.
 GitHub forwards each old address to the same path and query under the new
 host's root. A
