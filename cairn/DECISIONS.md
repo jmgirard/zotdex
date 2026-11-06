@@ -1090,3 +1090,18 @@ what it answers after the rename. Creating a new repo named `zotero-plugin-index
 under the same account would end GitHub's forwards from the old repo name. This
 choice is wrong if a user reports a broken link to the old repo or old github.io
 address.
+
+### D-071: Each plugin has a Zotdex badge file at a stable address, and the badge states starts only, annotating D-023 and D-066
+
+2026-11-05, M105 plan. The site publishes `badges/<id>.json` for each listed
+plugin, a shields.io endpoint file that authors embed in a README through
+`img.shields.io`. The address is a public path that READMEs depend on, so it
+stays stable like the data URL. The badge is labeled Zotdex, so readers see who
+ran the test and can reach the index. It says "started in Zotero" and the majors
+whose newest start result is `started`, never "works" (D-023). A record that
+keeps earlier facts (D-066) shows the same badge with no mark, at the user's
+choice: the facts are at most 7 days old, and the plugin page keeps its "Older
+data" note. The site shows the snippet as text and loads nothing from
+shields.io. The user rejected a page on About alone. This choice is wrong if
+readers take the badge as a works claim, or if a kept record's badge misleads a
+user.
