@@ -72,6 +72,7 @@ Serve the site and its data at `https://zotdex.jmgirard.com/` under the name Zot
 - 2026-11-05: T4 in progress: 1.1.1.1 and 8.8.8.8 return the `zotdex` CNAME `jmgirard.github.io.`; this machine's resolver still holds an earlier empty answer, so a background read waits for it.
 - 2026-11-05: T4 done: `dig +short zotdex.jmgirard.com CNAME` on this machine prints `jmgirard.github.io.` once the router's empty answer expired; the custom domain is still `zotero-plugins.jmgirard.com`. Implement done; status review.
 - 2026-11-05: substantive amendment: Scope In's switch step now reads the `carry-start-results` read of the new URL, which runs every build, since `pnpm build` reads the deployed data only when a record fails at the build level (diff-bug #3). What users see is unchanged.
+- 2026-11-05: step-7 approval: m103-move-to-zotdex approved for merge
 
 ## Decisions
 
