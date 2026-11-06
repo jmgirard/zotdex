@@ -91,6 +91,7 @@ Serve the site and its data at `https://zotero-plugins.jmgirard.com/` before the
 - 2026-11-05: review return 1: AC5 fails as written: its sweep outside `cairn/` also lists `test/site.test.ts:165`, the link-sweep test line that names `/zotero-plugin-index/` as a refused prefix, a line that is neither CHANGELOG nor README.
 - 2026-11-05: T6 added for review return 1 (minor amendment): write the link sweep's refused old-path prefix so the AC5 sweep does not match it.
 - 2026-11-05: T6 done: the link sweep now tests each value with `/^\/(?!\/)/` and refuses `/^\/zotero-plugin-index\//`, which the AC5 sweep does not match; that sweep now lists only CHANGELOG lines 9, 271, 272, 279 and README:369. Planting the old `BASE` again turned the sweep red on 232 links. pnpm test 2484 passed, pnpm check 0 problems. Status review.
+- 2026-11-05: step-7 approval: m102-move-to-subdomain approved for merge
 
 ## Decisions
 
