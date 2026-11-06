@@ -8,7 +8,8 @@
   schema's `$id` names its new address. The site now has a `robots.txt`
   that names its sitemap.
 - The GitHub repo is now `https://github.com/jmgirard/zotdex`. GitHub
-  forwards the old repo's web, issue, and git addresses to it.
+  forwards the old repo's web, issue, and git addresses to it while no new
+  repo takes the old name.
 - Old addresses under `https://jmgirard.github.io/zotero-plugin-index/`
   now answer 404.
 - The `pnpm build` log now says how long the plugin reads took: the whole
