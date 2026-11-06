@@ -242,7 +242,8 @@ contributor needs a GitHub account.
 Each listed plugin also has a README badge file at the stable public path
 `https://zotdex.jmgirard.com/badges/<id>.json`, with the id percent-encoded.
 It is a shields.io endpoint file labeled Zotdex. Its message names the Zotero
-majors whose newest start result is `started`, never "works" (D-023, D-071). A record that keeps earlier facts gets the badge of those facts. Each
+majors whose newest start result is `started`, never "works" (D-023, D-071).
+A record that keeps earlier facts gets the badge of those facts. Each
 plugin page shows the Markdown that embeds the badge through `img.shields.io`
 as text, and the site loads nothing from shields.io (M105).
 
