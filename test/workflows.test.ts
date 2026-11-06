@@ -93,7 +93,7 @@ describe("build.yml", () => {
     expect(job).toContain(`      - run: >-\n          pnpm build --plan start-plan.json\n          --previous ${PREVIOUS_URL}\n        env:\n`);
     expect(job.match(/^ {10}pnpm build /gm)).toHaveLength(1);
     expect(job).not.toMatch(/^ {6}- run: pnpm build/m);
-    expect(PREVIOUS_URL).toBe("https://zotero-plugins.jmgirard.com/v1/plugins.json");
+    expect(PREVIOUS_URL).toBe("https://zotdex.jmgirard.com/v1/plugins.json");
   });
 
   test("carries start results from the deployed data after pnpm build and before the start plan's upload", () => {

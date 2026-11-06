@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://zotero-plugins.jmgirard.com/schemas/index.v1.schema.json",
+  "$id": "https://zotdex.jmgirard.com/schemas/index.v1.schema.json",
   "title": "zotero-plugin-index entry fields",
   "description": "Fields of plugins/<id>/index.json: the data the index keeps beside the registry meta.json.",
   "type": "object",

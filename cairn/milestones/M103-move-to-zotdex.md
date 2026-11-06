@@ -1,13 +1,13 @@
 # M103: Move the site to zotdex.jmgirard.com and name it Zotdex
 
-- **Status:** planned
+- **Status:** in-progress
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — the site's address, the public data URL, and the site's visible name change
-- **Branch/PR:** —
+- **Branch/PR:** m103-move-to-zotdex
 
 ## Goal
 
@@ -46,7 +46,7 @@ Serve the site and its data at `https://zotdex.jmgirard.com/` under the name Zot
 
 ## Tasks
 
-- [ ] T1: Move the host in `site/src/base.ts`, `src/build/previous.ts`, `.github/workflows/build.yml`, both schemas, and the tests that name it (`test/site.test.ts`, `test/home-filter.test.ts`, `test/schemas.test.ts`, `test/workflows.test.ts`).
+- [x] T1: Move the host in `site/src/base.ts`, `src/build/previous.ts`, `.github/workflows/build.yml`, both schemas, and the tests that name it (`test/site.test.ts`, `test/home-filter.test.ts`, `test/schemas.test.ts`, `test/workflows.test.ts`).
 - [ ] T2: Rename the site to Zotdex in `site/src/layouts/Base.astro`, `site/src/pages/index.astro`, `about.astro`, `404.astro`, `plugins/[id]/index.astro`, and `site/src/data.ts`; widen the preview-tag test to `404.html` for `og:site_name`, and add the case-insensitive name sweep over every built HTML file.
 - [ ] T3: README, the CHANGELOG Unreleased entry, `cairn/DESIGN.md`, and the M035 lesson, marked `corrected M103`.
 - [ ] T4: Once the user has added the CNAME record, read it with `dig`; if it is missing, stop for the user.
@@ -64,6 +64,8 @@ Serve the site and its data at `https://zotdex.jmgirard.com/` under the name Zot
 - 2026-11-05: question set: GitHub steps after the merge (custom domain, enforce HTTPS, build run, repo homepage) — the agent runs them with gh.
 - 2026-11-05: question set: DNS — the user adds `zotdex` CNAME to `jmgirard.github.io` (DNS only) before the merge and deletes the `zotero-plugins` record after the switch; the user also asked whether to rename the repo.
 - 2026-11-05: plan gate chose no redirect for `zotero-plugins.jmgirard.com`, at the user's word, over a Cloudflare redirect rule, as the host was live about two hours and never announced; falsified by a link to it found in use.
+- 2026-11-05: implement started on m103-move-to-zotdex; untracked `.claude/` left unstaged.
+- 2026-11-05: T1 done: `ORIGIN`, `PREVIOUS_URL`, both build.yml `--previous` lines, both schema `$id`s, and the four test files name `https://zotdex.jmgirard.com`; a search of site, src, test, schemas, and .github finds no `zotero-plugins.jmgirard`. pnpm test 2483 passed, pnpm check 0 problems.
 
 ## Decisions
 

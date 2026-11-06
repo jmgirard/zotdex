@@ -136,7 +136,7 @@ describe("pnpm site", () => {
 
   test("writes a robots.txt at the top that allows every path and names the sitemap", () => {
     expect(readFileSync(join(out, "robots.txt"), "utf8")).toBe(
-      "User-agent: *\nAllow: /\n\nSitemap: https://zotero-plugins.jmgirard.com/sitemap.xml\n",
+      "User-agent: *\nAllow: /\n\nSitemap: https://zotdex.jmgirard.com/sitemap.xml\n",
     );
   });
 
@@ -1608,7 +1608,7 @@ function homeScript(href: string, generated = 0, missing?: "search" | "category"
 }
 
 describe("the home page script", () => {
-  const PAGE = "https://zotero-plugins.jmgirard.com/";
+  const PAGE = "https://zotdex.jmgirard.com/";
 
   test("reads q into the search box on load and shows only the rows it matches", () => {
     const page = homeScript(`${PAGE}?q=TOOLS`);
@@ -2184,7 +2184,7 @@ function tagValue(html: string, attribute: string, value: string): string {
 }
 
 describe("the link preview tags", () => {
-  const SITE = "https://zotero-plugins.jmgirard.com/";
+  const SITE = "https://zotdex.jmgirard.com/";
   const read = (file: string) => readFileSync(join(out, file), "utf8");
   const previewOf = (file: string) => {
     const html = read(file);

@@ -7,7 +7,7 @@ _Last hygiene check: 2026-11-05 (M102 review: site live at zotero-plugins.jmgira
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M103 | Move the site to zotdex.jmgirard.com and name it Zotdex | planned | — | high | milestones/M103-move-to-zotdex.md |
+| M103 | Move the site to zotdex.jmgirard.com and name it Zotdex | in-progress | — | high | milestones/M103-move-to-zotdex.md |
 | M102 | Move the site to a jmgirard.com subdomain | done | — | high | milestones/archive/M102-move-to-subdomain.md |
 | M101 | Time each plugin read in the build log | done | — | normal | milestones/archive/M101-time-each-read.md |
 | M100 | Keep a plugin's last good record | done | — | high | milestones/archive/M100-keep-last-good-record.md |
