@@ -1,0 +1,8 @@
+{
+  "id": "retainpdf-bridge@local.invalid",
+  "name": "Zotero → RetainPDF",
+  "description": "自用 Zotero 插件：按分类将新论文 PDF 导入 RetainPDF，并提交中文全文翻译。",
+  "homepage": "https://github.com/haoning-Chen226/zotero-retainpdf",
+  "repoUrl": "https://github.com/haoning-Chen226/zotero-retainpdf",
+  "updateUrl": "https://raw.githubusercontent.com/haoning-Chen226/zotero-retainpdf/main/updates.json"
+}
