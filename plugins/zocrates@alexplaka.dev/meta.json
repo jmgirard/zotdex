@@ -1,0 +1,7 @@
+{
+  "id": "zocrates@alexplaka.dev",
+  "name": "Zocrates",
+  "description": "Agentic research assistant plugin for Zotero.",
+  "repoUrl": "https://github.com/alexplaka/Zocrates",
+  "updateUrl": "https://github.com/alexplaka/Zocrates/releases/latest/download/update.json"
+}
