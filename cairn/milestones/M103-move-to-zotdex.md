@@ -88,18 +88,18 @@ Evidence at `d81ad511`, 2026-11-05, with the fixes below re-verified.
 - spawned: diff-bug, blame-history, prior-review, ripple
 - prior-review: no regression of a past review point; the PR comment probe returned none.
 - diff-bug #1: a 06:17 UTC build between the merge and HTTPS reads an unserved host, so `carry-start-results` reuses nothing and kept facts are lost for that run — reject, planned change: Scope In sets the domain right after the merge, run at 03:00 UTC, and the M102 certificate came in about 60 s.
-- diff-bug #2: the repo-rename row cited D-069, which says the repo keeps its name, and left out README links and workflows; "may end" understated the github.io forward — fix now.
-- diff-bug #3: Scope In's "`--previous` reads" overstated what a healthy build's log shows — fix now, by the substantive amendment above.
-- diff-bug #4: the new test repeated the preview test's `og:site_name` check — fix now: the preview test drops it, and the new test covers every page, `404.html` included.
-- diff-bug #5: the old-name sweep stripped `<title>` and `og:title` on every page, so `About: Zotero plugin index: Zotdex` passed — fix now: it strips them on the home page only.
-- diff-bug #6: no plant exercised the strip and sweep together — fix now, with #5: the planted title above turned it red at the sweep.
-- diff-bug #7: the new test repeated the home `og:title` check — fix now: it checks the home title, and the preview test checks `og:title` equals it.
-- diff-bug #8: the M035 lesson lost its "corrected M102" mark — fix now: "corrected M102, corrected M103".
-- diff-bug #9: DESIGN never named the site Zotdex — fix now, with ripple #2.
+- diff-bug #2: the repo-rename row cited D-069, which says the repo keeps its name, and left out README links and workflows; "may end" understated the github.io forward — fix now, fixed 92149a43.
+- diff-bug #3: Scope In's "`--previous` reads" overstated what a healthy build's log shows — fix now, fixed 92149a43, by the substantive amendment above.
+- diff-bug #4: the new test repeated the preview test's `og:site_name` check — fix now, fixed 92149a43: the preview test drops it, and the new test covers every page, `404.html` included.
+- diff-bug #5: the old-name sweep stripped `<title>` and `og:title` on every page, so `About: Zotero plugin index: Zotdex` passed — fix now, fixed 92149a43: it strips them on the home page only.
+- diff-bug #6: no plant exercised the strip and sweep together — fix now, fixed 92149a43, with #5: the planted title above turned it red at the sweep.
+- diff-bug #7: the new test repeated the home `og:title` check — fix now, fixed 92149a43: it checks the home title, and the preview test checks `og:title` equals it.
+- diff-bug #8: the M035 lesson lost its "corrected M102" mark — fix now, fixed 92149a43: "corrected M102, corrected M103".
+- diff-bug #9: DESIGN never named the site Zotdex — fix now, fixed 92149a43, with ripple #2.
 - diff-bug #10: the sweep misses "Zotero plugins index" and hyphenated forms — reject, false as a defect: AC2 names a case-insensitive search for `zotero plugin index`, and no source text uses those forms.
 - diff-bug #11, #12: no await changed; the new test has no comments beyond one line on the strip — noted.
-- blame-history #1: the preview fallback "… is a plugin listed in Zotdex." dropped Zotero context, the risk D-069 names — fix now: "… is a Zotero plugin listed in Zotdex."
+- blame-history #1: the preview fallback "… is a plugin listed in Zotdex." dropped Zotero context, the risk D-069 names — fix now, fixed 92149a43: "… is a Zotero plugin listed in Zotdex."
 - blame-history #2: the merge-to-switch window for the `--previous` reads — reject, planned change, as diff-bug #1.
 - ripple #1: the ROADMAP hygiene stamp names zotero-plugins.jmgirard.com — reject, planned change: the M103 hygiene pass replaces the stamp.
-- ripple #2: `cairn/DESIGN.md:11` named the project zotero-plugin-index — fix now: "Zotdex, kept in the repository zotero-plugin-index, is a community index …".
+- ripple #2: `cairn/DESIGN.md:11` named the project zotero-plugin-index — fix now, fixed 92149a43: "Zotdex, kept in the repository zotero-plugin-index, is a community index …".
 - snapshot: no changed snapshot file.
