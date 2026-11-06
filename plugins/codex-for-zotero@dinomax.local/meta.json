@@ -1,0 +1,8 @@
+{
+  "id": "codex-for-zotero@dinomax.local",
+  "name": "Codex for Zotero",
+  "description": "Read papers with your local Codex, directly in Zotero's sidebar.",
+  "homepage": "https://github.com/DinoMax00/codex_for_zotero",
+  "repoUrl": "https://github.com/DinoMax00/codex_for_zotero",
+  "updateUrl": "https://github.com/DinoMax00/codex_for_zotero/releases/latest/download/updates.json"
+}
