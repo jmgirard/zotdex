@@ -7,7 +7,7 @@ affiliated with or endorsed by Zotero, and cannot vet the plugins it lists.
 
 ## The site
 
-The website <https://jmgirard.github.io/zotero-plugin-index/> shows the index.
+The website <https://zotero-plugins.jmgirard.com/> shows the index.
 A top bar on every page links to the home page and to the About page. It
 also links to the "Add a plugin" issue form, to the repository's GitHub
 Discussions as "Feedback", and to the data file. With
@@ -339,8 +339,9 @@ index it.
 
 The site has a sitemap at `sitemap.xml`, and the head of each page links to
 it. It lists the home page, the About page, and each plugin page, each at
-its canonical address. A maintainer submits it to a search engine by hand,
-because the site cannot have a `robots.txt` at the top of its host.
+its canonical address. The site's `robots.txt`, at the top of its host, lets
+search engines read every page and names the sitemap. A maintainer can also
+submit the sitemap to a search engine by hand.
 
 Each page has a favicon, the icon that a browser shows for the page. It is a
 blue puzzle piece, and the top bar shows the same piece beside the site's name.
@@ -358,11 +359,19 @@ page uses a sentence that names the plugin.
 
 The index publishes its data file on GitHub Pages:
 
-- Data: <https://jmgirard.github.io/zotero-plugin-index/v1/plugins.json>
+- Data: <https://zotero-plugins.jmgirard.com/v1/plugins.json>
 - Schema for the data file:
-  <https://jmgirard.github.io/zotero-plugin-index/schemas/plugins.v1.schema.json>
+  <https://zotero-plugins.jmgirard.com/schemas/plugins.v1.schema.json>
 - Schema for `index.json`:
-  <https://jmgirard.github.io/zotero-plugin-index/schemas/index.v1.schema.json>
+  <https://zotero-plugins.jmgirard.com/schemas/index.v1.schema.json>
+
+The site and the data were first published under
+`https://jmgirard.github.io/zotero-plugin-index/`. GitHub forwards each old
+address to the same path and query under the new host's root. So old links to
+the pages and to the data still work in a browser and in most clients that
+follow redirects. A
+script in a web page on another site must fetch the data from the new
+address. The forward lacks the header that a browser needs for that request.
 
 [License](#license) gives the terms for reusing the data.
 
@@ -1320,7 +1329,7 @@ No bot answers the form. To check a request, download the deployed data file
 and run the command with the issue's number:
 
 ```sh
-curl -sSLo plugins.json https://jmgirard.github.io/zotero-plugin-index/v1/plugins.json
+curl -sSLo plugins.json https://zotero-plugins.jmgirard.com/v1/plugins.json
 pnpm text-request <issue> --data plugins.json
 ```
 
@@ -1836,14 +1845,15 @@ Zotero" says. Then run:
 pnpm site
 ```
 
-The command reads `dist/v1/plugins.json`. It writes the home page,
-`dist/index.html`, the About page, `dist/about/index.html`, one page
-for each record, `dist/plugins/<id>/index.html`, and the favicon,
-`dist/favicon.svg`. It does not change the data file or the schemas. It
-replaces the `index.html`, `about/`, `plugins/`, and `favicon.svg` of an
-earlier run. So a page for a plugin that the data no
-longer lists goes away. Links between the pages, and to the data file, start
-with `/zotero-plugin-index/`, the path of the site on GitHub Pages.
+The command reads `dist/v1/plugins.json`. It writes these pages: the home
+page, `dist/index.html`, the About page, `dist/about/index.html`, one page
+for each record, `dist/plugins/<id>/index.html`, and the "Page not found"
+page, `dist/404.html`. It also writes the favicon, `dist/favicon.svg`,
+`dist/sitemap.xml`, and `dist/robots.txt`. It does not change the data file
+or the schemas. It
+replaces each of those files and folders of an earlier run. So a page for a
+plugin that the data no longer lists goes away. Links between the pages, and
+to the data file, start with `/`, the top of the site's host.
 
 To read the data from another directory and write the pages there, add
 `--out <dir>`. The command then reads `<dir>/v1/plugins.json`. If it cannot

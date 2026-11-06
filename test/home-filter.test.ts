@@ -114,7 +114,7 @@ describe("filterStatus", () => {
 });
 
 describe("filterHref", () => {
-  const PAGE = "http://localhost:4321/zotero-plugin-index/";
+  const PAGE = "https://zotero-plugins.jmgirard.com/";
 
   test("sets the language parameter and keeps the path and the other parameters", () => {
     expect(filterHref(`${PAGE}?a=1&language=en`, "language", "zh")).toBe(`${PAGE}?a=1&language=zh`);

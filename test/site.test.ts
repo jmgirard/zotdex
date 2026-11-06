@@ -110,8 +110,8 @@ describe("pnpm site", () => {
     const main = /<main>(.*?)<\/main>/s.exec(html)![1]!;
     expect(main).toContain("<h1>Page not found</h1>");
     expect(main).toContain("No page is at this address.");
-    expect(main).toContain('<a href="/zotero-plugin-index/">See all plugins</a>');
-    expect(main).toContain('<a href="/zotero-plugin-index/about/">About page</a>');
+    expect(main).toContain('<a href="/">See all plugins</a>');
+    expect(main).toContain('<a href="/about/">About page</a>');
     expect(html).toContain('<meta name="robots" content="noindex">');
     expect(html).not.toMatch(/rel="canonical"|property="og:url"/);
   });
@@ -134,10 +134,16 @@ describe("pnpm site", () => {
     expect(locs.toSorted()).toEqual(canonicals.toSorted());
   });
 
+  test("writes a robots.txt at the top that allows every path and names the sitemap", () => {
+    expect(readFileSync(join(out, "robots.txt"), "utf8")).toBe(
+      "User-agent: *\nAllow: /\n\nSitemap: https://zotero-plugins.jmgirard.com/sitemap.xml\n",
+    );
+  });
+
   test("links the sitemap from the head of every page", () => {
     for (const file of htmlFiles(out)) {
       const head = /<head>(.*?)<\/head>/s.exec(readFileSync(join(out, file), "utf8"))![1]!;
-      expect(head, file).toContain('<link rel="sitemap" type="application/xml" href="/zotero-plugin-index/sitemap.xml">');
+      expect(head, file).toContain('<link rel="sitemap" type="application/xml" href="/sitemap.xml">');
     }
   });
 
@@ -145,7 +151,7 @@ describe("pnpm site", () => {
     for (const [file, bytes] of before) expect(readFileSync(join(out, file)).equals(bytes), file).toBe(true);
   });
 
-  test("starts every link inside the site with the Pages path", () => {
+  test("starts every link inside the site with the root path", () => {
     const files = htmlFiles(out);
     expect(files).toHaveLength(ids.length + 3);
     const inside = files.flatMap((file) =>
@@ -156,7 +162,8 @@ describe("pnpm site", () => {
     );
     // Each plugin page links home, and the home page links each plugin page.
     expect(inside.length).toBeGreaterThanOrEqual(2 * ids.length);
-    expect(inside.filter(({ url }) => !url.startsWith("/zotero-plugin-index/"))).toEqual([]);
+    // The old Pages path is a pattern, not a string, so a repo search for that path skips this line.
+    expect(inside.filter(({ url }) => !/^\/(?!\/)/.test(url) || /^\/zotero-plugin-index(?:[/?#]|$)/.test(url))).toEqual([]);
   });
 });
 
@@ -180,7 +187,7 @@ describe("how to install a plugin", () => {
       expect(noteOf(html)).toHaveLength(hasLink ? 1 : 0);
       if (!hasLink) continue;
       expect(html.replace(/>\s+</g, "><")).toMatch(/<div class="page-head" data-page-head>.*?<div class="actions" data-links>.*?<\/div><\/div><p class="install-note" data-fact="install-note">/s);
-      expect(noteOf(html)[0]).toMatch(/<a href="\/zotero-plugin-index\/about\/#installing">More about installing<\/a>/);
+      expect(noteOf(html)[0]).toMatch(/<a href="\/about\/#installing">More about installing<\/a>/);
     }
   });
 
@@ -523,7 +530,7 @@ describe("the plugin page", () => {
     const paid = record.paidService ? ` ${paidMark("<svg>")}` : "";
     const main = html.slice(html.indexOf("<main>") + "<main>".length, html.indexOf("</main>"));
     const head = new RegExp(
-      `^<a class="back" href="/zotero-plugin-index/" data-back>${ICON}All plugins</a>` +
+      `^<a class="back" href="/" data-back>${ICON}All plugins</a>` +
         `<div class="page-head" data-page-head>(.*?)<div class="actions" data-links>(.*?)</div></div>`,
       "s",
     ).exec(main.replace(/>\s+</g, "><").trim());
@@ -532,11 +539,11 @@ describe("the plugin page", () => {
     const github = githubRepo(repoUrl);
     const shownCategories = CATEGORIES.filter(({ slug }) => categories(record).includes(slug)).map(
       ({ slug, name }) =>
-        `<a href="/zotero-plugin-index/?category=${slug}" aria-label="${escaped(name)}: plugins in this category" data-category="${slug}">${escaped(name)}</a>`,
+        `<a href="/?category=${slug}" aria-label="${escaped(name)}: plugins in this category" data-category="${slug}">${escaped(name)}</a>`,
     );
     const categoryLine =
       shownCategories.length > 0
-        ? `<p class="categories" data-categories><a href="/zotero-plugin-index/about/#categories" data-categories-about>Index categories</a>: ` +
+        ? `<p class="categories" data-categories><a href="/about/#categories" data-categories-about>Index categories</a>: ` +
           `${shownCategories.join(", ")}</p>`
         : "";
     const stars =
@@ -901,7 +908,7 @@ describe("the About page", () => {
     const offered = new Set((fixture.plugins as PluginRecord[]).flatMap((record) => categories(record)));
     expect(offered.size).toBe(5);
     expect(items).toEqual(
-      CATEGORIES.map(({ slug, name, about }) => [offered.has(slug) ? `/zotero-plugin-index/?category=${slug}` : undefined, name, about]),
+      CATEGORIES.map(({ slug, name, about }) => [offered.has(slug) ? `/?category=${slug}` : undefined, name, about]),
     );
     const text = mainText(about());
     expect(text).toContain("It assigns them from words in a plugin's name and descriptions, and it adds or removes some by hand.");
@@ -999,9 +1006,9 @@ describe("the About page", () => {
       expect(text, sentence).not.toContain(sentence);
     }
     const main = html.slice(html.indexOf("<main>"), html.indexOf("</main>"));
-    expect(main.split('href="/zotero-plugin-index/about/"').length - 1).toBe(1);
+    expect(main.split('href="/about/"').length - 1).toBe(1);
     const line = /<p class="fineprint" data-about-line>(.*?)<\/p>/s.exec(main)?.[1];
-    expect(line).toMatch(/<a href="\/zotero-plugin-index\/about\/">How the index reads plugins<\/a>\s*$/);
+    expect(line).toMatch(/<a href="\/about\/">How the index reads plugins<\/a>\s*$/);
     const card = sections(html).find(({ name }) => name === "compatibility")!.body;
     expect(card).toContain("data-about-line");
     if (records.find((r) => r.id === id)!.upstream) expectInOrder(card, ["</table>", "data-about-line", 'data-fact="report-prompt"']);
@@ -1012,7 +1019,7 @@ describe("the About page", () => {
 describe("the home page", () => {
   test("links each plugin to the directory of its raw id", () => {
     const html = readFileSync(join(out, "index.html"), "utf8");
-    const linked = [...html.matchAll(/href="\/zotero-plugin-index\/plugins\/([^/"]+)\/"/g)].map((m) =>
+    const linked = [...html.matchAll(/href="\/plugins\/([^/"]+)\/"/g)].map((m) =>
       decodeURIComponent(m[1]!),
     );
     expect(linked.sort()).toEqual([...ids].sort());
@@ -1601,7 +1608,7 @@ function homeScript(href: string, generated = 0, missing?: "search" | "category"
 }
 
 describe("the home page script", () => {
-  const PAGE = "https://jmgirard.github.io/zotero-plugin-index/";
+  const PAGE = "https://zotero-plugins.jmgirard.com/";
 
   test("reads q into the search box on load and shows only the rows it matches", () => {
     const page = homeScript(`${PAGE}?q=TOOLS`);
@@ -2008,17 +2015,17 @@ describe("the built site", () => {
       const html = readFileSync(join(out, path), "utf8");
       const bar = /<body><header class="topbar"><div class="topbar-inner">(.*?)<\/div><\/header><main>/s.exec(html)?.[1];
       expect(bar?.replace(/<button .*<\/script>/s, ""), path).toBe(
-        `<a class="brand" href="/zotero-plugin-index/"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="${PUZZLE_PATH}"></path></svg>Zotero plugin index</a><nav aria-label="Site">` +
-          '<a href="/zotero-plugin-index/about/">About</a>' +
+        `<a class="brand" href="/"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="${PUZZLE_PATH}"></path></svg>Zotero plugin index</a><nav aria-label="Site">` +
+          '<a href="/about/">About</a>' +
           '<a href="https://github.com/jmgirard/zotero-plugin-index/issues/new?template=add-plugin.yml" data-add-plugin>Add a plugin</a>' +
           '<a href="https://github.com/jmgirard/zotero-plugin-index/discussions" data-feedback>Feedback</a>' +
-          '<a href="/zotero-plugin-index/v1/plugins.json">Data</a></nav>',
+          '<a href="/v1/plugins.json">Data</a></nav>',
       );
       const foot = /<\/main><footer class="foot"><div class="foot-inner foot-rule">(.*?)<\/div><\/footer><\/body>/s.exec(html)?.[1];
       expect(foot, path).toBe(
         `<p data-fact="disclaimer">${DISCLAIMER_TEXT}</p>` +
           "<p>The data comes from the build of 2026-10-25.</p>" +
-          '<p>Data file: <a href="/zotero-plugin-index/v1/plugins.json">v1/plugins.json</a></p>',
+          '<p>Data file: <a href="/v1/plugins.json">v1/plugins.json</a></p>',
       );
     }
     expect(existsSync(join(ROOT, ".github/ISSUE_TEMPLATE/add-plugin.yml"))).toBe(true);
@@ -2034,7 +2041,7 @@ describe("the built site", () => {
     expect(unescaped(intro.replace(/<[^>]+>/g, "")).replace(/\s+/g, " ").trim()).toBe(
       `See which Zotero versions each plugin declares, whether it starts, and what users report. ${DISCLAIMER_TEXT} How to install a plugin.`,
     );
-    expect(intro).toMatch(/<a href="\/zotero-plugin-index\/about\/#installing">How to install a plugin<\/a>\./);
+    expect(intro).toMatch(/<a href="\/about\/#installing">How to install a plugin<\/a>\./);
     expect(home().indexOf('<p class="intro">')).toBeLessThan(home().indexOf('<table class="plugins">'));
   });
 
@@ -2177,7 +2184,7 @@ function tagValue(html: string, attribute: string, value: string): string {
 }
 
 describe("the link preview tags", () => {
-  const SITE = "https://jmgirard.github.io/zotero-plugin-index/";
+  const SITE = "https://zotero-plugins.jmgirard.com/";
   const read = (file: string) => readFileSync(join(out, file), "utf8");
   const previewOf = (file: string) => {
     const html = read(file);
@@ -2318,7 +2325,7 @@ describe("a kept record", () => {
     const text = /<p class="fineprint kept-note" data-fact="kept">(.*?)<\/p>/s.exec(page(KEPT))?.[1].replace(/\s+/g, " ").trim();
     expect(text).toBe(
       "The build that wrote this page, on 2026-11-05, could not read this plugin: <code>not-read</code>: the build reads no plugin after 18 minutes, its time limit. " +
-        'These facts come from an earlier build, on 2026-11-03. <a href="/zotero-plugin-index/about/#older-data">About older data</a>',
+        'These facts come from an earlier build, on 2026-11-03. <a href="/about/#older-data">About older data</a>',
     );
     expect(page(KEPT)).toMatch(/<h1>[^<]*<span class="badge" data-kept>Older data<\/span>/);
     expect(page(TWIN)).not.toContain("data-kept");
@@ -2666,7 +2673,7 @@ describe("the site colors", () => {
     test("is linked once from every page, under the base path", () => {
       for (const file of htmlFiles(out)) {
         const html = readFileSync(join(out, file), "utf8");
-        expect(tagValue(html, "rel", "icon"), file).toBe("/zotero-plugin-index/favicon.svg");
+        expect(tagValue(html, "rel", "icon"), file).toBe("/favicon.svg");
       }
     });
 
