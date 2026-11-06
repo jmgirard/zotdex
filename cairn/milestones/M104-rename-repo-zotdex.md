@@ -1,6 +1,6 @@
 # M104: Rename the GitHub repo to zotdex
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
@@ -65,6 +65,8 @@ Rename the GitHub repo `jmgirard/zotero-plugin-index` to `jmgirard/zotdex` so th
 - 2026-11-05: T1 done: `INDEX_REPO` `jmgirard/zotdex`; `LICENSE_HREF`, the issue-form base, and `FEEDBACK_HREF` under `https://github.com/jmgirard/zotdex`; user-agent `zotdex`; `package.json` name `zotdex`; schema titles `Zotdex entry fields` and `Zotdex published data`; the site, text-request, and build fixture URLs follow. pnpm test 2484 passed, pnpm check 0 problems.
 - 2026-11-05: T2 done: `gh repo rename zotdex` ran; `origin` is `https://github.com/jmgirard/zotdex.git` and fetches; description "Zotdex: a community index of Zotero 7+ plugins with tracked version compatibility" and topic `zotdex` set. Reads: `https://github.com/jmgirard/zotero-plugin-index` and its `issues/new` answer 301 to the zotdex paths; `gh api repos/jmgirard/zotero-plugin-index` resolves to `jmgirard/zotdex`; Pages keeps `cname` `zotdex.jmgirard.com` with HTTPS enforced; 14 bot pull requests stay open. Old github.io addresses read past the cache (`x-cache: MISS`) answer 404, `about/?r=…` once gave a cached 301 aged 607 s.
 - 2026-11-05: T3 done: README title `# Zotdex`, the build's default repo `jmgirard/zotdex`, and its old-address paragraph removed; `CLAUDE.md` title `# Zotdex`; CHANGELOG Unreleased drops the forward sentences and adds a repo bullet and one line that old github.io addresses answer 404; DESIGN's purpose line names `jmgirard/zotdex`, and its data paragraph says those addresses answer 404 since the rename. The plain `about/` address still gave an edge-cache 301 (age 779 s, `x-cache: HIT`), so a background read waits for it to expire. No new plain-English hit in README or CHANGELOG. pnpm test 2484 passed, pnpm check 0 problems.
+- 2026-11-05: claim audit: 9 claims read, 2 corrected — CHANGELOG.md: the repo forward lasts while no new repo takes the old name; the 404 line held once the edge cache's 301 expired, about one hour after it was stored. Re-read: both hold.
+- 2026-11-05: the plain `https://jmgirard.github.io/zotero-plugin-index/about/` now answers 404, as does the root. Implement done; status review.
 
 ## Decisions
 
