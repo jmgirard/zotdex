@@ -271,8 +271,10 @@ failed to read a plugin, the card shows the failure in place of the table,
 with no report buttons. A plugin that keeps earlier facts shows the table
 and the buttons for the version of those facts.
 
-An open "Details" card comes last. Its last lines link to the forms that ask
-to change the plugin's text and to remove the plugin or report harm. It lists
+An open "Details" card comes next. Its last lines link to the forms that ask
+to change the plugin's text and to remove the plugin or report harm. A
+"Badge for your README" card comes last, with the plugin's badge Markdown. The
+Details card lists
 the plugin id. For a plugin with
 the card icon, it then gives the paid service fact, whether or not the build
 read the plugin. If the build
@@ -356,8 +358,9 @@ The badge names the Zotero majors whose newest start result is `started`,
 joined by " · ". An example is "started in Zotero 7 · 8 · 9". If no major
 started, the badge says "no start in tests". If the plugin has no start
 results, it says "not start-tested". If the last build failed to read the
-plugin, it says "no data". A plugin that keeps earlier facts gets the badge of
-those facts. A start does not show that a plugin works.
+plugin and kept no earlier facts, it says "no data". A plugin that keeps
+earlier facts gets the badge of those facts. A start does not show that a
+plugin works.
 
 Only a build that deploys changes a badge. Start results come from each day's
 build. After a day whose start tests fail, a badge can name fewer majors or

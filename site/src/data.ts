@@ -6,7 +6,6 @@ import { cutDescription, shownDescription } from "../../src/site/description.ts"
 import { appliedLanguages, languageName, languageOptions, listedSubtags, rowLanguages } from "../../src/site/languages.ts";
 import {
   appliedValue,
-  compareVersions,
   declaredRange,
   majorStart,
   rowMajors,

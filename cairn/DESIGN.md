@@ -159,12 +159,16 @@ id, the repository and release facts, and the "Menus and settings in"
 fact (M024, M033), with each override beside the upstream value it
 corrects under an h3 (M007, M015, M054), and a `description` override
 beside each upstream text that is not blank (M088). It ends with links to the
-text-change form and the remove-plugin form (M079, M093). The About page
+text-change form and the remove-plugin form (M079, M093). A "Badge for your
+README" card (`data-section="badge"`) comes last, with `badgeSnippet`'s
+Markdown in one `<code>` element (M105). The About page
 (`site/src/pages/about.astro`) holds the method notes: the declared range
 and its marks, the start test, which reports count, and how overrides and
 the Used column work (M054), the categories, each with its `about`
 text (M066), what the source fact means (M081), what the paid service
-mark means (M082), the grounds for removing a plugin (M093), how to install a plugin (M096), and the license terms (M095, D-063). The home table marks an archived plugin with
+mark means (M082), the grounds for removing a plugin (M093), how to install
+a plugin (M096), what the README badge says (M105), and the license terms
+(M095, D-063). The home table marks an archived plugin with
 "Archived" after its name (M053), and the data carries the same `archived`
 fact (M013). A home row and a plugin page show a lock for a record with
 `sourceInRepo: false`, the fact that the top level of the repo's default branch
@@ -594,9 +598,12 @@ user reports. The exception is a report that is abuse.
   source text the layout's classic scripts carry, so each calls and reads
   nothing from outside its body except built-ins and browser globals (M078).
   `site/src/data.ts` holds the template helpers, among them `homeOrder`,
-  `majorStart`, `shortLanguages`, and `monthYear` for the home table, and
-  `compatMajors`, `majorReport`, and `startWords` for the plugin page's
-  table (M054). `site/src/components/Icon.astro` draws the line icons, the lock
+  `shortLanguages`, and `monthYear` for the home table, `compatMajors`,
+  `majorReport`, and `startWords` for the plugin page's table (M054), and
+  `badgeSnippet` for its badge card (M105). `majorStart` lives in
+  `src/site/version.ts`, which `data.ts` re-exports, and
+  `src/site/badge.ts` holds `badgeFor` (M105).
+  `site/src/components/Icon.astro` draws the line icons, the lock
   (M081), the card (M082), the star, which `Base.astro` fills with `--star`
   inside `[data-repo-stars]` (M064) and with the count's color in `.row-stars`
   (M097), and the puzzle piece, which `Base.astro` fills with `--accent` inside

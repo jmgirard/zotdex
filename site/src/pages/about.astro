@@ -267,10 +267,11 @@ const offered = new Set(categoryOptions(plugins).map(({ value }) => value));
       ends with the Markdown that shows the badge in a README and links it to that page.
     </p>
     <p>
-      The badge says "started in Zotero" and the Zotero versions whose newest start test started, such as "started in
+      The badge says "started in Zotero" and each Zotero version whose start result for its newest tested release is
+      "started", such as "started in
       Zotero 7 · 8 · 9". If no version started, it says "no start in tests". If the plugin has no start results, it says
-      "not start-tested". If the last build failed to read the plugin, it says "no data". A plugin that keeps earlier
-      facts gets the badge of those facts. A start does not show that a plugin works.
+      "not start-tested". If the last build failed to read the plugin and kept no earlier facts, it says "no data". A
+      plugin that keeps earlier facts gets the badge of those facts. A start does not show that a plugin works.
     </p>
     <p>
       Only a build that deploys changes a badge. Start results come from each day's build. After a day whose start tests
