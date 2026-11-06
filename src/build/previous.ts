@@ -3,7 +3,7 @@ import { withinLimit } from "../upstream/time-limit.ts";
 
 // The deployed data, which the daily build keeps facts from (src/build/keep.ts) and
 // `pnpm carry-start-results` reuses start results from.
-export const PREVIOUS_URL = "https://zotero-plugins.jmgirard.com/v1/plugins.json";
+export const PREVIOUS_URL = "https://zotdex.jmgirard.com/v1/plugins.json";
 
 // The largest earlier data read, counted in decoded bytes. The deployed file of 272 plugins was
 // 375,942 bytes (observed 2026-10-30).

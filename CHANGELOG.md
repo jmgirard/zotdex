@@ -2,9 +2,9 @@
 
 ## Unreleased
 
-- The site, the data file, and the schemas moved to
-  `https://zotero-plugins.jmgirard.com/`. The data file is now at
-  `https://zotero-plugins.jmgirard.com/v1/plugins.json`, and each published
+- The site is now named Zotdex, and the site, the data file, and the schemas
+  moved to `https://zotdex.jmgirard.com/`. The data file is now at
+  `https://zotdex.jmgirard.com/v1/plugins.json`, and each published
   schema's `$id` names its new address. GitHub forwards each address under
   `https://jmgirard.github.io/zotero-plugin-index/` to the same path and
   query under the new host's root. A script in a web page on another site

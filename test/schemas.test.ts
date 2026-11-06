@@ -12,7 +12,7 @@ test("gives each schema that the build publishes the $id of its own published ad
     expect(files.length).toBeGreaterThan(0);
     for (const file of files) {
       const schema = JSON.parse(readFileSync(join(out, "schemas", file), "utf8")) as { $id?: unknown };
-      expect(schema.$id, file).toBe(`https://zotero-plugins.jmgirard.com/schemas/${file}`);
+      expect(schema.$id, file).toBe(`https://zotdex.jmgirard.com/schemas/${file}`);
     }
   } finally {
     rmSync(out, { recursive: true, force: true });

@@ -8,8 +8,9 @@ _Architecture as it **is**, not as it will be. Future work lives in
 > Elicited by `/design-interview` Phase 1 on 2026-10-24, run on Opus 5.5.
 > Design Principles come from Phase 2.
 
-zotero-plugin-index is a community index of Zotero plugins for Zotero 7 and
-later. It answers one question for Zotero users first: does this plugin work
+Zotdex, kept in the repository zotero-plugin-index, is a community index of
+Zotero plugins for Zotero 7 and later (named by D-069). It answers one
+question for Zotero users first: does this plugin work
 on my version of Zotero? Zotero publishes no plugin list. Its support page
 says that an official directory is planned.
 
@@ -245,9 +246,10 @@ pattern that the published data already meets is not a breaking change
 either, and it stays in the current version (D-018). The v1 schema
 rejects fields it does not define, so a consumer that validates against a
 saved copy must fetch the schema again after such a change. The URL is
-`https://zotero-plugins.jmgirard.com/v1/plugins.json`. The published schemas
-are under `https://zotero-plugins.jmgirard.com/schemas/`, and each schema's
-`$id` is its own URL (M006, moved by M102 under D-068). The site
+`https://zotdex.jmgirard.com/v1/plugins.json`. The published schemas
+are under `https://zotdex.jmgirard.com/schemas/`, and each schema's
+`$id` is its own URL (M006, moved by M102 and M103 under D-068 and
+D-069). The site
 and data were first under `https://jmgirard.github.io/zotero-plugin-index/`.
 GitHub forwards each old address to the same path and query under the new
 host's root. A

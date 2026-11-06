@@ -1,13 +1,14 @@
 # zotero-plugin-index
 
-A community index of plugins for Zotero 7 and later. The index lists plugins
-and links to the releases of each author. It does not host plugin files, and
-it does not review or endorse plugins. The index is unofficial, is not
-affiliated with or endorsed by Zotero, and cannot vet the plugins it lists.
+Zotdex is a community index of plugins for Zotero 7 and later. The index
+lists plugins and links to the releases of each author. It does not host
+plugin files, and it does not review or endorse plugins. The index is
+unofficial, is not affiliated with or endorsed by Zotero, and cannot vet the
+plugins it lists.
 
 ## The site
 
-The website <https://zotero-plugins.jmgirard.com/> shows the index.
+The website <https://zotdex.jmgirard.com/> shows the index.
 A top bar on every page links to the home page and to the About page. It
 also links to the "Add a plugin" issue form, to the repository's GitHub
 Discussions as "Feedback", and to the data file. With
@@ -359,11 +360,11 @@ page uses a sentence that names the plugin.
 
 The index publishes its data file on GitHub Pages:
 
-- Data: <https://zotero-plugins.jmgirard.com/v1/plugins.json>
+- Data: <https://zotdex.jmgirard.com/v1/plugins.json>
 - Schema for the data file:
-  <https://zotero-plugins.jmgirard.com/schemas/plugins.v1.schema.json>
+  <https://zotdex.jmgirard.com/schemas/plugins.v1.schema.json>
 - Schema for `index.json`:
-  <https://zotero-plugins.jmgirard.com/schemas/index.v1.schema.json>
+  <https://zotdex.jmgirard.com/schemas/index.v1.schema.json>
 
 The site and the data were first published under
 `https://jmgirard.github.io/zotero-plugin-index/`. GitHub forwards each old
@@ -1329,7 +1330,7 @@ No bot answers the form. To check a request, download the deployed data file
 and run the command with the issue's number:
 
 ```sh
-curl -sSLo plugins.json https://zotero-plugins.jmgirard.com/v1/plugins.json
+curl -sSLo plugins.json https://zotdex.jmgirard.com/v1/plugins.json
 pnpm text-request <issue> --data plugins.json
 ```
 

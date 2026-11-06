@@ -66,7 +66,7 @@ jobs:
       # failure (D-066; README "Building the data" gives every condition).
       - run: >-
           pnpm build --plan start-plan.json
-          --previous https://zotero-plugins.jmgirard.com/v1/plugins.json
+          --previous https://zotdex.jmgirard.com/v1/plugins.json
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # Reuses the `started` results of the deployed data for each XPI whose SHA-256 is unchanged,
@@ -74,7 +74,7 @@ jobs:
       # exits 0 and leaves the plan as it is when the deployed data cannot be read (D-024).
       - run: >-
           pnpm carry-start-results --plan start-plan.json --data dist/v1/plugins.json
-          --previous https://zotero-plugins.jmgirard.com/v1/plugins.json
+          --previous https://zotdex.jmgirard.com/v1/plugins.json
       - id: plan-sha256
         run: echo "sha256=$(sha256sum start-plan.json | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
       # The SHA-256 of every path, kind, and file under dist/, which the site job checks the
