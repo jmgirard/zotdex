@@ -1,6 +1,6 @@
 # M105: Offer plugin authors a README badge
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
@@ -71,6 +71,8 @@ Give each listed plugin a README badge, labeled Zotdex, that says which Zotero m
 - 2026-11-05: T2 done: `site/src/pages/badges/[id].json.ts` writes `badges/<raw id>.json` from `badgeFor` for every record; the site test "writes one badge file for each record and no other" lists `badges/`, compares each file with `badgeFor`, and reads `started in Zotero 7` for no-range-plugin. pnpm test 2492 passed, pnpm check 0 problems.
 - 2026-11-05: T3 done: `badgeSnippet(id)` in `site/src/data.ts` builds the Markdown from `ORIGIN`, `BASE`, and `pluginHref`; each plugin page ends with a `data-section="badge"` card, "Badge for your README", one fineprint line, and the snippet in `<code class="badge-snippet">`, styled with `--space-4`, `--space-6`, `--radius-m`, and `--hover`. The section-order test now lists the badge card; new tests read every built `plugins/` page's snippet against its canonical address and check every HTML file for `img.shields.io` outside code text and in `src`, `srcset`, or `url(`. Planting an `<img>` from img.shields.io turned that test red. A real-data build wrote 736 badge files; the 375 px view shows the card with no sideways scroll. pnpm test 2494 passed, pnpm check 0 problems.
 - 2026-11-05: T4 done: README's site section gains two badge paragraphs, and its `pnpm site` list names `dist/badges/<id>.json`; About gains a "README badge" section after "Installing a plugin", with tests for the section list and its address and four messages; DESIGN's Contract boundary names the badge path and its rules, and its site build line names the badge files; CHANGELOG has an Unreleased entry. No new plain-English hit in README, CHANGELOG, or DESIGN. pnpm test 2495 passed, pnpm check 0 problems.
+- 2026-11-05: claim audit: 44 claims read, 4 corrected — site/src/pages/about.astro, README.md, site/src/pages/plugins/[id]/index.astro, CHANGELOG.md: About's "no data" sentence gains the kept-facts exception; the cache sentence adds GitHub Pages' 10-minute copy of the badge file; the plugin page and the changelog say the badge names the versions or why it names none. Re-read: all four hold; GitHub's image proxy honoring shields' one-hour header stays unchecked.
+- 2026-11-05: implement done; status review.
 
 ## Decisions
 
