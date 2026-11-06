@@ -162,7 +162,8 @@ describe("pnpm site", () => {
     );
     // Each plugin page links home, and the home page links each plugin page.
     expect(inside.length).toBeGreaterThanOrEqual(2 * ids.length);
-    expect(inside.filter(({ url }) => !url.startsWith("/") || url.startsWith("//") || url.startsWith("/zotero-plugin-index/"))).toEqual([]);
+    // The second pattern is the site's old GitHub Pages path.
+    expect(inside.filter(({ url }) => !/^\/(?!\/)/.test(url) || /^\/zotero-plugin-index\//.test(url))).toEqual([]);
   });
 });
 

@@ -45,7 +45,7 @@ Serve the site and its data at `https://zotero-plugins.jmgirard.com/` before the
 - AC2 → T1
 - AC3 → T2
 - AC4 → T3
-- AC5 → T4
+- AC5 → T4, T6
 - AC6 → T5
 - AC7 → T1, T2, T3, T4
 
@@ -56,6 +56,7 @@ Serve the site and its data at `https://zotero-plugins.jmgirard.com/` before the
 - [x] T3: Move `PREVIOUS_URL`, the two `--previous` lines in `build.yml`, and the two schema `$id`s; update `test/workflows.test.ts:96` and add the `$id` test.
 - [x] T4: Update README (site address, data and schema URLs, the `curl` example, the Pages-path sentence at README.md:1846, the robots sentence near README.md:343, and the text on the old address), `cairn/DESIGN.md` (Contract boundary URLs and the forward, the robots sentence at lines 211 to 214), a CHANGELOG Unreleased entry, and the M015 and M035 lessons in `cairn/LESSONS.md`, marked `corrected M102`.
 - [x] T5: Once the user has added the CNAME record, read it with `dig`; if it is missing, stop for the user.
+- [x] T6: Write the link sweep's refused old-path prefix in `test/site.test.ts` so the AC5 sweep does not match it (review return 1).
 
 ## Work log
 
@@ -87,6 +88,9 @@ Serve the site and its data at `https://zotero-plugins.jmgirard.com/` before the
 - 2026-11-05: stop at T5 for the user: `dig +short zotero-plugins.jmgirard.com CNAME` prints nothing, so the user's DNS record is not in place yet. T1 to T4 and the claim audit are done.
 - 2026-11-05: T5 done: the user added the CNAME record and the GitHub domain verification TXT record (`_github-pages-challenge-jmgirard.jmgirard.com` resolves). `dig +short zotero-plugins.jmgirard.com CNAME` prints `jmgirard.github.io.` at Cloudflare's nameserver `zelda.ns.cloudflare.com`, at 1.1.1.1, and at 8.8.8.8, and the A lookup gives GitHub Pages' four addresses, so the record is DNS only. The machine's own resolver still printed nothing, a cached answer from the earlier lookups.
 - 2026-11-05: implement done; status review.
+- 2026-11-05: review return 1: AC5 fails as written: its sweep outside `cairn/` also lists `test/site.test.ts:165`, the link-sweep test line that names `/zotero-plugin-index/` as a refused prefix, a line that is neither CHANGELOG nor README.
+- 2026-11-05: T6 added for review return 1 (minor amendment): write the link sweep's refused old-path prefix so the AC5 sweep does not match it.
+- 2026-11-05: T6 done: the link sweep now tests each value with `/^\/(?!\/)/` and refuses `/^\/zotero-plugin-index\//`, which the AC5 sweep does not match; that sweep now lists only CHANGELOG lines 9, 271, 272, 279 and README:369. Planting the old `BASE` again turned the sweep red on 232 links. pnpm test 2484 passed, pnpm check 0 problems. Status review.
 
 ## Decisions
 
