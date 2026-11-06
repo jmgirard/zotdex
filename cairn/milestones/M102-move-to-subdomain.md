@@ -52,7 +52,7 @@ Serve the site and its data at `https://zotero-plugins.jmgirard.com/` before the
 ## Tasks
 
 - [x] T1: Set `BASE` and `ORIGIN` in `site/src/base.ts` and correct the Pages-path comments. Move the site tests to the root base and the new host: the link sweep (`test/site.test.ts:148`) asserts the AC1 prefixes, and the tests that name `/zotero-plugin-index/` or the github.io host (`test/site.test.ts`, `test/home-filter.test.ts:117`) use the new values; add a `filterHref` probe on a root-path page address.
-- [ ] T2: Add `site/src/pages/robots.txt.ts`, built from `ORIGIN` as `sitemap.xml.ts` is, and a site test that reads the built `robots.txt`.
+- [x] T2: Add `site/src/pages/robots.txt.ts`, built from `ORIGIN` as `sitemap.xml.ts` is, and a site test that reads the built `robots.txt`.
 - [ ] T3: Move `PREVIOUS_URL`, the two `--previous` lines in `build.yml`, and the two schema `$id`s; update `test/workflows.test.ts:96` and add the `$id` test.
 - [ ] T4: Update README (site address, data and schema URLs, the `curl` example, the Pages-path sentence at README.md:1846, the robots sentence near README.md:343, and the text on the old address), `cairn/DESIGN.md` (Contract boundary URLs and the forward, the robots sentence at lines 211 to 214), a CHANGELOG Unreleased entry, and the M015 and M035 lessons in `cairn/LESSONS.md`, marked `corrected M102`.
 - [ ] T5: Once the user has added the CNAME record, read it with `dig`; if it is missing, stop for the user.
@@ -75,6 +75,7 @@ Serve the site and its data at `https://zotero-plugins.jmgirard.com/` before the
 - 2026-11-05: plan gate chose moving the schema `$id`s over keeping them, so that each `$id` stays its own URL; falsified by a consumer that resolves the schemas by the old `$id` string.
 - 2026-11-05: implement started on m102-move-to-subdomain; untracked `.claude/` left unstaged. DNS CNAME not yet present (dig prints nothing), so T5 comes last.
 - 2026-11-05: T1 done: `BASE` `/`, `ORIGIN` the new host; site and home-filter tests moved, the link sweep now refuses a value not starting with `/`, starting with `//`, or starting with `/zotero-plugin-index/`; `filterHref` probes the root page and a sub-path. Planting the old `BASE` turned the sweep red on 232 links. pnpm test 2482 passed, pnpm check 0 problems.
+- 2026-11-05: T2 done: `site/src/pages/robots.txt.ts` writes `User-agent: *`, `Allow: /`, and the `Sitemap:` line from `ORIGIN` and `BASE`; a site test compares the built file exactly. pnpm test 2483 passed, pnpm check 0 problems.
 
 ## Decisions
 

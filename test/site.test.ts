@@ -134,6 +134,12 @@ describe("pnpm site", () => {
     expect(locs.toSorted()).toEqual(canonicals.toSorted());
   });
 
+  test("writes a robots.txt at the top that allows every path and names the sitemap", () => {
+    expect(readFileSync(join(out, "robots.txt"), "utf8")).toBe(
+      "User-agent: *\nAllow: /\n\nSitemap: https://zotero-plugins.jmgirard.com/sitemap.xml\n",
+    );
+  });
+
   test("links the sitemap from the head of every page", () => {
     for (const file of htmlFiles(out)) {
       const head = /<head>(.*?)<\/head>/s.exec(readFileSync(join(out, file), "utf8"))![1]!;
