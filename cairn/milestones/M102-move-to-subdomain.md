@@ -83,6 +83,8 @@ Serve the site and its data at `https://zotero-plugins.jmgirard.com/` before the
 - 2026-11-05: T4 done: README (site address, data and schema URLs, the forward and browser-script note, the robots sentence, the `curl` example, and the `pnpm site` output list, which now also names `404.html` and `sitemap.xml`), DESIGN (data URLs, the forward, the robots sentence), a CHANGELOG Unreleased entry, and the M015 and M035 lessons. The plain-English linter finds no new hit from these edits, and README keeps its 28 older hits. The AC5 sweeps list only CHANGELOG lines, README:369, the link-sweep test line that names the old path as refused, and DESIGN:251. pnpm test 2484 passed, pnpm check 0 problems.
 - 2026-11-05: claim audit: 29 claims read, 2 corrected — README.md, CHANGELOG.md, cairn/DESIGN.md: the forward keeps path and query under the new host's root (it drops the repo prefix), and old links work in a browser and in most clients that follow redirects, since the first hop goes to http. Re-read of the two corrections pending at this checkpoint.
 - 2026-11-05: hand check: a local `pnpm site --out` build of the deployed data, served at a root path in the browser pane, loads the home page (736 rows), About, a plugin page, the data file, the favicon, the sitemap, and robots.txt, and answers a missing path with 404; every top bar link starts at `/`.
+- 2026-11-05: claim audit re-read: both corrections hold; the forward's first hop stays http even with HTTPS enforced, which "most clients" allows for.
+- 2026-11-05: stop at T5 for the user: `dig +short zotero-plugins.jmgirard.com CNAME` prints nothing, so the user's DNS record is not in place yet. T1 to T4 and the claim audit are done.
 
 ## Decisions
 
