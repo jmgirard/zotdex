@@ -642,6 +642,7 @@ describe("the plugin page", () => {
     expect(found.map(({ name, heading }) => [name, heading])).toEqual([
       ["compatibility", "Zotero compatibility"],
       ["details", "Details"],
+      ["badge", "Badge for your README"],
     ]);
     const body = (name: string) => found.find((section) => section.name === name)!.body;
     const holds: [string, string[]][] = [
@@ -2104,6 +2105,31 @@ describe("the built site", () => {
     }
     expect(home()).not.toContain("data-text-change");
     expect(readFileSync(join(out, "about/index.html"), "utf8")).not.toContain("data-text-change");
+  });
+
+  test("gives each built plugin page one badge snippet for its own badge file and page", () => {
+    const built = readdirSync(join(out, "plugins"));
+    expect(built.sort()).toEqual([...ids].sort());
+    expect(built).toContain("_x-y+z.w@{v}");
+    for (const id of built) {
+      const html = page(id);
+      const badge = sections(html).filter(({ name }) => name === "badge");
+      expect(badge.map(({ heading }) => heading), id).toEqual(["Badge for your README"]);
+      const codes = [...badge[0]!.body.matchAll(/<code\b[^>]*>(.*?)<\/code>/gs)];
+      expect(codes, id).toHaveLength(1);
+      const file = `https://zotdex.jmgirard.com/badges/${encodeURIComponent(id)}.json`;
+      const canonical = /<link rel="canonical" href="([^"]*)"/.exec(html)![1]!;
+      expect(decoded(codes[0]![1]!), id).toBe(`[![Zotdex](https://img.shields.io/endpoint?url=${encodeURIComponent(file)})](${canonical})`);
+    }
+  });
+
+  test("names img.shields.io only in code text, and loads nothing from it", () => {
+    for (const file of htmlFiles(out)) {
+      const html = readFileSync(join(out, file), "utf8");
+      expect(html.replace(/<code\b[^>]*>.*?<\/code>/gs, ""), file).not.toContain("img.shields.io");
+      const loads = [...html.matchAll(/\s(?:src|srcset)="([^"]*)"|url\(([^)]*)\)/g)].map((match) => match[1] ?? match[2]!);
+      expect(loads.filter((url) => url.includes("shields.io")), file).toEqual([]);
+    }
   });
 
   test("links each plugin page to the remove-plugin form with its id, and no other page with an id", () => {

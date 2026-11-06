@@ -941,6 +941,15 @@ const themeButton = `(${wireThemeButton})();`;
         font-size: var(--text-s);
         color: var(--muted);
       }
+      /* The README badge's Markdown: one block that wraps anywhere, so a long address fits. */
+      .badge-snippet {
+        display: block;
+        padding: var(--space-4) var(--space-6);
+        border-radius: var(--radius-m);
+        background: var(--hover);
+        font-size: var(--text-s);
+        overflow-wrap: anywhere;
+      }
       /* Words in the table break only at spaces, so a narrow header wraps between words. */
       .compat-table {
         overflow-wrap: normal;
