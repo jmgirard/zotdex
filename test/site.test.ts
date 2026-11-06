@@ -888,9 +888,18 @@ describe("the About page", () => {
       ["paid-service", "Paid service"],
       ["removing", "Removing a plugin"],
       ["installing", "Installing a plugin"],
+      ["badge", "README badge"],
       ["not-vetted", "What the index does not do"],
       ["license", "License"],
     ]);
+  });
+
+  test("names the badge file's address and each of the badge's four messages", () => {
+    const section = /<section class="card" id="badge" data-about="badge">(.*?)<\/section>/s.exec(about())![1]!;
+    const text = unescaped(section.replace(/<[^>]+>/g, "")).replace(/\s+/g, " ");
+    expect(text).toContain("https://zotdex.jmgirard.com/badges/<id>.json");
+    for (const message of ["started in Zotero 7 · 8 · 9", "no start in tests", "not start-tested", "no data"]) expect(text).toContain(`"${message}"`);
+    expect(text).toContain("A start does not show that a plugin works.");
   });
 
   test("states the license terms and the icons' sources, and links to the README's License section", () => {

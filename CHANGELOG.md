@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Each plugin now has a README badge, labeled Zotdex, that names the Zotero
+  versions its release started in, such as "started in Zotero 7 · 8 · 9". The
+  site build writes one shields.io endpoint file per plugin at
+  `https://zotdex.jmgirard.com/badges/<id>.json`. Each plugin page ends with a
+  "Badge for your README" card that holds the Markdown to copy. README and
+  About say what each badge message means and how long a change takes to show.
 - The site is now named Zotdex, and the site, the data file, and the schemas
   moved to `https://zotdex.jmgirard.com/`. The data file is now at
   `https://zotdex.jmgirard.com/v1/plugins.json`, and each published

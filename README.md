@@ -344,6 +344,28 @@ its canonical address. The site's `robots.txt`, at the top of its host, lets
 search engines read every page and names the sitemap. A maintainer can also
 submit the sitemap to a search engine by hand.
 
+Each plugin has a README badge file at
+`https://zotdex.jmgirard.com/badges/<id>.json`, with the plugin's id
+percent-encoded. The badge service shields.io draws a badge from it, labeled
+Zotdex. Each plugin page ends with a "Badge for your README" card that holds
+the Markdown to copy. The Markdown shows the badge through `img.shields.io` and
+links it to the plugin's page. The site shows the Markdown as text and loads
+nothing from shields.io.
+
+The badge names the Zotero majors whose newest start result is `started`,
+joined by " · ". An example is "started in Zotero 7 · 8 · 9". If no major
+started, the badge says "no start in tests". If the plugin has no start
+results, it says "not start-tested". If the last build failed to read the
+plugin, it says "no data". A plugin that keeps earlier facts gets the badge of
+those facts. A start does not show that a plugin works.
+
+Only a build that deploys changes a badge. Start results come from each day's
+build. After a day whose start tests fail, a badge can name fewer majors or
+say "not start-tested" until a later build has results. shields.io and GitHub
+each keep a copy of the image for up to an hour. So a change can take a few
+hours to show. When the index removes a plugin, its badge shows an error badge
+from shields.io.
+
 Each page has a favicon, the icon that a browser shows for the page. It is a
 blue puzzle piece, and the top bar shows the same piece beside the site's name.
 Each page also has tags for link previews. The tags are a meta description,
@@ -1842,7 +1864,8 @@ The command reads `dist/v1/plugins.json`. It writes these pages: the home
 page, `dist/index.html`, the About page, `dist/about/index.html`, one page
 for each record, `dist/plugins/<id>/index.html`, and the "Page not found"
 page, `dist/404.html`. It also writes the favicon, `dist/favicon.svg`,
-`dist/sitemap.xml`, and `dist/robots.txt`. It does not change the data file
+`dist/sitemap.xml`, `dist/robots.txt`, and one badge file for each record,
+`dist/badges/<id>.json`. It does not change the data file
 or the schemas. It
 replaces each of those files and folders of an earlier run. So a page for a
 plugin that the data no longer lists goes away. Links between the pages, and

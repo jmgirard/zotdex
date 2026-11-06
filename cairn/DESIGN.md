@@ -239,6 +239,13 @@ and GitHub Discussions for feedback (M097), which no build reads. It has no
 server, no database, and no paid service. Thus every
 contributor needs a GitHub account.
 
+Each listed plugin also has a README badge file at the stable public path
+`https://zotdex.jmgirard.com/badges/<id>.json`, with the id percent-encoded.
+It is a shields.io endpoint file labeled Zotdex. Its message names the Zotero
+majors whose newest start result is `started`, never "works" (D-023, D-071). A record that keeps earlier facts gets the badge of those facts. Each
+plugin page shows the Markdown that embeds the badge through `img.shields.io`
+as text, and the site loads nothing from shields.io (M105).
+
 The generated JSON data is a public API at a stable URL, with a schema
 version. A breaking change gets a new schema version. The old version stays
 available for a transition period. A new optional field is not a breaking
@@ -558,7 +565,8 @@ user reports. The exception is a report that is abuse.
 - Site build (`src/site/`, `site/`): `pnpm site [--out <dir>]` writes the
   home page, the About page (M054), and one page per record into `dist/`,
   or `<dir>`, from the data file there. It also writes `404.html`,
-  `favicon.svg`, `sitemap.xml`, and `robots.txt` (M102).
+  `favicon.svg`, `sitemap.xml`, and `robots.txt` (M102), and
+  `badges/<id>.json` for each record (M105).
   `src/site/version.ts` holds the version and range functions
   that the templates use, `majorSupport` and `ZOTERO_MAJORS` among them, and
   `src/site/description.ts` holds `shownDescription`, `cjkShare`, and `cutDescription`.
