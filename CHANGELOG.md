@@ -5,12 +5,12 @@
 - The site is now named Zotdex, and the site, the data file, and the schemas
   moved to `https://zotdex.jmgirard.com/`. The data file is now at
   `https://zotdex.jmgirard.com/v1/plugins.json`, and each published
-  schema's `$id` names its new address. GitHub forwards each address under
-  `https://jmgirard.github.io/zotero-plugin-index/` to the same path and
-  query under the new host's root. A script in a web page on another site
-  must fetch the data from the new address. The forward lacks the header
-  that a browser needs for that request. The site now has a `robots.txt`
+  schema's `$id` names its new address. The site now has a `robots.txt`
   that names its sitemap.
+- The GitHub repo is now `https://github.com/jmgirard/zotdex`. GitHub
+  forwards the old repo's web, issue, and git addresses to it.
+- Old addresses under `https://jmgirard.github.io/zotero-plugin-index/`
+  now answer 404.
 - The `pnpm build` log now says how long the plugin reads took: the whole
   read phase, the reads and summed time for each result, and the 10 slowest
   reads.

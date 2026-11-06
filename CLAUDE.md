@@ -1,4 +1,4 @@
-# zotero-plugin-index
+# Zotdex
 
 A community index of Zotero 7+ plugins. See `cairn/DESIGN.md` for purpose and
 design.
