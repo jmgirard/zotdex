@@ -1038,3 +1038,25 @@ common use meets them. A test that fails in CI shows itself without a row, and t
 build writes its API URLs with `api.github.com` and no trailing dot.
 
 The drop can be reopened by an entry that supersedes this one.
+
+### D-068: The site and its data move to zotero-plugins.jmgirard.com, and GitHub's forward serves the old addresses, annotating DESIGN's stable data URL
+
+2026-11-05, M102 plan. DESIGN promises the data at a stable URL under
+`https://jmgirard.github.io/zotero-plugin-index/`. Before the index is
+advertised, the user chose to move the site, the data, and the schemas to
+`https://zotero-plugins.jmgirard.com/`, a subdomain of the user's own domain. The
+address is shorter to share, the link names what the site is, the user's domain
+shows that the index is not Zotero's planned directory, and a site at a host's
+root can have a `robots.txt`. The user rejected a new domain, whose lapsed renewal
+would break every link and whose name would need "Zotero" to say what it is, and
+staying on github.io, whose address every link shared after launch would then fix.
+With a custom domain set, GitHub answers each old address with a 301 to the same
+path and query on the new host, observed on the user's `circumplex` repo. That
+forward goes to http first and carries no Access-Control-Allow-Origin header, so
+a script in another site's page that fetches the old data URL fails, while page
+visits and clients that follow redirects still work. The user chose to move with
+that cost stated, as no outside use of the data is known. The README and the
+changelog tell data users to switch. Each schema's `$id` moves too, so it stays
+its own URL. That changes no field, so the data stays at v1 (D-007 governs
+shape, not address). This choice is wrong if a data user reports a working client
+that the move broke, or if GitHub's forward stops keeping the path.
