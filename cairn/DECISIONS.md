@@ -1060,3 +1060,18 @@ changelog tell data users to switch. Each schema's `$id` moves too, so it stays
 its own URL. That changes no field, so the data stays at v1 (D-007 governs
 shape, not address). This choice is wrong if a data user reports a working client
 that the move broke, or if GitHub's forward stops keeping the path.
+
+### D-069: The site moves to zotdex.jmgirard.com and is named Zotdex, annotating D-068
+
+2026-11-05, M103 plan. D-068 chose `zotero-plugins.jmgirard.com` partly because
+the link names what the site is. The user then judged that a name under their own
+domain reads as plugins they wrote, and that a longer descriptive name such as
+`zotero-plugin-index.jmgirard.com` is too long. So the site, the data, and the
+schemas move to `https://zotdex.jmgirard.com/`, and the site's visible name
+becomes Zotdex, with the home title "Zotdex: a Zotero plugin index" saying what
+it is. D-068's other reasons stand: a subdomain of the user's own domain, no
+Zotero-branded domain, and GitHub's forward for old github.io addresses, with the
+same cost for a script in another site's page. `zotero-plugins.jmgirard.com` gets
+no redirect, as it served the site for about two hours and was never announced.
+The GitHub repo keeps its name. This choice is wrong if readers do not connect
+Zotdex with Zotero plugins, or if a link to the old subdomain turns up in use.
