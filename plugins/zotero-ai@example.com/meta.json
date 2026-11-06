@@ -1,0 +1,8 @@
+{
+  "id": "zotero-ai@example.com",
+  "name": "Zotero AI",
+  "description": "AI research assistant for Zotero. Chat with your PDFs and search your library via any OpenAI-compatible API.",
+  "homepage": "https://github.com/text70/zotero_ai",
+  "repoUrl": "https://github.com/text70/zotero_ai",
+  "updateUrl": "https://github.com/text70/zotero_ai/releases/latest/download/updates.json"
+}
