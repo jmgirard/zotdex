@@ -167,10 +167,10 @@ supported range and its marks, the startup check, which reports count, and
 what corrections change (M054, M110), the categories, each with its `about`
 text (M066), what the lock means (M081), what the paid service mark means
 (M082), the grounds for removing a plugin (M093), how to install a plugin
-(M096), and the license terms in short
-form (M095, D-063). The home table marks an archived plugin with
-"Archived" after its name (M053), and the data carries the same `archived`
-fact (M013). A home row and a plugin page show a lock for a record with
+(M096), and the license terms in short form (M095, D-063). The home table
+marks an archived plugin with "Archived" after its name (M053), and the
+data carries the same `archived` fact (M013). A home row and a plugin page
+show a lock for a record with
 `sourceInRepo: false`, the fact that the top level of the repo's default branch
 holds no name that can be source code, and the Details card states it (M081,
 D-052). A home row and a plugin page show a card icon for a record with

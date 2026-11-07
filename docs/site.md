@@ -277,15 +277,13 @@ the failure and that build's day in place of the table. It then has no
 report buttons. A plugin that keeps earlier facts shows the table
 and the buttons for the version of those facts.
 
-An open "Details" card comes next. Its last lines link to the forms that ask
+An open "Details" card comes last. Its last lines link to the forms that ask
 to change the plugin's text and to remove the plugin or report harm. The
-Details card lists
-the plugin id. For a plugin with
-the card icon, it then gives the paid service fact, whether or not the build
-read the plugin. If the build
-read the plugin, it also lists facts about the repository and the release
-that the index read, with dates such as "March 14, 2023". Its last fact is
-"Languages". That fact names the
+Details card lists the plugin id. For a plugin with the card icon, it then
+gives the paid service fact, whether or not the build read the plugin. If
+the build read the plugin, it also lists facts about the repository and the
+release that the index read, with dates such as "March 14, 2023". Its last
+fact is "Languages". That fact names the
 languages of the `languages` list that "Using the data" in
 [data.md](data.md#using-the-data) describes, which
 come from the plugin's locale folders. If a `languages` override applies to

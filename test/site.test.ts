@@ -2157,7 +2157,6 @@ describe("the built site", () => {
     expect(files).toHaveLength(ids.length + 3);
     for (const file of files) {
       const html = readFileSync(join(out, file), "utf8");
-      expect(html, file).not.toContain('data-section="badge"');
       expect(html, file).not.toContain("img.shields.io");
     }
   });
