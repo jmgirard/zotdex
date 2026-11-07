@@ -4,11 +4,11 @@
 
 - Plugin pages with a download link show a "Malware scan" fact: whether
   ClamAV found known malware in the plugin's file, with the scan's date, or
-  "Not scanned yet". The daily build scans every plugin file with ClamAV on
+  "Not scanned yet". The daily build scans the plugin files with ClamAV on
   Mondays (UTC), and on a run that a maintainer starts with the new
-  `malware-scan` input. Between scans it keeps the published result for an
-  unchanged file. A find hides nothing, and it shows as a warning on the
-  workflow run. The data's records gain an optional `malwareScan` field, so
+  `malware-scan` input, as many as it downloads in 20 minutes. Between scans
+  it keeps the published result for an unchanged file. A find hides
+  nothing, and it shows as a warning on the workflow run. The data's records gain an optional `malwareScan` field, so
   the v1 schema changed. Fetch any saved copy of it again. The footer, the
   install note, and About now name the scan, and About says that a clean
   scan doesn't mean a plugin is safe.

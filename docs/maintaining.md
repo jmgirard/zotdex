@@ -973,7 +973,9 @@ data. It runs `clamscan` once over the files, with
 result go first, then the files with the oldest results. The command starts
 no download 20 minutes after it begins, and it stops `clamscan` after 10
 minutes. It prints one line for each file with no new result, with the
-reason. Only when it cannot read the data does it exit with status 1.
+reason, and one warning line with the number of files it did not reach. For
+a usage error, data it cannot read, or a file it cannot write, it exits with
+status 1.
 `cairn/references/clamav-docs.md` records the `clamscan` options and
 output.
 
@@ -987,7 +989,8 @@ In three cases it adds nothing: the results file is missing, its SHA-256 is
 not the `--expect` value, or it is not a list of results of the right shape.
 Each of these prints one warning line and exits 0, and the kept results
 stay. It skips a result whose plugin id or
-SHA-256 does not match its record. Then it prints one warning line for each
+SHA-256 does not match its record, and both results of an id that appears
+twice. Then it prints one warning line for each
 plugin whose file ClamAV flagged, with the plugin id, the version, and the
 signature name. GitHub Actions shows these lines on the run. If it cannot
 read or write the data, or the schema refuses the new data, it exits with

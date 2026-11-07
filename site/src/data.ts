@@ -199,9 +199,6 @@ export const FEEDBACK_HREF = "https://github.com/jmgirard/zotdex/discussions";
 // The index repo itself, linked from the top bar and the footer.
 export const REPO_HREF = "https://github.com/jmgirard/zotdex";
 
-// A timestamp's day in UTC with the month's English name, such as "October 25, 2026". The
-// schema does not check every date field, so a text that is not a date shows its first 10
-// characters, as the site did before.
 // ClamAV's home page, which the plugin page's "Malware scan" row links.
 export const CLAMAV_HREF = "https://www.clamav.net/";
 
@@ -211,6 +208,9 @@ export function malwareScanOf(record: PluginRecord): PluginRecord["malwareScan"]
   return scan && scan.xpiSha256 === record.upstream?.xpiSha256 ? scan : undefined;
 }
 
+// A timestamp's day in UTC with the month's English name, such as "October 25, 2026". The
+// schema does not check every date field, so a text that is not a date shows its first 10
+// characters, as the site did before.
 export function longDay(timestamp: string): string {
   const date = new Date(timestamp);
   if (Number.isNaN(date.getTime())) return timestamp.slice(0, 10);

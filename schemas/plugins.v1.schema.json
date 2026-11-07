@@ -105,7 +105,7 @@
           "items": { "$ref": "#/definitions/startTest" }
         },
         "malwareScan": {
-          "description": "The newest ClamAV scan of the file that upstream.xpiSha256 names. The build scans every plugin file once a week, on Mondays (UTC), and on a run that a maintainer starts with the malware-scan input. Between scans it keeps the published result for an unchanged xpiSha256. A file that ClamAV could not scan in full gets no result. A clean scan does not show that the plugin is safe. Absent for a file with no scan yet, and in data written before the scans.",
+          "description": "The newest ClamAV scan of the file that upstream.xpiSha256 names. The build scans the plugin files on Mondays (UTC), and on a run that a maintainer starts with the malware-scan input, as many as it downloads in 20 minutes, files with no result first. On every run it keeps the published result for an unchanged xpiSha256. A file that ClamAV could not scan in full gets no new result. A clean scan does not show that the plugin is safe. Absent for a file with no scan yet, when the build could not read the published data, for an id that two published records name, and in data written before the scans.",
           "type": "object",
           "additionalProperties": false,
           "required": ["xpiSha256", "scannedAt", "clamav"],

@@ -160,7 +160,7 @@ describe("build.yml", () => {
   test("takes a malware-scan input on dispatch", () => {
     expect(triggers(build)).toBe(
       'schedule:\n    - cron: "17 6 * * *"\n  workflow_dispatch:\n    inputs:\n' +
-        "      malware-scan:\n        description: Scan every plugin file with ClamAV in this run\n        type: boolean\n        default: false",
+        "      malware-scan:\n        description: Scan the plugin files with ClamAV in this run\n        type: boolean\n        default: false",
     );
   });
 
