@@ -939,6 +939,69 @@ the list of the results directories, or the schema can reject the new
 data. In each case, the command leaves the file as it was and exits with
 status 1.
 
+## Scanning plugins with ClamAV
+
+The daily build scans each plugin file with ClamAV once a week, on a
+scheduled run on a Monday (UTC). ClamAV asks its users not to download the
+full signature set often, and the build keeps no cache. To scan on another
+day, start the workflow on `main` with the `malware-scan` input:
+
+```bash
+gh workflow run build.yml --ref main -f malware-scan=true
+```
+
+Three commands do the work. In the build job, this command keeps the
+published result of each record whose file's SHA-256 is unchanged:
+
+```bash
+pnpm carry-scan-results --data <file> [--previous <url>]
+```
+
+It prints one line. If it cannot read the published data, it keeps no
+result and exits 0. It exits with status 1 only for a usage error.
+
+In the malware-scan job, this command writes the new results to `--out`:
+
+```bash
+pnpm malware-scan --data <file> --out <file> [--scan]
+```
+
+Without `--scan`, it downloads nothing and writes an empty list. With
+`--scan`, it downloads each plugin file and checks its SHA-256 against the
+data. It runs `clamscan` once over the files, with
+`--alert-exceeds-max=yes` and `--alert-encrypted=yes`. Files with no kept
+result go first, then the files with the oldest results. The command starts
+no download 20 minutes after it begins, and it stops `clamscan` after 10
+minutes. It prints one line for each file with no new result, with the
+reason. Only when it cannot read the data does it exit with status 1.
+`cairn/references/clamav-docs.md` records the `clamscan` options and
+output.
+
+In the site job, this command adds the new results to the data:
+
+```bash
+pnpm add-scan-results --data <file> --results <file> --expect <sha256>
+```
+
+In three cases it adds nothing: the results file is missing, its SHA-256 is
+not the `--expect` value, or it is not a list of results of the right shape.
+Each of these prints one warning line and exits 0, and the kept results
+stay. It skips a result whose plugin id or
+SHA-256 does not match its record. Then it prints one warning line for each
+plugin whose file ClamAV flagged, with the plugin id, the version, and the
+signature name. GitHub Actions shows these lines on the run. If it cannot
+read or write the data, or the schema refuses the new data, it exits with
+status 1.
+
+A flagged file stays listed, and its page shows the find. Handle a find as
+a report of harm, as "Removing a plugin" in [requests.md](requests.md)
+says: look at the signature and the plugin's source before you decide. A
+flag on a large JavaScript bundle can be a false alarm.
+
+ClamAV's `freshclam` can refuse a download from a cloud host such as a
+GitHub runner. The job then scans nothing that week, and the kept results
+stay.
+
 ## Building the site
 
 To build the site, first run `pnpm build`. To show start tests, also run
@@ -1007,14 +1070,15 @@ of descriptions.
 ## The daily build
 
 The `Build data` workflow runs once a day, and you can also start it by
-hand. It has four jobs:
+hand. It has five jobs:
 
 1. The build job runs `pnpm check` and `pnpm build --plan start-plan.json`.
    It gives `pnpm build` the published data's address as `--previous`, so a
    plugin that it fails to read can keep earlier facts. Then it runs
    `pnpm carry-start-results` on the plan with the published data, as
-   "Starting plugins in Zotero" says. It gives the SHA-256 of the plan and
-   the `pnpm data-digest` value of `dist/` as job outputs. It keeps `dist/` as a workflow artifact named `plugins-data`, and the plan
+   "Starting plugins in Zotero" says, and `pnpm carry-scan-results` on the
+   data, as "Scanning plugins with ClamAV" says. It gives the SHA-256 of
+   the plan and the `pnpm data-digest` value of `dist/` as job outputs. It keeps `dist/` as a workflow artifact named `plugins-data`, and the plan
    as an artifact named `start-plan`. No artifact holds an XPI.
 2. The start-test job runs once for each tested Zotero release for Linux.
    It downloads Zotero from download.zotero.org and checks the file against
@@ -1023,20 +1087,28 @@ hand. It has four jobs:
    `start-results-<version>`. The job has no token permission, reads no
    secret, keeps no git credentials, and uses no cache, since plugin code
    runs in it.
-3. The site job checks the downloaded data with
+3. The malware-scan job checks the downloaded data with
+   `pnpm data-digest --dir dist --expect`. On a scan run it installs
+   ClamAV, runs `freshclam`, and runs `pnpm malware-scan --scan`. On other
+   runs it runs `pnpm malware-scan` without `--scan`. It keeps the results
+   as an artifact named `scan-results`, and gives their SHA-256 as a job
+   output. The job has no token permission, reads no secret, keeps no git
+   credentials, and uses no cache, since ClamAV reads plugin files in it.
+4. The site job checks the downloaded data with
    `pnpm data-digest --dir dist --expect`, and the start plan against its
    SHA-256, each against the value that the build job gives as a job
    output. Plugin code in a start-test job can upload artifacts. If that
    code reaches the run's artifact token, it can also delete
    `plugins-data` and upload another under that name. Then the site job runs
-   `pnpm add-start-results` and `pnpm site`. It runs when the build job
-   succeeded, whatever the start-test jobs' results.
-4. If the site job succeeded, the deploy job deploys `dist/` to GitHub
-   Pages, whatever the start-test jobs' results.
+   `pnpm add-start-results`, `pnpm add-scan-results`, and `pnpm site`. It
+   runs when the build job succeeded, whatever the start-test and
+   malware-scan jobs' results.
+5. If the site job succeeded, the deploy job deploys `dist/` to GitHub
+   Pages, whatever the start-test and malware-scan jobs' results.
 
-If `pnpm build`, `pnpm add-start-results`, or `pnpm site` exits with
-status 1, the workflow deploys nothing. If the downloaded data or the
-start plan fails its check, the workflow also deploys nothing. So does an
+If `pnpm build`, `pnpm add-start-results`, `pnpm add-scan-results`, or
+`pnpm site` exits with status 1, the workflow deploys nothing. If the
+downloaded data or the start plan fails its check, the workflow also deploys nothing. So does an
 exit status of 1 from `pnpm carry-start-results`, which it gives only for
 a usage error. The site and data from the last good build then stay
 published.

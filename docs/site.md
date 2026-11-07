@@ -245,9 +245,9 @@ address after it, as plain text. A plugin whose read failed has no download or r
 A plugin page with a download link has an install note after those links.
 It says how to install the file in Zotero, and it gives a step for Firefox.
 It also says that a plugin has full access to Zotero and the computer. It
-says that Zotdex doesn't test plugins' safety or features, and it tells the
-reader to look into a plugin before trusting it. The note links to the
-"Installing a plugin" section of the About page (`#installing`).
+says that Zotdex doesn't test plugins' safety or features beyond a malware
+scan, and it tells the reader to look into a plugin before trusting it.
+The note links to the "Installing a plugin" section of the About page (`#installing`).
 
 A "Zotero versions" card follows. It names the plugin version that
 the index read and holds a table, newest major first. The table has one
@@ -283,7 +283,18 @@ or report harm. The
 Details card lists the plugin id. For a plugin with the card icon, it then
 gives the paid service fact, whether or not the build read the plugin. If
 the build read the plugin, it also lists facts about the repository and the
-release that the index read, with dates such as "March 14, 2023". Its last
+release that the index read, with dates such as "March 14, 2023".
+A page with a download link has a "Malware scan" fact right after "Release
+on this page". It reads "ClamAV found no known malware in this file", or
+"ClamAV flagged this file as" and the name of the signature that ClamAV
+found. The date of the scan follows each. With no scan, it reads "Not
+scanned yet".
+"ClamAV" links to ClamAV's site. The fact shows the record's `malwareScan`
+result, which "Using the data" in [data.md](data.md#using-the-data)
+describes. It shows it only when the result names the file of the release
+on the page.
+A new release reads "Not scanned yet" until the next scan run. A find hides
+nothing on the page. Its last
 fact is "Languages". That fact names the
 languages of the `languages` list that "Using the data" in
 [data.md](data.md#using-the-data) describes, which
@@ -317,8 +328,11 @@ that the report counts keep each person's latest report for each Zotero
 version. It says which facts a correction can change and where a plugin page
 lists its corrections. Each page's footer
 says: "Zotdex is an independent project, not part of Zotero, and it doesn't
-test the safety or features of the plugins it lists." The home page's intro
-says that Zotdex is independent and unofficial and doesn't review anyone's
+test the safety or features of the plugins it lists, beyond a malware scan
+by ClamAV." The About page's "Installing a plugin" section says that the
+scan checks each plugin file once a week with ClamAV, that it finds known
+malware only, and that a clean scan doesn't mean a plugin is safe. The home
+page's intro says that Zotdex is independent and unofficial and doesn't review anyone's
 code. The About page says that the index cannot vet the plugins it lists,
 and it gives the reason. It also states the terms of "License" in
 [license.md](license.md) in short form, and it links there.

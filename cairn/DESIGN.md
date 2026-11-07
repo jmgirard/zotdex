@@ -26,7 +26,10 @@ tags.
 
 The index lists plugins and links to the releases of each author. It does not
 host, mirror, or re-serve plugin files (XPI files). It does not review plugin
-code, and it does not endorse plugins.
+code, and it does not endorse plugins. Since M115 the daily build scans each
+plugin file with ClamAV once a week. That scan is an automated match against
+signatures of known malware, not a review of plugin code, and no artifact
+holds an XPI (D-082).
 
 Each plugin page shows facts that a reader can check. These facts are the
 declared range of Zotero versions, source availability, whether GitHub marks
@@ -54,6 +57,10 @@ owner asked for through an issue form and a maintainer applied with
 `pnpm screenshot-request`. The entry holds a re-encoded WebP copy, and the
 site serves it under `v1/screenshots/`. Like the icon, it is not a fact to
 check (M114, D-081).
+A page with a download link also shows a "Malware scan" fact: whether ClamAV
+found a known malware signature in the file that the build read, and the
+date of the scan, or "Not scanned yet". The data's optional `malwareScan`
+holds it. A find hides nothing (M115, D-082).
 The data also carries the interface languages that the read XPI's locale
 folders name (M023), keeping a tag only when its files hold at least one
 message, judged by file type (M027), and at least half as many messages as
