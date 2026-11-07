@@ -240,3 +240,29 @@ Pass 3, after review return 2, evidence at 422a6932, 2026-11-07. Default branch 
 - AC7 (pass 3): About-page copy test and owner-line test pass; docs sections present (pass 2 read, wording narrowed since, no page change).
 - AC8 (pass 3): `pnpm test` exit 0 (2649 passed, 6 skipped) and `pnpm check` exit 0 on the 422a6932 tree.
 - gate (pass 3): `cairn_validate.py` first failed `weight caps` (ROADMAP 60 lines) from this review's two M114 candidate rows; review merged its own two rows into "Give screenshot images their pixel size" and re-ran: all checks pass, 1 advisory (sizing). ROADMAP is 24,098 bytes, over its 24,000 budget, left to step 9's terminal-row prune.
+- spawned: diff-bug, blame-history, prior-review, ripple (pass 3)
+- diff-bug #1 (pass 3): `--apply` downloads again and writes the entry before the maintainer can compare SHA-256 lines — fix now (docs: the written files stay local until the maintainer commits them, so a differing SHA-256 means restore the entry and run the report again)
+- diff-bug #2 (pass 3): the preview has a fixed name in a possibly shared temporary folder, so another local user could plant it — fix now (removed first, then written only as a new file)
+- diff-bug #3 (pass 3): `imageLinks` refuses some unusual but shown forms and counts an escaped `\![x](url)` — reject (edge: GitHub writes a plain `<img … src>` for an attachment, and the effect is a `problem:` refusal, exit 1, after which the owner files again)
+- diff-bug #4 (pass 3): stat then read of a `--file` image or screenshot.webp — reject (edge: only a file changed by the maintainer during the run reaches it, and its effect is reading past the limit)
+- diff-bug #5 (pass 3): a failed run or a removal leaves an earlier preview — fix now (each run removes the issue's preview first)
+- diff-bug #6 (pass 3): the first URL is checked by `linkUrl` and by `downloader` — reject (false: once in each layer, with no effect)
+- diff-bug #7 (pass 3): `imageLinks` is quadratic on 65,000 backticks — reject (edge: GitHub's issue body limit bounds the field, and the effect is slow running)
+- diff-bug #8 (pass 3): README calls screenshots "text" — fix now
+- diff-bug (c)1 (pass 3): no test for `preview-failed` — fix now
+- diff-bug (c)2 (pass 3): the problem table asserts only the first problem — fix now (exact list)
+- diff-bug (c)3 (pass 3): the not-JSON test does not assert status 2 — fix now
+- diff-bug (c)4 (pass 3): untested parse branches (a code point over U+10FFFF, a bare `src`, an `<img>` with no `src`) — fix now
+- diff-bug (c)5 (pass 3): icc and xmp absences cannot fail for an input that has neither — fix now (removed)
+- diff-bug (c)6 (pass 3): the check test's no-screenshot case repeats "passes a tree of valid entries" — fix now (removed)
+- diff-bug (c)7 (pass 3): four test comments restate their assertion — fix now (removed)
+- blame-history #1 (pass 3): no maintainer-only way to pull a shown screenshot, as `iconHidden` does for icons — fix now (docs/requests.md says a maintainer removes one by hand: delete screenshot.webp and the field)
+- blame-history #2 (pass 3): D-080's own sentence on sharp is not marked — reject (false: D-081, whose heading annotates D-080, records the change, and DECISIONS is append-only)
+- blame-history #3 (pass 3): D-081 adopts the owner-submit model that D-080 rejected for icons without saying so — fix now (D-081, drafted on this branch, says why)
+- blame-history #4 (pass 3): ROADMAP over its byte budget — reject (false: recorded above and handled at step 9)
+- prior-review #1 (pass 3): a missing width or height no longer reads as `unreadable-image` by name — reject (false: pass 2 #8 removed that branch as unreachable for PNG, JPEG, and WebP; a size of 0 fails the encode as `unreadable-image`)
+- prior-review #2 (pass 3): sharp in the bot's check — reject (as pass 2 blame-history #1)
+- prior-review #3 (pass 3): the first URL is checked in two layers — reject (as diff-bug #6)
+- prior-review note (pass 3): raw format characters on main at test/check.test.ts:321, test/text-request.test.ts:103 and :220, test/upstream.test.ts:285 and :286, lines this branch did not change — follow-up: candidate row "Escape the raw format characters in tests", [low] because the tests pass and only M032's rule is broken, written at step 9 once its terminal-row prune frees a ROADMAP line
+- ripple #1 (pass 3): cairn/DESIGN.md:766 says an entry holds meta.json and index.json — fix now
+- ripple #2 (pass 3): cairn/DESIGN.md:453-455 names `reason-not-blank` for override reasons only — fix now
