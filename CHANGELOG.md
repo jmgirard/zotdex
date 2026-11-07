@@ -12,7 +12,8 @@
   site build writes one shields.io endpoint file per plugin at
   `https://zotdex.jmgirard.com/badges/<id>.json`. Each plugin page ends with a
   "Badge for your README" card that holds the Markdown to copy.
-  `docs/site.md` and About say what each badge message means and how long a change takes to show.
+  `docs/site.md` and About say what each badge message means and how long a
+  change takes to show.
 - The site is now named Zotdex, and the site, the data file, and the schemas
   moved to `https://zotdex.jmgirard.com/`. The data file is now at
   `https://zotdex.jmgirard.com/v1/plugins.json`, and each published
@@ -211,7 +212,8 @@
   no label.
 - `pnpm discover` also runs five GitHub code searches for the
   `manifest.json` and `package.json` files of Zotero plugins, as
-  `docs/maintaining.md` lists, so a plugin that no topic and no catalog names can reach the index.
+  `docs/maintaining.md` lists, so a plugin that no topic and no catalog names
+  can reach the index.
   If `CODE_SEARCH_TOKEN` is set, the code search sends it, and otherwise
   `GITHUB_TOKEN`. `Discover plugins` passes it from a repository secret of
   that name, since the built-in token gets HTTP 429 from code search. The
@@ -384,8 +386,9 @@
   cannot restore a cache that such a job saved.
 - `pnpm build` counts only build-level failures toward its more-than-half
   exit-1 rule.
-  "Building the data" in `docs/maintaining.md` lists them. A 404, a fork, or a release
-  with no `.xpi` file no longer counts. Before, a build where most records
+  "Building the data" in `docs/maintaining.md` lists them. A 404, a fork, or
+  a release with no `.xpi` file no longer counts. Before, a build where most
+  records
   failed for such reasons deployed nothing. The command also prints the
   number of records for each failure name and the number with a
   build-level failure. If a record carries a build-level failure, it prints
@@ -407,8 +410,8 @@
   "broken" reports for each Zotero major with a counted report. Only
   reports on the plugin version that the index read count. For each plugin
   and Zotero major, only the newest report of each GitHub account counts.
-  "Using the data" in `docs/data.md` gives the whole rule. The page of each plugin
-  that the index read shows the counts, a "Works" link, and a "Broken"
+  "Using the data" in `docs/data.md` gives the whole rule. The page of each
+  plugin that the index read shows the counts, a "Works" link, and a "Broken"
   link. The links open the forms with the plugin id and the version filled
   in. If the build cannot read the report issues, it writes
   no data file, and the daily build deploys nothing. The schema now defines
@@ -700,15 +703,15 @@
   site now shows that part. The site cuts the text at each ` / ` and after
   each `。`. The part is the pieces whose letters are all Latin and that
   hold at least three words, unless they only repeat the name.
-  `docs/site.md` gives the whole rule. A `description` override can now also replace an
-  English description of fewer than six words. `pnpm description-gaps
+  `docs/site.md` gives the whole rule. A `description` override can now also
+  replace an English description of fewer than six words. `pnpm description-gaps
   <data file>` lists the plugins with a description gap, after the
   checkout's overrides. A gap is a description that is missing, half or
   more Chinese, Japanese, or Korean, or under six words.
 - The bot now merges its own pull requests. Each new bot pull request body
   has a Hold line, which names the entry's hold reasons or says
-  `Hold: none`. `docs/maintaining.md` lists the reasons. A held pull request gets
-  the `hold` label.
+  `Hold: none`. `docs/maintaining.md` lists the reasons. A held pull request
+  gets the `hold` label.
   The new `Merge bot pull requests` workflow runs `pnpm merge-discover`
   daily. The command merges a bot pull request that says `Hold: none`, has
   no `hold` label, and opened at least 48 hours before the run. A run

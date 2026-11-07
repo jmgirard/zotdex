@@ -110,7 +110,7 @@ of the About change waits for a `Build data` run (offered after the merge).
   `site/src/pages/about.astro`, and the license test in `test/site.test.ts`
   (its title included) per AC5.
 - [x] T6: Add the `## Unreleased` entry of AC6.
-- [ ] T7: Run the link check, the joined-line diff, the heading-uniqueness
+- [x] T7: Run the link check, the joined-line diff, the heading-uniqueness
   check, the long-line check
   (`git diff -U0 main | grep '^+' | awk 'length > 80'`), and
   `npx -y pnpm@12.15.0 test` with its output sent to a file and `$?` read.
@@ -139,6 +139,7 @@ of the About change waits for a `Build data` run (offered after the merge).
 - 2026-11-06: T4 done: all of `CHANGELOG.md` sits under `## Unreleased`, so AC4 covered 12 of its README mentions, now naming `docs/site.md`, `docs/data.md`, `docs/maintaining.md`, or `docs/license.md`; also DESIGN.md (2), build.yml (2), the check.test.ts comment, and 3 schema descriptions. Remaining hits name plugin authors' READMEs, the badge, or file names (T7 lists them).
 - 2026-11-06: T5 done: the license test, changed first, failed on the old `#license` link (Received `https://github.com/jmgirard/zotdex#license`), then passed after `LICENSE_HREF` and the About card changed.
 - 2026-11-06: T6 done: one `## Unreleased` entry naming the five docs files and the License link.
+- 2026-11-06: T7 done: README 55 lines; `check_move.py` 0 structural problems, 23 changed paragraphs (all link or reference edits); AC4 search leaves only plugin-README, badge, file-name, and docs-naming hits; long-line check rewrapped 6 CHANGELOG lines and 2 workflow comments; `pnpm test` 2508 passed, 6 skipped; `pnpm check` 741 entries, 0 problems.
 
 ## Decisions
 
