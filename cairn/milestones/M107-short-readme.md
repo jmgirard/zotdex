@@ -68,13 +68,13 @@ of the About change waits for a `Build data` run (offered after the merge).
   section, or says that the README holds text now under `docs/`, names the
   `docs/` file or files that now hold it. Released `CHANGELOG.md` entries
   stay as they are.
-- [ ] AC5: The About page's License link targets
+- [x] AC5: The About page's License link targets
   `https://github.com/jmgirard/zotdex/blob/main/docs/license.md`. Its License
   card says "the files that the license page names" in place of "the files
   that the README names", and the link text reads "license page" in place of
   "README's License section". `test/site.test.ts` asserts the new target and
   both new phrases.
-- [ ] AC6: `CHANGELOG.md` gets one `## Unreleased` entry saying that the
+- [x] AC6: `CHANGELOG.md` gets one `## Unreleased` entry saying that the
   README now holds an overview, that its detail moved to the five `docs/`
   files it names, and that the About page's License link goes to
   `docs/license.md`. `pnpm test` passes.
@@ -153,3 +153,6 @@ of the About change waits for a `Build data` run (offered after the merge).
 - AC2 evidence (head e775fca3): the scratchpad `check_move.py` against `git show main:README.md` (20 `##`/`###` sections) reports 0 structural problems: each heading once across `docs/*.md`, old order kept, one `#` title per file (`Data`, `License` raised, `Maintaining the index`, `Requests`, `The site` raised), no text outside sections. It prints 23 changed joined paragraphs, the same list the implement session read word by word: each is a link-target change or a reference that now names its file, plus the two license sentences of AC4. Planted defects (dropped word, duplicate section, bad anchor) each showed at implement.
 - AC3 evidence (head e775fca3): the same script resolves each inline link in README.md and docs/*.md from its own folder and each anchor by GitHub's slug rule, 0 problems; no reference-style links (`grep '\]\['` empty). The scratchpad `refs.py` lists 60 references: 24 quoted headings that live in another file, all naming that file; 23 above/below phrases, each pointing inside its own file (the site section's `"License"` now names `license.md`).
 - AC4 evidence (head e775fca3): `grep -rn README` over `src/ site/src/ test/ .github/ schemas/ cairn/DESIGN.md docs/license.md` lists 33 hits; none names a README section or says the README holds moved text: they are plugin authors' READMEs, `README.md` fixture file names, the badge, the source-code rule's name list, `docs/license.md`'s list of places that can quote text, and DESIGN.md's "moved from README by M107" note. `CHANGELOG.md` (all of it under `## Unreleased`) had 15 README mentions on main; 12 now name the docs file that holds the text, and the rest are the badge, a plugin's README, and the new entry.
+- AC5 evidence (head 9aaac2da): `site/src/data.ts:182` sets `LICENSE_HREF` to `https://github.com/jmgirard/zotdex/blob/main/docs/license.md`; `about.astro:297` says "the files that the license page names" and `:302` has link text "license page"; `test/site.test.ts:907-910` asserts the target, the link text, and the sentence. `vitest run test/site.test.ts test/check.test.ts`: 2 files passed, 637 tests passed, 1 skipped. At implement the changed test failed on the old link first (work log T5).
+- AC6 evidence (head 9aaac2da): `CHANGELOG.md:5-9` is one `## Unreleased` entry saying the README holds an overview, naming the five docs files, and saying the About License link goes to `docs/license.md`. `npx -y pnpm@12.15.0 test` exit 0: 37 files passed, 1 skipped; 2508 tests passed, 6 skipped.
+- Consistency gate: `cairn_validate.py` exit 0, all checks passed; the generic profile names no toolchain checks; no principle changed, so no impact report.
