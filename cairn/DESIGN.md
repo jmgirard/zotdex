@@ -1095,8 +1095,9 @@ reused._
   `ORIGIN` in `site/src/base.ts` (M094). It links `favicon.png`, then
   `favicon.svg`, and `apple-touch-icon.png`, and names `preview.png` as each
   page's `og:image` (M106). The top bar's logo draws the full mark's three
-  shapes from `logo.ts`, the same ones as `apple-touch-icon.png`, 2rem
-  square beside the site's name at `--text-xl` (D-074, M108). The body takes
+  shapes from `logo.ts`, the same ones as `apple-touch-icon.png` less their
+  fills, 2rem square beside the site's name at `--text-xl` (D-074, M108).
+  The body takes
   `--accent`, and the disc and Z take `--logo-disc` and `--logo-z`, so all
   three follow the theme button. Forced colors fill the body and disc with
   `CanvasText` and the Z with `Canvas` (M106). `--accent` has the values of

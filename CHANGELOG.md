@@ -83,9 +83,9 @@
   and a lid line. The top bar shows the full logo, 2rem square, beside a
   larger site name, in place of a red square that looked like an error. The
   full logo is also the phone home-screen icon, `apple-touch-icon.png` (180
-  by 180), and the picture in link previews. A browser that shows no SVG icon gets `favicon.png` (32 by
-  32). The site build draws all three PNG files from `src/site/logo.ts`, the
-  same source as `favicon.svg`.
+  by 180), and the picture in link previews. A browser that shows no SVG
+  icon gets `favicon.png` (32 by 32). The site build draws all three PNG
+  files from `src/site/logo.ts`, the same source as `favicon.svg`.
 - A new issue form asks to remove a plugin or reports harm. Each plugin page
   and the About page link to it. The form is public, and a maintainer reads
   each request. About states the four reasons for a removal.

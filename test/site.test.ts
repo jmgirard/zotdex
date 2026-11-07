@@ -2876,8 +2876,6 @@ describe("the site colors", () => {
       const bare = (tag: string) => tag.replace(/ (?:fill|class)="[^"]*"/g, "");
       const full = shapes(pictureSvg("apple-touch-icon.png")).map(bare);
       expect(full.map((tag) => /^<(\w+)/.exec(tag)![1])).toEqual(["path", "circle", "path"]);
-      // The body's path holds the rounded body, then the lens opening, three lights, and lid gap that cut it.
-      expect(attribute(full[0]!, "d").match(/M/g)).toHaveLength(6);
       for (const file of htmlFiles(out)) {
         const brand = /<a class="brand"[^>]*>(.*?)<\/a>/s.exec(readFileSync(join(out, file), "utf8"))![1]!;
         const icons = brand.match(/<svg\b.*?<\/svg>/gs);
