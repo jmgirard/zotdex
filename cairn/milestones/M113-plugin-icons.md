@@ -177,3 +177,4 @@ Evidence gathered 2026-11-07 at `6c99a04e`; `origin/main` is still the plan comm
 - ripple #9: DESIGN's About topic list omitted icons — fix now, fixed 88f58704
 - ripple #10: the plugins.v1 schema's title line says the file is what `pnpm build` writes — reject, false: the data file is still exactly what that names
 - After the fixes at 88f58704: `pnpm test` 2556 passed, 6 skipped; `pnpm check` 745 entries, 0 problems; the AC6 look rerun passes at 375 and 1280 px in light and `data-theme="dark"` (tile edge 0 px, 0 of 20 text nodes, no scroll, white tile).
+- 2026-11-07: step-7 approval: m113-plugin-icons approved for merge
