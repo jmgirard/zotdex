@@ -49,6 +49,25 @@
         }
       }
     },
+    "screenshot": {
+      "description": "Set when the repository's owner asked for a screenshot and a maintainer applied it. The image is screenshot.webp beside this file.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["description", "reason"],
+      "properties": {
+        "description": {
+          "description": "What the screenshot shows, in the owner's words, for a reader who cannot see it.",
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "reason": {
+          "description": "The issue that asks for the screenshot.",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
     "overrides": {
       "description": "Corrections to upstream facts that the plugin author cannot or will not fix upstream. A description override can also give English text for a plugin whose manifest and GitHub descriptions are each missing, not in English, only repeat the name, or are half or more Chinese, Japanese, or Korean. It can also replace an English description of fewer than six words that the site shows without the override. A repository's owner can also ask for a name or description override, whatever the upstream text says.",
       "type": "array",

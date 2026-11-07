@@ -2,12 +2,21 @@
 
 ## Unreleased
 
+- A plugin's repository owner can ask for one screenshot with a new issue
+  form, linked from the owner line on the plugin's page. A maintainer looks
+  at the image and applies it with `pnpm screenshot-request`, which keeps a
+  WebP copy in the entry. Plugin pages show it under the icon, or under the
+  links on a narrow screen. The build publishes it under `v1/screenshots/`,
+  and the data's records gain an optional `screenshot` field with its path
+  and description. `index.json` gains a `screenshot` field too. Both v1
+  schemas changed, so fetch any saved copy of them again.
 - Plugin pages show the plugin's own icon, the one its manifest names for
   Zotero's Plugins window, on a white tile at the top right of the page head.
   The build redraws it as a 96 by 96 PNG under `v1/icons/`. The data's
   `upstream` block gains an optional `icon` field with its path. A stock
   plugin-template icon shows none, and a maintainer can hide an icon with
-  `iconHidden` in the entry's `index.json`. About gains an "Icons" section.
+  `iconHidden` in the entry's `index.json`. About gains an "Icons and
+  screenshots" section.
 - The About page is now "How Zotdex works": a short page in the home page's
   plain words, with sections such as "Supported Zotero versions" and
   "Startup check". Its intro links to the site docs on GitHub, which hold

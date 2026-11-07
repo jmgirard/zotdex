@@ -14,6 +14,10 @@
     {
       "id": "first-plugin@example.org",
       "repoUrl": "https://github.com/example/first-plugin",
+      "screenshot": {
+        "file": "screenshots/2222222222222222222222222222222222222222222222222222222222222222.webp",
+        "alt": "The plugin's pane beside an item, with \"quotes\" & an ampersand."
+      },
       "upstream": {
         "id": "first-plugin@example.org",
         "name": "First Plugin",
@@ -282,6 +286,10 @@
     {
       "id": "a-cafe@example.org",
       "repoUrl": "https://github.com/example/cafe-tools",
+      "screenshot": {
+        "file": "screenshots/3333333333333333333333333333333333333333333333333333333333333333.webp",
+        "alt": "The file names before and after a cleanup."
+      },
       "upstream": {
         "id": "a-cafe@example.org",
         "name": "Café Tools",

@@ -299,12 +299,14 @@ describe("textRequest's report", () => {
     expect(result.lines[0]).toMatch(/^failure: data-unreadable: /);
   });
 
-  test("fails with exit 2 on an entry whose index.json is not valid", async () => {
+  test("fails with exit 2 on an entry whose index.json is not valid, before it asks for the owner", async () => {
     const tree = checkout();
     writeFileSync(tree.indexPath, "not JSON");
-    const result = await run(tree, responses());
+    const fetched = fixtureFetch({ ...responses(), [REPO_URL]: { status: 500, text: "{}" } });
+    const result = await textRequest({ root: tree.root, dataPath: tree.dataPath, fetch: fetched.fetch, indexRepo: "jmgirard/zotdex", issue: 7 });
     expect(result.status).toBe(2);
     expect(result.lines[0]).toMatch(/^failure: entry-not-json: /);
+    expect(fetched.requests.map(({ url }) => url)).toEqual([ISSUE_URL]);
   });
 
   test("fails with exit 2 when the entry's repo URL is not on GitHub", async () => {

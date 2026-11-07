@@ -1583,7 +1583,7 @@ describe("buildData icons", () => {
     const out = tempDir();
     // A directory where the icon file would go makes its rename fail.
     mkdirSync(join(out, "v1", "icons", `${"c".repeat(64)}.png`), { recursive: true });
-    const written = await writeData(out, "{}\n", new Map([[`icons/${"c".repeat(64)}.png`, png]]));
+    const written = await writeData(out, "{}\n", new Map([[`icons/${"c".repeat(64)}.png`, png]]), new Map());
     expect(written).toMatchObject({ ok: false, message: expect.stringContaining("cannot write") });
     expect(existsSync(join(out, "v1", "plugins.json"))).toBe(false);
   });
@@ -1593,9 +1593,77 @@ describe("buildData icons", () => {
     mkdirSync(join(out, "v1", "icons"), { recursive: true });
     writeFileSync(join(out, "v1", "icons", "stale.png"), "old");
     const name = `icons/${"b".repeat(64)}.png`;
-    expect(await writeData(out, "{}\n", new Map([[name, png]]))).toMatchObject({ ok: true });
+    expect(await writeData(out, "{}\n", new Map([[name, png]]), new Map())).toMatchObject({ ok: true });
     expect(readdirSync(join(out, "v1", "icons"))).toEqual([`${"b".repeat(64)}.png`]);
     expect(new Uint8Array(readFileSync(join(out, "v1", name)))).toEqual(png);
+  });
+});
+
+describe("buildData screenshots", () => {
+  const shot = (color: string) => sharp({ create: { width: 40, height: 30, channels: 3, background: color } }).webp().toBuffer();
+  const sha = (bytes: Uint8Array) => createHash("sha256").update(bytes).digest("hex");
+
+  // A copy of TREE where each id in `shots` has screenshot.webp and index.json's screenshot.
+  function treeWithShots(shots: Record<string, { bytes?: Uint8Array; description: string }>): string {
+    const tree = tempDir();
+    cpSync(TREE, tree, { recursive: true });
+    for (const [id, { bytes, description }] of Object.entries(shots)) {
+      const index = join(tree, id, "index.json");
+      const reason = "The repository's owner asked for this screenshot in issue #9.";
+      writeFileSync(index, JSON.stringify({ ...JSON.parse(readFileSync(index, "utf8")), screenshot: { description, reason } }));
+      if (bytes) writeFileSync(join(tree, id, "screenshot.webp"), bytes);
+    }
+    return tree;
+  }
+
+  test("names each entry's screenshot by its SHA-256 on a read and a failed record, and gives its bytes under that name", async () => {
+    const [blue, red] = [await shot("#06c"), await shot("#c00")];
+    const tree = treeWithShots({ [SECOND]: { bytes: blue, description: "The plugin's pane beside an item." }, [FORKED]: { bytes: red, description: "A menu that the plugin adds." } });
+    const result = await buildData(tree, fixtureFetch(responses()).fetch);
+    if (!result.ok) throw new Error(result.problems.join("\n"));
+    const output = JSON.parse(result.text) as Output & { plugins: { screenshot?: unknown }[] };
+    expect(record(output, SECOND)).toMatchObject({ screenshot: { file: `screenshots/${sha(blue)}.webp`, alt: "The plugin's pane beside an item." }, upstream: expect.any(Object) });
+    expect(record(output, FORKED)).toMatchObject({ screenshot: { file: `screenshots/${sha(red)}.webp`, alt: "A menu that the plugin adds." }, failure: expect.any(Object) });
+    expect(record(output, BETTER_NOTES)).not.toHaveProperty("screenshot");
+    expect([...result.screenshots.keys()].sort()).toEqual([`screenshots/${sha(blue)}.webp`, `screenshots/${sha(red)}.webp`].sort());
+    expect(new Uint8Array(result.screenshots.get(`screenshots/${sha(blue)}.webp`)!)).toEqual(new Uint8Array(blue));
+    expect(checkOutput(output)).toEqual([]);
+  });
+
+  test("stops the build when index.json names a screenshot and the file is missing", async () => {
+    const result = await buildData(treeWithShots({ [SECOND]: { description: "The plugin's pane beside an item." } }), fixtureFetch(responses()).fetch);
+    expect(result).toEqual({ ok: false, problems: [expect.stringMatching(new RegExp(`^${SECOND}: index.json names a screenshot, and screenshot.webp cannot be read: ENOENT`))] });
+  });
+
+  test("the schema takes a record with or without a screenshot and refuses another path", async () => {
+    const result = await buildData(TREE, fixtureFetch(responses()).fetch);
+    if (!result.ok) throw new Error(result.problems.join("\n"));
+    const output = JSON.parse(result.text) as { plugins: Record<string, unknown>[] };
+    expect(checkOutput(output)).toEqual([]);
+    output.plugins[0].screenshot = { file: `screenshots/${"a".repeat(64)}.webp`, alt: "A pane." };
+    expect(checkOutput(output)).toEqual([]);
+    output.plugins[0].screenshot = { file: "screenshots/shot.png", alt: "A pane." };
+    expect(checkOutput(output)).toEqual(['/plugins/0/screenshot/file must match pattern "^screenshots/[0-9a-f]{64}\\.webp$"']);
+  });
+
+  test("writeData writes each screenshot and removes other files in v1/screenshots", async () => {
+    const out = tempDir();
+    mkdirSync(join(out, "v1", "screenshots"), { recursive: true });
+    writeFileSync(join(out, "v1", "screenshots", "stale.webp"), "old");
+    const bytes = await shot("#06c");
+    const name = `screenshots/${sha(bytes)}.webp`;
+    expect(await writeData(out, "{}\n", new Map(), new Map([[name, bytes]]))).toMatchObject({ ok: true });
+    expect(readdirSync(join(out, "v1", "screenshots"))).toEqual([`${sha(bytes)}.webp`]);
+    expect(new Uint8Array(readFileSync(join(out, "v1", name)))).toEqual(new Uint8Array(bytes));
+  });
+
+  test("pnpm build writes the screenshot that the data names", async () => {
+    const bytes = await shot("#06c");
+    const out = tempDir();
+    const result = pnpmBuild([treeWithShots({ [SECOND]: { bytes, description: "The plugin's pane beside an item." } }), "--out", out], writeFixture(responses()));
+    expect(result.status, result.stderr).toBe(0);
+    const file = (record(readOutput(out), SECOND) as { screenshot?: { file: string } }).screenshot!.file;
+    expect(new Uint8Array(readFileSync(join(out, "v1", file)))).toEqual(new Uint8Array(bytes));
   });
 });
 
@@ -1933,7 +2001,7 @@ describe("writeData", () => {
   test("reports a directory it cannot make", async () => {
     const blocker = join(tempDir(), "file");
     writeFileSync(blocker, "");
-    expect(await writeData(join(blocker, "dist"), "{}\n", new Map())).toEqual({
+    expect(await writeData(join(blocker, "dist"), "{}\n", new Map(), new Map())).toEqual({
       ok: false,
       message: expect.stringContaining(`cannot write ${join(blocker, "dist", "schemas", "plugins.v1.schema.json")}`),
     });
@@ -1942,7 +2010,7 @@ describe("writeData", () => {
   test("reports a data directory it cannot make after the schemas are written", async () => {
     const out = tempDir();
     writeFileSync(join(out, "v1"), "");
-    expect(await writeData(out, "{}\n", new Map())).toEqual({
+    expect(await writeData(out, "{}\n", new Map(), new Map())).toEqual({
       ok: false,
       message: expect.stringContaining(`cannot write ${join(out, "v1", "plugins.json")}`),
     });
@@ -1952,7 +2020,7 @@ describe("writeData", () => {
   test("removes its temporary schema file when the schema cannot be replaced", async () => {
     const out = tempDir();
     mkdirSync(join(out, "schemas", "plugins.v1.schema.json", "taken"), { recursive: true });
-    expect(await writeData(out, "{}\n", new Map())).toEqual({
+    expect(await writeData(out, "{}\n", new Map(), new Map())).toEqual({
       ok: false,
       message: expect.stringContaining(`cannot write ${join(out, "schemas", "plugins.v1.schema.json")}`),
     });
@@ -1963,7 +2031,7 @@ describe("writeData", () => {
   test("removes its temporary file when the file cannot be replaced", async () => {
     const out = tempDir();
     mkdirSync(join(out, "v1", "plugins.json", "taken"), { recursive: true });
-    expect((await writeData(out, "{}\n", new Map())).ok).toBe(false);
+    expect((await writeData(out, "{}\n", new Map(), new Map())).ok).toBe(false);
     expect(readdirSync(join(out, "v1"))).toEqual(["plugins.json"]);
   });
 });

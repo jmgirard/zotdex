@@ -208,7 +208,7 @@ describe("pnpm refresh-holds", () => {
     const LINES = [
       "- This repo: created 2026-03-04, 2 stars, newest stable release 2026-03-01",
       "- Listed repo: [example/second-plugin](https://github.com/example/second-plugin): created 2020-05-06, 40 stars, newest stable release none",
-      "- Kept from `index.json`: no override and no paid-service mark",
+      "- Kept from `index.json`: no override, no paid-service mark, and no screenshot",
     ];
 
     test.each<[string, Written["holds"], string]>([

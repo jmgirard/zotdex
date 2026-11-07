@@ -70,6 +70,25 @@
             }
           }
         },
+        "screenshot": {
+          "description": "A screenshot that the repository's owner asked for and a maintainer applied: a WebP image at most 1600 px wide, 2400 px tall, and 1 MiB. Absent when the entry has none, and in data written before the build wrote it.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["file", "alt"],
+          "properties": {
+            "file": {
+              "description": "The image's path relative to the folder of this data file. Its file name is the SHA-256 of its bytes.",
+              "type": "string",
+              "pattern": "^screenshots/[0-9a-f]{64}\\.webp$"
+            },
+            "alt": {
+              "description": "What the screenshot shows, in the owner's words, for a reader who cannot see it.",
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            }
+          }
+        },
         "upstream": {
           "description": "The facts read from the plugin's GitHub repo, its releases, and its release XPI, after a check that its update.json lists the plugin id. Present when the read succeeds, and on a kept record, where these facts come from an earlier build (see kept).",
           "$ref": "#/definitions/upstream"

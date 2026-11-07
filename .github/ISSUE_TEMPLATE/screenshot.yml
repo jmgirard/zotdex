@@ -1,0 +1,51 @@
+name: Add a screenshot to a plugin's page
+description: For a plugin repository's owner. Ask the index to show a screenshot of the plugin.
+title: Add a screenshot to a plugin's page
+labels: ["screenshot"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The repository's owner files this form. A maintainer looks at each
+        screenshot before the index shows it, and answers here.
+
+        Rules for the screenshot:
+
+        - Attach one PNG, JPEG, or WebP image to the Screenshot field. Drag the
+          file into the field, or paste it.
+        - The image is at most 10 MiB, and at most 8000 pixels wide and 8000
+          pixels tall.
+        - Show the plugin in use in Zotero.
+
+        The index keeps its own copy of the image, made to fit within 1600 by
+        2400 pixels, and shows it on the plugin's page. If that copy is over
+        1 MiB, the maintainer asks for a smaller image.
+
+        The description tells a reader who can't see the image what it shows.
+        Write it in English, on one line, with no links and no `<`, in at least
+        6 words and at most 200 characters.
+
+        A new request replaces the plugin's screenshot. To remove the
+        screenshot, leave the Screenshot field blank.
+  # src/screenshot-request/parse.ts finds each value under its label's heading in the issue body.
+  - type: input
+    id: plugin
+    attributes:
+      label: Plugin id
+      description: The plugin page's link fills this in.
+    validations:
+      required: true
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot
+      description: Attach one image. Leave this blank to remove the plugin's screenshot.
+    validations:
+      required: false
+  - type: input
+    id: description
+    attributes:
+      label: Description of the screenshot
+      description: What the image shows, for a reader who can't see it.
+    validations:
+      required: false

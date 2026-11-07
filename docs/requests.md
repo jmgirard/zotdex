@@ -234,6 +234,94 @@ or the owner is an organization, check the author by hand, then add
 the `--apply` run. Then read the text, answer the issue, and open a pull
 request with the change.
 
+## Adding a screenshot
+
+A repository's owner can ask the index to show one screenshot on the plugin's
+page, or to remove it. The owner line in the plugin page's Details card links
+to the form `.github/ISSUE_TEMPLATE/screenshot.yml`, with the plugin id filled
+in. The form adds the label `screenshot`. It has three fields: the plugin id,
+the screenshot, which is an image attached to the issue, and a description of
+the screenshot. If the Screenshot field is blank, the request asks to remove
+the screenshot, and the command ignores the description.
+
+The request follows these rules. `src/screenshot-request/rules.ts` holds their
+hosts and limits:
+
+- The Screenshot field holds one image link. An image link is a Markdown
+  image or the `src` attribute of an `<img>` element, which GitHub writes for
+  an attached image. An image in an HTML comment, a code span, or a fenced
+  code block does not count.
+- The link and each redirect use HTTPS and stay on the hosts in
+  `SCREENSHOT_HOSTS`. GitHub's attachment links are on `github.com` and
+  redirect to its file host. A link of any other scheme, such as `data:` or
+  `ftp:`, breaks this rule.
+- The image is at most 10 MiB.
+- The image is a PNG, JPEG, or WebP file, by its first bytes, and sharp reads
+  it as at most 8000 pixels wide and 8000 pixels tall. Sharp can read all of
+  it, so a cut file breaks this rule.
+- The index's copy, which the next paragraphs describe, is at most 1 MiB.
+- The description follows the rules for a description in "Changing a plugin's
+  name or description".
+
+No bot answers the form. To check a request, download the deployed data file
+and run the command with the issue's number:
+
+```sh
+curl -sSLo plugins.json https://zotdex.jmgirard.com/v1/plugins.json
+pnpm screenshot-request <issue> --data plugins.json
+```
+
+The command reads the issue and the owner of the entry's repository, and checks
+the owner as `pnpm text-request` does. It downloads the image and prints the
+plugin, each image link, the description, the issue's author, the owner, and
+whether the two match. It also prints the image's format, its sizes in pixels
+and in bytes, and the SHA-256 of its bytes. It makes the index's copy, prints
+the copy's size in pixels and in bytes, and writes the copy to
+`zotdex-screenshot-<issue>.webp` in the system temporary folder. The `preview:`
+line names that file. It prints the description of the
+screenshot that the request replaces or removes, and the age of the data file.
+It prints each rule that the request breaks as a `problem:` line. A rule of the
+description prints as `description-` and the name that `pnpm text-request`
+gives the rule.
+
+The command has the three exit statuses of `pnpm text-request`. A download
+that fails or gets an HTTP error is a named failure, so it exits 2. A removal
+from an entry with no screenshot writes nothing and exits 0. A removal with
+`--file` is a named failure.
+
+If the download does not work, save the image by hand and run the command
+with `--file <path>`. The command then reads that file in place of the
+download. It still checks the Screenshot field, the link's own host, the
+image, its size, and the description. Only the redirects go unchecked. If a
+redirect goes to a host that is not in `SCREENSHOT_HOSTS`, the command prints
+`host-not-allowed` with that address. If the address is GitHub's own file host,
+use `--file`.
+
+The command makes the index's copy with sharp. Sharp turns the image upright
+by its orientation tag. It makes the image fit within 1600 by 2400 pixels, but
+never larger. It saves the copy as WebP with no metadata. If the copy is more
+than 1 MiB, ask the owner for a smaller image.
+
+Before you apply a screenshot, open the preview file and look at it. Do not
+rely on the issue page, which can show another image than the one the command
+reads. Each run removes the issue's earlier preview, so a run that prints no
+`preview:` line leaves no file to look at. With `--apply`, the command writes
+the copy to `plugins/<id>/screenshot.webp` and sets the `screenshot` field of
+the entry's `index.json`, as [data.md](data.md#plugin-entries) says. It reads
+`index.json` again just before it writes, so it keeps other edits to the file.
+If the command cannot write `index.json`, the image file and `index.json` still
+match. A removal deletes both. The command writes nothing past a broken rule,
+and `--owner-checked` works as in `pnpm text-request`.
+
+The `--apply` run reads the image again. Its files stay in your checkout until
+you commit them. If its SHA-256 differs from the run whose preview you looked
+at, the owner changed the image: restore the entry's files and run the report
+again. Otherwise answer the issue and open a pull request with the change.
+
+A maintainer can also remove a shown screenshot without a request, as for any
+entry file: delete `plugins/<id>/screenshot.webp` and the `screenshot` field of
+`index.json` in a pull request.
+
 ## Removing a plugin
 
 Anyone can ask to remove a plugin with the "Remove a plugin or report harm"

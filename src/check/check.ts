@@ -2,6 +2,7 @@ import { readdir, readFile, stat } from "node:fs/promises";
 import { join } from "node:path";
 import { Ajv, type ErrorObject, type ValidateFunction } from "ajv";
 import indexSchema from "../../schemas/index.v1.schema.json" with { type: "json" };
+import { imageFormat, SCREENSHOT_FILE, SCREENSHOT_MAX_BYTES, SCREENSHOT_MAX_HEIGHT, SCREENSHOT_MAX_WIDTH } from "../screenshot-request/rules.ts";
 import { type Delisted, githubRepoOf, NOTHING_DELISTED } from "./delisted.ts";
 
 export type Rule =
@@ -14,6 +15,7 @@ export type Rule =
   | "id-matches-directory"
   | "reason-not-blank"
   | "unique-override"
+  | "screenshot-file"
   | "entry-name"
   | "entry-is-directory"
   | "unique-ignoring-case";
@@ -176,6 +178,24 @@ async function checkEntry(dir: string, entry: string, validators: Validators, de
   if (blank((iconHidden as { reason?: unknown } | null | undefined)?.reason)) {
     add("reason-not-blank", "iconHidden.reason holds only whitespace or format characters");
   }
+  const screenshot = (index.value as { screenshot?: unknown } | undefined)?.screenshot;
+  // The description is the image's alt text, so it must say something too.
+  for (const key of ["description", "reason"] as const) {
+    if (blank((screenshot as Record<string, unknown> | null | undefined)?.[key])) {
+      add("reason-not-blank", `screenshot.${key} holds only whitespace or format characters`);
+    }
+  }
+  // An index.json that cannot be read or parsed is reported above, and says nothing here.
+  if ("value" in index) {
+    for (const message of await screenshotProblems(join(dir, SCREENSHOT_FILE), screenshot !== undefined)) add("screenshot-file", message);
+    // `pnpm screenshot-request --apply` writes the image here first, so one left behind means a
+    // run stopped partway.
+    const leftover = await stat(join(dir, `${SCREENSHOT_FILE}.tmp`)).then(
+      () => true,
+      () => false,
+    );
+    if (leftover) add("screenshot-file", `${SCREENSHOT_FILE}.tmp is left from a screenshot-request run that stopped: delete it`);
+  }
   const overrides = (index.value as { overrides?: unknown } | undefined)?.overrides;
   if (Array.isArray(overrides)) {
     // The index of the first override for each field and version. The site's usedOverride
@@ -198,6 +218,35 @@ async function checkEntry(dir: string, entry: string, validators: Validators, de
     });
   }
   return findings;
+}
+
+// What breaks the screenshot rules: index.json names a screenshot and the file is missing, the
+// file exists and index.json names none, or the file is not a WebP image within the limits of
+// src/screenshot-request/rules.ts.
+// A file over the size limit is not read.
+async function screenshotProblems(path: string, named: boolean): Promise<string[]> {
+  let bytes: Uint8Array;
+  const problems: string[] = [];
+  try {
+    const { size } = await stat(path);
+    if (!named) problems.push(`${SCREENSHOT_FILE} exists, and index.json names no screenshot`);
+    if (size > SCREENSHOT_MAX_BYTES) return [...problems, `${SCREENSHOT_FILE} is ${size} bytes, over ${SCREENSHOT_MAX_BYTES}`];
+    bytes = await readFile(path);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") return [...problems, `cannot read ${SCREENSHOT_FILE}: ${(error as Error).message}`];
+    return named ? [`index.json names a screenshot, and ${SCREENSHOT_FILE} is missing`] : [];
+  }
+  if (imageFormat(bytes) !== "webp") return [...problems, `${SCREENSHOT_FILE} is not a WebP image`];
+  // sharp loads only for an entry with a screenshot.
+  const { default: sharp } = await import("sharp");
+  try {
+    const { width = 0, height = 0 } = await sharp(bytes).metadata();
+    if (width > SCREENSHOT_MAX_WIDTH) problems.push(`${SCREENSHOT_FILE} is ${width} px wide, over ${SCREENSHOT_MAX_WIDTH}`);
+    if (height > SCREENSHOT_MAX_HEIGHT) problems.push(`${SCREENSHOT_FILE} is ${height} px tall, over ${SCREENSHOT_MAX_HEIGHT}`);
+  } catch (error) {
+    problems.push(`${SCREENSHOT_FILE} is not a readable image: ${(error as Error).message}`);
+  }
+  return problems;
 }
 
 function validate(

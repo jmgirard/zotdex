@@ -533,15 +533,15 @@ describe("the plugin page", () => {
     const main = html.slice(html.indexOf("<main>") + "<main>".length, html.indexOf("</main>"));
     const head = new RegExp(
       `^<a class="back" href="/" data-back>${ICON}All plugins</a>` +
-        `<div class="page-head" data-page-head><div class="head-text">(.*?)<div class="actions" data-links>(.*?)</div></div>((?:<div class="head-side">.*?</div>)?)</div>`,
+        `<div class="page-head" data-page-head><div class="head-text">(.*?)<div class="actions" data-links>(.*?)</div></div>((?:<div class="head-side[^"]*">.*?</div>)?)</div>`,
       "s",
     ).exec(main.replace(/>\s+</g, "><").trim());
-    const { upstream } = record;
-    expect(head?.[3]).toBe(
-      upstream?.icon
-        ? `<div class="head-side"><span class="icon-tile" data-icon-tile><img src="/v1/${upstream.icon}" alt="" width="64" height="64" data-icon></span></div>`
-        : "",
-    );
+    const { upstream, screenshot } = record;
+    const icon = upstream?.icon ? `<span class="icon-tile" data-icon-tile><img src="/v1/${upstream.icon}" alt="" width="64" height="64" data-icon></span>` : "";
+    const shot = screenshot
+      ? `<a class="screenshot" href="/v1/${screenshot.file}" data-screenshot><img src="/v1/${screenshot.file}" alt="${escaped(screenshot.alt).replaceAll("&#39;", "'")}" decoding="async"></a>`
+      : "";
+    expect(head?.[3]).toBe(icon || shot ? `<div class="head-side${shot ? " with-screenshot" : ""}">${icon}${shot}</div>` : "");
     const repoUrl = upstream?.repoUrl ?? record.repoUrl;
     const github = githubRepo(repoUrl);
     const shownCategories = CATEGORIES.filter(({ slug }) => categories(record).includes(slug)).map(
@@ -904,9 +904,11 @@ describe("the About page", () => {
     ],
     [
       "icons",
-      "Icons",
+      "Icons and screenshots",
       "A plugin's icon is the one its author made for Zotero's Plugins window. " +
-        "Zotdex doesn't look at icons before it shows them, and a maintainer can hide one.",
+        "Zotdex doesn't look at icons before it shows them, and a maintainer can hide one. " +
+        "A screenshot comes from the plugin's owner, who asks for it with the link on the plugin's page. " +
+        "A maintainer looks at each one before it's shown.",
     ],
     [
       "overrides",
@@ -963,7 +965,7 @@ describe("the About page", () => {
       "license",
       "License",
       "Zotdex's code is under the MIT License, and its data, categories, and own text are under CC0 1.0. " +
-        "Names, descriptions, icons, and other work from plugin authors keep their authors' terms. " +
+        "Names, descriptions, icons, screenshots, and other work from plugin authors keep their authors' terms. " +
         "The license page gives the details, including the exceptions.",
     ],
   ];
@@ -2159,10 +2161,55 @@ describe("the built site", () => {
       const details = html.indexOf('data-section="details"');
       expect(links[0]!.index, id).toBeGreaterThan(details);
       expect(links[0]!.index, id).toBeLessThan(html.indexOf("</section>", details));
-      expect(mainText(html), id).toContain("Is this your plugin? Ask to change its name or description.");
+      expect(mainText(html), id).toContain("Is this your plugin? Ask to change its name or description or add a screenshot.");
     }
     expect(home()).not.toContain("data-text-change");
     expect(readFileSync(join(out, "about/index.html"), "utf8")).not.toContain("data-text-change");
+  });
+
+  test("links each plugin page's owner line to the screenshot form with the plugin id, and no other page", () => {
+    for (const id of ids) {
+      const html = page(id);
+      const links = [...html.matchAll(/<a href="([^"]*)" data-screenshot-request>add a screenshot<\/a>/g)];
+      expect(links, id).toHaveLength(1);
+      expect(links[0]![1]!.replace(/&amp;/g, "&").replace(/&#38;/g, "&"), id).toBe(
+        `https://github.com/jmgirard/zotdex/issues/new?template=screenshot.yml&plugin=${encodeURIComponent(id)}`,
+      );
+      expect(links[0]!.index, id).toBeGreaterThan(html.indexOf("data-text-change>"));
+    }
+    expect(home()).not.toContain("data-screenshot-request");
+    expect(readFileSync(join(out, "about/index.html"), "utf8")).not.toContain("data-screenshot-request");
+  });
+
+  test("shows a record's screenshot as one link to its file holding an image with its alt text, and none on another page", () => {
+    const withShot = records.filter(({ screenshot }) => screenshot);
+    expect(withShot.map(({ id }) => id).sort()).toEqual(["a-cafe@example.org", "first-plugin@example.org"]);
+    for (const { id, screenshot } of records) {
+      const html = page(id);
+      const links = [...html.matchAll(/<a class="screenshot" href="([^"]*)" data-screenshot><img src="([^"]*)" alt="([^"]*)"/g)];
+      expect(html.match(/data-screenshot[\s>]/g) ?? [], id).toHaveLength(screenshot ? 1 : 0);
+      if (!screenshot) continue;
+      expect(links, id).toHaveLength(1);
+      expect(unescaped(links[0]![1]!), id).toBe(`/v1/${screenshot.file}`);
+      expect(unescaped(links[0]![3]!), id).toBe(screenshot.alt);
+    }
+    expect(home()).not.toMatch(/data-screenshot[\s>]/);
+  });
+
+  test("puts the screenshot after the links and before the install note, or before the version card with no note", () => {
+    for (const id of ["first-plugin@example.org", "a-cafe@example.org"]) {
+      const html = page(id);
+      const at = html.indexOf("data-screenshot>");
+      const next = html.includes('data-fact="install-note"') ? html.indexOf('data-fact="install-note"') : html.indexOf('data-section="compatibility"');
+      expect(at, id).toBeGreaterThan(html.indexOf('<div class="actions" data-links>'));
+      expect(at, id).toBeLessThan(next);
+    }
+    const iconPage = page("first-plugin@example.org");
+    expect(iconPage.indexOf("data-icon-tile")).toBeGreaterThan(-1);
+    expect(iconPage.indexOf("data-screenshot>")).toBeGreaterThan(iconPage.indexOf("data-icon-tile"));
+    expect(page("a-cafe@example.org")).not.toContain("data-icon-tile");
+    expect(page("a-cafe@example.org")).toContain('data-fact="install-note"');
+    expect(page("first-plugin@example.org")).not.toContain('data-fact="install-note"');
   });
 
   test("offers no badge on any page", () => {

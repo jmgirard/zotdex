@@ -5,6 +5,7 @@ import { join, resolve } from "node:path";
 import process from "node:process";
 import { promisify } from "node:util";
 import type { Delisted } from "../check/delisted.ts";
+import { SCREENSHOT_FILE } from "../screenshot-request/rules.ts";
 import type { Lookup } from "../upstream/host-guard.ts";
 import { type Fetch, githubClient, ReadFailure } from "../upstream/reader.ts";
 import { duration } from "../upstream/time-limit.ts";
@@ -284,7 +285,7 @@ type Git = (args: string[], env?: Record<string, string>) => Promise<string>;
 
 // Runs git in `gitDir` and returns its trimmed output. A process that passes `ms` is
 // killed, and the error says so.
-function gitRunner(gitDir: string, ms: number): Git & { bytes: (args: string[], input: string) => Promise<Buffer> } {
+function gitRunner(gitDir: string, ms: number): Git & { bytes: (args: string[], input?: string) => Promise<Buffer> } {
   // Runs git with `input`, if any, on its stdin, and returns its output as bytes.
   async function bytes(args: string[], input?: string, env: Record<string, string> = {}): Promise<Buffer> {
     try {
@@ -305,7 +306,7 @@ function gitRunner(gitDir: string, ms: number): Git & { bytes: (args: string[], 
     }
   }
   const git: Git = async (args, env = {}) => (await bytes(args, undefined, env)).toString("utf8").trim();
-  return Object.assign(git, { bytes: (args: string[], input: string) => bytes(args, input) });
+  return Object.assign(git, { bytes: (args: string[], input?: string) => bytes(args, input) });
 }
 
 // The most output one git process may write. The index's ls-tree listing takes about 300
@@ -441,6 +442,12 @@ export async function propose(options: ProposeOptions): Promise<{ proposed: Prop
         const keptIndex = replacing ? await git(["cat-file", "blob", `${baseCommit}:plugins/${id}/index.json`]) : undefined;
         if (keptIndex !== undefined) await writeFile(join(checkDir, id, "index.json"), `${keptIndex}\n`);
         const kept = keptIndex === undefined ? [] : keptLines(JSON.parse(keptIndex));
+        // The pull request keeps the entry's screenshot too, so the check reads it with the kept index.json.
+        if (keptIndex !== undefined && (JSON.parse(keptIndex) as { screenshot?: unknown }).screenshot !== undefined) {
+          // No input: git cat-file blob reads no stdin, and a write to it can fail as EPIPE.
+          const shot = await git.bytes(["cat-file", "blob", `${baseCommit}:plugins/${id}/${SCREENSHOT_FILE}`]);
+          await writeFile(join(checkDir, id, SCREENSHOT_FILE), shot);
+        }
         const checked = await check(checkDir);
 
         const index = { GIT_INDEX_FILE: join(work, `index-${n}`) };
@@ -577,15 +584,21 @@ export function body(entry: Written, checked: { status: number; output: string }
 }
 
 // The detail lines for what an entry's index.json keeps when another repo replaces its
-// meta.json: each override and the paid-service mark, since they were written for the
-// listed repo. Each value goes in a code span.
+// meta.json: each override, the paid-service mark, and the screenshot, since they were written
+// for the listed repo. Each value goes in a code span.
 export function keptLines(index: unknown): string[] {
-  const { overrides, paidService } = (index ?? {}) as { overrides?: { field?: unknown; value?: unknown; version?: unknown }[]; paidService?: { note?: unknown; source?: unknown; read?: unknown } };
+  const { overrides, paidService, screenshot } = (index ?? {}) as {
+    overrides?: { field?: unknown; value?: unknown; version?: unknown }[];
+    paidService?: { note?: unknown; source?: unknown; read?: unknown };
+    screenshot?: { description?: unknown; reason?: unknown };
+  };
   const lines = [
     ...(overrides ?? []).map(({ field, value, version }) => `- Kept override of ${code(String(field))}${version === undefined ? "" : ` for version ${code(String(version))}`}: ${code(JSON.stringify(value))}`),
     ...(paidService ? [`- Kept paid-service mark: ${code(String(paidService.note))}, source ${code(String(paidService.source))}, read ${code(String(paidService.read))}`] : []),
+    // A screenshot comes from the listed repo's owner (D-081), so the maintainer decides whether it stays.
+    ...(screenshot ? [`- Kept screenshot that the listed repo's owner asked for: ${code(String(screenshot.description))}, ${code(String(screenshot.reason))}`] : []),
   ];
-  return lines.length > 0 ? lines : ["- Kept from `index.json`: no override and no paid-service mark"];
+  return lines.length > 0 ? lines : ["- Kept from `index.json`: no override, no paid-service mark, and no screenshot"];
 }
 
 // The lines under DETAILS_HEADING. A name goes in a code span, so it cannot add a line or

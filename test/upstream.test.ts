@@ -4,7 +4,7 @@ import { afterEach, beforeAll, describe, expect, test, vi } from "vitest";
 import type { Lookup } from "../src/upstream/host-guard.ts";
 import indexSchema from "../schemas/index.v1.schema.json" with { type: "json" };
 import pluginsSchema from "../schemas/plugins.v1.schema.json" with { type: "json" };
-import { buildLevelStatus, LANGUAGE_TAG, readUpstream, zipEntryCount } from "../src/upstream/reader.ts";
+import { buildLevelStatus, downloader, LANGUAGE_TAG, readUpstream, zipEntryCount } from "../src/upstream/reader.ts";
 import { fixtureFetch, loadFixture, type Recorded, type Responses } from "./support/fixture-fetch.ts";
 
 const FIXTURE = "test/fixtures/upstream/better-notes.json";
@@ -1370,6 +1370,21 @@ describe("readUpstream", () => {
       expect(control.ok).toBe(false);
       expect(result).toEqual(control);
     });
+  });
+});
+
+describe("downloader's check", () => {
+  test("sees the first URL before the scheme check and before any request", async () => {
+    const { fetch, requests } = fixtureFetch({});
+    const refused = new Error("refused by the caller");
+    const seen: string[] = [];
+    const check = (url: URL) => {
+      seen.push(url.href);
+      throw refused;
+    };
+    await expect(downloader(fetch, async () => ["140.82.112.3"], undefined, check)("ftp://example.org/a.png")).rejects.toBe(refused);
+    expect(seen).toEqual(["ftp://example.org/a.png"]);
+    expect(requests).toEqual([]);
   });
 });
 

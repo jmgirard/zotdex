@@ -27,6 +27,14 @@ Plugin icons also keep their authors' terms. The build redraws the icon that
 a plugin's manifest names and publishes it under `v1/icons/`, which
 `upstream.icon` names. The index gives no license for these files.
 
+Screenshots keep their owners' terms. A repository's owner asks for a
+screenshot, and a maintainer adds a copy to the entry as
+`plugins/<id>/screenshot.webp`. The build publishes the copy under
+`v1/screenshots/`, which the record's `screenshot.file` names. The owner's
+description of the image, in `index.json`'s `screenshot.description` and the
+record's `screenshot.alt`, is text that an owner asked for. The index gives
+no license for these files or this text.
+
 These files hold parts from a third party. Those parts keep their source's
 terms, and the rest of each file follows the terms above:
 

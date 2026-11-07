@@ -14,19 +14,28 @@ export interface TextRequest {
 
 export type ParseResult = { ok: true; request: TextRequest } | { ok: false; failure: "missing-heading" | "duplicate-heading" | "bad-field"; message: string };
 
-// Reads a request from an issue body, which anyone who files the issue can edit. A heading
-// that appears twice is refused, since one can sit in an HTML comment that the issue page hides.
-export function parseTextRequest(body: string): ParseResult {
+export type FormValues<K extends string> = { ok: true; values: Record<K, string> } | { ok: false; failure: "missing-heading" | "duplicate-heading"; message: string };
+
+// Reads the value under each label's heading from an issue body, which anyone who files the
+// issue can edit. A heading that appears twice is refused, since one can sit in an HTML comment
+// that the issue page hides.
+export function formValues<K extends string>(body: string, labels: Record<K, string>): FormValues<K> {
   const lines = body.split(/\r?\n/);
-  const values: Partial<Record<keyof typeof TEXT_REQUEST_LABELS, string>> = {};
-  for (const id of ["plugin", "field", "text"] as const) {
-    const heading = `### ${TEXT_REQUEST_LABELS[id]}`;
+  const values: Partial<Record<K, string>> = {};
+  for (const id of Object.keys(labels) as K[]) {
+    const heading = `### ${labels[id]}`;
     const count = lines.filter((line) => line.trim() === heading).length;
     if (count === 0) return { ok: false, failure: "missing-heading", message: `the issue body has no "${heading}" heading` };
     if (count > 1) return { ok: false, failure: "duplicate-heading", message: `the issue body has more than one "${heading}" heading` };
     values[id] = under(lines, heading);
   }
-  const { plugin, field, text } = values as Record<keyof typeof TEXT_REQUEST_LABELS, string>;
+  return { ok: true, values: values as Record<K, string> };
+}
+
+export function parseTextRequest(body: string): ParseResult {
+  const read = formValues(body, TEXT_REQUEST_LABELS);
+  if (!read.ok) return read;
+  const { plugin, field, text } = read.values;
   if (field !== "name" && field !== "description") return { ok: false, failure: "bad-field", message: "the field must be name or description" };
   return { ok: true, request: { plugin, field, text } };
 }

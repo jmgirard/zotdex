@@ -49,7 +49,11 @@ A page also shows, at the top right of its head, the icon that the read
 release's manifest names, which the build redraws as a 96 by 96 PNG and the
 site serves under `v1/icons/`. The icon is an image from the plugin file, not
 the plugin file, and not a fact to check. A maintainer can hide one (M113,
-D-080).
+D-080). Under the icon a page can show one screenshot that the repository's
+owner asked for through an issue form and a maintainer applied with
+`pnpm screenshot-request`. The entry holds a re-encoded WebP copy, and the
+site serves it under `v1/screenshots/`. Like the icon, it is not a fact to
+check (M114, D-081).
 The data also carries the interface languages that the read XPI's locale
 folders name (M023), keeping a tag only when its files hold at least one
 message, judged by file type (M027), and at least half as many messages as
@@ -165,7 +169,7 @@ release facts with dates from `longDay`, and the "Languages" fact (M024,
 M033, M110), with each override beside the upstream value it corrects under
 an h3, "Corrections by Zotdex" (M007, M015, M054, M110), and a
 `description` override beside each upstream text that is not blank (M088). It ends with links to the
-text-change form and the remove-plugin form (M079, M093). The About page
+text-change form, the screenshot form, and the remove-plugin form (M079, M093, M114). The About page
 (`site/src/pages/about.astro`) holds the method notes in short form, and
 its intro links `docs/site.md` for the full rules (M111, D-078): the
 supported range and its marks, the startup check, which reports count, and
@@ -173,7 +177,7 @@ what corrections change (M054, M110), the categories, each with its `about`
 text (M066), what the lock means (M081), what the paid service mark means
 (M082), the grounds for removing a plugin (M093), how to install a plugin
 (M096), the license terms in short form (M095, D-063), and where a plugin's
-icon comes from (M113, D-080). The home table
+icon and screenshot come from (M113, D-080, M114, D-081). The home table
 marks an archived plugin with "Archived" after its name (M053), and the
 data carries the same `archived` fact (M013). A home row and a plugin page
 show a lock for a record with
@@ -375,7 +379,12 @@ shows each one separately. A combined verdict is out of scope.
    `name` or `description` override, through a form linked from the plugin
    page's Details card, after trying an upstream edit first. No bot answers.
    A maintainer runs `pnpm text-request`. The override has no `version`, and
-   its reason names the issue (M079, D-049, D-050).
+   its reason names the issue (M079, D-049, D-050). The owner can also ask
+   for one screenshot, or its removal, through a second form linked from the
+   same line. A maintainer looks at the image and runs
+   `pnpm screenshot-request`, which shares the owner check and writes
+   `plugins/<id>/screenshot.webp` and `index.json`'s `screenshot` (M114,
+   D-081).
 4. User reports. Two issue forms take a "works" or a "broken" report with
    the plugin id, the plugin version, and the Zotero version. A bot checks
    each report, comments, and closes the issue (M020), and a daily sweep
@@ -443,11 +452,19 @@ user reports. The exception is a report that is abuse.
   directory name that `entryNameProblem` refuses, and names that differ
   only in case; `writeEntry` refuses the same ids (M031). It refuses an
   override reason of only JavaScript `\s` whitespace and Unicode format
-  characters, two overrides with the same `field` and `version`, and names
+  characters (since M113 and M114 also an `iconHidden` reason and a
+  screenshot's description and reason), two overrides with the same `field` and `version`, and names
   a UTF-8 byte-order mark at the start of an entry file (M032). It reads the
   package root's `delisted.json` (`src/check/delisted.ts`, or the file that
   `ZPI_DELISTED` names) for any `dir`, and refuses a listed id, a listed
   GitHub repo, and a list that `schemas/delisted.schema.json` refuses (M093).
+  Its rule `screenshot-file` refuses a named screenshot with no
+  `screenshot.webp`, a file that `index.json` does not name, and a file that
+  is not WebP or passes 1600 px wide, 2400 px tall, or 1 MiB, with sharp
+  loaded only for an entry that has the file, which the discovery bot's merge
+  check also runs (M114, D-081), and a `screenshot.webp.tmp` that a stopped
+  apply left. It refuses a screenshot description of only whitespace and
+  format characters as `reason-not-blank`.
 - Upstream reader (`src/upstream/`): `readUpstream(repoUrl, fetch, {
   lookup, signal })` returns the facts of one GitHub repo with the URL and
   SHA-256 of the XPI it read (M047), the repo's topics (M056), and each URL
@@ -455,7 +472,9 @@ user reports. The exception is a report that is abuse.
   icon file its manifest names as `icon` (M113), or one named
   inclusion-bar failure. `readUpdateRoute` gives that route for one address
   and reads no body (M077).
-  `downloadXpi` downloads one XPI with the same host check (M047). The
+  `downloadXpi` downloads one XPI with the same host check (M047).
+  `downloader`, which takes a `check` for each URL, and `readCapped` are
+  exported for `pnpm screenshot-request` (M114). The
   optional `lookup` resolves download hosts for the host check (M004).
   When the optional `signal` aborts, the read fails as a build-level
   `request-failed` (M029). Added M002. `githubClient(fetch)` makes its GitHub
@@ -511,7 +530,8 @@ user reports. The exception is a report that is abuse.
   <file>]` writes
   `dist/v1/plugins.json`, one record per entry, with a failed upstream read
   kept in that entry's record, writes each drawn icon to `dist/v1/icons/`
-  before it (M113), and copies the two schemas to `dist/schemas/`.
+  (M113) and each screenshot to `dist/v1/screenshots/` (M114) before it,
+  and copies the two schemas to `dist/schemas/`.
   It exits 1 when more than half of the records carry a build-level failure,
   as "Building the data" in `docs/maintaining.md` defines it, and also when every record carries a
   failure, whatever its name, and, after writing the data, when it cannot
@@ -559,7 +579,11 @@ user reports. The exception is a report that is abuse.
   `iconHidden`. A kept record keeps its icon only when `readPreviousIcons`
   reads the deployed file back with the SHA-256 in its name. `writeData`
   writes the icons to `v1/icons/` before `plugins.json`, and the data never
-  names an icon file the build does not hold (M113, D-080).
+  names an icon file the build does not hold (M113, D-080). An entry whose
+  `index.json` has `screenshot` gets the record's `screenshot`, read or not;
+  `writeData` copies its `screenshot.webp` to `v1/screenshots/<sha>.webp`
+  beside the icons and clears stale files there, and a named file the build
+  cannot read stops the build (M114, D-081).
   After the plugin reads, `readZoteroRelease` in
   `src/build/zotero-release.ts` reads the current Zotero release from
   zotero.org with no token and a 30 s limit, and the build writes it as the
@@ -647,7 +671,27 @@ user reports. The exception is a report that is abuse.
   prints the facts a maintainer needs, and with `--apply` writes or removes
   the override. Exit 0 means that nothing blocks `--apply`, 1 a broken rule, or
   a mismatch or organization owner that `--owner-checked` did not clear, and 2 a
-  named failure (M079, D-049).
+  named failure (M079, D-049). Since M114 the issue, label, form, record,
+  entry, and owner reads are `readOwnerRequest` (`owner.ts`), and
+  `formValues` (`parse.ts`) reads a form's headings.
+- Screenshot requests (`src/screenshot-request/`): the limits and
+  `imageFormat` (`rules.ts`), `parseScreenshotRequest` and `imageLinks`
+  (`parse.ts`), and `pnpm screenshot-request <issue> --data <file> [--file
+  <image>] [--apply [--owner-checked]]` (`request.ts`, `cli.ts`). It reads a
+  `screenshot` issue through `readOwnerRequest`, checks the one image link's
+  host, downloads it with the reader's `downloader` and the same check on each
+  redirect against `SCREENSHOT_HOSTS` (a `--file` image skips only the
+  redirects), makes the WebP copy in the report and writes it to
+  `zotdex-screenshot-<issue>.webp` in the system temporary folder for the
+  maintainer to look at, since the issue page can show another image than the
+  link `imageLinks` reads (it skips comments, code fences and spans, and a `src` inside another
+  attribute), and with `--apply` writes the
+  copy and `index.json`'s `screenshot`, or removes both, re-reading
+  `index.json` just before it writes. The exit statuses are `pnpm
+  text-request`'s (M114, D-081). `readOwnerRequest` reads the entry's
+  `index.json` before it asks GitHub for the owner. Propose copies a kept
+  screenshot into its check folder and names it in the kept lines of a
+  `replaces-entry` pull request (M114).
 - Start tests (`src/start-test/`): `pnpm start-test --zotero --xpi --out
   [--limit]` starts one Zotero binary with one XPI in a new profile, with
   the reporter plugin of `src/start-test/reporter/`, and writes one of the
@@ -720,7 +764,8 @@ reused._
 
 - A pnpm project in TypeScript. Node runs the `.ts` files through its
   built-in type stripping, and `pnpm test` runs `tsc --noEmit`, then Vitest.
-- Entries live in `plugins/<id>/` as `meta.json` and `index.json` (D-002).
+- Entries live in `plugins/<id>/` as `meta.json` and `index.json` (D-002), with
+  `screenshot.webp` beside them for a plugin with a screenshot (M114, D-081).
   `schemas/index.v1.schema.json` is the `index.json` schema.
 - `src/check/` holds the checker. It reads the registry schema from
   zotero-plugin-registry at a pinned commit, checks the file against a pinned
@@ -1022,7 +1067,8 @@ reused._
   daily and on manual dispatch, and keeps the data as a workflow artifact
   (M003); since M047 a later site job runs `pnpm site`. The build also
   copies both schemas to `dist/schemas/` and writes the icon files to
-  `dist/v1/icons/` (M113), and it exits 1 after it writes
+  `dist/v1/icons/` (M113) and the screenshots to `dist/v1/screenshots/`
+  (M114), and it exits 1 after it writes
   the file when more than half of the records carry a build-level
   failure, as "Building the data" in `docs/maintaining.md` defines it (M017;
   moved from README by M107), or when every

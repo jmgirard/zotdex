@@ -2,6 +2,7 @@ import { spawnSync } from "node:child_process";
 import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
+import sharp from "sharp";
 import { afterAll, describe, expect, test, vi } from "vitest";
 import type { ReadItem, SkippedItem } from "../src/discover/discover.ts";
 import { entriesDir, planned, plannedProblem, REF_CHECK_LIMIT_MS, readHandoff, writePlan } from "../src/discover/handoff.ts";
@@ -826,12 +827,37 @@ describe("the write step checks the bot pull requests again and the index at the
       expect(requests.some(({ url }) => url === `${INDEX}/issues/1/labels`)).toBe(true);
     });
 
+    test("checks a kept screenshot with the kept index.json, keeps it in the pull request, and names it", async () => {
+      const { remote, work } = checkout();
+      const shot = await sharp({ create: { width: 40, height: 30, channels: 3, background: "#06c" } }).webp().toBuffer();
+      const screenshot = { description: "The plugin's pane beside an item.", reason: "The repository's owner asked for this screenshot in issue #9." };
+      pushFromClone(remote, tempDir(), {
+        [`plugins/${ID}/meta.json`]: meta("bob/copy"),
+        [`plugins/${ID}/index.json`]: `${JSON.stringify({ schemaVersion: 1, screenshot }, null, 2)}\n`,
+        [`plugins/${ID}/screenshot.webp`]: shot,
+      });
+      const { fetch, requests } = fixtureFetch(opened);
+      let checkedShot: Buffer | undefined;
+      const check: CheckRunner = async (dir) => {
+        checkedShot = readFileSync(join(dir, ID, "screenshot.webp"));
+        return pnpmCheck(dir);
+      };
+      await proposeHandoff({ fetch, indexRepo: "example/index", gitDir: work, check, entries: [replacing()] });
+      expect(checkedShot).toEqual(shot);
+      expect(git(remote, "diff", "--name-status", "main", "discover/example/alpha")).toBe(`M\tplugins/${ID}/meta.json`);
+      const { body } = JSON.parse(requests.find(({ method, url }) => method === "POST" && url === PULLS)!.body!);
+      expect(body).toContain("exited with status 0:");
+      expect(body).toContain(
+        "- Kept screenshot that the listed repo's owner asked for: ` The plugin's pane beside an item. `, ` The repository's owner asked for this screenshot in issue #9. `",
+      );
+    });
+
     test("says so when the kept index.json has no override and no mark", async () => {
       const { remote, work } = checkout();
       pushFromClone(remote, tempDir(), { [`plugins/${ID}/meta.json`]: meta("bob/copy"), [`plugins/${ID}/index.json`]: `${JSON.stringify({ schemaVersion: 1 })}\n` });
       const { fetch, requests } = fixtureFetch(opened);
       await proposeHandoff({ fetch, indexRepo: "example/index", gitDir: work, check: async () => ({ status: 0, output: "" }), entries: [replacing()] });
-      expect(JSON.parse(requests.find(({ method, url }) => method === "POST" && url === PULLS)!.body!).body).toContain("- Kept from `index.json`: no override and no paid-service mark");
+      expect(JSON.parse(requests.find(({ method, url }) => method === "POST" && url === PULLS)!.body!).body).toContain("- Kept from `index.json`: no override, no paid-service mark, and no screenshot");
     });
 
     test("names a kept override's version, and says not read for a release it could not read", () => {
