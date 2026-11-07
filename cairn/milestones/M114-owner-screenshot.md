@@ -7,7 +7,7 @@
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — owners gain a request form and plugin pages show the screenshot
-- **Branch/PR:** m114-owner-screenshot
+- **Branch/PR:** m114-owner-screenshot, https://github.com/jmgirard/zotdex/pull/863
 
 ## Goal
 
