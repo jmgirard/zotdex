@@ -570,8 +570,14 @@ user reports. The exception is a report that is abuse.
 - Site build (`src/site/`, `site/`): `pnpm site [--out <dir>]` writes the
   home page, the About page (M054), and one page per record into `dist/`,
   or `<dir>`, from the data file there. It also writes `404.html`,
-  `favicon.svg`, `sitemap.xml`, and `robots.txt` (M102), and
-  `badges/<id>.json` for each record (M105).
+  `favicon.svg`, `sitemap.xml`, and `robots.txt` (M102),
+  `badges/<id>.json` for each record (M105), and `favicon.png`,
+  `apple-touch-icon.png`, and `preview.png` (M106).
+  `src/site/logo.ts` holds the Zotdex logo's shapes (D-072): `FULL_MARK`,
+  and `lensMark`, which cuts the full mark's lens out and scales it, so the
+  two marks share one lens. It also writes `favicon.svg`, the top bar's
+  shapes, and each PNG file's SVG, whose mark, margin, and size `PICTURES`
+  sets. `src/site/logo-png.ts` draws those SVGs with `sharp` (D-073).
   `src/site/version.ts` holds the version and range functions
   that the templates use, `majorSupport` and `ZOTERO_MAJORS` among them, and
   `src/site/description.ts` holds `shownDescription`, `cjkShare`, and `cutDescription`.
@@ -606,8 +612,7 @@ user reports. The exception is a report that is abuse.
   `site/src/components/Icon.astro` draws the line icons, the lock
   (M081), the card (M082), the star, which `Base.astro` fills with `--star`
   inside `[data-repo-stars]` (M064) and with the count's color in `.row-stars`
-  (M097), and the puzzle piece, which `Base.astro` fills with `--accent` inside
-  `.brand` (M099).
+  (M097).
   `site/src/layouts/Base.astro` holds the color and size tokens for both
   color schemes, the shared rules, the top bar, and the footer. Added M007;
   pills and descriptions M015; languages M024; version buttons M037; status
@@ -1084,11 +1089,15 @@ reused._
   Astro's `import.meta.env.BASE_URL`. `Base.astro` writes each page's preview
   tags, and for a page with a `path` its canonical link and `og:url`, from its
   `description` and `path` props and from
-  `ORIGIN` in `site/src/base.ts`, and Astro copies `site/public/favicon.svg`
-  to the output (M094). The top bar's logo draws `puzzle` from `Icon.astro` in
-  `--accent`, and `favicon.svg` holds a copy of that path with the same colors,
-  which tests keep equal (M099). `--accent` has the values of `--link`, the
-  site's blue, so that it stays apart from the red of `--bad` (M099).
+  `ORIGIN` in `site/src/base.ts` (M094). It links `favicon.png`, then
+  `favicon.svg`, and `apple-touch-icon.png`, and names `preview.png` as each
+  page's `og:image` (M106). The top bar's logo draws the lens mark's three
+  shapes from `logo.ts`, the same ones as `favicon.svg`. The rim takes
+  `--accent`, and the disc and Z take `--logo-disc` and `--logo-z`, so all
+  three follow the theme button. Forced colors fill the rim and disc with
+  `CanvasText` and the Z with `Canvas` (M106). `--accent` has the values of
+  `--link`, the site's blue, so that it stays apart from the red of `--bad`
+  (M099).
   `build.yml`'s site job runs `pnpm site`
   after the build job (M047), so a failed site build also deploys nothing.
   `tsconfig.json` includes `site/`, so `pnpm test` type-checks its `.ts`
