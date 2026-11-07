@@ -1,6 +1,6 @@
 # M106: Replace the puzzle piece with the Zotdex lens mark
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
@@ -88,3 +88,4 @@ Replace the puzzle-piece logo with Zotdex's own mark, the lens alone at 16 px an
 - 2026-11-06: T7 done: built the site from the deployed `plugins.json` (738 pages) and served it in the browser pane; the top-bar logo is 16 by 16 and computes rim, disc, and Z as `#7fb0ff`, `#1d5fb8`, `#ffffff` in dark and `#1d5fb8`, `#a9cbff`, `#0e2f5c` in light; the page links the three icons in order; `preview.png` and `apple-touch-icon.png` read as the full mark on white. Forced colors were not emulated; the CSS rule order has a test.
 - 2026-11-06: claim-audit corrections applied (CHANGELOG's "same shapes" line, Base.astro's `sizes` comment narrowed to Chrome, logo.ts's lid-gap comment, DESIGN's "writes" to "builds the text of"); the reader's one re-read is pending.
 - 2026-11-06: claim audit: 41 claims read, 4 corrected — CHANGELOG.md, site/src/layouts/Base.astro, src/site/logo.ts, cairn/DESIGN.md; the re-read found all four right; a DESIGN line joined by an Edit was rewrapped.
+- 2026-11-06: implement done: all 7 tasks checked; verify green (2507 passed, 6 skipped; check 0 problems); status review.
