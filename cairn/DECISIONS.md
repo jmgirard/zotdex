@@ -1200,3 +1200,16 @@ ignores, which D-077 kept on About. About still says that a range is not a
 test result and that passing the startup check does not mean a plugin works.
 This choice is wrong if readers take the short About to mean that Zotdex
 checks plugins, or need a rule that only docs/site.md states.
+
+### D-079: The README badge is removed, and its stable-address promise is withdrawn, superseding D-071
+
+2026-11-07, M112. The user found that the README badge did not do anything
+useful and chose to remove it over keeping the badge files without the card.
+The site no longer writes `badges/<id>.json`, plugin pages no longer end with
+the "Badge for your README" card, and About no longer has its README badge
+section. D-071 called the badge address a stable public path that READMEs
+depend on. That promise is withdrawn: a README that embeds a badge now shows
+an error image from shields.io, because the file is gone. GitHub code search
+found no README outside this repo that embeds one (M112 plan). The start
+results stay on each plugin page and in the data. This choice is wrong if a
+plugin author asks for a badge or a README is found that relied on one.
