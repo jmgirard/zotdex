@@ -1,0 +1,8 @@
+{
+  "id": "readtime@pymaster17.github.io",
+  "name": "Reading Time",
+  "description": "Track how long you read each item in Zotero, with a per-page reading map and statistics.",
+  "homepage": "https://github.com/pymaster17/zotero-readtime",
+  "repoUrl": "https://github.com/pymaster17/zotero-readtime",
+  "updateUrl": "https://github.com/pymaster17/zotero-readtime/releases/latest/download/updates.json"
+}
