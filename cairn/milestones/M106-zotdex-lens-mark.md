@@ -90,6 +90,8 @@ Replace the puzzle-piece logo with Zotdex's own mark, the lens alone at 16 px an
 - 2026-11-06: claim audit: 41 claims read, 4 corrected — CHANGELOG.md, site/src/layouts/Base.astro, src/site/logo.ts, cairn/DESIGN.md; the re-read found all four right; a DESIGN line joined by an Edit was rewrapped.
 - 2026-11-06: implement done: all 7 tasks checked; verify green (2507 passed, 6 skipped; check 0 problems); status review.
 - 2026-11-06: step-7 approval: m106-zotdex-lens-mark approved for merge
+- 2026-11-06: resume: PR #855 open with CI running, main unmoved at 10e690d5; re-entered at route (c), the PR conversation read empty, the merge chip re-posed.
+- 2026-11-06: step-7 approval: m106-zotdex-lens-mark approved for merge
 
 ## Decisions
 
