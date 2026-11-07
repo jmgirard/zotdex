@@ -144,6 +144,7 @@ of the About change waits for a `Build data` run (offered after the merge).
 - 2026-11-06: claim audit: 74 claims read, 3 corrected — README.md (About names four topics, not "each fact"), CHANGELOG.md (the move also changed two license sentences), test/check.test.ts (the comment claimed an empty-value limit that no docs file states, a gap from before this branch); the same reader re-read all three as OK.
 - 2026-11-06: the docs never state that an override's `value` must not be empty; filed as parked candidate row "Say that an override value needs text", since the moved text stays unchanged here.
 - 2026-11-06: after the last full `pnpm test`, only README and CHANGELOG prose and one test comment changed; status set to review.
+- 2026-11-06: step-7 approval: m107-short-readme approved for merge
 
 ## Decisions
 
