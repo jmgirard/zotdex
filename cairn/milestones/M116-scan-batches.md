@@ -35,7 +35,7 @@ run's results) stay as they are.
 
 ## Acceptance criteria
 
-- [ ] AC1: `scan()` deals the downloaded files round-robin, in selection
+- [x] AC1: `scan()` deals the downloaded files round-robin, in selection
       order, into `min(SCAN_BATCHES_MAX, cores, files)` batches, with
       `SCAN_BATCHES_MAX` 4 and `cores` a `ScanOptions` value that defaults to
       `availableParallelism()`, and starts one `clamscan` per batch before any
@@ -44,7 +44,7 @@ run's results) stay as they are.
       the batch count for 1, 3, and 9 files with 8 cores and for 9 files with
       2 cores, that each file is in exactly one batch, and that every batch's
       run starts before the first one ends.
-- [ ] AC2: A file named on exactly one line of its own batch's output, that
+- [x] AC2: A file named on exactly one line of its own batch's output, that
       line an OK or FOUND line, gets a result whether or not that batch was
       stopped, under M115's other rules (no text before OK, no scan-limit or
       encrypted-entry find, the schema's shape). A file of a stopped batch
@@ -54,11 +54,11 @@ run's results) stay as they are.
       include a FOUND, a stopped batch with no line, and output that ends
       inside a path, inside the verdict word, and after the verdict word with
       no line break.
-- [ ] AC3: `pnpm malware-scan --scan` prints one line per batch with its
+- [x] AC3: `pnpm malware-scan --scan` prints one line per batch with its
       number, its file count, its result count, its run time in seconds, and
       whether it was stopped. A test of the line's text, with a set run time,
       covers a stopped and a finished batch.
-- [ ] AC4: `docs/data.md` (its no-result list and the stopped-`clamscan`
+- [x] AC4: `docs/data.md` (its no-result list and the stopped-`clamscan`
       case) and `docs/maintaining.md` state the batches, that a stopped batch
       keeps the results of the lines it printed, and the batch line; the
       comments on `CLAMSCAN_LIMIT_MS`, `clamscan`, and `scan()` state the
@@ -67,7 +67,7 @@ run's results) stay as they are.
       stopped `clamscan` no longer says that a stop gives no file a result;
       D-083 records the change to M115's rule; `CHANGELOG.md`'s Unreleased
       section names it.
-- [ ] AC5: The verify slot (`pnpm test` and `pnpm check`) passes.
+- [x] AC5: The verify slot (`pnpm test` and `pnpm check`) passes.
 
 ## Coverage
 
@@ -126,3 +126,12 @@ run's results) stay as they are.
 ## Decisions
 
 ## Review
+
+Evidence gathered 2026-11-07 on `m116-scan-batches` at `d16349fc`; `origin/main` is an ancestor, so no sync was needed. The Copilot round is off.
+
+- AC1: `test/malware-scan.test.ts` "the clamscan batches" block: "deals 1/3/9 files into batches by 8 cores" gives 1, 3, and 4 batches and "deals 9 files ... by 2 cores" gives 2, each file in exactly one batch dealt round-robin, and the first `end` event comes after every batch's `start`; "passes each batch the scan options and the clamscan limit" sees `CLAMSCAN_OPTIONS` lead each batch call and `CLAMSCAN_LIMIT_MS` as each limit. Code read: `SCAN_BATCHES_MAX` is 4, `cores` defaults to `availableParallelism()`, and the batches run through `Promise.all`.
+- AC2: "keeps the printed lines of a stopped last batch beside a finished first batch, a find included" (p0, p2 from the finished batch, p1's FOUND kept, p3 `clamscan-stopped`), "gives no file of a stopped batch with no line a result", and the three "reads output that a stop cut ..." cases (inside a path and inside the verdict word give no result, after the verdict word with no line break gives one) pass; the M115 tests "gives no result to a file with no line" (`no-line`), text before OK, scan-limit and encrypted finds, two lines, and the schema shape pass unchanged.
+- AC3: "reports each batch's files, results, run time, and stop" with set clock readings gives "batch 1: 2 files, 2 results, 1.5 s" and "batch 2: 1 files, 0 results, 3.0 s, stopped". Code read: `cli.ts` prints `batchLine` for each batch after `--scan`; T4's real run printed the four lines in the job log.
+- AC4: joined-text searches: `docs/data.md` holds "splits the files into batches, at most 4", "A batch that is stopped keeps the result of each file whose line it printed", and the stop case "Its batch's `clamscan` is stopped"; `docs/maintaining.md` holds the batches, "A stopped batch keeps the result of each file", and the batch line example; `scan.ts`'s comments on `CLAMSCAN_LIMIT_MS`, the `clamscan` wrapper, and `scan()` state the batch rule; DESIGN's Function Families entry names `batchesOf` (M116), and its Known issues entry now reads "gives no result to the files whose lines it had not printed", with the old rule only in its "corrected M116" note; one `### D-083`; the Unreleased CHANGELOG entry names "up to 4 `clamscan` batches".
+- AC5: `pnpm test` 2713 passed, 6 skipped, exit 0; `pnpm check` 745 entries, 0 problems.
+- Consistency gate: `cairn_validate.py` exit 0, all checks passed, `coverage complete` PASS, no advisory. No principle changed; the `generic` profile names no toolchain checks.
