@@ -1,13 +1,13 @@
 # M112: Remove the README badge
 
-- **Status:** planned
+- **Status:** in-progress
 - **Priority:** normal
 - **Depends on:** —
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — plugin pages, About, and a public file path change
-- **Branch/PR:** —
+- **Branch/PR:** m112-remove-readme-badge
 
 ## Goal
 
@@ -64,7 +64,7 @@ chose removal).
 
 ## Tasks
 
-- [ ] T1: Remove the badge code and its tests: delete
+- [x] T1: Remove the badge code and its tests: delete
       `site/src/pages/badges/[id].json.ts`, `src/site/badge.ts`, and
       `test/badge.test.ts`; remove `badgeSnippet` (`site/src/data.ts:45-50`),
       the card (`site/src/pages/plugins/[id]/index.astro:395-402`) and its
@@ -96,6 +96,7 @@ chose removal).
 - 2026-11-07: plan gate chose removing everything over keeping the badge files and dropping only the card, because no README uses the files and keeping them keeps About text and a promise to maintain; falsified by an author asking for the badge or a README found embedding it.
 - 2026-11-07: question set: remove the README badge in full, deleting the approved card and About section lines — yes (remove it all).
 - 2026-11-07: question set: start `build.yml` on main by hand after the merge — yes.
+- 2026-11-07: T1 done: removed the badge files, `badgeSnippet` (and the now unused `ORIGIN` import in `site/src/data.ts`), the card, and `.badge-snippet`; `test/site.test.ts` now checks that the output has no `badges` entry and that no HTML page has a badge section or `img.shields.io`, both of which a main build fails; `pnpm test` 2494 passed.
 
 ## Decisions
 

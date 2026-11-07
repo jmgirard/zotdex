@@ -5,7 +5,6 @@ import NoSourceMark from "../../../components/NoSourceMark.astro";
 import PaidServiceMark from "../../../components/PaidServiceMark.astro";
 import Base from "../../../layouts/Base.astro";
 import {
-  badgeSnippet,
   BASE,
   CATEGORIES,
   categories,
@@ -391,13 +390,5 @@ const { min, max } = declaredRange(record);
     <p class="fineprint">
       <a href={removeHref(record)} data-remove-plugin>Ask to remove this plugin or report harm</a>.
     </p>
-  </section>
-  <section class="card" data-section="badge">
-    <h2>Badge for your README</h2>
-    <p class="fineprint">
-      If this is your plugin, you can add this Markdown to its README. The badge shows the Zotero versions where it
-      passed Zotdex's startup check, or why it shows none, and it links to this page.
-    </p>
-    <code class="badge-snippet" data-badge-snippet>{badgeSnippet(record.id)}</code>
   </section>
 </Base>
