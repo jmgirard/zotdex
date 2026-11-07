@@ -7,7 +7,7 @@ _Last hygiene check: 2026-11-07 (M111 review: short About; 1 row graduated, 1 lo
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M112 | Remove the README badge | in-progress | — | normal | milestones/M112-remove-readme-badge.md |
+| M112 | Remove the README badge | review | — | normal | milestones/M112-remove-readme-badge.md |
 | M111 | Shorten About in the home page's words | done | M110 | normal | milestones/archive/M111-short-about.md |
 | M110 | Use plain words on plugin pages | done | — | normal | milestones/archive/M110-plain-plugin-pages.md |
 | M109 | Make the home page a field guide | done | — | high | milestones/archive/M109-field-guide-home.md |

@@ -1,6 +1,6 @@
 # M112: Remove the README badge
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** normal
 - **Depends on:** —
 - **Driving RR:** —
@@ -81,7 +81,7 @@ chose removal).
       :157-160); delete the CHANGELOG entry (:36-43). Rewrap edited prose
       near 76 columns.
 - [x] T3: Append the D-entry that supersedes D-071, as AC5 says.
-- [ ] T4: Run `pnpm test`, `pnpm check`, and the AC4 sweep; after the merge,
+- [x] T4: Run `pnpm test`, `pnpm check`, and the AC4 sweep; after the merge,
       run `gh workflow run build.yml --ref main` (granted at the question set).
 
 ## Work log
@@ -99,6 +99,8 @@ chose removal).
 - 2026-11-07: T1 done: removed the badge files, `badgeSnippet` (and the now unused `ORIGIN` import in `site/src/data.ts`), the card, and `.badge-snippet`; `test/site.test.ts` now checks that the output has no `badges` entry and that no HTML page has a badge section or `img.shields.io`, both of which a main build fails; `pnpm test` 2494 passed.
 - 2026-11-07: T2 done: removed About's section and its test entry, the badge text in `docs/site.md`, `docs/maintaining.md`, `cairn/DESIGN.md`, and `cairn/references/plain-words-copy.md`, and the CHANGELOG entry; the AC4 sweep prints nothing; `pnpm test` 2493 passed. The simple-english lint hook flagged older sentences in those files that this task did not write, so they stay.
 - 2026-11-07: T3 done: appended D-079, which supersedes D-071.
+- 2026-11-07: T4 done: `pnpm test` 2493 passed, `pnpm check` 745 entries with 0 problems, AC4 sweep prints nothing; a site built from the deployed data has no `badges` folder and no page with badge text, and in the browser pane a plugin page ends with Details and About lists 13 sections with no badge. The post-merge `build.yml` run belongs to review's merge step.
+- 2026-11-07: claim audit: 6 claims read, 0 corrected — docs/maintaining.md, docs/site.md, test/site.test.ts, site/src/data.ts. Noted: a local `dist/badges/` from an earlier run stays, since the site build replaces only what it writes; CI builds `dist/` fresh, so the deploy is not affected.
 
 ## Decisions
 
