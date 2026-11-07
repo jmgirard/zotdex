@@ -1,16 +1,15 @@
 # Roadmap
 
 _The only authority on milestone status. Grouped by status, not ID._
-_Last hygiene check: 2026-11-07 (M108 review: full mark in the top bar; 2 parked rows extended; 8 lessons marked used, 1 captured, 1 evicted; M105 row pruned; caps and validate green)_
+_Last hygiene check: 2026-11-07 (M109 review: field guide home copy; 1 row extended, 1 parked row added; 7 lessons marked used, 1 captured, 1 evicted; M106 row pruned; caps and validate green)_
 
 ## Milestones
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M109 | Make the home page a field guide | review | — | high | milestones/M109-field-guide-home.md |
+| M109 | Make the home page a field guide | done | — | high | milestones/archive/M109-field-guide-home.md |
 | M108 | Show the full Zotdex mark in the top bar | done | — | high | milestones/archive/M108-full-mark-top-bar.md |
 | M107 | Shorten the README and move its detail to docs/ | done | — | normal | milestones/archive/M107-short-readme.md |
-| M106 | Replace the puzzle piece with the Zotdex lens mark | done | — | high | milestones/archive/M106-zotdex-lens-mark.md |
 <!-- rows grouped by status, not by ID; keep the 3 most recent done/dropped rows; older ones: milestones/archive/ + git -->
 
 ## Candidates
