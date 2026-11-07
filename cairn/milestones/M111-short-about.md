@@ -75,7 +75,7 @@ the docs moved from README" holds.
   description, h1, the intro with the docs link, and the 14 sections, with
   their ids, the category list, and the newest-releases list kept.
 - [x] T2: Set `site/src/pages/404.astro`'s text to the copy.
-- [ ] T3: Read `about.astro` at the branch's cut commit sentence by
+- [x] T3: Read `about.astro` at the branch's cut commit sentence by
   sentence; for each sentence the new About drops, find the `docs/` text
   that states its rule (the audit found many in `docs/data.md` and
   `docs/requests.md`; bot flagging and maintainer adds were not found) or
@@ -102,5 +102,6 @@ the docs moved from README" holds.
 - 2026-11-07: started on branch m111-short-about, cut from 65c81d34; the untracked `.claude/` folder stays unstaged.
 - 2026-11-07: implementation choices: the intro link reads its address from a new `SITE_DOCS_HREF` in `site/src/data.ts`; the declared and startup marks sit in the prose as styled spans that screen readers read, and the old mark lists are gone; `[data-about] .start` replaces `.about-list .start` so a startup mark stays inline in a paragraph; Installing keeps two paragraphs; the 404 title and description stay, since the copy names neither; the newest-release item for a major with no known release reads "no known release", as the copy lists.
 - 2026-11-07: T1, T2, T4 done: About and 404 follow the copy; the old wording tests in `test/site.test.ts` gave way to one test per copy section (text compared whole), the head and intro link, the two links, the 3 and 90 seconds against the code, and the AC3 phrase check on both pages; the section tests first failed on Astro joining an h2 to its paragraph, fixed in the test with `blockText`; `pnpm test` 2503 passed, `pnpm check` 0 problems.
+- 2026-11-07: T3 done (delegated read: one fresh Opus reader of the cut-commit about.astro against the copy and docs/*.md): 146 sentences, 59 kept by the new About, 73 already in `docs/`, 14 added: in `docs/site.md` the manifest fields of the range, the `10.0.*` example, several categories, the "In use" column and version-over-every-version rule, why a lock or card icon leaves a plugin listed, the payment forms, "from the plugin's own text", why an unmarked plugin can cost money, and that an author can open an issue; in `docs/maintaining.md` the maintainer's mislead check with "who controls its updates"; in `docs/requests.md` "does not endorse"; in `docs/license.md` the logo's terms; checked against `usedOverride`, `overrideUsed`, and the `10.0.*` tests.
 
 ## Decisions

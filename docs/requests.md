@@ -250,7 +250,7 @@ A maintainer removes a plugin for any of four reasons:
 - A report shows harm with evidence that a reader can check.
 
 A claim with no evidence removes nothing. The index still cannot vet plugins,
-and it does not review their code.
+it does not endorse them, and it does not review their code.
 
 Before you act on an owner's request, make sure that the issue's author owns
 the repository, or ask the owner to confirm from the repository itself.

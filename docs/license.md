@@ -32,7 +32,8 @@ terms, and the rest of each file follows the terms above:
   [Lucide](https://lucide.dev), under the ISC License, and from the Feather
   icons that Lucide includes, under the MIT License. `Icon.astro` holds both
   notices, and the other three files point to it. The Zotdex logo is the
-  index's own drawing, in `src/site/logo.ts`.
+  index's own drawing, in `src/site/logo.ts`, under the same terms as the
+  index's code.
 - `test/fixtures/upstream/better-notes.json`,
   `test/fixtures/build/plugins/Knowledge4Zotero@windingwind.com/meta.json`,
   `test/add-plugin.test.ts`, and `test/upstream.test.ts`: data or text recorded
