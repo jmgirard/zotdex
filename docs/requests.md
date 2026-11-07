@@ -251,10 +251,13 @@ hosts and limits:
   image or an `<img>` element, which GitHub writes for an attached image.
 - The link and each redirect use HTTPS and stay on the hosts in
   `SCREENSHOT_HOSTS`. GitHub's attachment links are on `github.com` and
-  redirect to its file host.
-- The download is at most 10 MiB.
+  redirect to its file host. A link of any other scheme, such as `data:` or
+  `ftp:`, breaks this rule.
+- The image is at most 10 MiB.
 - The image is a PNG, JPEG, or WebP file, by its first bytes, and sharp reads
-  it as at most 8000 pixels wide and 8000 pixels tall.
+  it as at most 8000 pixels wide and 8000 pixels tall. Sharp can read all of
+  it, so a cut file breaks this rule.
+- The index's copy, which the next paragraphs describe, is at most 1 MiB.
 - The description follows the rules for a description in "Changing a plugin's
   name or description".
 
@@ -269,11 +272,14 @@ pnpm screenshot-request <issue> --data plugins.json
 The command reads the issue and the owner of the entry's repository, and checks
 the owner as `pnpm text-request` does. It downloads the image and prints the
 plugin, each image link, the description, the issue's author, the owner, and
-whether the two match. It also prints the image's format and sizes, in pixels
-and in bytes. It prints the description of the screenshot that the request
-replaces or removes, and the age of the data file. It prints each rule that the
-request breaks as a `problem:` line. A rule of the description prints as `description-` and the name that
-`pnpm text-request` gives the rule.
+whether the two match. It also prints the image's format, its sizes in pixels
+and in bytes, and the SHA-256 of its bytes. Compare that SHA-256 in the
+`--apply` run with the image that you looked at. It makes the index's copy and
+prints the copy's size in pixels and in bytes. It prints the description of the
+screenshot that the request replaces or removes, and the age of the data file.
+It prints each rule that the request breaks as a `problem:` line. A rule of the
+description prints as `description-` and the name that `pnpm text-request`
+gives the rule.
 
 The command has the three exit statuses of `pnpm text-request`. A download
 that fails or gets an HTTP error is a named failure, so it exits 2. A removal
@@ -281,16 +287,19 @@ from an entry with no screenshot writes nothing and exits 0.
 
 If the download does not work, save the image by hand, look at it, and run the
 command with `--file <path>`. The command then reads that file in place of the
-download. It still checks the Screenshot field, the image, and the
-description.
+download. It still checks the Screenshot field, the link's own host, the
+image, its size, and the description. Only the redirects go unchecked.
 
-Look at the image before you apply it. With `--apply`, the command makes the
-index's copy with sharp. Sharp turns the image upright by its orientation tag.
-It makes the image fit within 1600 by 2400 pixels, but never larger. It saves
-the copy as WebP with no metadata. If the copy is more than 1 MiB, the command writes nothing
-and exits 1, so ask the owner for a smaller image. Otherwise it writes the
+The command makes the index's copy with sharp. Sharp turns the image upright
+by its orientation tag. It makes the image fit within 1600 by 2400 pixels, but
+never larger. It saves the copy as WebP with no metadata. If the copy is more
+than 1 MiB, ask the owner for a smaller image.
+
+Look at the image before you apply it. With `--apply`, the command writes the
 copy to `plugins/<id>/screenshot.webp` and sets the `screenshot` field of the
-entry's `index.json`, as [data.md](data.md#plugin-entries) says. A removal
+entry's `index.json`, as [data.md](data.md#plugin-entries) says. It reads
+`index.json` again just before it writes, so it keeps other edits to the file.
+If a write fails, the image file and `index.json` still match. A removal
 deletes both. The command writes nothing past a broken rule, and
 `--owner-checked` works as in `pnpm text-request`. Then answer the issue and
 open a pull request with the change.

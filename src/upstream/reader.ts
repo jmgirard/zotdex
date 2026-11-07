@@ -575,11 +575,13 @@ const REDIRECTS = [301, 302, 303, 307, 308];
 export const MAX_REDIRECTS = 5;
 
 // Follows redirects itself, at most MAX_REDIRECTS, and checks the host of each URL
-// before it requests it. `check`, when given, also sees each URL before its request, and
-// what it throws reaches the caller as it is. A `signal` that aborts while a redirect's
-// body is canceled fails the download as a cut read, since the cancel hides the abort.
+// before it requests it. `check`, when given, also sees the first URL and each redirect's
+// target before the scheme check here and before its request, and what it throws reaches the
+// caller as it is. A `signal` that aborts while a redirect's body is canceled fails the
+// download as a cut read, since the cancel hides the abort.
 export function downloader(fetch: Fetch, lookup: Lookup, signal?: AbortSignal, check?: (url: URL) => void): Download {
   return async (url) => {
+    if (check && URL.canParse(url)) check(new URL(url));
     if (!URL.canParse(url) || !["http:", "https:"].includes(new URL(url).protocol)) {
       fail("request-failed", `${url} is not an http or https URL`);
     }
@@ -605,6 +607,7 @@ export function downloader(fetch: Fetch, lookup: Lookup, signal?: AbortSignal, c
         fail("request-failed", `GET ${current.href} returned HTTP ${response.status} with no usable Location`);
       }
       const next = new URL(location, current);
+      check?.(next);
       if (!["http:", "https:"].includes(next.protocol)) {
         fail("request-failed", `GET ${current.href} redirects to ${next.href}, which is not an http or https URL`);
       }

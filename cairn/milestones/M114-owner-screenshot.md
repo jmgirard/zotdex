@@ -66,13 +66,13 @@ check text requests at once" holds the same idea for text; icons → M113.
 ## Coverage
 
 - AC1 → T1
-- AC2 → T2
-- AC3 → T3
+- AC2 → T2, T8
+- AC3 → T3, T8
 - AC4 → T4
 - AC5 → T5
 - AC6 → T6
 - AC7 → T1, T7
-- AC8 → T1, T2, T3, T4, T5, T6, T7
+- AC8 → T1, T2, T3, T4, T5, T6, T7, T8
 
 ## Tasks
 
@@ -97,6 +97,9 @@ check text requests at once" holds the same idea for text; icons → M113.
       in `docs/requests.md` (after "Changing a plugin's name or description", :165), the fields in `docs/data.md`,
       and terms in `docs/license.md`; update DESIGN's sources and add a D-entry for owner screenshots, annotating
       D-049, D-062, and D-063; add the CHANGELOG entry.
+- [x] T8: Review return 1: a link or redirect of any scheme other than https is host-not-allowed (exit 1), and
+      `--file` checks the link's own host and the 10 MiB limit; with it, the review's fix-now findings listed in the
+      Review section; tests.
 
 ## Work log
 
@@ -124,6 +127,8 @@ check text requests at once" holds the same idea for text; icons → M113.
 - 2026-11-07: claim audit: 165 claims read, 5 corrected — Base.astro, src/screenshot-request/request.ts, src/text-request/owner.ts, docs/requests.md (fresh Opus reader; open points for review: About's license line says screenshots keep "their authors' terms" while docs/license.md says owners', an approved line left as is; `--file` skips the 10 MiB download cap by design of AC3).
 - 2026-11-07: implement done; status review.
 - 2026-11-07: review return 1: AC2 and AC3 fail as written — a Screenshot link or redirect with a scheme other than http(s) exits 2 `download-failed` instead of 1 host-not-allowed, and with `--file` the link's own host is never checked; the review's fix-now findings (Review section, diff-bug #1, #2, #5–#8, #10–#12, prior-review #1, #2, #4, ripple #1–#11) ride on the same return.
+- 2026-11-07: added T8 for review return 1 (minor amendment; Coverage AC2, AC3, AC8 → T8).
+- 2026-11-07: T8: `downloader` runs `check` on the first URL and each redirect target before its own scheme check, so any non-https link or redirect is host-not-allowed (exit 1), shown failing with that line removed; `--file` checks the link's own host and the 10 MiB limit; the report makes the copy, so a cut image is `unreadable-image` and an over-1 MiB copy is `copy-too-large` before `--apply`, and prints the image's SHA-256; apply re-reads index.json before writing, writes the image through a temporary file after index.json names it, and a removal changes index.json first; `readOwnerRequest` reads index.json before the owner; `imageLinks` decodes character references; check stats before reading and refuses a format-only description; propose copies a kept screenshot into its check and names it; docs, README, DESIGN, D-081, and CHANGELOG fixed; full `pnpm test` 2638 passed, 6 skipped, `pnpm check` clean.
 
 ## Review
 

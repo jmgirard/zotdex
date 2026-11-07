@@ -350,7 +350,17 @@ describe("checkTree", () => {
   test("index-schema: a screenshot with no reason or a blank description", async () => {
     const file = await webp(10, 10);
     expect(await screenshotFindings({ description: SCREENSHOT.description }, file)).toEqual([expect.objectContaining({ rule: "index-schema" })]);
-    expect(await screenshotFindings({ ...SCREENSHOT, description: " " }, file)).toEqual([expect.objectContaining({ rule: "index-schema" })]);
+    // minLength and pattern each refuse the empty text.
+    expect(await screenshotFindings({ ...SCREENSHOT, description: "" }, file)).toEqual([
+      { entry: ENTRY, rule: "index-schema", message: "index.json: /screenshot/description must NOT have fewer than 1 characters" },
+      { entry: ENTRY, rule: "index-schema", message: 'index.json: /screenshot/description must match pattern "\\S"' },
+    ]);
+  });
+
+  test("reason-not-blank: a screenshot description of only a format character", async () => {
+    expect(await screenshotFindings({ ...SCREENSHOT, description: "​" }, await webp(10, 10))).toEqual([
+      { entry: ENTRY, rule: "reason-not-blank", message: "screenshot.description holds only whitespace or format characters" },
+    ]);
   });
 
   test("reason-not-blank: a screenshot reason of only a format character", async () => {
@@ -370,11 +380,26 @@ describe("checkTree", () => {
   });
 
   test("screenshot-file: a file over 1 MiB", async () => {
-    // A WebP header with more bytes after it; the size is checked before the image is read.
-    const file = Buffer.concat([await webp(10, 10), Buffer.alloc(1024 * 1024)]);
-    const findings = await screenshotFindings(SCREENSHOT, file);
-    expect(findings).toContainEqual({ entry: ENTRY, rule: "screenshot-file", message: `screenshot.webp is ${file.byteLength} bytes, over 1048576` });
-    expect(findings.every(({ rule }) => rule === "screenshot-file")).toBe(true);
+    // Not an image at all: the size is checked before the file is read.
+    const file = Buffer.alloc(1024 * 1024 + 1);
+    expect(await screenshotFindings(SCREENSHOT, file)).toEqual([{ entry: ENTRY, rule: "screenshot-file", message: "screenshot.webp is 1048577 bytes, over 1048576" }]);
+  });
+
+  test("screenshot-file: a WebP header that sharp cannot read", async () => {
+    const file = Buffer.concat([Buffer.from("RIFF\x10\x00\x00\x00WEBP", "latin1"), Buffer.from("junk junk junk")]);
+    expect(await screenshotFindings(SCREENSHOT, file)).toEqual([
+      { entry: ENTRY, rule: "screenshot-file", message: expect.stringMatching(/^screenshot\.webp is not a readable image: /) },
+    ]);
+  });
+
+  test("screenshot-file: a screenshot.webp that cannot be read as a file", async () => {
+    const root = treeWith((dir) => {
+      editJson(join(dir, "index.json"), (index) => (index.screenshot = SCREENSHOT));
+      mkdirSync(join(dir, "screenshot.webp"));
+    });
+    expect((await checkTree(root, compileValidators({}))).findings).toEqual([
+      { entry: ENTRY, rule: "screenshot-file", message: expect.stringMatching(/^cannot read screenshot\.webp: .*EISDIR/) },
+    ]);
   });
 
   test("passes a reason with a format character beside a letter", async () => {

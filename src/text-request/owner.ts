@@ -4,8 +4,8 @@
 // and answers no issue.
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import type { PluginRecord, PluginsFile } from "../build/build.ts";
-import { readData } from "../site/description-gaps.ts";
+import type { Override, PluginRecord, PluginsFile } from "../build/build.ts";
+import { checkoutOverrides, readData } from "../site/description-gaps.ts";
 import { type Fetch, githubClient, parseRepoUrl } from "../upstream/reader.ts";
 
 export interface IssueOptions {
@@ -33,6 +33,8 @@ export interface OwnerRequest<T> {
   record: PluginRecord;
   // The entry's directory in the checkout.
   entry: string;
+  // The overrides of the entry's index.json, which passed its schema.
+  overrides: Override[];
   author: string;
   owner: string;
   organization: boolean;
@@ -92,6 +94,9 @@ export async function readOwnerRequest<T extends { plugin: string }>(
   } catch (error) {
     return stop(failed("no-entry", `the checkout has no readable entry ${quoted(record.id)}: ${(error as Error).message}`));
   }
+  // The checkout's own files fail before any request to the repository's owner.
+  const overrides = await checkoutOverrides(join(entry, "index.json"));
+  if (!Array.isArray(overrides)) return stop({ status: 2, lines: [`failure: ${overrides.message}`] });
 
   let owner: { login?: unknown; type?: unknown } | undefined;
   try {
@@ -109,6 +114,7 @@ export async function readOwnerRequest<T extends { plugin: string }>(
       data: data.data,
       record,
       entry,
+      overrides,
       author,
       owner: owner.login,
       organization: owner.type === "Organization",

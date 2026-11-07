@@ -2202,9 +2202,13 @@ describe("the built site", () => {
       const at = html.indexOf("data-screenshot>");
       const next = html.includes('data-fact="install-note"') ? html.indexOf('data-fact="install-note"') : html.indexOf('data-section="compatibility"');
       expect(at, id).toBeGreaterThan(html.indexOf('<div class="actions" data-links>'));
-      expect(at, id).toBeGreaterThan(html.indexOf("data-icon-tile"));
       expect(at, id).toBeLessThan(next);
     }
+    // The icon comes first on the page that has one.
+    const iconPage = page("first-plugin@example.org");
+    expect(iconPage.indexOf("data-icon-tile")).toBeGreaterThan(-1);
+    expect(iconPage.indexOf("data-screenshot>")).toBeGreaterThan(iconPage.indexOf("data-icon-tile"));
+    expect(page("a-cafe@example.org")).not.toContain("data-icon-tile");
     expect(page("a-cafe@example.org")).toContain('data-fact="install-note"');
     expect(page("first-plugin@example.org")).not.toContain('data-fact="install-note"');
   });

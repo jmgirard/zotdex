@@ -1255,7 +1255,9 @@ The index commits a copy, `plugins/<id>/screenshot.webp`, and serves it under
 change the image after the maintainer looked at it. sharp re-encodes the copy
 as WebP with no metadata, which also drops any location tag. The limits live
 in `src/screenshot-request/rules.ts`, and `pnpm check` holds every entry to the
-file limits. Looking at a screenshot is not a review of plugin code, so D-051
+file limits. `pnpm check` loads sharp to read a screenshot's size, so once an
+entry has one, the discovery bot's merge check loads sharp too, which D-080 said
+the bot does not; every workflow installs sharp, so D-073's falsifier covers it. Looking at a screenshot is not a review of plugin code, so D-051
 and D-062 stand: the index still cannot vet plugins, and a maintainer removes
 a plugin only on D-062's grounds. A screenshot is not a fact to check, as
 D-080 says of icons. D-063 gives terms for the index's own work only, so a

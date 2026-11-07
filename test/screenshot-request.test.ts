@@ -1,5 +1,6 @@
 import { spawnSync } from "node:child_process";
-import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { chmodSync, cpSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import sharp from "sharp";
@@ -59,6 +60,10 @@ describe("parseScreenshotRequest and imageLinks", () => {
     expect(imageLinks(text)).toEqual([S3, LINK]);
   });
 
+  test("decodes character references in a link, as a browser reads an <img> src", () => {
+    expect(imageLinks(`<img src="${LINK}?a=1&amp;b=2&#38;c=3&#x26;d=4&unknown;">`)).toEqual([`${LINK}?a=1&b=2&c=3&d=4&unknown;`]);
+  });
+
   test("finds no image in a plain link or in text", () => {
     expect(imageLinks(`${LINK}\n[a link](${LINK}) and words`)).toEqual([]);
   });
@@ -116,23 +121,31 @@ const problems = (lines: string[]) => lines.filter((line) => line.startsWith("pr
 
 describe("screenshotRequest's report", () => {
   test("follows the attachment's redirect, prints the facts, and exits 0 for a good request from the owner", async () => {
-    const { result, requests } = run(checkout(), responses(body(attached())));
-    expect(await result).toEqual({
-      status: 0,
-      lines: [
-        `plugin: "${ID}"`,
-        `link: "${LINK}"`,
-        `description: "${GOOD}"`,
-        'author: "example"',
-        'owner: "Example"',
-        "author-matches-owner: true",
-        expect.stringMatching(/^data-generated: /),
-        `image: png 800x500 ${png.byteLength} bytes`,
-      ],
-    });
-    expect(requests.map(({ url }) => url)).toEqual([ISSUE_URL, REPO_URL, LINK, S3]);
-    // The token goes to the API only.
-    expect(requests.slice(2).every(({ headers }) => !headers.has("authorization"))).toBe(true);
+    const saved = process.env.GITHUB_TOKEN;
+    process.env.GITHUB_TOKEN = "test-token";
+    try {
+      const { result, requests } = run(checkout(), responses(body(attached())));
+      expect(await result).toEqual({
+        status: 0,
+        lines: [
+          `plugin: "${ID}"`,
+          `link: "${LINK}"`,
+          `description: "${GOOD}"`,
+          'author: "example"',
+          'owner: "Example"',
+          "author-matches-owner: true",
+          expect.stringMatching(/^data-generated: /),
+          `image: png 800x500 ${png.byteLength} bytes sha256 ${createHash("sha256").update(png).digest("hex")}`,
+          expect.stringMatching(/^copy: webp 800x500 \d+ bytes$/),
+        ],
+      });
+      expect(requests.map(({ url }) => url)).toEqual([ISSUE_URL, REPO_URL, LINK, S3]);
+      // The token goes to the API only.
+      expect(requests.map(({ headers }) => headers.get("authorization"))).toEqual(["Bearer test-token", "Bearer test-token", null, null]);
+    } finally {
+      if (saved === undefined) delete process.env.GITHUB_TOKEN;
+      else process.env.GITHUB_TOKEN = saved;
+    }
   });
 
   test.each(["", "_No response_"])("reads the Screenshot field %j as a removal and ignores the description", async (field) => {
@@ -156,7 +169,10 @@ describe("screenshotRequest's report", () => {
     ["two image links", body(`${attached()}\n![b](${S3})`), "problem: more-than-one-image: the Screenshot field holds more than one image"],
     ["a link off the hosts", body(attached("https://example.org/shot.png")), 'problem: host-not-allowed: "https://example.org/shot.png"'],
     ["a link to another port", body(attached("https://github.com:8443/shot.png")), 'problem: host-not-allowed: "https://github.com:8443/shot.png"'],
-    ["a description that breaks a rule", body(attached(), "See https://example.org"), "problem: description-too-short"],
+    ["an http link", body(attached("http://github.com/user-attachments/assets/x")), 'problem: host-not-allowed: "http://github.com/user-attachments/assets/x"'],
+    ["an ftp link", body("![x](ftp://github.com/shot.png)"), 'problem: host-not-allowed: "ftp://github.com/shot.png"'],
+    ["a data link", body("![x](data:image/png;base64,iVBORw0KGgo=)"), 'problem: host-not-allowed: "data:image/png;base64,iVBORw0KGgo="'],
+    ["a link that is not a URL", body("![x](shot.png)"), 'problem: host-not-allowed: "shot.png" is not a URL'],
   ])("exits 1 naming the problem for %s", async (_name, issueBody, problem) => {
     const { result, requests } = run(checkout(), responses(issueBody));
     const { status, lines } = await result;
@@ -171,13 +187,21 @@ describe("screenshotRequest's report", () => {
     expect(problems(lines)).toEqual(["problem: description-too-short", "problem: description-url"]);
   });
 
-  test("exits 1 for a redirect off the hosts, before it requests that host", async () => {
-    const answers = { ...responses(body(attached())), [LINK]: { status: 302, headers: { location: "https://images.example.org/shot.png" } } };
+  test.each(["https://images.example.org/shot.png", "ftp://github.com/shot.png"])("exits 1 for a redirect to %s, before it requests that URL", async (location) => {
+    const answers = { ...responses(body(attached())), [LINK]: { status: 302, headers: { location } } };
     const { result, requests } = run(checkout(), answers);
     const { status, lines } = await result;
     expect(status).toBe(1);
-    expect(problems(lines)).toEqual(['problem: host-not-allowed: "https://images.example.org/shot.png"']);
+    expect(problems(lines)).toEqual([`problem: host-not-allowed: "${location}"`]);
     expect(requests.map(({ url }) => url)).toEqual([ISSUE_URL, REPO_URL, LINK]);
+  });
+
+  test("exits 1 for a cut image whose header reads, before --apply", async () => {
+    const cut = png.subarray(0, Math.floor(png.byteLength / 2));
+    const { status, lines } = await run(checkout(), responses(body(attached()), { bytes: cut })).result;
+    expect(status).toBe(1);
+    expect(lines).toContainEqual(expect.stringMatching(/^image: png 800x500 /));
+    expect(problems(lines)).toEqual([expect.stringMatching(/^problem: unreadable-image: /)]);
   });
 
   test("exits 1 for a download over the limit, and stops reading", async () => {
@@ -186,7 +210,7 @@ describe("screenshotRequest's report", () => {
     const { result, requests } = run(checkout(), answers);
     const { status, lines } = await result;
     expect(status).toBe(1);
-    expect(problems(lines)).toEqual([`problem: too-large: the download is over ${DOWNLOAD_MAX_BYTES} bytes`]);
+    expect(problems(lines)).toEqual([`problem: too-large: the image is over ${DOWNLOAD_MAX_BYTES} bytes`]);
     expect(requests.at(-1)!.bytesEnqueued).toBeLessThanOrEqual(DOWNLOAD_MAX_BYTES + chunk);
   });
 
@@ -204,7 +228,7 @@ describe("screenshotRequest's report", () => {
     const answers = responses(body(attached()), { bytes: await image(width, height) });
     const { status, lines } = await run(checkout(), answers).result;
     expect(status).toBe(1);
-    expect(lines).toContain(`image: png ${width}x${height} ${(await image(width, height)).byteLength} bytes`);
+    expect(lines).toContainEqual(expect.stringMatching(new RegExp(`^image: png ${width}x${height} \\d+ bytes sha256 [0-9a-f]{64}$`)));
     expect(problems(lines)).toEqual([`problem: too-many-pixels: the image is over ${IMAGE_MAX_PIXELS} px wide or tall`]);
   });
 
@@ -227,6 +251,22 @@ describe("screenshotRequest's report", () => {
     expect(lines[0]).toMatch(new RegExp(`^failure: ${failure}: `));
   });
 
+  test("fails with exit 2 on an index.json that is not JSON, before it asks for the owner", async () => {
+    const tree = checkout();
+    writeFileSync(join(tree.entry, "index.json"), "not JSON");
+    const { result, requests } = run(tree, responses(body(attached())));
+    expect((await result).lines).toEqual([expect.stringMatching(/^failure: entry-not-json: /)]);
+    expect(requests.map(({ url }) => url)).toEqual([ISSUE_URL]);
+  });
+
+  test("fails with exit 2 on an entry with no index.json", async () => {
+    const tree = checkout();
+    rmSync(join(tree.entry, "index.json"));
+    const { status, lines } = await run(tree, responses(body(attached()))).result;
+    expect(status).toBe(2);
+    expect(lines).toEqual([expect.stringMatching(/^failure: entry-unreadable: .*ENOENT/)]);
+  });
+
   test("checks a --file image in place of the download, and still checks the field and the description", async () => {
     const tree = checkout();
     const file = join(tree.dir, "shot.png");
@@ -241,6 +281,25 @@ describe("screenshotRequest's report", () => {
 
     writeFileSync(file, "not an image");
     expect(problems((await run(tree, responses(body(attached())), { file }).result).lines)).toEqual(["problem: not-an-image: the file is not PNG, JPEG, or WebP"]);
+  });
+
+  test("checks the link's own host with --file, and holds the file to the download limit", async () => {
+    const tree = checkout();
+    const file = join(tree.dir, "shot.png");
+    writeFileSync(file, png);
+    const offHost = await run(tree, responses(body(attached("https://example.org/shot.png"))), { file }).result;
+    expect(offHost.status).toBe(1);
+    expect(problems(offHost.lines)).toEqual(['problem: host-not-allowed: "https://example.org/shot.png"']);
+
+    writeFileSync(file, Buffer.alloc(DOWNLOAD_MAX_BYTES + 1));
+    expect(problems((await run(tree, responses(body(attached())), { file }).result).lines)).toEqual([`problem: too-large: the image is over ${DOWNLOAD_MAX_BYTES} bytes`]);
+  });
+
+  test("fails with exit 2 on a --file it cannot read", async () => {
+    const tree = checkout();
+    const { status, lines } = await run(tree, responses(body(attached())), { file: join(tree.dir, "missing.png") }).result;
+    expect(status).toBe(2);
+    expect(lines).toEqual([expect.stringMatching(/^failure: file-unreadable: .*ENOENT/)]);
   });
 });
 
@@ -309,11 +368,48 @@ describe("screenshotRequest with apply", () => {
     const before = readFileSync(join(tree.entry, "index.json"), "utf8");
     const { status, lines } = await run(tree, responses(body(attached()), { bytes: big }), { apply: true }).result;
     expect(status).toBe(1);
-    expect(lines.at(-2)).toMatch(/^copy: webp 1600x2400 (\d+) bytes$/);
-    expect(Number(lines.at(-2)!.split(" ")[3])).toBeGreaterThan(1024 * 1024);
-    expect(lines.at(-1)).toBe("wrote nothing: the copy is over 1048576 bytes, so ask for a smaller image");
+    const copy = lines.find((line) => line.startsWith("copy: "));
+    expect(copy).toMatch(/^copy: webp 1600x2400 (\d+) bytes$/);
+    expect(Number(copy!.split(" ")[3])).toBeGreaterThan(1024 * 1024);
+    expect(lines.slice(-2)).toEqual(["problem: copy-too-large: the copy is over 1048576 bytes, so ask for a smaller image", "wrote nothing: the request breaks a rule"]);
     expect(readFileSync(join(tree.entry, "index.json"), "utf8")).toBe(before);
     expect(() => readFileSync(shotOf(tree))).toThrow(/ENOENT/);
+  });
+
+  test("removes a screenshot.webp that index.json does not name, and leaves index.json", async () => {
+    const tree = checkout();
+    writeFileSync(shotOf(tree), "stray");
+    const before = readFileSync(join(tree.entry, "index.json"), "utf8");
+    const { status, lines } = await run(tree, responses(body("")), { apply: true }).result;
+    expect(status).toBe(0);
+    expect(lines.at(-1)).toBe(`removed: "${shotOf(tree)}"`);
+    expect(readFileSync(join(tree.entry, "index.json"), "utf8")).toBe(before);
+    expect(() => readFileSync(shotOf(tree))).toThrow(/ENOENT/);
+  });
+
+  test("keeps an edit made to index.json while it reads the image", async () => {
+    const tree = checkout();
+    const fetched = fixtureFetch(responses(body(attached())), ({ url }) => {
+      if (url === S3) writeFileSync(join(tree.entry, "index.json"), JSON.stringify({ schemaVersion: 1, iconHidden: { reason: "Edited meanwhile." } }));
+    });
+    const result = await screenshotRequest({ root: tree.root, dataPath: tree.dataPath, fetch: fetched.fetch, lookup: async () => ["140.82.112.3"], indexRepo: "jmgirard/zotdex", issue: 9, apply: true });
+    expect(result.status).toBe(0);
+    expect(indexOf(tree)).toEqual({ schemaVersion: 1, iconHidden: { reason: "Edited meanwhile." }, screenshot: { description: GOOD, reason: REASON } });
+  });
+
+  test("fails with exit 2 when it cannot write, and leaves the entry as it was", async () => {
+    const tree = checkout();
+    const before = readFileSync(join(tree.entry, "index.json"), "utf8");
+    chmodSync(tree.entry, 0o555);
+    try {
+      const { status, lines } = await run(tree, responses(body(attached())), { apply: true }).result;
+      expect(status).toBe(2);
+      expect(lines).toEqual([expect.stringMatching(/^failure: write-failed: /)]);
+    } finally {
+      chmodSync(tree.entry, 0o755);
+    }
+    expect(readdirSync(tree.entry).sort()).toEqual(["index.json", "meta.json"]);
+    expect(readFileSync(join(tree.entry, "index.json"), "utf8")).toBe(before);
   });
 
   test("removes the file and the field for a blank Screenshot field", async () => {

@@ -179,8 +179,11 @@ async function checkEntry(dir: string, entry: string, validators: Validators, de
     add("reason-not-blank", "iconHidden.reason holds only whitespace or format characters");
   }
   const screenshot = (index.value as { screenshot?: unknown } | undefined)?.screenshot;
-  if (blank((screenshot as { reason?: unknown } | null | undefined)?.reason)) {
-    add("reason-not-blank", "screenshot.reason holds only whitespace or format characters");
+  // The description is the image's alt text, so it must say something too.
+  for (const key of ["description", "reason"] as const) {
+    if (blank((screenshot as Record<string, unknown> | null | undefined)?.[key])) {
+      add("reason-not-blank", `screenshot.${key} holds only whitespace or format characters`);
+    }
   }
   // An index.json that cannot be read or parsed is reported above, and says nothing here.
   if ("value" in index) {
@@ -213,17 +216,19 @@ async function checkEntry(dir: string, entry: string, validators: Validators, de
 // What breaks the screenshot rules: index.json names a screenshot and the file is missing, the
 // file exists and index.json names none, or the file is not a WebP image within the limits of
 // src/screenshot-request/rules.ts.
+// A file over the size limit is not read.
 async function screenshotProblems(path: string, named: boolean): Promise<string[]> {
   let bytes: Uint8Array;
+  const problems: string[] = [];
   try {
+    const { size } = await stat(path);
+    if (!named) problems.push(`${SCREENSHOT_FILE} exists, and index.json names no screenshot`);
+    if (size > SCREENSHOT_MAX_BYTES) return [...problems, `${SCREENSHOT_FILE} is ${size} bytes, over ${SCREENSHOT_MAX_BYTES}`];
     bytes = await readFile(path);
   } catch (error) {
-    if ((error as NodeJS.ErrnoException).code !== "ENOENT") return [`cannot read ${SCREENSHOT_FILE}: ${(error as Error).message}`];
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") return [...problems, `cannot read ${SCREENSHOT_FILE}: ${(error as Error).message}`];
     return named ? [`index.json names a screenshot, and ${SCREENSHOT_FILE} is missing`] : [];
   }
-  const problems: string[] = [];
-  if (!named) problems.push(`${SCREENSHOT_FILE} exists, and index.json names no screenshot`);
-  if (bytes.byteLength > SCREENSHOT_MAX_BYTES) problems.push(`${SCREENSHOT_FILE} is ${bytes.byteLength} bytes, over ${SCREENSHOT_MAX_BYTES}`);
   if (imageFormat(bytes) !== "webp") return [...problems, `${SCREENSHOT_FILE} is not a WebP image`];
   // sharp loads only for an entry with a screenshot.
   const { default: sharp } = await import("sharp");

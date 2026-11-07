@@ -30,6 +30,7 @@ Each of these forms opens a public GitHub issue:
 - [Report that a plugin works](https://github.com/jmgirard/zotdex/issues/new?template=works.yml)
 - [Report that a plugin is broken](https://github.com/jmgirard/zotdex/issues/new?template=broken.yml)
 - [Change a plugin's name or description](https://github.com/jmgirard/zotdex/issues/new?template=text-change.yml)
+- [Add a screenshot to a plugin's page](https://github.com/jmgirard/zotdex/issues/new?template=screenshot.yml)
 - [Remove a plugin or report harm](https://github.com/jmgirard/zotdex/issues/new?template=remove-plugin.yml)
 
 For other feedback, use the
@@ -52,5 +53,5 @@ The code is under the [MIT License](LICENSE), except the third-party parts
 that [docs/license.md](docs/license.md) names. The index's facts, its
 categories, and its maintainer's text are under
 [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/). Plugin names,
-descriptions, icons, and other text keep their authors' terms. The license page
-gives the details.
+descriptions, icons, screenshots, and other text keep their authors' or owners'
+terms. The license page gives the details.

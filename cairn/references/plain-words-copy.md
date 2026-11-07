@@ -59,7 +59,8 @@ icon and screenshot lines at the M113 and M114 plan question set (2026-11-07). `
   version", "In use", "Reason". A description's lines: "Plugin file: …" and
   "GitHub: …"
 - Owner links: "Is this your plugin? Ask to change its name or
-  description." and "Ask to remove this plugin or report harm."
+  description." and "Ask to remove this plugin or report harm." (The first
+  is replaced at M114, as "Icons and screenshots" below records.)
 - About's quotes of these labels follow them: "Source code in the
   repository's top folder", the "Corrections by Zotdex" table, and its "In
   use" column.

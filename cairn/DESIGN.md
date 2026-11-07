@@ -169,7 +169,7 @@ release facts with dates from `longDay`, and the "Languages" fact (M024,
 M033, M110), with each override beside the upstream value it corrects under
 an h3, "Corrections by Zotdex" (M007, M015, M054, M110), and a
 `description` override beside each upstream text that is not blank (M088). It ends with links to the
-text-change form and the remove-plugin form (M079, M093). The About page
+text-change form, the screenshot form, and the remove-plugin form (M079, M093, M114). The About page
 (`site/src/pages/about.astro`) holds the method notes in short form, and
 its intro links `docs/site.md` for the full rules (M111, D-078): the
 supported range and its marks, the startup check, which reports count, and
@@ -460,7 +460,9 @@ user reports. The exception is a report that is abuse.
   Its rule `screenshot-file` refuses a named screenshot with no
   `screenshot.webp`, a file that `index.json` does not name, and a file that
   is not WebP or passes 1600 px wide, 2400 px tall, or 1 MiB, with sharp
-  loaded only for an entry that has the file (M114).
+  loaded only for an entry that has the file, which the discovery bot's merge
+  check also runs (M114, D-081). It refuses a screenshot description of only
+  whitespace and format characters as `reason-not-blank`.
 - Upstream reader (`src/upstream/`): `readUpstream(repoUrl, fetch, {
   lookup, signal })` returns the facts of one GitHub repo with the URL and
   SHA-256 of the XPI it read (M047), the repo's topics (M056), and each URL
@@ -526,7 +528,8 @@ user reports. The exception is a report that is abuse.
   <file>]` writes
   `dist/v1/plugins.json`, one record per entry, with a failed upstream read
   kept in that entry's record, writes each drawn icon to `dist/v1/icons/`
-  before it (M113), and copies the two schemas to `dist/schemas/`.
+  (M113) and each screenshot to `dist/v1/screenshots/` (M114) before it,
+  and copies the two schemas to `dist/schemas/`.
   It exits 1 when more than half of the records carry a build-level failure,
   as "Building the data" in `docs/maintaining.md` defines it, and also when every record carries a
   failure, whatever its name, and, after writing the data, when it cannot
@@ -673,11 +676,16 @@ user reports. The exception is a report that is abuse.
   `imageFormat` (`rules.ts`), `parseScreenshotRequest` and `imageLinks`
   (`parse.ts`), and `pnpm screenshot-request <issue> --data <file> [--file
   <image>] [--apply [--owner-checked]]` (`request.ts`, `cli.ts`). It reads a
-  `screenshot` issue through `readOwnerRequest`, downloads the one image link
-  with the reader's `downloader` and a host check on each URL against
-  `SCREENSHOT_HOSTS`, and with `--apply` writes the WebP copy and
-  `index.json`'s `screenshot`, or removes both. The exit statuses are
-  `pnpm text-request`'s (M114, D-081).
+  `screenshot` issue through `readOwnerRequest`, checks the one image link's
+  host, downloads it with the reader's `downloader` and the same check on each
+  redirect against `SCREENSHOT_HOSTS` (a `--file` image skips only the
+  redirects), makes the WebP copy in the report, and with `--apply` writes the
+  copy and `index.json`'s `screenshot`, or removes both, re-reading
+  `index.json` just before it writes. The exit statuses are `pnpm
+  text-request`'s (M114, D-081). `readOwnerRequest` reads the entry's
+  `index.json` before it asks GitHub for the owner. Propose copies a kept
+  screenshot into its check folder and names it in the kept lines of a
+  `replaces-entry` pull request (M114).
 - Start tests (`src/start-test/`): `pnpm start-test --zotero --xpi --out
   [--limit]` starts one Zotero binary with one XPI in a new profile, with
   the reporter plugin of `src/start-test/reporter/`, and writes one of the
@@ -1052,7 +1060,8 @@ reused._
   daily and on manual dispatch, and keeps the data as a workflow artifact
   (M003); since M047 a later site job runs `pnpm site`. The build also
   copies both schemas to `dist/schemas/` and writes the icon files to
-  `dist/v1/icons/` (M113), and it exits 1 after it writes
+  `dist/v1/icons/` (M113) and the screenshots to `dist/v1/screenshots/`
+  (M114), and it exits 1 after it writes
   the file when more than half of the records carry a build-level
   failure, as "Building the data" in `docs/maintaining.md` defines it (M017;
   moved from README by M107), or when every

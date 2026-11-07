@@ -18,7 +18,7 @@ function pushAll(work: string, message: string) {
 // Clones `remote` into the empty directory `dir`, deletes the `remove` paths, writes
 // `files` (paths to text), and pushes the change to main, so a checkout made before
 // does not change.
-export function pushFromClone(remote: string, dir: string, files: Record<string, string>, remove: string[] = []) {
+export function pushFromClone(remote: string, dir: string, files: Record<string, string | Uint8Array>, remove: string[] = []) {
   const other = join(dir, "other");
   git(dir, "clone", "--quiet", remote, other);
   for (const path of remove) git(other, "rm", "-r", "--quiet", path);

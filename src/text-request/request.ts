@@ -5,7 +5,7 @@ import { join } from "node:path";
 import type { Override, PluginRecord } from "../build/build.ts";
 import { nameKey } from "../discover/holds.ts";
 import { categories, OTHER } from "../site/categories.ts";
-import { checkoutOverrides, gapOf } from "../site/description-gaps.ts";
+import { gapOf } from "../site/description-gaps.ts";
 import { appliedValue, usedOverride } from "../site/version.ts";
 import { failed, type IssueOptions, ownerLines, quoted, readOwnerRequest, type RequestResult } from "./owner.ts";
 import { parseTextRequest, type TextRequest } from "./parse.ts";
@@ -40,9 +40,7 @@ export async function textRequest(options: RequestOptions): Promise<RequestResul
   const { issue, apply = false, ownerChecked = false } = options;
   const read = await readOwnerRequest(options, TEXT_CHANGE_LABEL, parseTextRequest);
   if (!read.ok) return read.result;
-  const { request, record, entry, data, matches, organization } = read.read;
-  const overrides = await checkoutOverrides(join(entry, "index.json"));
-  if (!Array.isArray(overrides)) return { status: 2, lines: [`failure: ${overrides.message}`] };
+  const { request, record, entry, data, matches, organization, overrides } = read.read;
 
   const edited = editedOverrides(overrides, request, issue);
   const before = { ...record, overrides };

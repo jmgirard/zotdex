@@ -277,8 +277,9 @@ the failure and that build's day in place of the table. It then has no
 report buttons. A plugin that keeps earlier facts shows the table
 and the buttons for the version of those facts.
 
-An open "Details" card comes last. Its last lines link to the forms that ask
-to change the plugin's text and to remove the plugin or report harm. The
+An open "Details" card comes last. Its last lines link to three forms. They
+ask to change the plugin's text, to add a screenshot, and to remove the plugin
+or report harm. The
 Details card lists the plugin id. For a plugin with the card icon, it then
 gives the paid service fact, whether or not the build read the plugin. If
 the build read the plugin, it also lists facts about the repository and the
