@@ -129,27 +129,27 @@ text, which M109 set.
 - prior-review #2: the plugin page and About disagree on "doesn't test plugins' safety or features" against "does not review their code" — follow-up: M111
 - prior-review #3: About and `docs/site.md` say "top level" while the label says "top folder" — reject (false: both state the same fact, and neither line quotes the label; About's wording is M111's)
 - prior-review #4: About's headings "Overrides" and "Start test" differ from the plugin page — follow-up: M111
-- prior-review #5: DESIGN's Known issues entry names the "Overrides cell" and a bare `Manifest:` — fix now
+- prior-review #5: DESIGN's Known issues entry names the "Overrides cell" and a bare `Manifest:` — fix now, fixed 51b723de
 - prior-review #6: the Older data badge's new `title` repeats visible text — reject (false: the title adds the reason and the date, not the badge's words, and the home badge carried a title before M110)
 - prior-review #7: "Language not listed" replaces M036's wording — reject (planned change: approved copy)
 - ripple #1: About's h1 "How the index reads plugins" differs from the plugin page's link text "How Zotdex reads plugins" — follow-up: M111, whose approved h1 is "How Zotdex works"
-- ripple #2: `.github/ISSUE_TEMPLATE/text-change.yml` names the plugin page's "Overrides table" — fix now
+- ripple #2: `.github/ISSUE_TEMPLATE/text-change.yml` names the plugin page's "Overrides table" — fix now, fixed 6a0fd341
 - ripple #3: About's h2 "Overrides" names the old table heading — follow-up: M111
-- ripple #4: `docs/requests.md` names the plugin page's "Overrides table" — fix now
+- ripple #4: `docs/requests.md` names the plugin page's "Overrides table" — fix now, fixed 6a0fd341
 - ripple #5: the ROADMAP row "Use plain words on plugin pages and About" still lists plugin page labels and the home tooltip — reject (false as a defect: post-merge hygiene narrows that row to About, its remainder in M111)
 - ripple #6: the parked ROADMAP row "Name the build on the failure page" quotes the old failure text — reject (false as a defect: M110 absorbs that row, and post-merge hygiene removes it)
-- ripple #7: `docs/site.md` does not give the two description labels — fix now
-- ripple #8: `docs/site.md` and About describe the Corrections rows as "the manifest description and the GitHub description" — fix now in `docs/site.md` (the "Plugin file:" and "GitHub:" lines); About's line is M111's
+- ripple #7: `docs/site.md` does not give the two description labels — fix now, fixed 6a0fd341
+- ripple #8: `docs/site.md` and About describe the Corrections rows as "the manifest description and the GitHub description" — fix now in `docs/site.md` (the "Plugin file:" and "GitHub:" lines), fixed 6a0fd341; About's line is M111's
 - ripple #9: About and `docs/requests.md` say the index "does not review their code", unlike the install note's safety-or-features sentence — reject (false: both statements are true, and About's wording is M111's)
-- ripple #10: a test title still says "the Used column" — fix now
+- ripple #10: a test title still says "the Used column" — fix now, fixed 6a0fd341
 - ripple #11: `docs/site.md` and About say "top level" while the label says "top folder" — reject (false: same fact, and neither line quotes the label)
 - ripple #12: the issue forms label the field "Plugin id" where the page now says "Plugin ID" — reject (style: letter case on separate GitHub forms)
-- diff-bug #1: `longDay` prints "Invalid Date" for `repoCreatedAt` or `latestReleaseDate` text that is not a date, where `day()` sliced it — fix now (`longDay` falls back to the first 10 characters, with a test that fails on the unfixed helper)
-- diff-bug #2: the badge text check runs on every built page through one code path — fix now (moved to one page)
-- diff-bug #3: "leaves the old languages label off every plugin page" checks only "Interface languages:" — fix now (also checks "Menus and settings in")
-- diff-bug #4: a test comment restates the fixture's `generatedAt` — fix now (removed)
+- diff-bug #1: `longDay` prints "Invalid Date" for `repoCreatedAt` or `latestReleaseDate` text that is not a date, where `day()` sliced it — fix now (`longDay` falls back to the first 10 characters, with a test that fails on the unfixed helper), fixed 6a0fd341
+- diff-bug #2: the badge text check runs on every built page through one code path — fix now (moved to one page), fixed 6a0fd341
+- diff-bug #3: "leaves the old languages label off every plugin page" checks only "Interface languages:" — fix now (also checks "Menus and settings in"), fixed 6a0fd341
+- diff-bug #4: a test comment restates the fixture's `generatedAt` — fix now (removed), fixed 6a0fd341
 - diff-bug #5: `keptTitle` has no direct test — reject (false: a site helper, covered by the kept-record tests, and "What gets a test" tests internal helpers indirectly)
-- diff-bug #6: the h1 badge regex treats the badge text's dots as wildcards — fix now (a contains check on the h1)
+- diff-bug #6: the h1 badge regex treats the badge text's dots as wildcards — fix now (a contains check on the h1), fixed 6a0fd341
 - diff-bug #7: "couldn't reach" is loose for a time-limit failure — reject (planned change: the user kept it to match the home legend after the claim audit)
 - diff-bug #8: About still says "declared range" — follow-up: M111
 - diff-bug #9: one reflowed About line is 135 characters — reject (style)
