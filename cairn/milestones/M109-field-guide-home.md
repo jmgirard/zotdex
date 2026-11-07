@@ -120,22 +120,22 @@ signals for plugins, set aside by the user.
 
 ## Tasks
 
-- [ ] T1: In `site/src/pages/index.astro`, set the heading, intro, controls,
+- [x] T1: In `site/src/pages/index.astro`, set the heading, intro, controls,
   table headers, legend, `<title>`, and description to the copy block; drop
   the `DISCLAIMER` import there.
-- [ ] T2: In `site/src/data.ts` and `src/site/home-filter.ts`, set
+- [x] T2: In `site/src/data.ts` and `src/site/home-filter.ts`, set
   `supportText`, `START_WORDS`, the start tooltip and hidden-text prefix,
   `starsText`, `PAID_SERVICE_TEXT`, `NoSourceMark`'s text, and the
   empty-result text to the copy block.
-- [ ] T3: In `site/src/data.ts` and `site/src/layouts/Base.astro`, set
+- [x] T3: In `site/src/data.ts` and `site/src/layouts/Base.astro`, set
   `DISCLAIMER` and the footer lines, format the build date as "Month D,
   YYYY", and add the GitHub mark (Lucide's path, in `Icon.astro`) to the top
   bar and the footer link.
-- [ ] T4: Update `test/site.test.ts` and `test/home-filter.test.ts` to the
+- [x] T4: Update `test/site.test.ts` and `test/home-filter.test.ts` to the
   copy block per AC1 to AC5.
-- [ ] T5: Grep every replaced string (AC6) and update `docs/site.md`,
+- [x] T5: Grep every replaced string (AC6) and update `docs/site.md`,
   DESIGN.md, and README.md where they quote it; add the CHANGELOG entry.
-- [ ] T6: Build the site, check the AC7 views in the browser pane, run
+- [x] T6: Build the site, check the AC7 views in the browser pane, run
   `pnpm test`.
 
 ## Work log
@@ -156,6 +156,7 @@ signals for plugins, set aside by the user.
 - 2026-11-07: substantive amendment: AC6 now allows "Menus and settings" in the plugin page, "cannot vet the plugins" on About, and docs/site.md lines that quote those two, which Out keeps; the first wording listed them as failures. Wording only; what users see is unchanged.
 - 2026-11-07: re-audit: AC6 (full) — the first carve-out exempted whole files, which would hide stale strings on plugin pages; narrowed to the two strings and the docs lines that quote them, as written.
 - 2026-11-07: style-hook hits in docs/site.md and CHANGELOG.md left in place at the user's direction to set Simplified English aside.
+- 2026-11-07: verify clean at 28520878: `pnpm test` 37 files passed, 1 skipped, 2511 tests passed, 6 skipped; `pnpm check` 741 entries, 0 problems; a build from the deployed data viewed at 1024 and 375 px, home and plugin page, scroll width equal to client width, no console errors; the user looked at the preview and said "Looks good, review it"; T1 to T6 ticked; claim audit running.
 
 ## Decisions
 
