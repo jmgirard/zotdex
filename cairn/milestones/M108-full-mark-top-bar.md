@@ -30,24 +30,24 @@ the icon" keeps its forced-colors and icon-pick items.
 
 ## Acceptance criteria
 
-- [ ] AC1: On every HTML page of a site build, as the site tests' walk of the
+- [x] AC1: On every HTML page of a site build, as the site tests' walk of the
   build folder lists them, the top bar's brand link holds one SVG with
   `aria-hidden="true"` and the view box `0 0 16 16`, then the text "Zotdex".
   The SVG's tags, with fills and classes set aside, equal the full-mark tags
   that `pictureSvg("apple-touch-icon.png")` writes, as a site test shows.
-- [ ] AC2: The SVG is 2rem wide and 2rem tall, and the brand text's font size
+- [x] AC2: The SVG is 2rem wide and 2rem tall, and the brand text's font size
   is `var(--text-xl)`. The body takes `--accent`, the disc `--logo-disc`, and
   the Z `--logo-z`, in the light block and both dark blocks. In forced colors
   the body and disc are `CanvasText` and the Z is `Canvas`.
-- [ ] AC3: A site build's `favicon.svg`, `favicon.png`,
+- [x] AC3: A site build's `favicon.svg`, `favicon.png`,
   `apple-touch-icon.png`, and `preview.png` are byte-identical to a build of
   `main` at the milestone's branch point, as `cmp` shows.
-- [ ] AC4: In the browser pane, a built home page and one plugin page at 375
+- [x] AC4: In the browser pane, a built home page and one plugin page at 375
   px and 1280 px wide, each in the light scheme and in the dark scheme set
   with the top bar's theme button, show the full mark with its three lights
   and lid line visible, as a zoom of the logo region shows, and
   `document.documentElement.scrollWidth` equals `clientWidth` on each.
-- [ ] AC5: A case-insensitive search for `lens`, `rim`, `same mark`,
+- [x] AC5: A case-insensitive search for `lens`, `rim`, `same mark`,
   `top bar`, and `top$` in `README.md`, `docs/`, `cairn/DESIGN.md`, the
   `## Unreleased` part of `CHANGELOG.md`, `src/site/logo.ts`,
   `site/src/layouts/Base.astro`, and `test/site.test.ts` lists every hit.
@@ -110,3 +110,28 @@ the icon" keeps its forced-colors and icon-pick items.
 ## Decisions
 
 ## Review
+
+- AC1 evidence (2026-11-06, head a3a11ec0, rerun after fix f07c530c): `pnpm test` 37 files passed, 1 skipped, 2509 tests passed, 6 skipped; by name, "is the full mark's three shapes, as the phone icon draws them, hidden from screen readers, before the site's name on every page" passed, over the build walk that "puts the top bar and the footer on every page" pins at ids + 3 files; a plant of `lensShapes()` in the top bar failed it on 404.html (work log).
+- AC2 evidence: "draws the mark 2rem square beside the site's name at the type scale's --text-xl" and "fills the body, disc, and Z from each scheme's tokens, with CanvasText and Canvas in forced colors, and leaves no square behind" passed; in the browser pane the logo measured 32 by 32 px, the brand text 22px, the body fill rgb(29, 95, 184) light and rgb(127, 176, 255) dark.
+- AC3 evidence: site built at the branch point 68a5c1fe and again at a3a11ec0 from the same deployed data; `cmp` found `favicon.svg`, `favicon.png`, `apple-touch-icon.png`, and `preview.png` identical.
+- AC4 evidence: build of a3a11ec0 served on port 4408; home page and the Translate for Zotero page, each light and dark, the dark set with the top bar's theme button; 375 px views zoomed at full size in the pane, and 1280 px views zoomed at full size from a 1280 px same-origin frame inside a 375 px view, since the pane shrinks 1280 px screenshots; all eight zooms show the lens, three lights, and lid line, and `scrollWidth` equaled `clientWidth` (375 or 1280) on each.
+- AC5 evidence: the five-pattern search hit docs/site.md 7, cairn/DESIGN.md 8, Unreleased CHANGELOG 7, logo.ts 33, Base.astro 3, site.test.ts 47 lines, README.md and other docs 0; whole sentences read: the top-bar sentences in docs/site.md, DESIGN.md, CHANGELOG, logo.ts, and Base.astro name the full mark, and the remaining lens and rim hits describe `favicon.svg`, `favicon.png`, `lensMark`, or the favicon tests; a joined-text search found no sentence with "top bar" followed by "lens" or "same mark"; `pnpm test` passed as in AC1.
+- gate: `cairn_validate.py` all checks passed; `pnpm check` 741 entries, 0 problems; profile `generic` has no toolchain checks; no principle changed, so no `cairn_impact` run.
+- spawned: diff-bug, blame-history, prior-review, ripple
+- diff-bug #1: CHANGELOG.md line 86 ran 103 characters after an edit joined two lines — fix now, fixed f07c530c
+- diff-bug #2: the top bar is about 10 px taller at 375 px, wraps from about 494 px down, and was not looked at above 16 px text — reject (planned change) for the height and wrap, which follow from the 2rem mark and `--text-xl` name the plan set; follow-up for the larger-text look, absorbed into "Tighten the home controls at larger text" (parked, promote when a user reports it, as no documented or common use was shown to break)
+- diff-bug #3: disc contrast is 1.6:1 on the light top bar and 2.7:1 on the dark ring, from M106's tokens, on an `aria-hidden` mark — follow-up, absorbed into "Tighten link previews and the icon" (parked, promote when a user reports it)
+- diff-bug #4: the 6-M check on the body path repeats geometry that test/logo.test.ts and the PNG pixel test cover — fix now, fixed f07c530c
+- diff-bug #5: the AC1 test's expected tags come from the same `fullShapes` — reject (planned change): AC1 names this comparison, and the plant shows it fails with the lens
+- diff-bug #6: `fullShapes(fills)` writes no class where `lensShapes(fills)` writes both — reject (planned change): T1's work-log line chose it to keep the PNG bytes, and the comment states it
+- diff-bug #7: a custom mark needs `fullShapes(undefined, mark)` — reject (style): no caller passes a mark
+- diff-bug #8: DESIGN.md's "the same ones as `apple-touch-icon.png`" dropped AC1's fills-aside qualifier — fix now, fixed f07c530c
+- diff-bug #9: D-072 has no pointer to D-074 — reject (false): DECISIONS.md is append-only, and D-074's heading names what it supersedes
+- prior-review #1: the top bar's forced-colors rule was not looked at rendered, as M106 parked — follow-up, absorbed into "Tighten link previews and the icon" (parked)
+- prior-review #2: larger text not checked for the bigger top bar, as M098 found for the home controls — follow-up, same row as diff-bug #2
+- prior-review #3: the changelog entry's long line, the class M106 fixed — fix now, fixed f07c530c (same as diff-bug #1)
+- prior-review #4: checks ran in Chromium only, as M063 and M106 recorded — follow-up, already in "Tighten the home controls at larger text" (Chromium only)
+- blame-history: no finding; noted the changelog line, same as diff-bug #1
+- ripple: no ripple evidence; noted the changelog line, same as diff-bug #1
+- conversation: no PR yet, so no PR-conversation read
+- snapshot: no `_snaps` or `__snapshots__` path in `git diff --name-only origin/main...HEAD`
