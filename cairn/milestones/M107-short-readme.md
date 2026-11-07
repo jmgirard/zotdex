@@ -34,7 +34,7 @@ of the About change waits for a `Build data` run (offered after the merge).
 
 ## Acceptance criteria
 
-- [ ] AC1: `README.md` has at most 150 lines by `wc -l`. It holds the old
+- [x] AC1: `README.md` has at most 150 lines by `wc -l`. It holds the old
   README's opening paragraph unchanged, a link to
   `https://zotdex.jmgirard.com/`, the data file address and its two schema
   addresses, a link to
@@ -43,7 +43,7 @@ of the About change waits for a `Build data` run (offered after the merge).
   the five files under `docs/`, and a license part of at most 6 lines that
   names the MIT License for the code and CC0 1.0 for the facts, categories,
   and maintainer text, and links to `docs/license.md`.
-- [ ] AC2: Each `##` and `###` section of the old README
+- [x] AC2: Each `##` and `###` section of the old README
   (`git show main:README.md`; a section runs from its heading to the next
   heading of any level) is in exactly one of the five `docs/` files, in the
   old order within that file, under the same heading text. Its heading level
@@ -54,7 +54,7 @@ of the About change waits for a `Build data` run (offered after the merge).
   with wrapped lines joined, equals its new copy except for link targets
   changed so that AC3 holds, and the reference edits of AC3 and AC4. The
   evidence is a script that prints each joined line that differs.
-- [ ] AC3: Every inline Markdown link in `README.md` and `docs/*.md` (they use
+- [x] AC3: Every inline Markdown link in `README.md` and `docs/*.md` (they use
   no reference-style links) whose target is a repo path or a `#` anchor
   resolves relative to the linking file's folder, as GitHub does, to an
   existing file and, for an anchor, to a heading of that file by GitHub's
@@ -62,7 +62,7 @@ of the About change waits for a `Build data` run (offered after the merge).
   `above`/`below` phrase in the moved text shows each one that points to text
   now in another file, and each such reference names that file in place of
   `above` or `below`, the site section's `"License" below` included.
-- [ ] AC4: A search for `README` in `src/`, `site/src/`, `test/`, `.github/`,
+- [x] AC4: A search for `README` in `src/`, `site/src/`, `test/`, `.github/`,
   `schemas/`, `cairn/DESIGN.md`, `docs/license.md`, and the `## Unreleased`
   part of `CHANGELOG.md` lists every hit. Each hit that names a README
   section, or says that the README holds text now under `docs/`, names the
@@ -148,3 +148,8 @@ of the About change waits for a `Build data` run (offered after the merge).
 ## Decisions
 
 ## Review
+
+- AC1 evidence (2026-11-06, head e775fca3): `wc -l README.md` 56; lines 1-7 equal `git show main:README.md` lines 1-7; one each of the site link, the data address, and the two schema addresses; one `issues/new?template=<file>` link for each of the 5 files under `.github/ISSUE_TEMPLATE/`; a relative link to each of the 5 docs files; the License part has 6 non-blank lines naming the MIT License and CC0 1.0 and linking `docs/license.md`.
+- AC2 evidence (head e775fca3): the scratchpad `check_move.py` against `git show main:README.md` (20 `##`/`###` sections) reports 0 structural problems: each heading once across `docs/*.md`, old order kept, one `#` title per file (`Data`, `License` raised, `Maintaining the index`, `Requests`, `The site` raised), no text outside sections. It prints 23 changed joined paragraphs, the same list the implement session read word by word: each is a link-target change or a reference that now names its file, plus the two license sentences of AC4. Planted defects (dropped word, duplicate section, bad anchor) each showed at implement.
+- AC3 evidence (head e775fca3): the same script resolves each inline link in README.md and docs/*.md from its own folder and each anchor by GitHub's slug rule, 0 problems; no reference-style links (`grep '\]\['` empty). The scratchpad `refs.py` lists 60 references: 24 quoted headings that live in another file, all naming that file; 23 above/below phrases, each pointing inside its own file (the site section's `"License"` now names `license.md`).
+- AC4 evidence (head e775fca3): `grep -rn README` over `src/ site/src/ test/ .github/ schemas/ cairn/DESIGN.md docs/license.md` lists 33 hits; none names a README section or says the README holds moved text: they are plugin authors' READMEs, `README.md` fixture file names, the badge, the source-code rule's name list, `docs/license.md`'s list of places that can quote text, and DESIGN.md's "moved from README by M107" note. `CHANGELOG.md` (all of it under `## Unreleased`) had 15 README mentions on main; 12 now name the docs file that holds the text, and the rest are the badge, a plugin's README, and the new entry.
