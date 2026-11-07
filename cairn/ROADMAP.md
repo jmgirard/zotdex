@@ -7,7 +7,7 @@ _Last hygiene check: 2026-11-07 (M107 review: README moved to docs/; 2 rows adde
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M108 | Show the full Zotdex mark in the top bar | planned | — | high | milestones/M108-full-mark-top-bar.md |
+| M108 | Show the full Zotdex mark in the top bar | in-progress | — | high | milestones/M108-full-mark-top-bar.md |
 | M107 | Shorten the README and move its detail to docs/ | done | — | normal | milestones/archive/M107-short-readme.md |
 | M106 | Replace the puzzle piece with the Zotdex lens mark | done | — | high | milestones/archive/M106-zotdex-lens-mark.md |
 | M105 | Offer plugin authors a README badge | done | — | high | milestones/archive/M105-author-badge.md |

@@ -25,7 +25,7 @@ import { CATEGORIES, categories } from "../src/site/categories.ts";
 import { cutDescription, shownDescription } from "../src/site/description.ts";
 import { PAGE_SIZE, prePaintStyle } from "../src/site/home-filter.ts";
 import { appliedLanguages, languageName } from "../src/site/languages.ts";
-import { FULL_MARK, PICTURES } from "../src/site/logo.ts";
+import { FULL_MARK, PICTURES, pictureSvg } from "../src/site/logo.ts";
 import { START_LIMIT_MS } from "../src/start-test/start-test.ts";
 import { DESCRIPTION_MAX, DESCRIPTION_MIN_WORDS, NAME_MAX, NAME_MIN } from "../src/text-request/rules.ts";
 import { compareVersions, declaredRange, majorSupport, ZOTERO_MAJORS } from "../src/site/version.ts";
@@ -2871,18 +2871,30 @@ describe("the site colors", () => {
   });
 
   describe("the logo", () => {
-    test("is the favicon's three shapes, hidden from screen readers, before the site's name on every page", () => {
-      const favicon = lensParts(readFileSync(join(out, "favicon.svg"), "utf8")).tags.map((tag) => tag.replace(/ fill="#[0-9a-f]{6}"/, ""));
-      expect(favicon).toHaveLength(3);
+    test("is the full mark's three shapes, as the phone icon draws them, hidden from screen readers, before the site's name on every page", () => {
+      const shapes = (svg: string) => svg.match(/<(?:path|circle|rect|ellipse|polygon|polyline|line|image|text|use)\b[^>]*>/g) ?? [];
+      const bare = (tag: string) => tag.replace(/ (?:fill|class)="[^"]*"/g, "");
+      const full = shapes(pictureSvg("apple-touch-icon.png")).map(bare);
+      expect(full.map((tag) => /^<(\w+)/.exec(tag)![1])).toEqual(["path", "circle", "path"]);
+      // The body's path holds the rounded body, then the lens opening, three lights, and lid gap that cut it.
+      expect(attribute(full[0]!, "d").match(/M/g)).toHaveLength(6);
       for (const file of htmlFiles(out)) {
         const brand = /<a class="brand"[^>]*>(.*?)<\/a>/s.exec(readFileSync(join(out, file), "utf8"))![1]!;
         const icons = brand.match(/<svg\b.*?<\/svg>/gs);
         expect(icons, file).toHaveLength(1);
         expect(icons![0], file).toContain('aria-hidden="true"');
-        expect(lensParts(icons![0]!).tags, file).toEqual(favicon);
+        expect(icons![0], file).toContain('viewBox="0 0 16 16"');
+        expect(shapes(icons![0]!).map(bare), file).toEqual(full);
+        expect(shapes(icons![0]!).map((tag) => attribute(tag, "class")), file).toEqual(["logo-body", "logo-disc", "logo-z"]);
         expect(brand.startsWith(icons![0]!), file).toBe(true);
         expect(brand.replace(icons![0]!, ""), file).toBe("Zotdex");
       }
+    });
+
+    test("draws the mark 2rem square beside the site's name at the type scale's --text-xl", () => {
+      const rule = (selector: string) => new RegExp(`\\n {6}${selector.replace(/\./g, "\\.")} \\{([^}]*)\\}`).exec(layout)![1]!;
+      expect(rule(".brand")).toMatch(/font-size: var\(--text-xl\);/);
+      expect(rule(".brand .logo")).toMatch(/width: 2rem;\s*height: 2rem;/);
     });
 
     test("leaves nothing of the old puzzle piece in any built file", () => {
@@ -2895,10 +2907,10 @@ describe("the site colors", () => {
       }
     });
 
-    test("fills the rim, disc, and Z from each scheme's tokens, with CanvasText and Canvas in forced colors, and leaves no square behind", () => {
+    test("fills the body, disc, and Z from each scheme's tokens, with CanvasText and Canvas in forced colors, and leaves no square behind", () => {
       expect(layout).not.toContain(".brand::before");
-      const base = /\n {6}\.brand \.logo-rim \{\s*fill: var\(--accent\);\s*\}\s*\.brand \.logo-disc \{\s*fill: var\(--logo-disc\);\s*\}\s*\.brand \.logo-z \{\s*fill: var\(--logo-z\);/.exec(layout);
-      const forced = /@media \(forced-colors: active\) \{\s*\.brand \.logo-rim,\s*\.brand \.logo-disc \{\s*fill: CanvasText;\s*\}\s*\.brand \.logo-z \{\s*fill: Canvas;/.exec(layout);
+      const base = /\n {6}\.brand \.logo-body \{\s*fill: var\(--accent\);\s*\}\s*\.brand \.logo-disc \{\s*fill: var\(--logo-disc\);\s*\}\s*\.brand \.logo-z \{\s*fill: var\(--logo-z\);/.exec(layout);
+      const forced = /@media \(forced-colors: active\) \{\s*\.brand \.logo-body,\s*\.brand \.logo-disc \{\s*fill: CanvasText;\s*\}\s*\.brand \.logo-z \{\s*fill: Canvas;/.exec(layout);
       expect(base).not.toBeNull();
       expect(forced).not.toBeNull();
       // The rules have one specificity, so the forced-colors fills win only when they come later.

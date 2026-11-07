@@ -1,6 +1,7 @@
-// Zotdex's own mark (D-072), drawn on a 16 by 16 grid. The full mark is a handheld with a ringed
-// lens that holds a Z, three lights, and a stepped lid line. The lens mark is that lens alone,
-// cut out and scaled to fill the grid, for the 16 px places: the tab icon and the top bar.
+// Zotdex's own mark (D-072, D-074), drawn on a 16 by 16 grid. The full mark is a handheld with a
+// ringed lens that holds a Z, three lights, and a stepped lid line; the top bar, the phone icon,
+// and the link preview show it. The lens mark is that lens alone, cut out and scaled to fill the
+// grid, for the tab icon.
 
 export type Point = readonly [number, number];
 export interface Circle {
@@ -144,15 +145,19 @@ export function pictureSvg(name: PictureName): string {
   const { mark, margin, size } = PICTURES[name];
   const side = 16 + 2 * margin;
   const box = `${num(-margin)} ${num(-margin)} ${num(side)} ${num(side)}`;
-  const shapes = mark === "lens" ? lensShapes(LIGHT) : fullShapes();
+  const shapes = mark === "lens" ? lensShapes(LIGHT) : fullShapes(LIGHT);
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="${box}">${shapes}</svg>`;
 }
 
-function fullShapes(full: FullMark = FULL_MARK): string {
+// The full mark's three shapes: the body with the lens opening, the lights, and the lid gap cut
+// out, then the disc and the Z. `fills` gives each its fill, for the PNG files; without it each
+// gets a class instead, for the top bar, whose stylesheet colors them.
+export function fullShapes(fills?: typeof LIGHT, full: FullMark = FULL_MARK): string {
+  const paint = (part: keyof typeof LIGHT, name: string) => (fills ? ` fill="${fills[part]}"` : ` class="${name}"`);
   const cuts = [circlePath(full.opening), ...full.lights.map(circlePath), polygonPath(full.lidGap)].join("");
   return (
-    `<path fill="${LIGHT.body}" fill-rule="evenodd" d="${roundedRect(full.body)}${cuts}"/>` +
-    circleTag(full.disc, ` fill="${LIGHT.disc}"`) +
-    `<path fill="${LIGHT.z}" d="${polygonPath(full.z)}"/>`
+    `<path${paint("body", "logo-body")} fill-rule="evenodd" d="${roundedRect(full.body)}${cuts}"/>` +
+    circleTag(full.disc, paint("disc", "logo-disc")) +
+    `<path${paint("z", "logo-z")} d="${polygonPath(full.z)}"/>`
   );
 }

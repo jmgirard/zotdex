@@ -1,13 +1,13 @@
 # M108: Show the full Zotdex mark in the top bar
 
-- **Status:** planned
+- **Status:** in-progress
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — every page's top bar changes
-- **Branch/PR:** —
+- **Branch/PR:** m108-full-mark-top-bar
 
 ## Goal
 
@@ -98,6 +98,11 @@ the icon" keeps its forced-colors and icon-pick items.
 - 2026-11-06: plan gate chose the top bar only over adding a large mark to the About or home page because one change covers every page and the table stays where it is; falsified by a user asking for the mark on a page.
 - 2026-11-06: question set: mark size — 32 px, with the "Zotdex" text larger; placement — top bar only.
 - 2026-11-06: order: M107 is in progress in the same checkout, so M108 starts after M107 merges; this plan commit was made from a temporary checkout of main so the M107 branch stayed checked out.
+- 2026-11-06: implement started on m108-full-mark-top-bar, cut from main at 68a5c1fe after M107 merged.
+- 2026-11-06: T1 choice: `fullShapes(fills?)` writes fills only when given (no class), so `pictureSvg` output stays the bytes main wrote, and classes only without fills; `pictureSvg` and `faviconSvg` output compared equal to main's `logo.ts` for all four files.
+- 2026-11-06: T3 plant: with `lensShapes()` put back in the top bar, the new "is the full mark's three shapes" test failed on 404.html; restored.
+- 2026-11-06: T4: the style hook flagged older sentences in `docs/site.md` and `CHANGELOG.md` (moved unchanged by M107, or released entries); none is in the sentences this milestone wrote, so they stay.
+- 2026-11-06: checkpoint: T1 to T5 code and docs done; site and logo tests 507 passed; four icon files byte-identical to the branch point's build (cmp); eight browser-pane views passed; full `pnpm test` and `pnpm check` running, tasks not ticked yet.
 
 ## Decisions
 

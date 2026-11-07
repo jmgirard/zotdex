@@ -369,10 +369,10 @@ image for up to an hour. So a change can take a few hours to show. When the
 index removes a plugin, its badge shows an error badge from shields.io.
 
 Each page has a favicon, the icon that a browser shows for the page. It is the
-Zotdex lens mark, a ringed blue lens that holds a Z, in `favicon.svg`. The top
-bar shows the same mark beside the site's name. The full Zotdex logo is a
-handheld with that lens, three lights, and a lid line. The site build draws
-three PNG files from the same shapes:
+Zotdex lens mark, a ringed blue lens that holds a Z, in `favicon.svg`. The full
+Zotdex logo is a handheld with that lens, three lights, and a lid line. The top
+bar shows the full logo, 2rem square, beside the site's name. The site build
+draws three PNG files from the same shapes:
 
 - `favicon.png`, 32 by 32, the lens mark, for a browser that shows no SVG icon
 - `apple-touch-icon.png`, 180 by 180, the full logo, for a phone's home screen
