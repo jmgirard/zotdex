@@ -109,6 +109,7 @@ the docs moved from README" holds.
 - 2026-11-07: claim audit: 90 claims read, 1 corrected — docs/site.md ("The declared range is" the manifest fields became "comes from", since the cell uses the range after overrides; the same reader re-read it as true); none false; on the approved About copy the reader called imprecise: the startup check runs on one tested release per version from the manifest range before corrections (the user chose the lighter line on 2026-11-07, and data.md states the detail), "90 seconds" counts from Zotero's launch, "the counts start over with each new release" can read as a Zotero release, and "a few hours" counts from a deploy; the `10.0.*` example shows ◐ when the Zotero release read fails, which the same paragraph's N.0-to-N.9 rule covers.
 - 2026-11-07: question: approved-wording fix from the claim audit — the user chose "The counts start over with each new release of the plugin" over the approved "each new release", which could read as a Zotero release; page, test, and copy file updated; the other imprecise lines stay as approved; site tests 496 passed.
 - 2026-11-07: implement done, status review: `pnpm test` 2503 passed, `pnpm check` 0 problems.
+- 2026-11-07: step-7 approval: m111-short-about approved for merge
 
 ## Decisions
 
