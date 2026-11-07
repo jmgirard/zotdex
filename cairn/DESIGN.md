@@ -576,7 +576,8 @@ user reports. The exception is a report that is abuse.
   or `<dir>`, from the data file there. It also writes `404.html`,
   `favicon.svg`, `sitemap.xml`, and `robots.txt` (M102),
   `badges/<id>.json` for each record (M105), and `favicon.png`,
-  `apple-touch-icon.png`, and `preview.png` (M106).
+  `apple-touch-icon.png`, and `preview.png` (M106), and `logo.svg`, the full
+  mark with no background, which the README shows (`logoSvg`).
   `src/site/logo.ts` holds the Zotdex logo's shapes (D-072, D-074):
   `FULL_MARK`, and `lensMark`, which cuts the full mark's lens out and scales
   it, so the two marks share one lens. It also builds the text of

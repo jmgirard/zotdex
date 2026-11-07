@@ -384,6 +384,9 @@ draws three PNG files from the same shapes:
 - `apple-touch-icon.png`, 180 by 180, the full logo, for a phone's home screen
 - `preview.png`, 1200 by 1200, the full logo, for link previews
 
+It also writes `logo.svg`, the full logo with no background, which the README
+shows.
+
 Each page also has tags for link previews. The tags are a meta description,
 Open Graph tags, a Twitter card tag, and a canonical link. A shared link can
 show the page's title, its description, and `preview.png`. A plugin page uses

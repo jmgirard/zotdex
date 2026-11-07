@@ -132,6 +132,12 @@ export function faviconSvg(): string {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><style>${dark}</style>${lensShapes(LIGHT)}</svg>\n`;
 }
 
+// logo.svg, for the README: the full mark in the light fills with no background, so the page
+// shows through the cut-out lights, lid line, and ring on a light or a dark theme.
+export function logoSvg(): string {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">${fullShapes(LIGHT)}</svg>\n`;
+}
+
 // The PNG files: each draws a mark in the light fills `size` pixels wide, over a view box
 // `margin` grid units wider than the 16 by 16 grid on each side. logo-png.ts puts it on white.
 export const PICTURES = {

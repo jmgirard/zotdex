@@ -2897,6 +2897,15 @@ describe("the site colors", () => {
   });
 
   describe("the logo", () => {
+    test("writes logo.svg: the phone icon's three shapes and fills in a 16 by 16 view box, with nothing else to draw a background", () => {
+      const svg = readFileSync(join(out, "logo.svg"), "utf8");
+      const elements = (text: string) => text.match(/<[a-z][^\s>/]*/g) ?? [];
+      const shapes = (text: string) => text.match(/<(?:path|circle)\b[^>]*>/g) ?? [];
+      expect(svg).toMatch(/^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg" viewBox="0 0 16 16">/);
+      expect(elements(svg)).toEqual(["<svg", "<path", "<circle", "<path"]);
+      expect(shapes(svg)).toEqual(shapes(pictureSvg("apple-touch-icon.png")));
+    });
+
     test("is the full mark's three shapes, as the phone icon draws them, hidden from screen readers, before the site's name on every page", () => {
       const shapes = (svg: string) => svg.match(/<(?:path|circle|rect|ellipse|polygon|polyline|line|image|text|use)\b[^>]*>/g) ?? [];
       const bare = (tag: string) => tag.replace(/ (?:fill|class)="[^"]*"/g, "");

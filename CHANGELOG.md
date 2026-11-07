@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- The site now serves `logo.svg`, the full Zotdex logo with no background,
+  and the README shows it beside its title.
 - The home page is now "Your field guide to Zotero plugins", with an intro
   about finding plugins and plainer words throughout: the controls, the
   table, the tooltips, and the legend, which now calls the start test
