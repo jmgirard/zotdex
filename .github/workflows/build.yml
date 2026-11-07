@@ -77,6 +77,13 @@ jobs:
       - run: >-
           pnpm carry-start-results --plan start-plan.json --data dist/v1/plugins.json
           --previous https://zotdex.jmgirard.com/v1/plugins.json
+      # Keeps the deployed ClamAV result of each record whose file's SHA-256 is unchanged, so a
+      # run that scans nothing, or whose scan fails, keeps the results. It exits 0 and keeps
+      # nothing when the deployed data cannot be read. It runs before the data digest, which
+      # covers its output.
+      - run: >-
+          pnpm carry-scan-results --data dist/v1/plugins.json
+          --previous https://zotdex.jmgirard.com/v1/plugins.json
       - id: plan-sha256
         run: echo "sha256=$(sha256sum start-plan.json | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
       # The SHA-256 of every path, kind, and file under dist/, which the site job checks the
