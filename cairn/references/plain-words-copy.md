@@ -14,7 +14,8 @@ fills in.
 ## Plugin page (M110)
 
 - Older data badge title, on the plugin page and the home row: "Zotdex
-  couldn't reach this plugin today, so these facts are from <date>"
+  couldn't reach this plugin in its latest update, so these facts are from
+  <date>"
 - Older data note: "Zotdex couldn't reach this plugin on <date>: `{name}`:
   {message}. This page shows what it found on <date>. About older data"
 - Failure line: "Zotdex couldn't read this plugin when it last updated this
@@ -34,9 +35,9 @@ fills in.
 - Startup check cells: "Loaded Zotero {v}" and the other start words, or
   "Not checked"
 - Report cells: "{n} works {n} broken" or "None yet"
-- Line under the table: "The plugin says it supports {Zotero 7.0 to 9.*}.
-  How Zotdex reads plugins". The first sentence shows only for a plugin with
-  a range.
+- Line under the table: "Supported versions: {Zotero 7.0 to 9.*}. How
+  Zotdex reads plugins". The first sentence shows only for a plugin with a
+  range, which includes Zotdex's corrections.
 - Report line: "Tried version <v> on Zotero? Report what you found:",
   buttons "Works" and "Broken"
 - Details heading: "Details". Labels and values:
@@ -86,17 +87,17 @@ fields. Zotdex shows that range for the release it read, after any
 corrections. List: ✓ "Supports every release of that Zotero version, up to
 the newest one." ◐ "Supports some releases of it." – "Doesn't support it."
 Then: Zotdex counts Zotero N as every version from N.0 to the newest release
-of N. So a maximum such as 10.0.* covers all of Zotero 10 while 10.0 is the
-newest release, and only part of it once Zotero 10.1 is out. A range that
+of N. So a maximum such as 10.0.* covers all of Zotero 10 while the newest
+release is a 10.0 release, and only part of it once Zotero 10.1 is out. A range that
 ends before N.0, or starts after the newest release, covers none of it. So a
 minimum such as 8.999, which authors write to mean Zotero 9 and newer, covers
 none of Zotero 8. Every day Zotdex reads the current Zotero release from
 zotero.org, and it keeps the last release of each older Zotero version. For
-a Zotero version with no release yet, Zotdex counts N.0 to N.9, because
+a Zotero version with no known release, Zotdex counts N.0 to N.9, because
 authors often write a maximum such as 10.99.99 to mean every Zotero 10
 release. A plugin that lists no range shows no mark. The range is what the
 author says, not a test result. Then: "This update used these newest
-releases:", items "Zotero {N}: {release}" or "Zotero {N}: no release yet, so
+releases:", items "Zotero {N}: {release}" or "Zotero {N}: no known release, so
 Zotdex counts {N}.0 to {N}.9".
 
 **Startup check** (`#start-test`). Zotdex installs the plugin release it read
@@ -136,8 +137,8 @@ buttons on a plugin page open the report forms on GitHub. A bot checks each
 report and closes it. Then: Zotdex counts a report only when the bot closed
 it as completed and the report names the plugin version Zotdex read. A
 report labeled `not-counted` doesn't count. If one GitHub account reports
-more than once on the same plugin and Zotero version, only the newest report
-counts. When Zotdex reads a new release of a plugin, its counts start over.
+more than once on the same plugin and major Zotero version, such as Zotero 8,
+only the newest report counts. When Zotdex reads a new release of a plugin, its counts start over.
 The counts show what people found, not what Zotdex tested.
 
 **Descriptions** (`#descriptions`). A plugin's description comes from its
