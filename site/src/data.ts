@@ -19,10 +19,10 @@ export { BASE, CATEGORIES, categories, categoryOptions, declaredRange, languageN
 export type { Override, PluginRecord };
 
 // The words of the paid service mark, its legend line, and its Details fact (D-054).
-export const PAID_SERVICE_TEXT = "Needs a paid account or subscription from its maker";
+export const PAID_SERVICE_TEXT = "Requires paying its maker";
 
 // The words of the no-source mark and its legend line (D-052).
-export const NO_SOURCE_TEXT = "Source code not found in its repository";
+export const NO_SOURCE_TEXT = "No obvious source code in its repository";
 
 let loaded: { path: string; data: PluginsFile } | undefined;
 
@@ -175,7 +175,7 @@ export function overrideUsed(record: PluginRecord, override: Override): boolean 
   return usedOverride(record, override.field) === override;
 }
 
-// What every page's footer and the home page's intro say about the index itself.
+// What every page's footer says about the index itself.
 export const DISCLAIMER = "Zotdex is an independent project, not part of Zotero, and it doesn't test the safety or features of the plugins it lists.";
 
 // The About page's section on installing a plugin.

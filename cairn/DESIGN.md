@@ -65,7 +65,7 @@ sensitivity and then by id (M097, D-065). The menu's `name` value is that name
 order (M053), and its `latest` value puts a later `latestReleaseDate` first,
 with a missing or unreadable date last and ties in name order. The script
 reorders the rows on a change and shows page 1, keeps `name` or `latest` in
-`?sort=`, and removes any other value. Going back to Stars restores the built
+`?sort=`, and removes any other value. Going back to Most stars restores the built
 order. Without JavaScript the menu stays hidden and the rows keep the built
 order. The home page's script shows
 the rows the filters pass 50 at a time, with a pager below the table, and
@@ -84,12 +84,12 @@ last one, also hides rows that the script then shows. For an address with
 a non-blank `?q=`, it hides every row until the script runs. The script
 removes the style after its first pass, and the classic script removes it
 on any error the window reports, such as a module script that throws or
-cannot parse (M060). The home page's "Menus and
-settings in" menu filters the table by language subtag,
+cannot parse (M060). The home page's "Language" menu (named "Menus and
+settings in" before M109) filters the table by language subtag,
 run by the home page's script (D-014, D-026, M024, M033). The menu lists the
 languages with the most plugins first, and languages with the same number
 of plugins in code-unit order of their English names (M035). The home
-page's "Declares Zotero" buttons, "Any" and one per major of
+page's "Supports Zotero" buttons, "Any" and one per major of
 `ZOTERO_MAJORS`, filter the table to the plugins whose mark for the pressed
 major is all or part, one major at a time, together with the language menu; the
 same script runs them and keeps the choice in `?zotero=` (D-019, M037).

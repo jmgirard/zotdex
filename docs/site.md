@@ -20,8 +20,8 @@ repository is archived, the row shows "Archived" after the name. If the index
 found no source code at the top level of the repository, the row shows a lock
 after the name. If a maintainer read that the plugin's main use needs a paid
 service from its maker, the row shows a card icon after the name. Then come
-one cell for each Zotero major version from 7 to 10 and a "Menus and
-settings" cell. Next comes the month of
+one cell for each Zotero major version from 7 to 10 and a "Languages"
+cell. Next comes the month of
 the release that the index read, as the year and month in UTC, such as
 `2026-09`. Last come links to the source code, or to the repository for a row
 with a lock, and to the `.xpi` file.
@@ -178,7 +178,7 @@ one, and plugins that tie stay in Name order. A star count is a fact from
 GitHub. It is not a review. If you change the menu, the table shows page 1 in
 the new order. The
 page keeps your choice in the `sort` query parameter of its address, as
-`?sort=name` or `?sort=latest`. For Stars, or a value that names no other
+`?sort=name` or `?sort=latest`. For Most stars, or a value that names no other
 option, the page removes the parameter.
 
 The search box, the two filter menus, and the buttons work together: the table
@@ -338,7 +338,7 @@ index does not look inside folders.
 The card icon comes from a read by hand, not from the build. A maintainer sets
 it when the plugin's main use stops without paying its maker, or stops after a
 trial. The name on the home page and on the plugin page shows the icon. The
-Details card shows "Needs a paid service from its maker" with a note, a link to
+Details card shows "Requires paying its maker" with a note, a link to
 the source, and the date of the read. A plugin with no mark can still cost money.
 
 An address on the site that has no page shows a "Page not found" page, with

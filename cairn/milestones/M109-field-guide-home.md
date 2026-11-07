@@ -45,8 +45,8 @@ Copy block (approved 2026-11-07):
 - Legend: ✓ "Supports this version of Zotero"; ◐ "Supports some releases of
   this version"; – "Doesn't support this version"; Older data "Zotdex
   couldn't reach this plugin today, so this row shows what it found in the
-  past week"; lock "Source code not found in its repository"; card "Needs a
-  paid account or subscription from its maker"; ● "Passed Zotdex's startup
+  past week"; lock "No obvious source code in its repository"; card
+  "Requires paying its maker"; ● "Passed Zotdex's startup
   check: it installs and loads, but its features aren't tested"; ✕ "Failed
   Zotdex's startup check: it didn't install or load"; ★ "GitHub stars. The
   list is sorted by stars, which shows popularity (not necessarily
@@ -156,6 +156,7 @@ signals for plugins, set aside by the user.
 - 2026-11-07: substantive amendment: AC6 now allows "Menus and settings" in the plugin page, "cannot vet the plugins" on About, and docs/site.md lines that quote those two, which Out keeps; the first wording listed them as failures. Wording only; what users see is unchanged.
 - 2026-11-07: re-audit: AC6 (full) — the first carve-out exempted whole files, which would hide stale strings on plugin pages; narrowed to the two strings and the docs lines that quote them, as written.
 - 2026-11-07: style-hook hits in docs/site.md and CHANGELOG.md left in place at the user's direction to set Simplified English aside.
+- 2026-11-07: claim audit: 45 claims read, 6 corrected — the lock text overstated the top-level check and the card text missed plugins sold by code, both put to the user, who chose "No obvious source code in its repository" and "Requires paying its maker" (substantive amendment: the copy block's lock and card lines, at the user's choice); a stale `DISCLAIMER` comment in data.ts, "Menus and settings" and "Stars" in docs/site.md, home-filter.ts, and DESIGN.md, and DESIGN's control names fixed — site/src/data.ts, docs/site.md, src/site/home-filter.ts, cairn/DESIGN.md
 - 2026-11-07: verify clean at 28520878: `pnpm test` 37 files passed, 1 skipped, 2511 tests passed, 6 skipped; `pnpm check` 741 entries, 0 problems; a build from the deployed data viewed at 1024 and 375 px, home and plugin page, scroll width equal to client width, no console errors; the user looked at the preview and said "Looks good, review it"; T1 to T6 ticked; claim audit running.
 
 ## Decisions

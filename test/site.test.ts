@@ -233,12 +233,12 @@ function fact(html: string, name: string): string | undefined {
 const page = (id: string) => readFileSync(join(out, "plugins", id, "index.html"), "utf8");
 const home = () => readFileSync(join(out, "index.html"), "utf8");
 const records = (fixture as unknown as PluginsFile).plugins;
-const NO_SOURCE_TEXT = "Source code not found in its repository";
+const NO_SOURCE_TEXT = "No obvious source code in its repository";
 // The icon paths in this file come from Lucide and Feather. site/src/components/Icon.astro holds the notices.
 const LOCK_SVG =
   '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 11h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2z"></path><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
 const noSourceMark = (icon: string) => `<span class="no-source" data-no-source><span aria-hidden="true" title="${NO_SOURCE_TEXT}">${icon}</span><span class="visually-hidden">${NO_SOURCE_TEXT}</span></span>`;
-const PAID_TEXT = "Needs a paid account or subscription from its maker";
+const PAID_TEXT = "Requires paying its maker";
 const GITHUB_SVG =
   '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"></path><path d="M9 18c-4.51 2-5-2-7-2"></path></svg>';
 const STAR_SVG =

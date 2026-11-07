@@ -77,7 +77,7 @@ function time(date: string | undefined): number | undefined {
   return Number.isNaN(parsed) ? undefined : parsed;
 }
 
-// The compare function for a value of the sort menu: "name", "latest", or "" for Stars, which
+// The compare function for a value of the sort menu: "name", "latest", or "" for Most stars, which
 // is also the order of the rows in the built page. Rows that tie keep Name order.
 export function sortOrder(sort: string): (a: SortRow, b: SortRow) => number {
   if (sort === "name") return byName;
