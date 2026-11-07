@@ -101,6 +101,7 @@ chose removal).
 - 2026-11-07: T3 done: appended D-079, which supersedes D-071.
 - 2026-11-07: T4 done: `pnpm test` 2493 passed, `pnpm check` 745 entries with 0 problems, AC4 sweep prints nothing; a site built from the deployed data has no `badges` folder and no page with badge text, and in the browser pane a plugin page ends with Details and About lists 13 sections with no badge. The post-merge `build.yml` run belongs to review's merge step.
 - 2026-11-07: claim audit: 6 claims read, 0 corrected — docs/maintaining.md, docs/site.md, test/site.test.ts, site/src/data.ts. Noted: a local `dist/badges/` from an earlier run stays, since the site build replaces only what it writes; CI builds `dist/` fresh, so the deploy is not affected.
+- 2026-11-07: step-7 approval: m112-remove-readme-badge approved for merge
 
 ## Decisions
 
