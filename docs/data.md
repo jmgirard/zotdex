@@ -279,7 +279,8 @@ only registry fields. Its `id` must equal the directory name.
   [requests.md](requests.md#adding-a-screenshot) says. The image is
   `screenshot.webp` in the entry's directory. It has two required fields:
   - `description`: what the image shows, in the owner's words. It must hold
-    a character other than whitespace.
+    a character other than whitespace and Unicode format characters, as for
+    an override's reason.
   - `reason`: the issue that asks for the screenshot. It must hold a
     character other than whitespace and Unicode format characters, as for an
     override.

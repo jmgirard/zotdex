@@ -24,7 +24,7 @@ const HTML_IMAGE = /<img\b[^>]*?\ssrc\s*=\s*(["'])(.*?)\1/gi;
 const NAMED = { amp: "&", quot: '"', apos: "'", lt: "<", gt: ">" } as Record<string, string>;
 
 // A link with its character references decoded, as a browser reads an <img> src and CommonMark
-// a link: the named ones above and any numeric one. Another reference stays as it is.
+// a link: the named ones above and any numeric one up to U+10FFFF. Another reference stays as it is.
 function decoded(src: string): string {
   return src.replace(/&(?:#(\d+)|#[xX]([0-9a-fA-F]+)|([a-zA-Z]+));/g, (whole, decimal?: string, hex?: string, name?: string) => {
     const code = decimal !== undefined ? Number(decimal) : hex !== undefined ? Number.parseInt(hex, 16) : undefined;

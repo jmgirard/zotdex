@@ -33,7 +33,7 @@ export interface ScreenshotOptions extends IssueOptions {
   ownerChecked?: boolean;
 }
 
-// A rule that the request breaks, found while reading the image.
+// A rule that the request breaks, found while checking the link or reading the image.
 class Problem extends Error {}
 
 const TOO_LARGE = `too-large: the image is over ${DOWNLOAD_MAX_BYTES} bytes`;
@@ -187,8 +187,9 @@ export async function screenshotRequest(options: ScreenshotOptions): Promise<Req
   if (!ownerOk && !ownerChecked) return { status: 1, lines: [...lines, "wrote nothing: check the author, then use --owner-checked"] };
 
   // index.json is read again just before each write, so the write keeps any edit made while the
-  // image was read. A failed write leaves no file that index.json does not match: a new image
-  // waits in a temporary file until index.json names it, and a removal changes index.json first.
+  // image was read. A failed write of index.json leaves both files as they were: a new image
+  // waits in a temporary file until index.json names it, and a removal changes index.json before
+  // it deletes the image.
   const temporary = `${imagePath}.tmp`;
   try {
     if (removal) {

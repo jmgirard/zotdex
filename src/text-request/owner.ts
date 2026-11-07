@@ -33,7 +33,7 @@ export interface OwnerRequest<T> {
   record: PluginRecord;
   // The entry's directory in the checkout.
   entry: string;
-  // The overrides of the entry's index.json, which passed its schema.
+  // The overrides of the entry's index.json, which passed its schema, or none when the file is missing.
   overrides: Override[];
   author: string;
   owner: string;

@@ -299,7 +299,8 @@ Look at the image before you apply it. With `--apply`, the command writes the
 copy to `plugins/<id>/screenshot.webp` and sets the `screenshot` field of the
 entry's `index.json`, as [data.md](data.md#plugin-entries) says. It reads
 `index.json` again just before it writes, so it keeps other edits to the file.
-If a write fails, the image file and `index.json` still match. A removal
+If the command cannot write `index.json`, the image file and `index.json` still
+match. A removal
 deletes both. The command writes nothing past a broken rule, and
 `--owner-checked` works as in `pnpm text-request`. Then answer the issue and
 open a pull request with the change.

@@ -583,8 +583,8 @@ export function body(entry: Written, checked: { status: number; output: string }
 }
 
 // The detail lines for what an entry's index.json keeps when another repo replaces its
-// meta.json: each override and the paid-service mark, since they were written for the
-// listed repo. Each value goes in a code span.
+// meta.json: each override, the paid-service mark, and the screenshot, since they were written
+// for the listed repo. Each value goes in a code span.
 export function keptLines(index: unknown): string[] {
   const { overrides, paidService, screenshot } = (index ?? {}) as {
     overrides?: { field?: unknown; value?: unknown; version?: unknown }[];

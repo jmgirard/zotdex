@@ -575,8 +575,8 @@ const REDIRECTS = [301, 302, 303, 307, 308];
 export const MAX_REDIRECTS = 5;
 
 // Follows redirects itself, at most MAX_REDIRECTS, and checks the host of each URL
-// before it requests it. `check`, when given, also sees the first URL and each redirect's
-// target before the scheme check here and before its request, and what it throws reaches the
+// before it requests it. `check`, when given, also sees the first URL, when it parses, and each
+// redirect's target before the scheme check here and before its request, and what it throws reaches the
 // caller as it is. A `signal` that aborts while a redirect's body is canceled fails the
 // download as a cut read, since the cancel hides the abort.
 export function downloader(fetch: Fetch, lookup: Lookup, signal?: AbortSignal, check?: (url: URL) => void): Download {
