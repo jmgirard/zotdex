@@ -31,22 +31,31 @@ the docs moved from README" holds.
 ## Acceptance criteria
 
 - [ ] AC1: The built About page's `<h1>`, intro, and each section's `<h2>`
-  and text, with tags removed and spaces joined, read as the "About page
+  and prose, with tags removed and spaces joined, read as the "About page
   (M111)" section of the copy file, section by section in its order, with
-  each section's `id` unchanged, `{…}` filled from the code, the category
-  list unchanged, and each "(a link)" a link to the form or page it names,
-  as site tests show.
+  each section's `id` unchanged and `{…}` filled from the code; the copy's
+  directions (the title line, the id and link note, "Then:", "(a link)",
+  "The category list stays as it is.", and the 404 block) are not page
+  text; the category and newest-release list items are unchanged in form;
+  and the removal form and license page phrases link to
+  `REMOVE_PLUGIN_HREF` and `LICENSE_HREF`; as site tests show.
 - [ ] AC2: The built About page's `<title>` and meta description, the
   intro's "site docs" link to
   `https://github.com/jmgirard/zotdex/blob/main/docs/site.md`, and the 404
-  page's heading and text read as the copy file lists, as site tests show.
-- [ ] AC3: At the branch head, `git grep -n -i -F` over
-  `site/src/pages/about.astro` and `site/src/pages/404.astro` for each of
-  "the index", "start test", and "declared range" lists no line.
-- [ ] AC4: Reading main's `site/src/pages/about.astro` sentence by sentence,
-  `docs/site.md` at the branch head states the rule of each sentence that
-  the new About leaves out.
-- [ ] AC5: In the browser pane at 375 px and 1280 px, the built About and
+  page's heading and text, with "See all plugins" linking home and "About
+  page" linking `/about/`, read as the copy file lists, as site tests show.
+- [ ] AC3: The text of the built `about/index.html` and `404.html`, with
+  tags removed, holds none of "the index", "start test", and "declared
+  range" in any letter case, as a site test shows.
+- [ ] AC4: Reading `site/src/pages/about.astro` at the commit the M111
+  branch is cut from, sentence by sentence, a file under `docs/` at the
+  branch head states the rule of each sentence that the new About leaves
+  out.
+- [ ] AC5: Each sentence of `docs/site.md` and `cairn/DESIGN.md` at the
+  branch head that says what the About page states, found by searching
+  their joined text for "About", names only points that the new About
+  states.
+- [ ] AC6: In the browser pane at 375 px and 1280 px, the built About and
   404 pages have `documentElement.scrollWidth` equal to `clientWidth`;
   `pnpm test` passes; `CHANGELOG.md`'s Unreleased section names the About
   change.
@@ -55,9 +64,10 @@ the docs moved from README" holds.
 
 - AC1 → T1, T4
 - AC2 → T1, T2, T4
-- AC3 → T1, T2
+- AC3 → T1, T2, T4
 - AC4 → T3
-- AC5 → T5, T6
+- AC5 → T5
+- AC6 → T5, T6
 
 ## Tasks
 
@@ -65,11 +75,13 @@ the docs moved from README" holds.
   description, h1, the intro with the docs link, and the 14 sections, with
   their ids, the category list, and the newest-releases list kept.
 - [ ] T2: Set `site/src/pages/404.astro`'s text to the copy.
-- [ ] T3: Read main's `about.astro` sentence by sentence; for each sentence
-  the new About drops, find the `docs/site.md` text that states its rule or
-  add it; record the result in one work-log line.
-- [ ] T4: Update the About and 404 tests in `test/site.test.ts` per AC1 and
-  AC2.
+- [ ] T3: Read `about.astro` at the branch's cut commit sentence by
+  sentence; for each sentence the new About drops, find the `docs/` text
+  that states its rule (the audit found many in `docs/data.md` and
+  `docs/requests.md`; bot flagging and maintainer adds were not found) or
+  add it to `docs/site.md`; record the result in one work-log line.
+- [ ] T4: Update the About and 404 tests in `test/site.test.ts` per AC1 to
+  AC3.
 - [ ] T5: Update DESIGN.md's and docs/site.md's descriptions of About, and
   add the CHANGELOG entry.
 - [ ] T6: Build the site, check AC5 in the browser pane, and run
@@ -85,5 +97,6 @@ the docs moved from README" holds.
 - 2026-11-07: question set: wording — the user approved the short About on 2026-11-07, after asking for before-and-after views, the footer's safety-or-features sentence, and a shorter page.
 - 2026-11-07: plan gate chose a short About that links docs/site.md over a full About in plain words, at the user's request; falsified by visitors asking for rules that About no longer states.
 - 2026-11-07: criteria audit (full mode, fresh Opus) of the first draft found the docs criterion empty, so it was dropped; the criteria changed by the question set's answers (AC1, AC2, AC4) went back to a fresh Opus reader, whose findings a follow-up plan commit takes.
+- 2026-11-07: criteria re-audit (full mode, fresh Opus) returned 13 findings: AC1 separates the copy's directions from page text and names the two link targets; AC2 checks the 404 links; AC3 reads the built pages, so imported text counts; AC4 pins the cut commit and accepts any file under `docs/`; new AC5 keeps docs/site.md's and DESIGN's descriptions of About true; the copy now says "new Zotero profile" and "the tested release of each Zotero version that the plugin's own range covers", "most often up to a week old", reports "that pass the bot's checks", English read first only when the file gives several languages, "half or more", "when it has both", "a removed plugin's repository", the full License split, and no "updates this site"; the badge line had no finding; D-075's "install only plugins from developers you trust" became "look into a plugin before you trust it with your library", at the user's choice of the footer sentence.
 
 ## Decisions
