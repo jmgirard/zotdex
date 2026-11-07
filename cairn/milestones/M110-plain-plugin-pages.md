@@ -87,7 +87,7 @@ text, which M109 set.
   quotes of renamed labels (near lines 169 and 209).
 - [x] T4: Update `test/site.test.ts` per AC1 to AC3, on the shared fixtures
   and the kept-record build.
-- [ ] T5: Search the AC4 strings, update `docs/site.md` and DESIGN.md where
+- [x] T5: Search the AC4 strings, update `docs/site.md` and DESIGN.md where
   they quote them, and add the CHANGELOG entry.
 - [ ] T6: Build the site from the deployed data, check AC5 in the browser
   pane, and run `pnpm test`.
@@ -105,5 +105,6 @@ text, which M109 set.
 - 2026-11-07: implement started on m110-plain-plugin-pages; the untracked `.claude/` folder is unrelated and stays unstaged.
 - 2026-11-07: T1 to T4 landed in one commit, since the new words fail the old expectations until the tests change; `keptTitle` in `site/src/data.ts` gives both Older data titles; the unused `day()` helper is gone; `longDay` on a paid fact's `read` relies on the schema's YYYY-MM-DD pattern; new tests cover the version table's headers, the Corrections text and headers, the badge card text, the "Supported versions:" line, and About's three label quotes; `pnpm test` 2515 passed, `pnpm check` 741 entries, 0 problems.
 - 2026-11-07: the M109 lesson on `&#39;` holds for inserted text but not for an attribute: a `title={…}` value keeps a raw apostrophe in the built page.
+- 2026-11-07: T5: updated `docs/site.md` (languages, categories, links, install note, version card, Details, Corrections, source label) and DESIGN.md's plugin page and About lines; added the CHANGELOG entry; the AC4 joined-text search over 4 files hits only DESIGN's "named … before M109" note; `pnpm test` 2515 passed.
 
 ## Decisions

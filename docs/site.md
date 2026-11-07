@@ -69,7 +69,7 @@ languages list, after overrides, in list order. Regional forms such as
 `zh-CN` and `zh-TW` share one code. Hold the pointer over a code to read its
 name. If the list has more than 3 codes, the cell shows the first 2 and "+N"
 for the rest. An empty cell means that no language is left, which the
-plugin's page shows as "Unknown (no translations found)".
+plugin's page shows as "Language not listed".
 The source link goes to the plugin's repository. The download link goes to
 the `.xpi` file that the index read, on the author's release. The author
 can replace that file later. A link whose address does not start with
@@ -229,11 +229,11 @@ gives the count with its label, such as "8,400 stars on GitHub", or
 "1 star on GitHub" for a count of 1. Screen readers skip the icon and the
 number and read hidden text with the same words. For any other address,
 the page has no repository line. If the plugin has categories, a line
-after the description lists them after the words "Index categories". Each
+after the description lists them after the words "Zotdex categories". Each
 category links to the home page filtered by it. Then come up to
 three links, each with an icon and text: "Download <version> (.xpi)" to the `.xpi`
-file that the index read, "Source" to the repository, or "Repository" for a
-plugin with a lock, and "Releases" to
+file that the index read, "Source code" to the repository, or "Repository"
+for a plugin with a lock, and "Releases" to
 the repository's releases page. If the download address does not start
 with `http://` or `https://`, the page has no download link. If the
 repository address does not, the page shows that address, and the releases
@@ -241,34 +241,37 @@ address after it, as plain text. A plugin whose read failed has no download or r
 
 A plugin page with a download link has an install note after those links.
 It says how to install the file in Zotero, and it gives a step for Firefox.
-It also says that a plugin has full access to Zotero and the computer, and
-that the index does not review its code before listing it. The note links to
-the "Installing a plugin" section of the About page (`#installing`).
+It also says that a plugin has full access to Zotero and the computer. It
+says that Zotdex doesn't test plugins' safety or features, and it tells the
+reader to look into a plugin before trusting it. The note links to the
+"Installing a plugin" section of the About page (`#installing`).
 
-A "Zotero compatibility" card follows. It names the plugin version that
+A "Zotero versions" card follows. It names the plugin version that
 the index read and holds a table, newest major first. The table has one
 row for each Zotero major from 7 to 10. It also has a row for each other
 major that the plugin's counted reports or start-test results name. Each
 row has three cells:
 
-- Declared: the mark and the word for how much of that major the declared
+- Supports: the mark and the word for how much of that major the declared
   range covers. The words are "Yes" (✓), "Partly" (◐), and "No" (a dash). If the
-  plugin declares no range, the cell shows "No range".
-- Start test: the result of the newest tested release of that major, in
+  plugin declares no range, the cell shows "Not stated".
+- Startup check: the result of the newest tested release of that major, in
   words, with that release, such as "Loaded Zotero 10.0.6". A dot (●)
   marks a start, and a cross (✕) marks a failure. If no release of that
-  major has a result, the cell shows "Not tested".
+  major has a result, the cell shows "Not checked".
 - User reports: the number of "works" reports and of "broken" reports on
   that major, as "Using the data" in [data.md](data.md#using-the-data)
   counts them. If no report counts, the
   cell shows "None yet".
 
 Under the table, the card shows a link to the About page. If the plugin
-declares a range, the declared range comes before that link. Then a line names the plugin version that the index read, beside a
-"Works" button and a "Broken" button. The buttons open the report forms on
-GitHub with the plugin id and that version filled in. If the last build
-failed to read a plugin, the card shows the failure in place of the table,
-with no report buttons. A plugin that keeps earlier facts shows the table
+declares a range, a "Supported versions:" line with the range, after
+overrides, comes before that link. Then a line names the plugin version that
+the index read, beside a "Works" button and a "Broken" button. The buttons
+open the report forms on GitHub with the plugin id and that version filled
+in. If the build that wrote the page failed to read a plugin, the card shows
+the failure and that build's day in place of the table. It then has no
+report buttons. A plugin that keeps earlier facts shows the table
 and the buttons for the version of those facts.
 
 An open "Details" card comes next. Its last lines link to the forms that ask
@@ -279,23 +282,25 @@ the plugin id. For a plugin with
 the card icon, it then gives the paid service fact, whether or not the build
 read the plugin. If the build
 read the plugin, it also lists facts about the repository and the release
-that the index read. Its last fact is "Menus and settings in". That fact names the
+that the index read, with dates such as "March 14, 2023". Its last fact is
+"Languages". That fact names the
 languages of the `languages` list that "Using the data" in
 [data.md](data.md#using-the-data) describes, which
 come from the plugin's locale folders. If a `languages` override applies to
 the plugin version that the index read, the override replaces that list.
 The fact does not say how complete each language is. If no language is
-left, the page shows "Unknown (no translations found)". The description
+left, the page shows "Language not listed". The description
 comes from the plugin's manifest, from the About text of its GitHub
 repository, or from an index override. So it can be in another language
 than the languages fact names. The card shows the manifest description and
 the GitHub description as two more facts, unless one is missing or blank. If
-the index has overrides for the plugin, an "Overrides" table under its own heading in the card
-lists them.
+the index has overrides for the plugin, a "Corrections by Zotdex" table
+under its own heading in the card lists them.
 
 The About page says how the index shows the declared range and how the
 start test runs. It says which user reports count. It also says how
-overrides and the Used column of the Overrides table work. Each page's footer
+overrides and the "In use" column of the "Corrections by Zotdex" table work.
+Each page's footer
 says: "Zotdex is an independent project, not part of Zotero, and it doesn't
 test the safety or features of the plugins it lists." The home page's intro
 says that Zotdex is independent and unofficial and doesn't review anyone's
@@ -329,8 +334,8 @@ a name that ends in `.xpi`, `.md`, `.txt`, `.rdf`, `.png`, `.jpg`, `.jpeg`,
 assets, screenshots, dist, build, releases, update, and updates. Any other name
 does. If no name counts, the row on the home page and the name on the plugin page
 show a lock, and the link to the repository reads "Repository" in place of
-"Source code" or "Source". When the read succeeds, the Details card of the plugin
-page shows "Source code at the repository's top level" with "Yes" or "No". "Yes"
+"Source code". When the read succeeds, the Details card of the plugin page
+shows "Source code in the repository's top folder" with "Yes" or "No". "Yes"
 does not mean an open-source license or an XPI built from that code. "Yes" can be
 wrong, because a name such as `LICENSE-MIT` counts. "No" can be wrong, because the
 index does not look inside folders.

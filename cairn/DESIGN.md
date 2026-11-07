@@ -55,8 +55,8 @@ with half the fullest tag's messages stays. They do not say the language
 of the description, which comes from the manifest, the GitHub About text,
 or an override (M055). A `languages` override records them for a plugin
 whose list is wrong or empty. Each plugin page shows them by name in the
-"Menus and settings in" fact of its Details card (M054). When no language
-is left, the fact reads "Unknown (no translations found)" (M036). The home
+"Languages" fact of its Details card (M054, M110). When no language is
+left, the fact reads "Language not listed" (M036, M110). The home
 page lists the plugins in one table, built in the order of its "Sort by"
 menu's default: `sortOrder("")` in `src/site/home-filter.ts` puts a higher
 `upstream.stars` first, with 0 as a value, a record with no count after every
@@ -137,8 +137,8 @@ star icon filled with `--star` and the number, in an `aria-hidden` span
 whose `title` gives the count and its words (`starsText`); a
 `.visually-hidden` span after it gives the same words to screen readers,
 as M054 does for the declared marks (M064). After the description, a page
-whose record has a category shows "Index categories", a link to the About
-page's Categories section, and each category's name as a link to the home
+whose record has a category shows "Zotdex categories" (M110), a link to
+the About page's Categories section, and each category's name as a link to the home
 page filtered by it, in `CATEGORIES` order (M066). Each such link's
 `aria-label` is `<name>: plugins in this category` (M091). The links are: the
 `.xpi` file (`upstream.xpiUrl`, only when it passes `safeHref`, in the
@@ -146,7 +146,7 @@ same plain button style as the others, D-029), the source ("Repository" for a
 record with `sourceInRepo: false`, M081), and the
 releases; a repo URL that fails `safeHref` shows as plain text. An install note
 follows when the `.xpi` link shows (M096), and then a
-"Zotero compatibility" card. For a read record it names the
+"Zotero versions" card (M110). For a read record it names the
 version read and holds one table row per major,
 newest first, for `ZOTERO_MAJORS` and each other major that the record's
 reports or start results name. The row's cells are the declared support,
@@ -154,17 +154,18 @@ the major's newest start result (`majorStart`, M053), and that major's
 report counts (M021). Under the table comes one line with the declared
 range, when there is one, and the link to the About page, then the "Works"
 and "Broken" buttons after a line naming the version read. For a record with a failure the card holds the
-failure and the About line. An open "Details" card (h2) lists the plugin
-id, the repository and release facts, and the "Menus and settings in"
-fact (M024, M033), with each override beside the upstream value it
-corrects under an h3 (M007, M015, M054), and a `description` override
-beside each upstream text that is not blank (M088). It ends with links to the
+failure with the day of the build that wrote the page (M110), and the About
+line. An open "Details" card (h2) lists the plugin id, the repository and
+release facts with dates from `longDay`, and the "Languages" fact (M024,
+M033, M110), with each override beside the upstream value it corrects under
+an h3, "Corrections by Zotdex" (M007, M015, M054, M110), and a
+`description` override beside each upstream text that is not blank (M088). It ends with links to the
 text-change form and the remove-plugin form (M079, M093). A "Badge for your
 README" card (`data-section="badge"`) comes last, with `badgeSnippet`'s
 Markdown in one `<code>` element (M105). The About page
 (`site/src/pages/about.astro`) holds the method notes: the declared range
 and its marks, the start test, which reports count, and how overrides and
-the Used column work (M054), the categories, each with its `about`
+the "In use" column work (M054, M110), the categories, each with its `about`
 text (M066), what the source fact means (M081), what the paid service
 mark means (M082), the grounds for removing a plugin (M093), how to install
 a plugin (M096), what the README badge says (M105), and the license terms

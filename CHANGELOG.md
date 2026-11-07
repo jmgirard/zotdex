@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+- Plugin pages now use the home page's plain words. The version card is
+  "Zotero versions", with "Supports" and "Startup check" columns and a
+  "Supported versions:" line. The Details card has labels such as
+  "Description in the plugin file", "Updates come from", and "Languages".
+  It shows "Language not listed" when no language is left, and dates such as
+  "March 14, 2023". Overrides show as "Corrections by Zotdex". The install
+  note says that Zotdex doesn't test plugins' safety or features. A plugin
+  that the page's build did not read names that build's day. An Older data
+  badge, on the home page and the plugin page, has a new tooltip. It says
+  that Zotdex couldn't reach the plugin in its latest update, and it gives
+  the day of the facts on the page.
 - The site now serves `logo.svg`, the full Zotdex logo with no background,
   and the README shows it beside its title.
 - The home page is now "Your field guide to Zotero plugins", with an intro
