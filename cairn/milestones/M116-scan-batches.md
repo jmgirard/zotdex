@@ -122,6 +122,7 @@ run's results) stay as they are.
 - 2026-11-07: T5 done: the code comments (in `13b4a901`), docs/data.md and docs/maintaining.md, DESIGN's Function Families entry, D-083, and the CHANGELOG entry (in `1328cc32`), and DESIGN's Known issues entry rewritten with T4's times and marked corrected M116. Choice: the CHANGELOG adds to M115's unreleased entry rather than a second entry, since both are unreleased. `pnpm test` 2713 passed.
 - 2026-11-07: claim audit: 41 claims read, 6 corrected — docs/data.md (the stop cases, the batch count, a cut line), docs/maintaining.md (the batch count, the order of the batch lines and the warning), src/malware-scan/scan.ts (the stopped-run comments and message). `pnpm test` 2713 passed, `pnpm check` 0 problems.
 - 2026-11-07: implement done: all 5 tasks checked, verify slot clean; status set to review.
+- 2026-11-07: step-7 approval: m116-scan-batches approved for merge
 
 ## Decisions
 
