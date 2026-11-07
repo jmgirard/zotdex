@@ -34,9 +34,9 @@ const offered = new Set(categoryOptions(plugins).map(({ value }) => value));
     <h2>Supported Zotero versions</h2>
     <p>
       Each plugin says which Zotero versions it supports, and Zotdex shows that range, with any corrections.{" "}
-      <span class="mark" data-support="all">{MARKS.all}</span> means it supports every release of that version,{" "}
-      <span class="mark" data-support="some">{MARKS.some}</span> some releases, and{" "}
-      <span class="mark" data-support="none">{MARKS.none}</span> none. A plugin that doesn't say shows no mark. The range
+      <span class="mark" data-support="all" role="img" aria-label="check mark">{MARKS.all}</span> means it supports every
+      release of that version, <span class="mark" data-support="some" role="img" aria-label="half circle">{MARKS.some}</span>{" "}
+      some releases, and <span class="mark" data-support="none" role="img" aria-label="dash">{MARKS.none}</span> none. A plugin that doesn't say shows no mark. The range
       is what the author says, not a test result.
     </p>
     <p>This update counted these as the newest releases:</p>
@@ -53,8 +53,8 @@ const offered = new Set(categoryOptions(plugins).map(({ value }) => value));
     <h2>Startup check</h2>
     <p>
       Zotdex installs each plugin in a clean Zotero setup, once for each Zotero version the plugin says it supports, and
-      waits 3 seconds. <span class="start" data-start="started">●</span> means Zotero lists it as active and it logged no
-      startup error. <span class="start" data-start="start-error">✕</span> means it failed to load, didn't install, or
+      waits 3 seconds. <span class="start" data-start="started" role="img" aria-label="dot">●</span> means Zotero lists it as active and it logged no
+      startup error. <span class="start" data-start="start-error" role="img" aria-label="cross">✕</span> means it failed to load, didn't install, or
       didn't finish loading within 90 seconds. Passing doesn't mean the plugin works, because the check doesn't use any
       of its features, and the plugin's own code can change its result. Zotdex checks a plugin again when its file
       changes, after a failed check, and once a week, so a result is usually less than a week old.

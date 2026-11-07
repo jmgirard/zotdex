@@ -308,7 +308,11 @@ for the override that applies to the plugin version that the index read, and
 version.
 
 The About page says in short form what the facts on a plugin page mean. Its
-intro links to this file for the full rules. It names the marks of the
+intro links to this file for the full rules. Other files hold some of those
+rules. "Using the data" in [data.md](data.md#using-the-data) gives the
+schedule of the start tests and the rules for counting reports. "Plugin entries" in
+[data.md](data.md#plugin-entries) covers overrides, and
+[requests.md](requests.md) covers text requests and removals. It names the marks of the
 declared range and says that a range is not a test result. It says how the
 start test runs and that a pass does not mean that the plugin works. It says
 that the report counts keep each person's latest report for each Zotero

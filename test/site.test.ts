@@ -24,6 +24,7 @@ import {
   type PluginRecord,
 } from "../site/src/data.ts";
 import type { PluginsFile } from "../src/build/build.ts";
+import { KEEP_MS } from "../src/build/keep.ts";
 import { badgeFor } from "../src/site/badge.ts";
 import { CATEGORIES, categories } from "../src/site/categories.ts";
 import { cutDescription, shownDescription } from "../src/site/description.ts";
@@ -979,6 +980,12 @@ describe("the About page", () => {
     expect(proseOf(id)).toBe(`${h2} ${prose}`);
   });
 
+  test("gives each mark in the prose a name that screen readers read", () => {
+    const marks = (id: string) => [...sectionOf(id).matchAll(/<span class="(?:mark|start)"[^>]*aria-label="([^"]*)"[^>]*>([^<]*)<\/span>/g)].map(([, label, mark]) => [mark, label]);
+    expect(marks("declared")).toEqual([[MARKS.all, "check mark"], [MARKS.some, "half circle"], [MARKS.none, "dash"]]);
+    expect(marks("start-test")).toEqual([["●", "dot"], ["✕", "cross"]]);
+  });
+
   test("the title, the meta description, the h1, and the intro read as the copy, and the intro links the site docs", () => {
     const html = about();
     expect(/<title>([^<]*)<\/title>/.exec(html)?.[1]).toBe("About: Zotdex");
@@ -1002,10 +1009,11 @@ describe("the About page", () => {
     expect(links("license")).toEqual([[LICENSE_HREF, "license page"]]);
   });
 
-  test("says 3 seconds and 90 seconds, the reporter's wait after the install and the start's time limit", () => {
+  test("says 3 seconds, 90 seconds, and 7 days: the reporter's wait after the install, the start's time limit, and how long older data stays", () => {
     const reporter = readFileSync(resolve(ROOT, "src/start-test/reporter/bootstrap.js"), "utf8");
     expect(/^const SETTLE_MS = (\d+);$/m.exec(reporter)?.[1]).toBe("3000");
     expect(START_LIMIT_MS).toBe(90 * 1000);
+    expect(KEEP_MS).toBe(7 * 24 * 60 * 60 * 1000);
   });
 
   test.each(["about/index.html", "404.html"])("%s says none of the index's old names", (file) => {
@@ -2441,13 +2449,6 @@ describe("a kept record", () => {
     expect(page(TWIN)).not.toContain("data-kept");
     // The kept facts still show as the facts of a read record.
     expect(page(KEPT)).toContain('data-fact="read-version">For version 1.2.0, the release this page shows</p>');
-  });
-
-  test("says on About when Zotdex keeps facts and for how long", () => {
-    const about = readFileSync(join(dir, "about/index.html"), "utf8");
-    const text = /<section class="card" id="older-data" data-about="older-data">(.*?)<\/section>/s.exec(about)?.[1].replace(/\s+/g, " ");
-    expect(text).toContain("<h2>Older data</h2>");
-    expect(unescaped(text ?? "")).toContain("it keeps what it found in the past 7 days and marks the plugin \"Older data\".");
   });
 
   test("writes the footer's day in UTC, so a build just after midnight UTC names that day in any time zone", () => {
