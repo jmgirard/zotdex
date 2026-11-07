@@ -38,7 +38,8 @@ import { themePage } from "./support/theme-page.ts";
 
 const ROOT = resolve(import.meta.dirname, "..");
 const FIXTURE = resolve(ROOT, "test/fixtures/site/plugins.json");
-const DISCLAIMER_TEXT = "Zotdex is an independent project, not part of Zotero, and it doesn't test the safety or features of the plugins it lists.";
+const DISCLAIMER_TEXT =
+  "Zotdex is an independent project, not part of Zotero, and it doesn't test the safety or features of the plugins it lists, beyond a malware scan by ClamAV.";
 const DATA_FILES = ["v1/plugins.json", "schemas/plugins.v1.schema.json", "schemas/index.v1.schema.json"];
 const fixture = JSON.parse(readFileSync(FIXTURE, "utf8")) as { plugins: { id: string }[] };
 const ids = fixture.plugins.map((plugin) => plugin.id);
@@ -185,7 +186,7 @@ describe("how to install a plugin", () => {
   const INSTALL_NOTE =
     "To install, save the .xpi file and drag it onto the Plugins window in Zotero (Tools → Plugins). " +
     "In Firefox, right-click the download link and choose Save Link As. " +
-    "A plugin has full access to Zotero and your computer, and Zotdex doesn't test plugins' safety or features, " +
+    "A plugin has full access to Zotero and your computer, and Zotdex doesn't test plugins' safety or features beyond a malware scan, " +
     "so look into a plugin before you trust it with your library. More about installing";
   const noteOf = (html: string) => [...html.matchAll(/<p class="install-note" data-fact="install-note">(.*?)<\/p>/gs)].map(([, text]) => text!);
   // Tags go with no space added, so a space that the template drops before a link shows here.
@@ -203,6 +204,16 @@ describe("how to install a plugin", () => {
       expect(html.replace(/>\s+</g, "><")).toMatch(/<div class="page-head" data-page-head>.*?<div class="actions" data-links>.*?<\/div><\/div><p class="install-note" data-fact="install-note">/s);
       expect(noteOf(html)[0]).toMatch(/<a href="\/about\/#installing">More about installing<\/a>/);
     }
+  });
+
+  // The lines that the malware scan wording replaced (cairn/references/plain-words-copy.md).
+  test("no built page holds the footer line or the safety sentence that the scan wording replaced", () => {
+    const oldFooter = "it doesn't test the safety or features of the plugins it lists.";
+    const oldSentence = "Zotdex doesn't test plugins' safety or features, so look";
+    const pages = htmlFiles(out).map((file) => textOf(readFileSync(join(out, file), "utf8")));
+    expect(pages.length).toBeGreaterThan(3);
+    expect(pages.filter((text) => text.includes(oldFooter) || text.includes(oldSentence))).toEqual([]);
+    expect(pages.every((text) => text.includes(DISCLAIMER_TEXT))).toBe(true);
   });
 
   test("the note gives the steps, the Firefox step, and the risk", () => {
@@ -950,8 +961,10 @@ describe("the About page", () => {
       "Installing a plugin",
       "Save the plugin's .xpi file, then in Zotero go to Tools → Plugins and drag the file onto the Plugins window. " +
         "In Firefox, right-click the download link and choose Save Link As. " +
-        "A plugin has full access to Zotero and your computer, and Zotdex doesn't test plugins' safety or features, " +
+        "A plugin has full access to Zotero and your computer, and Zotdex doesn't test plugins' safety or features beyond a malware scan, " +
         "so look into a plugin before you trust it with your library. " +
+        "The malware scan checks each plugin file once a week with ClamAV, a free antivirus scanner. " +
+        "It finds known malware only, so a clean scan doesn't mean a plugin is safe. " +
         "A bot adds most new plugins, and a maintainer steps in when the bot flags one, " +
         "mainly to keep out entries that mislead people about what a plugin is or who makes it.",
     ],

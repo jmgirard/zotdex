@@ -175,7 +175,8 @@ export function overrideUsed(record: PluginRecord, override: Override): boolean 
 }
 
 // What every page's footer says about the index itself.
-export const DISCLAIMER = "Zotdex is an independent project, not part of Zotero, and it doesn't test the safety or features of the plugins it lists.";
+export const DISCLAIMER =
+  "Zotdex is an independent project, not part of Zotero, and it doesn't test the safety or features of the plugins it lists, beyond a malware scan by ClamAV.";
 
 // The About page's section on installing a plugin.
 export const INSTALL_HREF = `${BASE}about/#installing`;
