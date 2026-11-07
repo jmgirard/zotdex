@@ -53,5 +53,5 @@ The code is under the [MIT License](LICENSE), except the third-party parts
 that [docs/license.md](docs/license.md) names. The index's facts, its
 categories, and its maintainer's text are under
 [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/). Plugin names,
-descriptions, icons, screenshots, and other text keep their authors' or owners'
-terms. The license page gives the details.
+descriptions, icons, screenshots, and other work from plugin authors and owners
+keep their terms. The license page gives the details.

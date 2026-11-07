@@ -452,7 +452,8 @@ user reports. The exception is a report that is abuse.
   directory name that `entryNameProblem` refuses, and names that differ
   only in case; `writeEntry` refuses the same ids (M031). It refuses an
   override reason of only JavaScript `\s` whitespace and Unicode format
-  characters, two overrides with the same `field` and `version`, and names
+  characters (since M113 and M114 also an `iconHidden` reason and a
+  screenshot's description and reason), two overrides with the same `field` and `version`, and names
   a UTF-8 byte-order mark at the start of an entry file (M032). It reads the
   package root's `delisted.json` (`src/check/delisted.ts`, or the file that
   `ZPI_DELISTED` names) for any `dir`, and refuses a listed id, a listed
@@ -763,7 +764,8 @@ reused._
 
 - A pnpm project in TypeScript. Node runs the `.ts` files through its
   built-in type stripping, and `pnpm test` runs `tsc --noEmit`, then Vitest.
-- Entries live in `plugins/<id>/` as `meta.json` and `index.json` (D-002).
+- Entries live in `plugins/<id>/` as `meta.json` and `index.json` (D-002), with
+  `screenshot.webp` beside them for a plugin with a screenshot (M114, D-081).
   `schemas/index.v1.schema.json` is the `index.json` schema.
 - `src/check/` holds the checker. It reads the registry schema from
   zotero-plugin-registry at a pinned commit, checks the file against a pinned

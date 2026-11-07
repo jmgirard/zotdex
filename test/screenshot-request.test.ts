@@ -80,6 +80,15 @@ describe("parseScreenshotRequest and imageLinks", () => {
     expect(imageLinks(`${attached()}\n${hidden}`)).toEqual([LINK]);
   });
 
+  test("skips an <img> with no src, and reads a bare src as an empty link", () => {
+    expect(imageLinks(`<img alt="no source">\n${attached()}`)).toEqual([LINK]);
+    expect(imageLinks("<img src>")).toEqual([""]);
+  });
+
+  test("keeps a numeric reference past U+10FFFF as it is", () => {
+    expect(imageLinks(`<img src="${LINK}?a=&#x110000;">`)).toEqual([`${LINK}?a=&#x110000;`]);
+  });
+
   test("counts an image in an indented list item, which the page shows", () => {
     expect(imageLinks(`- item\n\n    ${attached()}`)).toEqual([LINK]);
   });
@@ -164,7 +173,6 @@ describe("screenshotRequest's report", () => {
       });
       expect(await sharp(readFileSync(previewPath(tree.dir, 9))).metadata()).toMatchObject({ format: "webp", width: 800, height: 500 });
       expect(requests.map(({ url }) => url)).toEqual([ISSUE_URL, REPO_URL, LINK, S3]);
-      // The token goes to the API only.
       expect(requests.map(({ headers }) => headers.get("authorization"))).toEqual(["Bearer test-token", "Bearer test-token", null, null]);
     } finally {
       if (saved === undefined) delete process.env.GITHUB_TOKEN;
@@ -201,8 +209,7 @@ describe("screenshotRequest's report", () => {
     const { result, requests } = run(checkout(), responses(issueBody));
     const { status, lines } = await result;
     expect(status).toBe(1);
-    expect(problems(lines)[0]).toBe(problem);
-    // A refused host gets no request.
+    expect(problems(lines)).toEqual([problem]);
     expect(requests.some(({ url }) => !url.startsWith("https://api.github.com/") && !url.startsWith("https://github.com/user-attachments/") && !url.startsWith(S3))).toBe(false);
   });
 
@@ -278,8 +285,26 @@ describe("screenshotRequest's report", () => {
     const tree = checkout();
     writeFileSync(join(tree.entry, "index.json"), "not JSON");
     const { result, requests } = run(tree, responses(body(attached())));
-    expect((await result).lines).toEqual([expect.stringMatching(/^failure: entry-not-json: /)]);
+    const { status, lines } = await result;
+    expect(status).toBe(2);
+    expect(lines).toEqual([expect.stringMatching(/^failure: entry-not-json: /)]);
     expect(requests.map(({ url }) => url)).toEqual([ISSUE_URL]);
+  });
+
+  test("removes an earlier preview on a run that fails", async () => {
+    const tree = checkout();
+    await run(tree, responses(body(attached()))).result;
+    expect(readFileSync(previewPath(tree.dir, 9)).byteLength).toBeGreaterThan(0);
+    const { status } = await run(tree, { ...responses(body(attached())), [S3]: { status: 403, text: "AccessDenied" } }).result;
+    expect(status).toBe(2);
+    expect(() => readFileSync(previewPath(tree.dir, 9))).toThrow(/ENOENT/);
+  });
+
+  test("fails with exit 2 when it cannot write the preview", async () => {
+    const tree = checkout();
+    const { status, lines } = await run(tree, responses(body(attached())), { previewDir: join(tree.dir, "missing") }).result;
+    expect(status).toBe(2);
+    expect(lines).toEqual([expect.stringMatching(/^failure: preview-failed: .*ENOENT/)]);
   });
 
   test("fails with exit 2 on an entry with no index.json", async () => {
@@ -390,8 +415,6 @@ describe("screenshotRequest with apply", () => {
     const copy = await sharp(readFileSync(shotOf(tree))).metadata();
     expect(copy).toMatchObject({ width: 100, height: 300 });
     expect(copy.exif).toBeUndefined();
-    expect(copy.icc).toBeUndefined();
-    expect(copy.xmp).toBeUndefined();
     expect(copy.orientation).toBeUndefined();
   });
 

@@ -37,8 +37,8 @@ export interface ScreenshotOptions extends IssueOptions {
   previewDir?: string;
 }
 
-// The preview file of one issue's copy. A run on an add or replace request that gets past the
-// download replaces it, or removes it when there is no copy. A removal and a failure leave it.
+// The preview file of one issue's copy. Each run removes it once it has read the issue, and a run
+// that makes a copy writes it again.
 export const previewPath = (dir: string, issue: number) => join(dir, `zotdex-screenshot-${issue}.webp`);
 
 // A rule that the request breaks, found while checking the link or reading the image.
@@ -151,6 +151,16 @@ export async function screenshotRequest(options: ScreenshotOptions): Promise<Req
     return failed("entry-unreadable", `${indexPath}: ${(error as Error).message}`);
   }
 
+  // The maintainer looks at the preview, the copy that --apply writes, and not at the issue page,
+  // which can show another image than the link that the command reads. An earlier run's preview
+  // goes first, so a run that makes no copy leaves none to mislead.
+  const preview = previewPath(previewDir, issue);
+  try {
+    await rm(preview, { force: true });
+  } catch (error) {
+    return failed("preview-failed", `${preview}: ${(error as Error).message}`);
+  }
+
   const removal = request.screenshot === "";
   const lines = [`plugin: ${quoted(record.id)}`];
   const problems: string[] = [];
@@ -189,18 +199,15 @@ export async function screenshotRequest(options: ScreenshotOptions): Promise<Req
       problems.push(...image.problems);
       copy = image.copy;
     }
-    // The maintainer looks at this file, the copy that --apply writes, and not at the issue page,
-    // which can show another image than the link that the command reads.
-    const preview = previewPath(previewDir, issue);
-    try {
-      if (copy) {
-        await writeFile(preview, copy);
-        lines.push(`preview: ${quoted(preview)}`);
-      } else {
-        await rm(preview, { force: true });
+    if (copy) {
+      try {
+        // A new file only, so a file that another user of a shared temporary folder put there
+        // since the removal above fails the run instead of standing in for the copy.
+        await writeFile(preview, copy, { flag: "wx" });
+      } catch (error) {
+        return failed("preview-failed", `${preview}: ${(error as Error).message}`);
       }
-    } catch (error) {
-      return failed("preview-failed", `${preview}: ${(error as Error).message}`);
+      lines.push(`preview: ${quoted(preview)}`);
     }
     for (const problem of textProblems("description", request.description, shownName(record))) problems.push(`description-${problem}`);
   }

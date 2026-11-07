@@ -304,17 +304,23 @@ than 1 MiB, ask the owner for a smaller image.
 
 Before you apply a screenshot, open the preview file and look at it. Do not
 rely on the issue page, which can show another image than the one the command
-reads. The `--apply` run reads the image again, so make sure that its SHA-256
-is the same as in the run whose preview you looked at. With `--apply`, the
-command writes the
-copy to `plugins/<id>/screenshot.webp` and sets the `screenshot` field of the
-entry's `index.json`, as [data.md](data.md#plugin-entries) says. It reads
+reads. Each run removes the issue's earlier preview, so a run that prints no
+`preview:` line leaves no file to look at. With `--apply`, the command writes
+the copy to `plugins/<id>/screenshot.webp` and sets the `screenshot` field of
+the entry's `index.json`, as [data.md](data.md#plugin-entries) says. It reads
 `index.json` again just before it writes, so it keeps other edits to the file.
 If the command cannot write `index.json`, the image file and `index.json` still
-match. A removal
-deletes both. The command writes nothing past a broken rule, and
-`--owner-checked` works as in `pnpm text-request`. Then answer the issue and
-open a pull request with the change.
+match. A removal deletes both. The command writes nothing past a broken rule,
+and `--owner-checked` works as in `pnpm text-request`.
+
+The `--apply` run reads the image again. Its files stay in your checkout until
+you commit them. If its SHA-256 differs from the run whose preview you looked
+at, the owner changed the image: restore the entry's files and run the report
+again. Otherwise answer the issue and open a pull request with the change.
+
+A maintainer can also remove a shown screenshot without a request, as for any
+entry file: delete `plugins/<id>/screenshot.webp` and the `screenshot` field of
+`index.json` in a pull request.
 
 ## Removing a plugin
 

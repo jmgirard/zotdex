@@ -1248,7 +1248,10 @@ issue form, and the maintainer looks at the image and applies it by hand with
 owner check. The user rejected screenshots that the build reads from READMEs,
 because the build cannot tell a screenshot from other images and the user did
 not want images that no one looked at. Unlike an icon, so, a screenshot shows
-only after a maintainer looks at it.
+only after a maintainer looks at it. D-080 rejected this owner-asks,
+maintainer-applies model for icons, because few plugins would get one when
+every manifest already names an icon; no file gives a plugin's screenshot, so
+here the model is the only source the user accepted.
 
 The index commits a copy, `plugins/<id>/screenshot.webp`, and serves it under
 `v1/screenshots/`, rather than linking the attachment, so the owner cannot

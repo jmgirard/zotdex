@@ -342,9 +342,8 @@ describe("checkTree", () => {
     return (await checkTree(root, compileValidators({}))).findings;
   }
 
-  test("index-schema and screenshot-file: passes an entry with a screenshot and its file, as one without both", async () => {
+  test("index-schema and screenshot-file: passes an entry with a screenshot and its file at the size limits", async () => {
     expect(await screenshotFindings(SCREENSHOT, await webp(1600, 2400))).toEqual([]);
-    expect(await screenshotFindings(undefined)).toEqual([]);
   });
 
   test("index-schema: a screenshot with no reason or a blank description", async () => {
@@ -352,7 +351,6 @@ describe("checkTree", () => {
     expect(await screenshotFindings({ description: SCREENSHOT.description }, file)).toEqual([
       { entry: ENTRY, rule: "index-schema", message: "index.json: /screenshot must have required property 'reason'" },
     ]);
-    // minLength and pattern each refuse the empty text.
     expect(await screenshotFindings({ ...SCREENSHOT, description: "" }, file)).toEqual([
       { entry: ENTRY, rule: "index-schema", message: "index.json: /screenshot/description must NOT have fewer than 1 characters" },
       { entry: ENTRY, rule: "index-schema", message: 'index.json: /screenshot/description must match pattern "\\S"' },

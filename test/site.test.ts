@@ -2204,7 +2204,6 @@ describe("the built site", () => {
       expect(at, id).toBeGreaterThan(html.indexOf('<div class="actions" data-links>'));
       expect(at, id).toBeLessThan(next);
     }
-    // The icon comes first on the page that has one.
     const iconPage = page("first-plugin@example.org");
     expect(iconPage.indexOf("data-icon-tile")).toBeGreaterThan(-1);
     expect(iconPage.indexOf("data-screenshot>")).toBeGreaterThan(iconPage.indexOf("data-icon-tile"));
