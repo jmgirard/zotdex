@@ -21,9 +21,9 @@ in the copy block below, and every page links to Zotdex's GitHub repository
 table, row tooltips, legend, `<title>`, meta description), every page's
 footer, and a GitHub link in every page's top bar and footer; the shared
 words in `site/src/data.ts` (`DISCLAIMER`, `supportText`, `START_WORDS`,
-`starsText`, the no-language text), so plugin pages show the same tooltip and
-start-result words; the tests, `docs/site.md`, DESIGN.md, and one Unreleased
-CHANGELOG entry.
+`starsText`, `PAID_SERVICE_TEXT`) and `NoSourceMark`'s text, so plugin pages
+show the same tooltip, mark, and start-result words; the tests,
+`docs/site.md`, DESIGN.md, and one Unreleased CHANGELOG entry.
 
 Copy block (approved 2026-11-07):
 - Heading: "Your field guide to Zotero plugins"
@@ -41,7 +41,7 @@ Copy block (approved 2026-11-07):
 - Tooltips: "Supports Zotero N"; "Supports some of Zotero N (<range>)";
   "Doesn't support Zotero N"; "Startup check: loaded in Zotero <v>" and
   "failed to load", "didn't install", "didn't finish loading" for the other
-  results; "<n> stars on GitHub" ("1 star on GitHub"); "Language not listed"
+  results; "<n> stars on GitHub" ("1 star on GitHub")
 - Legend: ✓ "Supports this version of Zotero"; ◐ "Supports some releases of
   this version"; – "Doesn't support this version"; Older data "Zotdex
   couldn't reach this plugin today, so this row shows what it found in the
@@ -62,8 +62,9 @@ Copy block (approved 2026-11-07):
   each one does, who makes it, and which Zotero versions it supports."
 
 **Out:** other text on plugin pages and About (headers such as "Start test",
-the Details card), which the row "Use plain words on plugin pages and About"
-holds; real trust signals for plugins, set aside by the user.
+the Details card, and "Language not listed", which shows only there), which
+the row "Use plain words on plugin pages and About" holds; real trust
+signals for plugins, set aside by the user.
 
 ## Acceptance criteria
 
@@ -71,24 +72,37 @@ holds; real trust signals for plugins, set aside by the user.
   block's heading, and its intro paragraph, with tags removed and spaces
   joined, reads the copy block's intro, as site tests show.
 - [ ] AC2: The built home page's legend lists the copy block's nine entries
-  in order and nothing else, as a site test reading the legend shows.
+  in order and nothing else, and each row's lock and card marks carry the
+  same text as their legend entries in title and hidden text, as site tests
+  show.
 - [ ] AC3: The built home page's control labels, sort options, table
-  headers, and row tooltips, and the home script's empty-result text, read
-  as the copy block lists, as site tests and `test/home-filter.test.ts`
-  show; a built plugin page's start results use the new words.
+  headers, and row tooltips (the `<range>` being `rangeText`'s output), and
+  the home script's empty-result text, read as the copy block lists, and
+  each start mark's hidden text equals its title, as site tests and
+  `test/home-filter.test.ts` show; a built plugin page's start cells read
+  "Loaded", "Failed to load", "Didn't install", and "Didn't finish loading"
+  for started, start-error, not-installed, and timed-out, and its support
+  and stars tooltips read as the home ones.
 - [ ] AC4: Every built page's footer reads the copy block's four footer
-  lines, and its top bar holds one link to
-  `https://github.com/jmgirard/zotdex` labeled "Zotdex on GitHub", as a site
-  test over the build's page walk shows.
+  lines, with the test build's date as "Updated October 25, 2026." in UTC,
+  and its top bar holds one link to `https://github.com/jmgirard/zotdex`
+  labeled "Zotdex on GitHub", as a site test over the build's page walk
+  shows.
 - [ ] AC5: The built home page's `<title>`, `og:title`, meta description, and
   `og:description` read as the copy block lists, as a site test shows.
-- [ ] AC6: For each replaced string the copy block's lines change (listed in
-  T5), `git grep -n -F` over `site/`, `src/`, `test/`, `docs/`, and
-  `README.md` at the branch head lists no line.
-- [ ] AC7: In the browser pane at 375 px and 1280 px, the built home page and
-  one plugin page show the new text and the GitHub link with
-  `scrollWidth` equal to `clientWidth`; `pnpm test` passes; `CHANGELOG.md`
-  has one Unreleased entry for the change.
+- [ ] AC6: `git grep -n -F` at the branch head over `site/src/`, `src/site/`,
+  `docs/site.md`, and `README.md`, for each of "Plugins for Zotero 7 and
+  later", "a Zotero plugin index", "Declares all of Zotero", "Declares part
+  of Zotero", "Does not declare Zotero", "GitHub Star", "failed at startup",
+  "did not install", "gave no answer in time", "No plugins match these
+  filters", "Menus and settings", "All languages", "Declares Zotero",
+  "cannot vet the plugins", "The data comes from the build of", "Data
+  file:", "No mark:", and "Started in the start test", lists no line.
+- [ ] AC7: In the browser pane at 375 px and 1280 px, the built home page's
+  heading, footer, and GitHub links, and one plugin page's footer and
+  GitHub links, are visible, with `scrollWidth` equal to `clientWidth`;
+  `pnpm test` passes; `CHANGELOG.md` has one Unreleased entry for the
+  change.
 
 ## Coverage
 
@@ -106,8 +120,9 @@ holds; real trust signals for plugins, set aside by the user.
   table headers, legend, `<title>`, and description to the copy block; drop
   the `DISCLAIMER` import there.
 - [ ] T2: In `site/src/data.ts` and `src/site/home-filter.ts`, set
-  `supportText`, `START_WORDS`, the start tooltip prefix, `starsText`, the
-  no-language text, and the empty-result text to the copy block.
+  `supportText`, `START_WORDS`, the start tooltip and hidden-text prefix,
+  `starsText`, `PAID_SERVICE_TEXT`, `NoSourceMark`'s text, and the
+  empty-result text to the copy block.
 - [ ] T3: In `site/src/data.ts` and `site/src/layouts/Base.astro`, set
   `DISCLAIMER` and the footer lines, format the build date as "Month D,
   YYYY", and add the GitHub mark (Lucide's path, in `Icon.astro`) to the top
@@ -128,6 +143,7 @@ holds; real trust signals for plugins, set aside by the user.
 - 2026-11-07: lessons used: 2026-10-25 (M001) pnpm via npx; 2026-10-26 (M015) serve the built site for the browser pane; 2026-10-27 (M021) Astro drops the space before a link; 2026-10-28 (M035) download the deployed data for a hand check; 2026-10-28 (M036) end an Edit at a line break; 2026-11-06 (M108) full-size zoom of a wide layout.
 - 2026-11-07: plan widened before implement at the user's request ("widen M109 to do all of this"): from the heading and intro to the whole home page's text, the footer, shared tooltip words, and a GitHub link; 7 criteria, at the split line, kept as one milestone at the user's request.
 - 2026-11-07: question set: home copy — the copy block, approved line by line by the user in chat.
+- 2026-11-07: criteria audit (full mode, fresh Opus) of the widened criteria returned 8 findings, all taken: "Language not listed" shows only on plugin pages, so it moved to Out; AC2 covers the lock and card marks' shared text; AC3 pins the hidden start text, the plugin page's start cells, and `rangeText`; AC4 names the fixture date; AC6 lists the exact old strings and greps `site/src/`, `src/site/`, `docs/site.md`, and README.md; AC7 names what must be visible.
 
 ## Decisions
 
