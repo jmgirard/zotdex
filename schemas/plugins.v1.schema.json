@@ -178,7 +178,7 @@
           "pattern": "^[0-9a-f]{64}$"
         },
         "icon": {
-          "description": "The plugin's icon: a 96 by 96 PNG that the build drew from the file that the manifest's icons names, at this path relative to the folder of this data file. Its file name is the SHA-256 of its bytes. Absent when the manifest names no icon, the build cannot read or draw it, it is a plugin template's stock icon, a maintainer hid it (iconHidden in index.json), and in data written before the build wrote it.",
+          "description": "The plugin's icon: a 96 by 96 PNG that the build drew from the file that the manifest's icons names, at this path relative to the folder of this data file. Its file name is the SHA-256 of its bytes. Absent when the manifest names no icon, the build cannot read or draw it, it is a stock icon of zotero-plugin-template, a maintainer hid it (iconHidden in index.json), the record keeps earlier facts and the build cannot read the earlier icon file back, and in data written before the build wrote it.",
           "type": "string",
           "pattern": "^icons/[0-9a-f]{64}\\.png$"
         },

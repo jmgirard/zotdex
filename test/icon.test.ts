@@ -1,7 +1,17 @@
 import { createHash } from "node:crypto";
 import sharp from "sharp";
 import { beforeAll, describe, expect, test } from "vitest";
-import { pickIconPath, redrawIcon } from "../src/upstream/icon.ts";
+import { readPreviousIcons } from "../src/build/previous.ts";
+import { iconFormat, pickIconPath, redrawIcon } from "../src/upstream/icon.ts";
+
+describe("readPreviousIcons", () => {
+  test("reads no path of another shape", async () => {
+    const urls: string[] = [];
+    const fetch = async (url: string) => (urls.push(url), new Response("x"));
+    const found = await readPreviousIcons("https://example.org/v1/plugins.json", ["../plugins.json", "icons/a.png"], fetch, 1000);
+    expect([found.size, urls]).toEqual([0, []]);
+  });
+});
 
 describe("pickIconPath", () => {
   test.each<[string, unknown, string | undefined]>([
@@ -50,6 +60,25 @@ describe("redrawIcon", () => {
     const { format, width, height } = await sharp(icon!.png).metadata();
     expect({ format, width, height }).toEqual({ format: "png", width: 96, height: 96 });
     expect(icon!.sha256).toBe(createHash("sha256").update(icon!.png).digest("hex"));
+  });
+
+  test("reads an SVG after a byte-order mark, a comment, and a doctype", async () => {
+    const svg = '﻿<!-- drawn by hand -->\n<!DOCTYPE svg>\n<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8"><rect width="8" height="8"/></svg>';
+    expect(iconFormat(new TextEncoder().encode(svg))).toBe("svg");
+    expect(await redrawIcon(new TextEncoder().encode(svg), new Set())).toBeDefined();
+  });
+
+  test("gives no icon for a source over 4096 px tall", async () => {
+    const tall = await sharp({ create: { width: 1, height: 4097, channels: 3, background: "#c00" } }).png().toBuffer();
+    expect(await redrawIcon(new Uint8Array(tall), new Set())).toBeUndefined();
+  });
+
+  test("writes no metadata from the source", async () => {
+    const tagged = await sharp(sources.png).withExif({ IFD0: { Copyright: "someone" } }).jpeg().toBuffer();
+    expect((await sharp(tagged).metadata()).exif).toBeDefined();
+    const icon = await redrawIcon(new Uint8Array(tagged), new Set());
+    const { exif, icc, xmp } = await sharp(icon!.png).metadata();
+    expect({ exif, icc, xmp }).toEqual({ exif: undefined, icc: undefined, xmp: undefined });
   });
 
   test("draws an SVG's shapes, not an empty image", async () => {

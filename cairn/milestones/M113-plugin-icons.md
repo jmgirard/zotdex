@@ -1,6 +1,6 @@
 # M113: Show each plugin's own icon on its page
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** normal
 - **Depends on:** —
 - **Driving RR:** —
@@ -129,3 +129,5 @@ right column under the icon → M114; owner-submitted icons (the user chose auto
 - 2026-11-07: implement chose a grid with a text column over a floated icon, because M114's screenshot must move below `.actions` at narrow widths, which a float cannot do.
 - 2026-11-07: T5 done: About gains the "Icons" section (`#icons`) after Descriptions and the license line reads "icons, and other work", both word for word from `cairn/references/plain-words-copy.md`; the About COPY table in `test/site.test.ts` holds both, so its order and prose tests match them; no other file held the old license line; verify clean (2546 tests, 745 entries).
 - 2026-11-07: T6 done: `docs/data.md` documents `upstream.icon` and `iconHidden`, `docs/maintaining.md` the icon writes, the hide, and the kept-icon read, and `docs/license.md` the icons' terms; DESIGN's Contract boundary and the build's architecture note name the icon; D-080 records the choice; CHANGELOG gains the entry; `build.yml` uploads and digests all of `dist/`, so `v1/icons/` reaches the deploy with no workflow change; verify clean (2546 tests, 745 entries), `cairn_validate` green.
+- 2026-11-07: claim audit: 110 claims read, 4 corrected — src/build/build.ts, test/build.test.ts, docs/data.md, schemas/plugins.v1.schema.json; also backed 4 untested comments with tests in test/icon.test.ts and test/build.test.ts (SVG after a BOM, comment, and doctype; a tall source; no metadata; no read of a path of another shape; no data file after a failed icon write); the same reader re-read all 5 and found them true; verify clean (2551 tests, 745 entries).
+- 2026-11-07: implement complete; status review.

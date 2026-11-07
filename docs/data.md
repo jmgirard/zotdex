@@ -76,6 +76,8 @@ by the SHA-256 of its bytes. In these cases the field is absent:
 - The build cannot read or draw the file.
 - The file is a stock icon of zotero-plugin-template.
 - A maintainer hid the icon with `iconHidden`.
+- The record keeps earlier facts, and the build cannot read the earlier
+  icon file back.
 
 Data written before the build wrote this field has none. The
 field is new in schema v1. If you validate against a saved copy of the

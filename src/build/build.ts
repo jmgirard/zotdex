@@ -416,9 +416,9 @@ export function checkOutput(value: unknown): string[] {
 const SCHEMAS = join(import.meta.dirname, "..", "..", "schemas");
 const PUBLISHED_SCHEMAS = ["plugins.v1.schema.json", "index.v1.schema.json"];
 
-// Copies the published schemas to <outDir>/schemas/, writes each of `icons` to <outDir>/v1/
-// at its path, then writes text to <outDir>/v1/plugins.json, and last removes each other file
-// in <outDir>/v1/icons/. Each file goes through a temporary file, so a failed write leaves any
+// Writes each of `icons` to <outDir>/v1/ at its path, copies the published schemas to
+// <outDir>/schemas/, then writes text to <outDir>/v1/plugins.json, and last removes each other
+// file in <outDir>/v1/icons/. Each file goes through a temporary file, so a failed write leaves any
 // earlier file whole, and the data is written only after the icons it names.
 export async function writeData(
   outDir: string,

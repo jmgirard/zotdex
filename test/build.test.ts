@@ -1579,7 +1579,16 @@ describe("buildData icons", () => {
     expect(checkOutput(output)).toEqual([`/plugins/${index}/upstream/icon must match pattern "^icons/[0-9a-f]{64}\\.png$"`]);
   });
 
-  test("writeData writes each icon before the data and removes other files in v1/icons", async () => {
+  test("writeData writes no data file when an icon write fails", async () => {
+    const out = tempDir();
+    // A directory where the icon file would go makes its rename fail.
+    mkdirSync(join(out, "v1", "icons", `${"c".repeat(64)}.png`), { recursive: true });
+    const written = await writeData(out, "{}\n", new Map([[`icons/${"c".repeat(64)}.png`, png]]));
+    expect(written).toMatchObject({ ok: false, message: expect.stringContaining("cannot write") });
+    expect(existsSync(join(out, "v1", "plugins.json"))).toBe(false);
+  });
+
+  test("writeData writes each icon and removes other files in v1/icons", async () => {
     const out = tempDir();
     mkdirSync(join(out, "v1", "icons"), { recursive: true });
     writeFileSync(join(out, "v1", "icons", "stale.png"), "old");
