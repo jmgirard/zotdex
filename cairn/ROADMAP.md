@@ -7,6 +7,7 @@ _Last hygiene check: 2026-11-07 (M108 review: full mark in the top bar; 2 parked
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
+| M109 | Make the home page a field guide | planned | — | high | milestones/M109-field-guide-home.md |
 | M108 | Show the full Zotdex mark in the top bar | done | — | high | milestones/archive/M108-full-mark-top-bar.md |
 | M107 | Shorten the README and move its detail to docs/ | done | — | normal | milestones/archive/M107-short-readme.md |
 | M106 | Replace the puzzle piece with the Zotdex lens mark | done | — | high | milestones/archive/M106-zotdex-lens-mark.md |

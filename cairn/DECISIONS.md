@@ -1142,3 +1142,15 @@ name beside it moves to the next size of the type scale, at the user's request.
 `favicon.svg` and `favicon.png` keep the lens, and the phone icon and link
 preview keep the full mark. The rest of D-072 stands. This choice is wrong if
 the lights or lid line do not show in the top bar at the default text size.
+
+### D-075: The home intro says in its own words that Zotdex is independent and does not review code, annotating D-051 and D-064
+
+2026-11-07, M109 plan. D-051 and D-064 kept the shared disclaimer sentence in
+the home intro. The user asked for the home heading and intro to read for
+people, and picked "Your field guide to Zotero plugins" with an intro that
+says Zotdex is independent and unofficial and does not review anyone's code.
+The intro no longer quotes the shared sentence; every page's footer still
+does, so the "not affiliated with or endorsed by Zotero" and "cannot vet"
+wording stays on the home page. About keeps Zotero's full-access warning that
+D-064 added. This choice is wrong if a reader takes the home intro to mean
+that the index checks plugins.
