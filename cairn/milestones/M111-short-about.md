@@ -30,7 +30,7 @@ the docs moved from README" holds.
 
 ## Acceptance criteria
 
-- [ ] AC1: The built About page's `<h1>`, intro, and each section's `<h2>`
+- [x] AC1: The built About page's `<h1>`, intro, and each section's `<h2>`
   and prose, with tags removed and spaces joined, read as the "About page
   (M111)" section of the copy file, section by section in its order, with
   each section's `id` unchanged and `{…}` filled from the code; the copy's
@@ -39,19 +39,19 @@ the docs moved from README" holds.
   text; the category and newest-release list items are unchanged in form;
   and the removal form and license page phrases link to
   `REMOVE_PLUGIN_HREF` and `LICENSE_HREF`; as site tests show.
-- [ ] AC2: The built About page's `<title>` and meta description, the
+- [x] AC2: The built About page's `<title>` and meta description, the
   intro's "site docs" link to
   `https://github.com/jmgirard/zotdex/blob/main/docs/site.md`, and the 404
   page's heading and text, with "See all plugins" linking home and "About
   page" linking `/about/`, read as the copy file lists, as site tests show.
-- [ ] AC3: The text of the built `about/index.html` and `404.html`, with
+- [x] AC3: The text of the built `about/index.html` and `404.html`, with
   tags removed, holds none of "the index", "start test", and "declared
   range" in any letter case, as a site test shows.
-- [ ] AC4: Reading `site/src/pages/about.astro` at the commit the M111
+- [x] AC4: Reading `site/src/pages/about.astro` at the commit the M111
   branch is cut from, sentence by sentence, a file under `docs/` at the
   branch head states the rule of each sentence that the new About leaves
   out.
-- [ ] AC5: Each sentence of `docs/site.md` and `cairn/DESIGN.md` at the
+- [x] AC5: Each sentence of `docs/site.md` and `cairn/DESIGN.md` at the
   branch head that says what the About page states, found by searching
   their joined text for "About", names only points that the new About
   states.
@@ -111,3 +111,11 @@ the docs moved from README" holds.
 - 2026-11-07: implement done, status review: `pnpm test` 2503 passed, `pnpm check` 0 problems.
 
 ## Decisions
+
+## Review
+
+- AC1 evidence (2026-11-07, branch head 3e4aaec1, site rebuilt to the scratchpad from the 2026-11-07 data): a scratch script parsed the copy file's "About page (M111)" section, dropped its directions, and compared the built `about/index.html`: h1 and intro, the 14 sections in order with their ids, title, and meta all match (0 problems); the same script on M110's built About gives 16 problems; site tests pass for each copy section, the section order and ids, the category list and links, the newest-release list (known 10.0.7 and no known release), and the removal form and license page links (48 About, 404, and release tests passed).
+- AC2 evidence: site tests "the title, the meta description, the h1, and the intro read as the copy, and the intro links the site docs" (one link, `https://github.com/jmgirard/zotdex/blob/main/docs/site.md`, text "site docs") and the 404 test (exact text, "See all plugins" to `/`, "About page" to `/about/`) pass; the scratch script's title, meta, and 404 checks match.
+- AC3 evidence: site tests "about/index.html says none of the index's old names" and the 404 one pass; on the rebuilt pages with tags removed and lowercased, "the index", "start test", and "declared range" each occur 0 times, and "zotdex" 24 times on About and 5 on 404.
+- AC4 evidence: T3's fresh reader read the cut commit's about.astro (146 sentences: 59 kept by the copy, 73 in docs, 14 not); each of the 14 added rules is found once at the head (12 in docs/site.md, 1 each in docs/maintaining.md, docs/requests.md, docs/license.md); every docs line the branch removes is rewrapped with its rule kept, or is the old "The About page says" paragraph that T5 rewrote.
+- AC5 evidence: every sentence of docs/site.md and cairn/DESIGN.md at the head that names "About" (11 and 14) was read with the rewritten paragraph's follow-on sentences; each one that says what About states names points the new About states (the newest releases, the category list, the install section with steps, Firefox, the full-access warning, and the bot and maintainer, the short method notes, vetting and its reason, the short license and its link, Older data, the removal form, the license page's icon credit).
