@@ -1,6 +1,6 @@
 # M114: Let a plugin's owner add a screenshot
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** normal
 - **Depends on:** M113
 - **Driving RR:** —
@@ -121,3 +121,5 @@ check text requests at once" holds the same idea for text; icons → M113.
 - 2026-11-07: T5: every record of an entry with a screenshot gets `screenshot`, a failed read included; `BuildResult.screenshots` and a required fourth `writeData` argument, which also clears stale files in `v1/screenshots/`; a named screenshot with no readable file stops the build; data of a tree with no screenshot is unchanged (lesson M075).
 - 2026-11-07: T6: the screenshot link sits in `.head-side` after the icon (DOM order: actions, icon, screenshot, then install note or version card); above 62.5rem `.head-side.with-screenshot` is a 20rem column, the image at most 30rem tall and right-aligned; at 62.5rem and under the column is `display: contents`, so the icon keeps its place beside the name and the screenshot takes row 2 under the links; fixture screenshots on first-plugin (icon, no install note) and a-cafe (no icon, install note); browser look at 1280, 1024, 1000, 375 px with a wide and a tall image, dark and light: every AC6 measure held, no horizontal scroll at 375.
 - 2026-11-07: T7: About's `#icons` section keeps its id under the new heading; docs/requests.md "Adding a screenshot", docs/data.md (record block, entry field, third file), docs/license.md screenshot terms, DESIGN (contract boundary, About list, overrides, check, reader, build, text and screenshot requests), D-081, and the CHANGELOG entry; the simple-english lint hook still flags older lines in those docs, left as they were.
+- 2026-11-07: claim audit: 165 claims read, 5 corrected — Base.astro, src/screenshot-request/request.ts, src/text-request/owner.ts, docs/requests.md (fresh Opus reader; open points for review: About's license line says screenshots keep "their authors' terms" while docs/license.md says owners', an approved line left as is; `--file` skips the 10 MiB download cap by design of AC3).
+- 2026-11-07: implement done; status review.

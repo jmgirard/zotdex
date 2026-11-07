@@ -71,8 +71,8 @@ async function imageProblems(bytes: Uint8Array): Promise<{ problems: string[]; l
   return { problems: [], line };
 }
 
-// The index's copy: turned upright by its orientation tag, fit within the file limits without
-// growing, and saved as WebP, which drops the metadata.
+// The index's copy: turned upright by its orientation tag, fit within the file's pixel limits
+// without growing, and saved as WebP, which drops the metadata.
 async function encode(bytes: Uint8Array): Promise<{ data: Buffer; width: number; height: number }> {
   const { data, info } = await sharp(bytes)
     .autoOrient()

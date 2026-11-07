@@ -244,8 +244,8 @@ the screenshot, which is an image attached to the issue, and a description of
 the screenshot. If the Screenshot field is blank, the request asks to remove
 the screenshot, and the command ignores the description.
 
-The request follows these rules, which `src/screenshot-request/rules.ts`
-holds:
+The request follows these rules. `src/screenshot-request/rules.ts` holds their
+hosts and limits:
 
 - The Screenshot field holds one image link. An image link is a Markdown
   image or an `<img>` element, which GitHub writes for an attached image.
@@ -270,9 +270,9 @@ The command reads the issue and the owner of the entry's repository, and checks
 the owner as `pnpm text-request` does. It downloads the image and prints the
 plugin, each image link, the description, the issue's author, the owner, and
 whether the two match. It also prints the image's format and sizes, in pixels
-and in bytes. It prints the screenshot that the request replaces or removes,
-and the age of the data file. It prints each rule that the request breaks as a `problem:`
-line. A rule of the description prints as `description-` and the name that
+and in bytes. It prints the description of the screenshot that the request
+replaces or removes, and the age of the data file. It prints each rule that the
+request breaks as a `problem:` line. A rule of the description prints as `description-` and the name that
 `pnpm text-request` gives the rule.
 
 The command has the three exit statuses of `pnpm text-request`. A download

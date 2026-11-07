@@ -18,8 +18,8 @@ export interface IssueOptions {
   issue: number;
 }
 
-// status 0: nothing blocks --apply, or it ran. 1: a problem, or a mismatch or an organization
-// owner that --owner-checked did not clear. 2: a named failure.
+// status 0: the report finds nothing that blocks --apply, or it ran. 1: a problem, or a
+// mismatch or an organization owner that --owner-checked did not clear. 2: a named failure.
 export interface RequestResult {
   status: 0 | 1 | 2;
   lines: string[];
