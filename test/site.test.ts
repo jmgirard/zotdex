@@ -24,6 +24,7 @@ import { CATEGORIES, categories } from "../src/site/categories.ts";
 import { cutDescription, shownDescription } from "../src/site/description.ts";
 import { PAGE_SIZE, prePaintStyle } from "../src/site/home-filter.ts";
 import { appliedLanguages, languageName } from "../src/site/languages.ts";
+import { FULL_MARK } from "../src/site/logo.ts";
 import { START_LIMIT_MS } from "../src/start-test/start-test.ts";
 import { DESCRIPTION_MAX, DESCRIPTION_MIN_WORDS, NAME_MAX, NAME_MIN } from "../src/text-request/rules.ts";
 import { compareVersions, declaredRange, majorSupport, ZOTERO_MAJORS } from "../src/site/version.ts";
@@ -2215,6 +2216,24 @@ function decoded(text: string): string {
   return text.replace(/&(?:#(\d+)|(lt|gt|quot|amp));/g, (_, code, name) => (code ? String.fromCodePoint(Number(code)) : named[name]!));
 }
 
+// One attribute's value in an element's start tag.
+function attribute(tag: string, name: string): string {
+  return new RegExp(`\\s${name}="([^"]*)"`).exec(tag)![1]!;
+}
+
+// The lens mark's three shapes in an SVG: the rim's two circles, read from its path, the disc,
+// and the Z's corners.
+function lensParts(svg: string) {
+  const tags = svg.match(/<(?:path|circle|rect|ellipse|polygon|polyline|line|image|text|use)\b[^>]*>/g) ?? [];
+  const rim = [...attribute(tags[0]!, "d").matchAll(/M([-\d.]+) ([-\d.]+)A([-\d.]+) \3 0 1 0 ([-\d.]+) \2A\3 \3 0 1 0 \1 \2Z/g)].map(
+    ([, left, cy, r, right]) => ({ cx: (Number(left) + Number(right)) / 2, cy: Number(cy), r: Number(r), across: Number(right) - Number(left) }),
+  );
+  for (const circle of rim) expect(circle.across).toBeCloseTo(2 * circle.r, 6);
+  const disc = { cx: Number(attribute(tags[1]!, "cx")), cy: Number(attribute(tags[1]!, "cy")), r: Number(attribute(tags[1]!, "r")) };
+  const z = [...attribute(tags[2]!, "d").matchAll(/([-\d.]+) ([-\d.]+)/g)].map(([, x, y]) => [Number(x), Number(y)] as [number, number]);
+  return { tags, rim, disc, z };
+}
+
 // The one tag whose attribute has this value, as content or href.
 function tagValue(html: string, attribute: string, value: string): string {
   const tags = tagsOf(html).filter((tag) => tag[attribute] === value);
@@ -2731,30 +2750,56 @@ describe("the site colors", () => {
       }
     });
 
-    test("draws one shape, the puzzle piece, in Lucide's 24 by 24 view box", () => {
-      expect(icon().match(/<(?:rect|path|circle|ellipse|polygon|polyline|line|image|text|use)\b/g)).toEqual(["<path"]);
-      expect(icon()).toContain('viewBox="0 0 24 24"');
-      expect(/<path\b[^>]*\bd="([^"]+)"/.exec(icon())![1]).toBe(PUZZLE_PATH);
+    test("draws the lens mark in a 16 by 16 view box: an even-odd rim of two circles, a disc, and a Z of M and L commands", () => {
+      const lens = lensParts(icon());
+      expect(icon()).toContain('viewBox="0 0 16 16"');
+      expect(lens.tags.map((tag) => /^<(\w+)/.exec(tag)![1])).toEqual(["path", "circle", "path"]);
+      expect(lens.tags[0]).toContain('fill-rule="evenodd"');
+      expect(lens.rim).toHaveLength(2);
+      expect(lens.rim[0]!.cx).toBe(lens.rim[1]!.cx);
+      expect(lens.rim[0]!.cy).toBe(lens.rim[1]!.cy);
+      expect(attribute(lens.tags[2]!, "d")).toMatch(/^M[-\d. ]+(?:L[-\d. ]+)+$/);
     });
 
-    test("uses each scheme's accent, which shows on that scheme's background", () => {
-      const lightFill = /<path\b[^>]*fill="(#[0-9a-f]{6})"/.exec(icon())![1]!;
-      const darkFill = /@media \(prefers-color-scheme: dark\)\s*\{\s*path\s*\{\s*fill:\s*(#[0-9a-f]{6})/.exec(icon())![1]!;
-      expect(lightFill).toBe(light.get("--accent"));
-      expect(darkFill).toBe(dark.get("--accent"));
-      expect(contrast(lightFill, light.get("--bg")!)).toBeGreaterThanOrEqual(3);
-      expect(contrast(darkFill, dark.get("--bg")!)).toBeGreaterThanOrEqual(3);
+    test("fills the rim, disc, and Z with each scheme's colors, the Z readable on the disc and the rim on the page", () => {
+      const fills = lensParts(icon()).tags.map((tag) => attribute(tag, "fill"));
+      expect(fills).toEqual(["#1d5fb8", "#a9cbff", "#0e2f5c"]);
+      const darkRules = /@media \(prefers-color-scheme: dark\) \{([^}]*\}[^}]*\}[^}]*\})/.exec(icon())![1]!;
+      const darkFills = ["logo-rim", "logo-disc", "logo-z"].map((name) => new RegExp(`\\.${name} \\{ fill: (#[0-9a-f]{6}) \\}`).exec(darkRules)![1]);
+      expect(darkFills).toEqual(["#7fb0ff", "#1d5fb8", "#ffffff"]);
+      expect(lensParts(icon()).tags.map((tag) => attribute(tag, "class"))).toEqual(["logo-rim", "logo-disc", "logo-z"]);
+      for (const [[rim, disc, z], scheme] of [[fills, light], [darkFills, dark]] as const) {
+        expect(contrast(z!, disc!)).toBeGreaterThanOrEqual(4.5);
+        expect(contrast(rim!, scheme.get("--bg")!)).toBeGreaterThanOrEqual(3);
+        expect(contrast(rim!, scheme.get("--surface")!)).toBeGreaterThanOrEqual(3);
+      }
     });
 
-    test("names the file that holds the icon's license notice", () => {
-      expect(icon()).toContain("site/src/components/Icon.astro");
+    test("is the full mark's lens cut out and scaled so the rim's outer edge has radius 7.5 at the center", () => {
+      // The rim reaches 1 grid unit past the full mark's lens opening.
+      const { opening, disc, z } = FULL_MARK;
+      const scale = 7.5 / (opening.r + 1);
+      const at = (x: number, y: number) => [8 + (x - opening.cx) * scale, 8 + (y - opening.cy) * scale] as const;
+      const lens = lensParts(icon());
+      const expected = [
+        { cx: 8, cy: 8, r: 7.5 },
+        { cx: at(opening.cx, opening.cy)[0], cy: at(opening.cx, opening.cy)[1], r: opening.r * scale },
+        { cx: at(disc.cx, disc.cy)[0], cy: at(disc.cx, disc.cy)[1], r: disc.r * scale },
+      ];
+      [...lens.rim, lens.disc].forEach((circle, i) => {
+        for (const key of ["cx", "cy", "r"] as const) expect(Math.abs(circle[key] - expected[i]![key]), `${i} ${key}`).toBeLessThan(0.001);
+      });
+      expect(lens.z).toHaveLength(z.length);
+      lens.z.forEach(([x, y], i) => {
+        const [ex, ey] = at(...z[i]!);
+        expect(Math.abs(x - ex) + Math.abs(y - ey), `Z corner ${i}`).toBeLessThan(0.001);
+      });
     });
   });
 
   describe("the logo", () => {
     test("is the favicon's shape, hidden from screen readers, before the site's name on every page", () => {
-      const favicon = readFileSync(join(out, "favicon.svg"), "utf8");
-      const drawn = /<path\b[^>]*\bd="([^"]+)"/.exec(favicon)![1];
+      const drawn = PUZZLE_PATH;
       for (const file of htmlFiles(out)) {
         const brand = /<a class="brand"[^>]*>(.*?)<\/a>/s.exec(readFileSync(join(out, file), "utf8"))![1]!;
         const icons = brand.match(/<svg\b.*?<\/svg>/gs);
