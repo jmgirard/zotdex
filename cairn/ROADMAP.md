@@ -7,6 +7,7 @@ _Last hygiene check: 2026-11-06 (M106 review: lens mark live on the site; 2 icon
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
+| M108 | Show the full Zotdex mark in the top bar | planned | — | high | milestones/M108-full-mark-top-bar.md |
 | M107 | Shorten the README and move its detail to docs/ | planned | — | normal | milestones/M107-short-readme.md |
 | M106 | Replace the puzzle piece with the Zotdex lens mark | done | — | high | milestones/archive/M106-zotdex-lens-mark.md |
 | M105 | Offer plugin authors a README badge | done | — | high | milestones/archive/M105-author-badge.md |

@@ -1130,3 +1130,15 @@ same shapes as `favicon.svg`. Astro already installs it as an optional
 dependency. The user rejected PNG files made once by hand, which a later logo
 change would leave stale. This choice is wrong if `sharp` fails to install or to
 draw SVG on the build runner.
+
+### D-074: The top bar shows the full mark, and only the favicon files show the lens, superseding D-072's top-bar clause
+
+2026-11-06, M108 plan. D-072 put the lens alone in the tab and the top bar,
+because the lights and lid line blur at 16 px. The user meant the lens for the
+favicon only, and wants the full mark that they designed shown on the site. The
+top bar now draws the full mark at 2rem, 32 px at the default text size, where
+the lights are 3 px across and the lid line 2 px tall, so both show. The site
+name beside it moves to the next size of the type scale, at the user's request.
+`favicon.svg` and `favicon.png` keep the lens, and the phone icon and link
+preview keep the full mark. The rest of D-072 stands. This choice is wrong if
+the lights or lid line do not show in the top bar at the default text size.
