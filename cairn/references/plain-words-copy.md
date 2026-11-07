@@ -194,16 +194,18 @@ brackets.
 
 ## Malware scan (M115)
 
-Approved at the M115 plan question set, 2026-11-07. Each change below
+Approved at the M115 plan question set, 2026-11-07, and approved again for
+ClamAV at the M115 re-plan the same day (corrected M115: the first lines
+named VirusTotal, whose terms bar showing its results). Each change below
 replaces the line that the sections above record. Links are in brackets.
 
 - Plugin page, Details row "Malware scan", after "Release on this page":
-  "None of {n} [VirusTotal] scanners flagged this file (<date>)", "{k} of
-  {n} [VirusTotal] scanners flagged this file (<date>)", or "Not scanned
-  yet". The link goes to VirusTotal's page for the file.
+  "[ClamAV] found no known malware in this file (<date>)", "[ClamAV]
+  flagged this file as {signature} (<date>)", or "Not scanned yet". The
+  link goes to https://www.clamav.net/.
 - Footer, replacing D-076's sentence: "Zotdex is an independent project,
   not part of Zotero, and it doesn't test the safety or features of the
-  plugins it lists, beyond a malware scan by VirusTotal."
+  plugins it lists, beyond a malware scan by ClamAV."
 - Install note and About's Installing section, replacing "A plugin has
   full access to Zotero and your computer, and Zotdex doesn't test plugins'
   safety or features, so look into a plugin before you trust it with your
@@ -211,6 +213,6 @@ replaces the line that the sections above record. Links are in brackets.
   Zotdex doesn't test plugins' safety or features beyond a malware scan, so
   look into a plugin before you trust it with your library."
 - About's Installing section, right after that sentence: "The malware scan
-  looks up each plugin file on VirusTotal, which checks it with about 70
-  antivirus scanners. It finds known malware only, so a clean scan doesn't
-  mean a plugin is safe."
+  checks each plugin file once a week with ClamAV, a free antivirus
+  scanner. It finds known malware only, so a clean scan doesn't mean a
+  plugin is safe."
