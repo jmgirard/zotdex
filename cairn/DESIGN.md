@@ -1406,7 +1406,11 @@ reused._
   adds no new result that run, so a plugin can keep its own new find off its
   page. Running the scan job after the start tests would close this at the
   cost of a later Monday deploy (M115, D-082). Accepted at the M115 gate
-- A `clamscan` run stopped at its 10-minute limit gives no file a result, and
-  no scan of every plugin file has been timed yet. The `clamav` package's own
-  freshclam service also asks ClamAV's servers for signatures before the job
-  stops it, a second request each scan run (M115). Accepted at the M115 gate
+- A `clamscan` batch stopped at its 10-minute limit gives no result to the
+  files whose lines it had not printed (corrected M116: before M116 one
+  stopped run gave no file a result). On 2026-11-07 four batches of 185 or
+  186 files each took 191 to 235 seconds, signature load included, in
+  `Build data` run 42417346897 on the M116 branch. The `clamav` package's
+  own freshclam service also asks ClamAV's servers for signatures before the
+  job stops it, a second request each scan run (M115). Accepted at the M115
+  gate

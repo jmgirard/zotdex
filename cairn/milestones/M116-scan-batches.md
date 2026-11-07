@@ -91,13 +91,13 @@ run's results) stay as they are.
 - [x] T3: Return each batch's number, files, results, seconds, and stopped
       flag in `ScanOutcome`, with an injectable clock, and print one line per
       batch from the CLI through a function the test calls.
-- [ ] T4: Dispatch `Build data` on the milestone branch with `malware-scan`
+- [x] T4: Dispatch `Build data` on the milestone branch with `malware-scan`
       true (the user allowed it; a branch run deploys nothing), read the scan
       job's batch lines with `gh api --allow-escape-sequences
       repos/jmgirard/zotdex/actions/jobs/<id>/logs`, and record each batch's
       line and the signature load time in the work log. If no batch
       finishes, file the clamd candidate row.
-- [ ] T5: Update the code comments, `docs/data.md`, `docs/maintaining.md`,
+- [x] T5: Update the code comments, `docs/data.md`, `docs/maintaining.md`,
       DESIGN's Function Families entry and the stopped-`clamscan` Known
       issues entry (with T4's times, or that no full scan was timed), append
       D-083 (annotating D-082, and noting that a stopped batch cannot tell a
@@ -118,6 +118,8 @@ run's results) stay as they are.
 - 2026-11-07: criteria audit (full mode, fresh Opus reader) returned 11 findings; 10 taken: (1) a `cores` option and a 2-core test; (2) "exactly one line, that line an OK or FOUND line"; (3) tests vary which batch is stopped, a FOUND kept from a stopped batch, and where the cut falls, with a per-call stand-in (T2); (4) a cut line can match only with its verdict word whole, and the weaker two-lines guard in a stopped batch goes to D-083; (5) the stopped message covers an outside stop (T2); (6) a set run time in the line test; (7) AC4 names the code comments and docs/data.md's case, and the Known issues entry drops "gives no file a result"; (10) D-083 annotates D-082; (11) four signature loads fit a 16 GB runner, and T4 records the load time. Declined (9): an AC binding T4's work-log record, since a criterion on a record binds an instrument, not the scan; T4 stays a task.
 - 2026-11-07: implement started on branch `m116-scan-batches` (cut from `598a1d7d`); `.claude/` is an unrelated untracked folder, left unstaged. The plan's rewrite after the criteria audit had dropped the empty `## Decisions` and `## Review` sections; they are restored here.
 - 2026-11-07: T1–T3 done in one commit (`13b4a901`), since the batch run, the per-batch line reading, and the batch report share one loop: `SCAN_BATCHES_MAX` (4), `batchesOf`, the `cores` and `now` options, `Promise.all` over the batches, `resultOf` per file from its own batch's lines (a stopped batch keeps them; `clamscan-stopped` only for its files with no line, with a message naming an outside stop), `Batch` and `batchLine`, and the CLI's batch lines. Choices: a failed `--version` runs no batch; batch numbers count from 1; the clock option times each batch. Tests: the M115 stopped-run test is removed, 10 batch tests added (counts for 1/3/9 files at 8 cores and 9 at 2, start order, options and limit per batch, a stopped last batch with a FOUND beside a finished first, a stopped batch with no line, three cut points, the batch lines). Planted defects (batches one after another, the old stop rule) each turned 4 tests red. `pnpm test` 2713 passed, `pnpm check` 0 problems. That commit went in without these ticks and this line, by a failed script; this commit adds them.
+- 2026-11-07: T4 done: `Build data` run 42417346897 on `m116-scan-batches` at `b2aa965c`, `malware-scan` true; every job passed and the deploy was skipped, as for any branch. freshclam updated `daily.cvd` 28176 and `main.cvd` 63 with no refusal. Batch lines: "batch 1: 186 files, 186 results, 191.1 s", "batch 2: 186 files, 185 results, 219.8 s", "batch 3: 186 files, 185 results, 234.9 s", "batch 4: 185 files, 185 results, 233.0 s". 741 results, 2 with none (`partial-scan`: ztransplit@zotero.org `Heuristics.Limits.Exceeded.MaxFiles`, chatpdf@zotero-plugin `Heuristics.Limits.Exceeded.MaxFileSize`); no find. The scan step took 5 min 54 s from its start to the batch lines, so the downloads took about 2 minutes; the batch times include the signature load, which no line times on its own. No batch was stopped, so no clamd row is filed. The site job added 741 results.
+- 2026-11-07: T5 done: the code comments (in `13b4a901`), docs/data.md and docs/maintaining.md, DESIGN's Function Families entry, D-083, and the CHANGELOG entry (in `1328cc32`), and DESIGN's Known issues entry rewritten with T4's times and marked corrected M116. Choice: the CHANGELOG adds to M115's unreleased entry rather than a second entry, since both are unreleased. `pnpm test` 2713 passed.
 
 ## Decisions
 
