@@ -573,10 +573,11 @@ user reports. The exception is a report that is abuse.
   `favicon.svg`, `sitemap.xml`, and `robots.txt` (M102),
   `badges/<id>.json` for each record (M105), and `favicon.png`,
   `apple-touch-icon.png`, and `preview.png` (M106).
-  `src/site/logo.ts` holds the Zotdex logo's shapes (D-072): `FULL_MARK`,
-  and `lensMark`, which cuts the full mark's lens out and scales it, so the
-  two marks share one lens. It also builds the text of `favicon.svg`, the top
-  bar's shapes, and each PNG file's SVG, whose mark, margin, and size
+  `src/site/logo.ts` holds the Zotdex logo's shapes (D-072, D-074):
+  `FULL_MARK`, and `lensMark`, which cuts the full mark's lens out and scales
+  it, so the two marks share one lens. It also builds the text of
+  `favicon.svg`, the top bar's full-mark shapes (`fullShapes`, M108), and
+  each PNG file's SVG, whose mark, margin, and size
   `PICTURES` sets. The endpoints in `site/src/pages/` write the files.
   `src/site/logo-png.ts` draws those SVGs with `sharp` (D-073).
   `src/site/version.ts` holds the version and range functions
@@ -1093,10 +1094,12 @@ reused._
   `description` and `path` props and from
   `ORIGIN` in `site/src/base.ts` (M094). It links `favicon.png`, then
   `favicon.svg`, and `apple-touch-icon.png`, and names `preview.png` as each
-  page's `og:image` (M106). The top bar's logo draws the lens mark's three
-  shapes from `logo.ts`, the same ones as `favicon.svg`. The rim takes
+  page's `og:image` (M106). The top bar's logo draws the full mark's three
+  shapes from `logo.ts`, the same ones as `apple-touch-icon.png` less their
+  fills, 2rem square beside the site's name at `--text-xl` (D-074, M108).
+  The body takes
   `--accent`, and the disc and Z take `--logo-disc` and `--logo-z`, so all
-  three follow the theme button. Forced colors fill the rim and disc with
+  three follow the theme button. Forced colors fill the body and disc with
   `CanvasText` and the Z with `Canvas` (M106). `--accent` has the values of
   `--link`, the site's blue, so that it stays apart from the red of `--bad`
   (M099).
