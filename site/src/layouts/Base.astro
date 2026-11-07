@@ -1,4 +1,5 @@
 ---
+import { lensShapes, PICTURES } from "../../../src/site/logo.ts";
 import { applySavedTheme, wireThemeButton } from "../../../src/site/theme.ts";
 import { BASE, ORIGIN } from "../base.ts";
 import Icon from "../components/Icon.astro";
@@ -15,6 +16,7 @@ interface Props {
 const { title, description, path } = Astro.props;
 const { generatedAt } = loadData();
 const address = path === undefined ? undefined : `${ORIGIN}${path}`;
+const faviconSize = PICTURES["favicon.png"].size;
 
 const themeHead = `(${applySavedTheme})();`;
 const themeButton = `(${wireThemeButton})();`;
@@ -28,13 +30,20 @@ const themeButton = `(${wireThemeButton})();`;
     <title>{title}</title>
     <meta name="description" content={description} />
     {address ? <link rel="canonical" href={address} /> : <meta name="robots" content="noindex" />}
+    {/* The PNG is for a browser that shows no SVG icon. Its sizes value keeps Chrome from choosing it over the SVG. */}
+    <link rel="icon" type="image/png" sizes={`${faviconSize}x${faviconSize}`} href={`${BASE}favicon.png`} />
     <link rel="icon" type="image/svg+xml" href={`${BASE}favicon.svg`} />
+    <link rel="apple-touch-icon" href={`${BASE}apple-touch-icon.png`} />
     <link rel="sitemap" type="application/xml" href={`${BASE}sitemap.xml`} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Zotdex" />
     {address && <meta property="og:url" content={address} />}
+    <meta property="og:image" content={`${ORIGIN}${BASE}preview.png`} />
+    <meta property="og:image:width" content={String(PICTURES["preview.png"].size)} />
+    <meta property="og:image:height" content={String(PICTURES["preview.png"].size)} />
+    <meta property="og:image:alt" content="The Zotdex logo" />
     <meta name="twitter:card" content="summary" />
     <script is:inline set:html={themeHead} />
     <style is:global>
@@ -58,6 +67,9 @@ const themeButton = `(${wireThemeButton})();`;
         --bad-bg: #fbe4e1;
         --none: #8f8f88;
         --star: #b07d00;
+        /* The logo's lens disc and Z. Its rim is --accent. src/site/logo.ts holds the same fills. */
+        --logo-disc: #a9cbff;
+        --logo-z: #0e2f5c;
         /* --space-N is N eighths of a rem. */
         --space-1: 0.125rem;
         --space-2: 0.25rem;
@@ -109,6 +121,8 @@ const themeButton = `(${wireThemeButton})();`;
           --bad-bg: #3d1a17;
           --none: #74746d;
           --star: #e3b341;
+          --logo-disc: #1d5fb8;
+          --logo-z: #ffffff;
         }
       }
       :root[data-theme="dark"] {
@@ -131,6 +145,8 @@ const themeButton = `(${wireThemeButton})();`;
         --bad-bg: #3d1a17;
         --none: #74746d;
         --star: #e3b341;
+        --logo-disc: #1d5fb8;
+        --logo-z: #ffffff;
       }
       :root[data-theme="light"] {
         color-scheme: light;
@@ -201,14 +217,29 @@ const themeButton = `(${wireThemeButton})();`;
         text-decoration: none;
         white-space: nowrap;
       }
-      /* The logo is filled, so it drops the line icons' stroke. */
-      .brand .icon {
-        fill: var(--accent);
-        stroke: none;
+      /* The logo is the lens mark (src/site/logo.ts), its three shapes filled from the tokens. */
+      .brand .logo {
+        width: 1rem;
+        height: 1rem;
+        flex: none;
       }
+      .brand .logo-rim {
+        fill: var(--accent);
+      }
+      .brand .logo-disc {
+        fill: var(--logo-disc);
+      }
+      .brand .logo-z {
+        fill: var(--logo-z);
+      }
+      /* Forced colors keep the Z apart from the disc it sits on. */
       @media (forced-colors: active) {
-        .brand .icon {
+        .brand .logo-rim,
+        .brand .logo-disc {
           fill: CanvasText;
+        }
+        .brand .logo-z {
+          fill: Canvas;
         }
       }
       .topbar nav {
@@ -1072,7 +1103,7 @@ const themeButton = `(${wireThemeButton})();`;
   <body>
     <header class="topbar">
       <div class="topbar-inner">
-        <a class="brand" href={BASE}><Icon name="puzzle" />Zotdex</a>
+        <a class="brand" href={BASE}><svg class="logo" viewBox="0 0 16 16" aria-hidden="true" focusable="false" set:html={lensShapes()} />Zotdex</a>
         <nav aria-label="Site">
           <a href={`${BASE}about/`}>About</a>
           <a href={ADD_PLUGIN_HREF} data-add-plugin>Add a plugin</a>

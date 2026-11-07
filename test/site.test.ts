@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { runInNewContext } from "node:vm";
 import { Ajv } from "ajv";
+import sharp from "sharp";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import pluginsSchema from "../schemas/plugins.v1.schema.json" with { type: "json" };
 import {
@@ -24,9 +25,11 @@ import { CATEGORIES, categories } from "../src/site/categories.ts";
 import { cutDescription, shownDescription } from "../src/site/description.ts";
 import { PAGE_SIZE, prePaintStyle } from "../src/site/home-filter.ts";
 import { appliedLanguages, languageName } from "../src/site/languages.ts";
+import { FULL_MARK, PICTURES } from "../src/site/logo.ts";
 import { START_LIMIT_MS } from "../src/start-test/start-test.ts";
 import { DESCRIPTION_MAX, DESCRIPTION_MIN_WORDS, NAME_MAX, NAME_MIN } from "../src/text-request/rules.ts";
 import { compareVersions, declaredRange, majorSupport, ZOTERO_MAJORS } from "../src/site/version.ts";
+import { partAt, type Part } from "./support/logo-geometry.ts";
 import { PRE_PAINT_CASES } from "./support/pre-paint.ts";
 import { themePage } from "./support/theme-page.ts";
 
@@ -234,9 +237,6 @@ const NO_SOURCE_TEXT = "No source code at the top level of the repository";
 // The icon paths in this file come from Lucide and Feather. site/src/components/Icon.astro holds the notices.
 const LOCK_SVG =
   '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 11h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2z"></path><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
-// The `puzzle` path of lucide-static 1.68.0, unchanged.
-const PUZZLE_PATH =
-  "M15.39 4.39a1 1 0 0 0 1.68-.474 2.5 2.5 0 1 1 3.014 3.015 1 1 0 0 0-.474 1.68l1.683 1.682a2.414 2.414 0 0 1 0 3.414L19.61 15.39a1 1 0 0 1-1.68-.474 2.5 2.5 0 1 0-3.014 3.015 1 1 0 0 1 .474 1.68l-1.683 1.682a2.414 2.414 0 0 1-3.414 0L8.61 19.61a1 1 0 0 0-1.68.474 2.5 2.5 0 1 1-3.014-3.015 1 1 0 0 0 .474-1.68l-1.683-1.682a2.414 2.414 0 0 1 0-3.414L4.39 8.61a1 1 0 0 1 1.68.474 2.5 2.5 0 1 0 3.014-3.015 1 1 0 0 1-.474-1.68l1.683-1.682a2.414 2.414 0 0 1 3.414 0z";
 const noSourceMark = (icon: string) => `<span class="no-source" data-no-source><span aria-hidden="true" title="${NO_SOURCE_TEXT}">${icon}</span><span class="visually-hidden">${NO_SOURCE_TEXT}</span></span>`;
 const PAID_TEXT = "Needs a paid service from its maker";
 const STAR_SVG =
@@ -907,7 +907,8 @@ describe("the About page", () => {
     expect(link?.[1]).toBe("https://github.com/jmgirard/zotdex#license");
     const text = unescaped(section.replace(/<[^>]+>/g, "")).replace(/\s+/g, " ");
     expect(text).toContain("The index's code is under the MIT License, except the third-party parts of the files that the README names.");
-    expect(text).toContain("The icons on these pages come from Lucide, under the ISC License, and from Feather, under the MIT License.");
+    expect(text).toContain("The Zotdex logo is the index's own drawing, under the same terms as its code.");
+    expect(text).toContain("The other icons on these pages come from Lucide, under the ISC License, and from Feather, under the MIT License.");
     expect(text).toContain("The facts that the index gathers, its categories, and text that a maintainer wrote are under CC0 1.0.");
     expect(text).toContain("All other text keeps its author's terms: plugin names and descriptions, GitHub About text, and text that an owner asked for.");
   });
@@ -2031,8 +2032,9 @@ describe("the built site", () => {
     for (const path of files) {
       const html = readFileSync(join(out, path), "utf8");
       const bar = /<body><header class="topbar"><div class="topbar-inner">(.*?)<\/div><\/header><main>/s.exec(html)?.[1];
-      expect(bar?.replace(/<button .*<\/script>/s, ""), path).toBe(
-        `<a class="brand" href="/"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="${PUZZLE_PATH}"></path></svg>Zotdex</a><nav aria-label="Site">` +
+      // The logo's shapes have their own tests in "the logo".
+      expect(bar?.replace(/<button .*<\/script>/s, "").replace(/(<svg class="logo"[^>]*>).*?<\/svg>/s, "$1</svg>"), path).toBe(
+        '<a class="brand" href="/"><svg class="logo" viewBox="0 0 16 16" aria-hidden="true" focusable="false"></svg>Zotdex</a><nav aria-label="Site">' +
           '<a href="/about/">About</a>' +
           '<a href="https://github.com/jmgirard/zotdex/issues/new?template=add-plugin.yml" data-add-plugin>Add a plugin</a>' +
           '<a href="https://github.com/jmgirard/zotdex/discussions" data-feedback>Feedback</a>' +
@@ -2215,6 +2217,24 @@ function decoded(text: string): string {
   return text.replace(/&(?:#(\d+)|(lt|gt|quot|amp));/g, (_, code, name) => (code ? String.fromCodePoint(Number(code)) : named[name]!));
 }
 
+// One attribute's value in an element's start tag.
+function attribute(tag: string, name: string): string {
+  return new RegExp(`\\s${name}="([^"]*)"`).exec(tag)![1]!;
+}
+
+// The lens mark's three shapes in an SVG: the rim's two circles, read from its path, the disc,
+// and the Z's corners.
+function lensParts(svg: string) {
+  const tags = svg.match(/<(?:path|circle|rect|ellipse|polygon|polyline|line|image|text|use)\b[^>]*>/g) ?? [];
+  const rim = [...attribute(tags[0]!, "d").matchAll(/M([-\d.]+) ([-\d.]+)A([-\d.]+) \3 0 1 0 ([-\d.]+) \2A\3 \3 0 1 0 \1 \2Z/g)].map(
+    ([, left, cy, r, right]) => ({ cx: (Number(left) + Number(right)) / 2, cy: Number(cy), r: Number(r), across: Number(right) - Number(left) }),
+  );
+  for (const circle of rim) expect(circle.across).toBeCloseTo(2 * circle.r, 6);
+  const disc = { cx: Number(attribute(tags[1]!, "cx")), cy: Number(attribute(tags[1]!, "cy")), r: Number(attribute(tags[1]!, "r")) };
+  const z = [...attribute(tags[2]!, "d").matchAll(/([-\d.]+) ([-\d.]+)/g)].map(([, x, y]) => [Number(x), Number(y)] as [number, number]);
+  return { tags, rim, disc, z };
+}
+
 // The one tag whose attribute has this value, as content or href.
 function tagValue(html: string, attribute: string, value: string): string {
   const tags = tagsOf(html).filter((tag) => tag[attribute] === value);
@@ -2254,6 +2274,19 @@ describe("the link preview tags", () => {
       expect(preview.description.trim(), file).not.toBe("");
       expect(preview.ogType, file).toBe("website");
       expect(preview.twitterCard, file).toBe("summary");
+    }
+  });
+
+  test("gives every page the preview picture, its size, and its alt text", () => {
+    const files = htmlFiles(out);
+    expect(files).toHaveLength(ids.length + 3);
+    for (const file of files) {
+      const page = read(file);
+      expect(tagValue(page, "property", "og:image"), file).toBe(`${SITE}preview.png`);
+      expect(tagValue(page, "property", "og:image:width"), file).toBe("1200");
+      expect(tagValue(page, "property", "og:image:height"), file).toBe("1200");
+      expect(tagValue(page, "property", "og:image:alt"), file).toBe("The Zotdex logo");
+      expect(tagValue(page, "name", "twitter:card"), file).toBe("summary");
     }
   });
 
@@ -2724,56 +2757,153 @@ describe("the site colors", () => {
   describe("the favicon", () => {
     const icon = () => readFileSync(join(out, "favicon.svg"), "utf8");
 
-    test("is linked once from every page, under the base path", () => {
-      for (const file of htmlFiles(out)) {
-        const html = readFileSync(join(out, file), "utf8");
-        expect(tagValue(html, "rel", "icon"), file).toBe("/favicon.svg");
+    test("is linked from every page as a PNG, then an SVG, beside the touch icon", () => {
+      const files = htmlFiles(out);
+      expect(files).toHaveLength(ids.length + 3);
+      for (const file of files) {
+        const icons = tagsOf(readFileSync(join(out, file), "utf8")).filter((tag) => tag.rel === "icon" || tag.rel === "apple-touch-icon");
+        expect(icons, file).toEqual([
+          { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon.png" },
+          { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
+          { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
+        ]);
       }
     });
 
-    test("draws one shape, the puzzle piece, in Lucide's 24 by 24 view box", () => {
-      expect(icon().match(/<(?:rect|path|circle|ellipse|polygon|polyline|line|image|text|use)\b/g)).toEqual(["<path"]);
-      expect(icon()).toContain('viewBox="0 0 24 24"');
-      expect(/<path\b[^>]*\bd="([^"]+)"/.exec(icon())![1]).toBe(PUZZLE_PATH);
+    test("draws the lens mark in a 16 by 16 view box: an even-odd rim of two circles, a disc, and a Z of M and L commands", () => {
+      const lens = lensParts(icon());
+      expect(icon()).toContain('viewBox="0 0 16 16"');
+      expect(lens.tags.map((tag) => /^<(\w+)/.exec(tag)![1])).toEqual(["path", "circle", "path"]);
+      expect(lens.tags[0]).toContain('fill-rule="evenodd"');
+      expect(lens.rim).toHaveLength(2);
+      expect(lens.rim[0]!.cx).toBe(lens.rim[1]!.cx);
+      expect(lens.rim[0]!.cy).toBe(lens.rim[1]!.cy);
+      expect(attribute(lens.tags[2]!, "d")).toMatch(/^M[-\d. ]+(?:L[-\d. ]+)+$/);
     });
 
-    test("uses each scheme's accent, which shows on that scheme's background", () => {
-      const lightFill = /<path\b[^>]*fill="(#[0-9a-f]{6})"/.exec(icon())![1]!;
-      const darkFill = /@media \(prefers-color-scheme: dark\)\s*\{\s*path\s*\{\s*fill:\s*(#[0-9a-f]{6})/.exec(icon())![1]!;
-      expect(lightFill).toBe(light.get("--accent"));
-      expect(darkFill).toBe(dark.get("--accent"));
-      expect(contrast(lightFill, light.get("--bg")!)).toBeGreaterThanOrEqual(3);
-      expect(contrast(darkFill, dark.get("--bg")!)).toBeGreaterThanOrEqual(3);
+    test("fills the rim, disc, and Z with each scheme's colors, the Z readable on the disc and the rim on the page", () => {
+      const fills = lensParts(icon()).tags.map((tag) => attribute(tag, "fill"));
+      expect(fills).toEqual(["#1d5fb8", "#a9cbff", "#0e2f5c"]);
+      const darkRules = /@media \(prefers-color-scheme: dark\) \{([^}]*\}[^}]*\}[^}]*\})/.exec(icon())![1]!;
+      const darkFills = ["logo-rim", "logo-disc", "logo-z"].map((name) => new RegExp(`\\.${name} \\{ fill: (#[0-9a-f]{6}) \\}`).exec(darkRules)![1]);
+      expect(darkFills).toEqual(["#7fb0ff", "#1d5fb8", "#ffffff"]);
+      expect(lensParts(icon()).tags.map((tag) => attribute(tag, "class"))).toEqual(["logo-rim", "logo-disc", "logo-z"]);
+      for (const [[rim, disc, z], scheme] of [[fills, light], [darkFills, dark]] as const) {
+        expect(contrast(z!, disc!)).toBeGreaterThanOrEqual(4.5);
+        expect(contrast(rim!, scheme.get("--bg")!)).toBeGreaterThanOrEqual(3);
+        expect(contrast(rim!, scheme.get("--surface")!)).toBeGreaterThanOrEqual(3);
+      }
     });
 
-    test("names the file that holds the icon's license notice", () => {
-      expect(icon()).toContain("site/src/components/Icon.astro");
+    test("is the full mark's lens cut out and scaled so the rim's outer edge has radius 7.5 at the center", () => {
+      // The rim reaches 1 grid unit past the full mark's lens opening.
+      const { opening, disc, z } = FULL_MARK;
+      const scale = 7.5 / (opening.r + 1);
+      const at = (x: number, y: number) => [8 + (x - opening.cx) * scale, 8 + (y - opening.cy) * scale] as const;
+      const lens = lensParts(icon());
+      const expected = [
+        { cx: 8, cy: 8, r: 7.5 },
+        { cx: at(opening.cx, opening.cy)[0], cy: at(opening.cx, opening.cy)[1], r: opening.r * scale },
+        { cx: at(disc.cx, disc.cy)[0], cy: at(disc.cx, disc.cy)[1], r: disc.r * scale },
+      ];
+      [...lens.rim, lens.disc].forEach((circle, i) => {
+        for (const key of ["cx", "cy", "r"] as const) expect(Math.abs(circle[key] - expected[i]![key]), `${i} ${key}`).toBeLessThan(0.001);
+      });
+      expect(lens.z).toHaveLength(z.length);
+      lens.z.forEach(([x, y], i) => {
+        const [ex, ey] = at(...z[i]!);
+        expect(Math.abs(x - ex) + Math.abs(y - ey), `Z corner ${i}`).toBeLessThan(0.001);
+      });
+    });
+  });
+
+  describe("the PNG icons", () => {
+    const pictures = Object.entries(PICTURES);
+    // Bytes 16 to 25 of a PNG hold its IHDR chunk's width, height, bit depth, and color type.
+    const header = (png: Buffer) => ({ width: png.readUInt32BE(16), height: png.readUInt32BE(20), depth: png[24], type: png[25] });
+    function chunks(png: Buffer): string[] {
+      const names: string[] = [];
+      for (let at = 8; at < png.length; at += 12 + png.readUInt32BE(at)) names.push(png.toString("latin1", at + 4, at + 8));
+      return names;
+    }
+    const WHITE = [255, 255, 255];
+    const COLORS: [Part, number[]][] = [
+      ["body", [0x1d, 0x5f, 0xb8]],
+      ["disc", [0xa9, 0xcb, 0xff]],
+      ["z", [0x0e, 0x2f, 0x5c]],
+      ["ring", WHITE],
+    ];
+    // The full mark's cuts, which only it has.
+    const FULL_CUTS: [Part, number[]][] = [
+      ["light", WHITE],
+      ["lid gap", WHITE],
+    ];
+    const SIZES: Record<string, number> = { "favicon.png": 32, "apple-touch-icon.png": 180, "preview.png": 1200 };
+
+    test.each(pictures)("writes %s at its size as 8-bit RGB with no transparency", (name) => {
+      const png = readFileSync(join(out, name));
+      const size = SIZES[name];
+      expect(header(png)).toEqual({ width: size, height: size, depth: 8, type: 2 });
+      expect(chunks(png).at(-1)).toBe("IEND");
+      expect(chunks(png)).not.toContain("tRNS");
+    });
+
+    test.each(pictures)("draws %s's mark in the light fills on white", async (name, { mark, margin, size }) => {
+      const { data, info } = await sharp(readFileSync(join(out, name))).raw().toBuffer({ resolveWithObject: true });
+      const pixel = (x: number, y: number) => [...data.subarray((y * size + x) * info.channels, (y * size + x) * info.channels + 3)];
+      expect(pixel(0, 0)).toEqual([255, 255, 255]);
+      const unit = (16 + 2 * margin) / size;
+      // The part that holds a pixel's whole square, read at 5 by 5 points over it, corners included.
+      const partOf = (x: number, y: number) => {
+        const parts = new Set<Part>();
+        for (let i = 0; i <= 4; i++) for (let j = 0; j <= 4; j++) parts.add(partAt(mark, [(x + i / 4) * unit - margin, (y + j / 4) * unit - margin]));
+        return parts.size === 1 ? [...parts][0] : undefined;
+      };
+      const step = Math.max(1, Math.floor(size / 64));
+      for (const [part, color] of mark === "full" ? [...COLORS, ...FULL_CUTS] : COLORS) {
+        let probe: [number, number] | undefined;
+        for (let y = 0; y < size && !probe; y += step) for (let x = 0; x < size && !probe; x += step) if (partOf(x, y) === part) probe = [x, y];
+        expect(probe, `${name} ${part}`).toBeDefined();
+        pixel(...probe!).forEach((value, i) => expect(Math.abs(value - color[i]!), `${name} ${part} at ${probe}`).toBeLessThanOrEqual(8));
+      }
     });
   });
 
   describe("the logo", () => {
-    test("is the favicon's shape, hidden from screen readers, before the site's name on every page", () => {
-      const favicon = readFileSync(join(out, "favicon.svg"), "utf8");
-      const drawn = /<path\b[^>]*\bd="([^"]+)"/.exec(favicon)![1];
+    test("is the favicon's three shapes, hidden from screen readers, before the site's name on every page", () => {
+      const favicon = lensParts(readFileSync(join(out, "favicon.svg"), "utf8")).tags.map((tag) => tag.replace(/ fill="#[0-9a-f]{6}"/, ""));
+      expect(favicon).toHaveLength(3);
       for (const file of htmlFiles(out)) {
         const brand = /<a class="brand"[^>]*>(.*?)<\/a>/s.exec(readFileSync(join(out, file), "utf8"))![1]!;
         const icons = brand.match(/<svg\b.*?<\/svg>/gs);
         expect(icons, file).toHaveLength(1);
         expect(icons![0], file).toContain('aria-hidden="true"');
-        expect(/<path\b[^>]*\bd="([^"]+)"/.exec(icons![0]!)?.[1], file).toBe(drawn);
+        expect(lensParts(icons![0]!).tags, file).toEqual(favicon);
         expect(brand.startsWith(icons![0]!), file).toBe(true);
         expect(brand.replace(icons![0]!, ""), file).toBe("Zotdex");
       }
     });
 
-    test("fills with --accent and no stroke, with CanvasText in forced colors, and leaves no square behind", () => {
-      const base = /\n {6}\.brand \.icon \{[^}]*fill: var\(--accent\);[^}]*stroke: none;/.exec(layout);
-      const forced = /@media \(forced-colors: active\) \{\s*\.brand \.icon \{\s*fill: CanvasText;/.exec(layout);
+    test("leaves nothing of the old puzzle piece in any built file", () => {
+      const files = (readdirSync(out, { recursive: true }) as string[]).filter((path) => statSync(join(out, path)).isFile());
+      expect(files).toContain("favicon.png");
+      for (const file of files) {
+        const text = readFileSync(join(out, file), "latin1");
+        expect(/puzzle/i.test(text), file).toBe(false);
+        expect(text.includes("M15.39 4.39"), file).toBe(false);
+      }
+    });
+
+    test("fills the rim, disc, and Z from each scheme's tokens, with CanvasText and Canvas in forced colors, and leaves no square behind", () => {
+      expect(layout).not.toContain(".brand::before");
+      const base = /\n {6}\.brand \.logo-rim \{\s*fill: var\(--accent\);\s*\}\s*\.brand \.logo-disc \{\s*fill: var\(--logo-disc\);\s*\}\s*\.brand \.logo-z \{\s*fill: var\(--logo-z\);/.exec(layout);
+      const forced = /@media \(forced-colors: active\) \{\s*\.brand \.logo-rim,\s*\.brand \.logo-disc \{\s*fill: CanvasText;\s*\}\s*\.brand \.logo-z \{\s*fill: Canvas;/.exec(layout);
       expect(base).not.toBeNull();
       expect(forced).not.toBeNull();
-      // Both rules have one specificity, so the forced-colors fill wins only when it comes later.
+      // The rules have one specificity, so the forced-colors fills win only when they come later.
       expect(forced!.index).toBeGreaterThan(base!.index);
-      expect(layout).not.toContain(".brand::before");
+      expect(layout.match(/--logo-disc: #[0-9a-f]{6};/g)).toEqual(["--logo-disc: #a9cbff;", "--logo-disc: #1d5fb8;", "--logo-disc: #1d5fb8;"]);
+      expect(layout.match(/--logo-z: #[0-9a-f]{6};/g)).toEqual(["--logo-z: #0e2f5c;", "--logo-z: #ffffff;", "--logo-z: #ffffff;"]);
     });
   });
 
