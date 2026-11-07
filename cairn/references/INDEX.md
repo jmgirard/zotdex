@@ -19,6 +19,7 @@ bullet lines.
 - mozilla-toolkit-version.md: how Zotero and Firefox order version strings (MDN's legacy version format)
 - paid-service-sweep.md: a hand read of which plugins' main use needs a paid service from their maker, on 2026-11-02 and 2026-11-03 (M082, M083, M084, M085)
 - repeat-id-ledger.md: the repos that the bot refused because another repo lists their add-on id, and the maintainer's choice for those that pass the replacement test (M085)
+- virustotal-terms.md: what VirusTotal's terms say on showing its results publicly and on uploads, and the public API's limits (M115)
 - zotero-changelogs.md: the newest release of each Zotero major and the release address's answer (zotero.org)
 - zotero-plugins-page.md: Zotero's own install steps and full-access warning, and the evidence for the Firefox step (M096)
 - plain-words-copy.md: the page wording drafted for plugin pages, About, and the 404 page in the home page's tone (M110, M111 plan), approved by the user; icon and screenshot lines added (M113, M114 plan); malware scan lines added (M115 plan)
