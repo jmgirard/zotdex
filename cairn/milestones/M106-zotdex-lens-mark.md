@@ -7,7 +7,7 @@
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — the icon in every browser tab, the top bar's logo, the phone home-screen icon, and the picture in link previews
-- **Branch/PR:** m106-zotdex-lens-mark
+- **Branch/PR:** m106-zotdex-lens-mark, https://github.com/jmgirard/zotdex/pull/855
 
 ## Goal
 
