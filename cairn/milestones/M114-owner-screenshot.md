@@ -84,7 +84,7 @@ check text requests at once" holds the same idea for text; icons → M113.
       byte cap (export `downloader` and `readCapped` from `src/upstream/reader.ts`, or share them); check the
       format by magic bytes and the size by sharp's metadata; tests with recorded responses
       (`test/support/fixture-fetch.ts`).
-- [ ] T3: Add `--apply`, removal, and `--file` to the command, re-encoding with sharp; tests.
+- [x] T3: Add `--apply`, removal, and `--file` to the command, re-encoding with sharp; tests.
 - [ ] T4: Add `screenshot` to `schemas/index.v1.schema.json` and the file rules to `src/check/check.ts` (`checkEntry`
       :143 reads only the two JSON files today); tests.
 - [ ] T5: Copy screenshots in `src/build/build.ts` `writeData` and add the record field and plugins.v1 schema entry;
@@ -116,3 +116,4 @@ check text requests at once" holds the same idea for text; icons → M113.
 - 2026-11-07: implement started on branch m114-owner-screenshot.
 - 2026-11-07: T1: created the `screenshot` label, added `screenshot.yml` (Screenshot is a textarea so an image can be attached), `screenshotHref`, and the approved owner line with site tests; the form's own test lands with T2's labels.
 - 2026-11-07: T2: moved the issue, label, form, record, entry, and owner reads into `src/text-request/owner.ts` (`readOwnerRequest`, `formValues` in parse.ts) and put both requests on it; exported `downloader` with a per-URL `check` and `readCapped`, whose `tooLarge` now throws outside its catch; `SCREENSHOT_HOSTS` is github.com and the S3 host an attachment redirected to (curl, 2026-11-07); a non-https URL or a port also counts as off the hosts; a ReadFailure or HTTP error on the download is failure `download-failed` (exit 2); problems print as `problem: <name>: <detail>`, the description's as `description-<textProblems name>`; the form test lives in `test/screenshot-request.test.ts`.
+- 2026-11-07: T3: `--apply` auto-orients, fits inside 1600×2400 without growing, and writes WebP at quality 80 (sharp drops metadata); `index.json`'s field is `screenshot: { description, reason }`; `--owner-checked` works as in text-request; the over-1 MiB test uses seeded noise; the check run after apply waits for T4's schema.

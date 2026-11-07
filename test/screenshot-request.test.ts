@@ -3,7 +3,7 @@ import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:f
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import sharp from "sharp";
-import { afterEach, beforeAll, describe, expect, test } from "vitest";
+import { afterEach, describe, expect, test } from "vitest";
 import { imageLinks, parseScreenshotRequest, SCREENSHOT_REQUEST_LABELS } from "../src/screenshot-request/parse.ts";
 import { type ScreenshotOptions, screenshotRequest } from "../src/screenshot-request/request.ts";
 import { DOWNLOAD_MAX_BYTES, IMAGE_MAX_PIXELS, imageFormat } from "../src/screenshot-request/rules.ts";
@@ -25,10 +25,8 @@ const image = (width: number, height: number, format: "png" | "jpeg" | "webp" = 
   sharp({ create: { width, height, channels: 3, background: { r: 40, g: 90, b: 160 } } })
     [format]()
     .toBuffer();
-let png: Buffer;
-beforeAll(async () => {
-  png = await image(800, 500);
-});
+// Built before the tables below read it.
+const png = await image(800, 500);
 
 describe("the screenshot form", () => {
   const form = readFileSync(resolve(ROOT, ".github/ISSUE_TEMPLATE/screenshot.yml"), "utf8");
@@ -246,8 +244,141 @@ describe("screenshotRequest's report", () => {
   });
 });
 
+// Noise from a fixed seed, which WebP cannot make small.
+function noise(width: number, height: number): Buffer {
+  const bytes = Buffer.alloc(width * height * 3);
+  let seed = 7;
+  for (let i = 0; i < bytes.length; i++) {
+    seed = (seed * 1103515245 + 12345) >>> 0;
+    bytes[i] = seed >>> 24;
+  }
+  return bytes;
+}
+
+describe("screenshotRequest with apply", () => {
+  const indexOf = (tree: ReturnType<typeof checkout>) => JSON.parse(readFileSync(join(tree.entry, "index.json"), "utf8"));
+  const shotOf = (tree: ReturnType<typeof checkout>) => join(tree.entry, "screenshot.webp");
+  const REASON = "The repository's owner asked for this screenshot in issue #9.";
+
+  test.each([
+    [3200, 2000, 1600, 1000],
+    [1000, 6000, 400, 2400],
+    [640, 400, 640, 400],
+  ])("writes a %ix%i image as WebP fit to %ix%i, and sets the description and reason", async (width, height, fitWidth, fitHeight) => {
+    const tree = checkout();
+    const { result } = run(tree, responses(body(attached()), { bytes: await image(width, height, "jpeg") }), { apply: true });
+    const { status, lines } = await result;
+    expect(status).toBe(0);
+    expect(lines.slice(-2)).toEqual([`wrote: "${shotOf(tree)}"`, `wrote: "${join(tree.entry, "index.json")}"`]);
+    const written = readFileSync(shotOf(tree));
+    expect(lines).toContain(`copy: webp ${fitWidth}x${fitHeight} ${written.byteLength} bytes`);
+    expect(await sharp(written).metadata()).toMatchObject({ format: "webp", width: fitWidth, height: fitHeight });
+    expect(indexOf(tree)).toEqual({ schemaVersion: 1, screenshot: { description: GOOD, reason: REASON } });
+  });
+
+  test("turns the image upright by its orientation tag and keeps no metadata", async () => {
+    const tree = checkout();
+    const tagged = await sharp({ create: { width: 300, height: 100, channels: 3, background: "#336699" } })
+      .jpeg()
+      .withMetadata({ orientation: 6, exif: { IFD0: { Copyright: "Someone" } } })
+      .toBuffer();
+    expect(await sharp(tagged).metadata()).toMatchObject({ orientation: 6, exif: expect.any(Buffer) });
+    await run(tree, responses(body(attached()), { bytes: tagged }), { apply: true }).result;
+    const copy = await sharp(readFileSync(shotOf(tree))).metadata();
+    expect(copy).toMatchObject({ width: 100, height: 300 });
+    expect(copy.exif).toBeUndefined();
+    expect(copy.icc).toBeUndefined();
+    expect(copy.xmp).toBeUndefined();
+    expect(copy.orientation).toBeUndefined();
+  });
+
+  test("replaces an earlier screenshot and leaves the other fields", async () => {
+    const tree = checkout();
+    writeFileSync(shotOf(tree), "old");
+    writeFileSync(join(tree.entry, "index.json"), JSON.stringify({ schemaVersion: 1, iconHidden: { reason: "Test." }, screenshot: { description: "Old text for the old image.", reason: "Old." } }));
+    const { lines } = await run(tree, responses(body(attached())), { apply: true }).result;
+    expect(lines).toContain('replaces-screenshot: "Old text for the old image."');
+    expect(indexOf(tree)).toEqual({ schemaVersion: 1, iconHidden: { reason: "Test." }, screenshot: { description: GOOD, reason: REASON } });
+    expect(imageFormat(readFileSync(shotOf(tree)))).toBe("webp");
+  });
+
+  test("writes nothing and exits 1 when the copy is over 1 MiB", async () => {
+    const tree = checkout();
+    const big = await sharp(noise(1600, 2400), { raw: { width: 1600, height: 2400, channels: 3 } }).jpeg({ quality: 95 }).toBuffer();
+    expect(big.byteLength).toBeLessThan(DOWNLOAD_MAX_BYTES);
+    const before = readFileSync(join(tree.entry, "index.json"), "utf8");
+    const { status, lines } = await run(tree, responses(body(attached()), { bytes: big }), { apply: true }).result;
+    expect(status).toBe(1);
+    expect(lines.at(-2)).toMatch(/^copy: webp 1600x2400 (\d+) bytes$/);
+    expect(Number(lines.at(-2)!.split(" ")[3])).toBeGreaterThan(1024 * 1024);
+    expect(lines.at(-1)).toBe("wrote nothing: the copy is over 1048576 bytes, so ask for a smaller image");
+    expect(readFileSync(join(tree.entry, "index.json"), "utf8")).toBe(before);
+    expect(() => readFileSync(shotOf(tree))).toThrow(/ENOENT/);
+  });
+
+  test("removes the file and the field for a blank Screenshot field", async () => {
+    const tree = checkout();
+    writeFileSync(shotOf(tree), "old");
+    writeFileSync(join(tree.entry, "index.json"), JSON.stringify({ schemaVersion: 1, screenshot: { description: "Old text for the old image.", reason: "Old." } }));
+    const { status, lines } = await run(tree, responses(body("")), { apply: true }).result;
+    expect(status).toBe(0);
+    expect(lines).toContain('removes-screenshot: "Old text for the old image."');
+    expect(lines.slice(-2)).toEqual([`removed: "${shotOf(tree)}"`, `wrote: "${join(tree.entry, "index.json")}"`]);
+    expect(indexOf(tree)).toEqual({ schemaVersion: 1 });
+    expect(() => readFileSync(shotOf(tree))).toThrow(/ENOENT/);
+  });
+
+  test("writes nothing for a removal from an entry with no screenshot", async () => {
+    const tree = checkout();
+    const before = readFileSync(join(tree.entry, "index.json"), "utf8");
+    const { status, lines } = await run(tree, responses(body("")), { apply: true }).result;
+    expect(status).toBe(0);
+    expect(lines.at(-1)).toBe("wrote nothing: the entry has no screenshot to remove");
+    expect(readFileSync(join(tree.entry, "index.json"), "utf8")).toBe(before);
+  });
+
+  test("writes a --file image without a download", async () => {
+    const tree = checkout();
+    const file = join(tree.dir, "shot.webp");
+    writeFileSync(file, await image(500, 300, "webp"));
+    const { result, requests } = run(tree, responses(body(attached())), { apply: true, file });
+    expect((await result).status).toBe(0);
+    expect(requests.map(({ url }) => url)).toEqual([ISSUE_URL, REPO_URL]);
+    expect(await sharp(readFileSync(shotOf(tree))).metadata()).toMatchObject({ format: "webp", width: 500, height: 300 });
+  });
+
+  test.each<[string, Responses, string]>([
+    ["a problem", responses(body(attached(), "Too short")), "wrote nothing: the request breaks a rule"],
+    ["a mismatch", responses(body(attached()), { author: "someone" }), "wrote nothing: check the author, then use --owner-checked"],
+  ])("writes nothing on %s", async (_name, answers, line) => {
+    const tree = checkout();
+    const before = readFileSync(join(tree.entry, "index.json"), "utf8");
+    const { status, lines } = await run(tree, answers, { apply: true }).result;
+    expect(status).toBe(1);
+    expect(lines.at(-1)).toBe(line);
+    expect(readFileSync(join(tree.entry, "index.json"), "utf8")).toBe(before);
+  });
+
+  test("writes past a mismatch with ownerChecked, but never past a problem", async () => {
+    const tree = checkout();
+    expect((await run(tree, responses(body(attached()), { author: "someone" }), { apply: true, ownerChecked: true }).result).status).toBe(0);
+    expect(indexOf(tree).screenshot.description).toBe(GOOD);
+    const other = checkout();
+    expect((await run(other, responses(body(attached(), "Too short"), { author: "someone" }), { apply: true, ownerChecked: true }).result).status).toBe(1);
+    expect(indexOf(other).screenshot).toBeUndefined();
+  });
+});
+
 describe("pnpm screenshot-request", () => {
-  test.each([[[]], [["9"]], [["x", "--data", "f"]], [["9", "--data"]], [["9", "--data", "f", "--file"]], [["9", "--data", "f", "--other"]]])(
+  test.each([
+    [[]],
+    [["9"]],
+    [["x", "--data", "f"]],
+    [["9", "--data"]],
+    [["9", "--data", "f", "--file"]],
+    [["9", "--data", "f", "--other"]],
+    [["9", "--data", "f", "--owner-checked"]],
+  ])(
     "prints the usage and exits 2 for the arguments %j",
     (args) => {
       const result = spawnSync(process.execPath, [resolve(ROOT, "src/screenshot-request/cli.ts"), ...args], { encoding: "utf8", cwd: ROOT });
