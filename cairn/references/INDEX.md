@@ -21,4 +21,4 @@ bullet lines.
 - repeat-id-ledger.md: the repos that the bot refused because another repo lists their add-on id, and the maintainer's choice for those that pass the replacement test (M085)
 - zotero-changelogs.md: the newest release of each Zotero major and the release address's answer (zotero.org)
 - zotero-plugins-page.md: Zotero's own install steps and full-access warning, and the evidence for the Firefox step (M096)
-- plain-words-copy.md: the page wording drafted for plugin pages, About, and the 404 page in the home page's tone (M110, M111 plan), approved by the user
+- plain-words-copy.md: the page wording drafted for plugin pages, About, and the 404 page in the home page's tone (M110, M111 plan), approved by the user; icon and screenshot lines added (M113, M114 plan)

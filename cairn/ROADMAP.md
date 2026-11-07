@@ -7,12 +7,15 @@ _Last hygiene check: 2026-11-07 (M112 review: README badge removed; no rows grad
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
+| M113 | Show each plugin's own icon on its page | planned | — | normal | milestones/M113-plugin-icons.md |
+| M114 | Let a plugin's owner add a screenshot | planned | M113 | normal | milestones/M114-owner-screenshot.md |
 | M112 | Remove the README badge | done | — | normal | milestones/archive/M112-remove-readme-badge.md |
 | M111 | Shorten About in the home page's words | done | M110 | normal | milestones/archive/M111-short-about.md |
 | M110 | Use plain words on plugin pages | done | — | normal | milestones/archive/M110-plain-plugin-pages.md |
 <!-- rows grouped by status, not by ID; keep the 3 most recent done/dropped rows; older ones: milestones/archive/ + git -->
 
 ## Candidates
+- Show plugin icons in home rows: M113 shows the manifest icon on plugin pages only; a small icon in each home row's name cell would need lazy loading, a blank slot for the plugins with no icon, and the user's look at the table (M113 plan) — added 2026-11-07 — M113
 - [low] Let a run by hand start every plugin: after a change to the start-test code, the reporter, or a Zotero pin, carried results stay up to 7 days, and nothing lets a maintainer skip the carry for one run (M059 review) — added 2026-10-30 — M059, D-035
 - [low] Read new plugins for paid services: M082 to M084 read the entries through `1b2cebf`, and the bot adds up to 5 a run, so later plugins carry no mark; repeat the word list and record in `cairn/references/paid-service-sweep.md`; a listing command waits for marks falling far behind the new plugins (M082 plan); also read the GitHub text of `zotero@wilddata.cn`, which names a free allowance for new users, and the maker's site of `zotbox@scigreat.com` (M089 review) — added 2026-11-02 — M082, M083, M084, M089, D-054
 - [low] Fill description gaps on new plugins: M089 and M090 fill the gaps in the two data files of 2026-11-03, and the bot adds up to 5 plugins a run, so later plugins need `pnpm description-gaps` and overrides; the command skips a plugin that the data's build did not read (M090), and it does not see other languages, and a word scan of that data found French (`hypothesis-import@zotero-plugin`, `readeck-import@zotero-plugin`), Spanish (`author-harvester@migueldelm`), and Turkish (`zotero-latin@mirket`) shown texts; `readeck-import` has an English GitHub text, so it needs a pick rule or a new override case (M088 plan) — added 2026-11-03 — M067, M089, M090, D-030, D-038

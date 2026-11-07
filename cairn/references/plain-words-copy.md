@@ -6,7 +6,8 @@ home page. It covers plugin pages (M110) and the About and 404 pages (M111).
 Pagination: none.
 Extraction: first-hand, so it has nothing to re-verify against. Status: the
 user approved it at the plan question set — observed 2026-11-07. The user approved "of the
-plugin" in About's reports line after the M111 claim audit (2026-11-07). `<v>` is the release version. `<date>` is a day in UTC written as
+plugin" in About's reports line after the M111 claim audit (2026-11-07). The user approved the
+icon and screenshot lines at the M113 and M114 plan question set (2026-11-07). `<v>` is the release version. `<date>` is a day in UTC written as
 "November 7, 2026". `{…}` is a value that the page fills in.
 
 ## Plugin page (M110)
@@ -163,3 +164,26 @@ other text from plugin authors keep their authors' terms. The license page
 **404 page.** Heading "Page not found"; text: "No page is at this address. A
 plugin's page goes away when Zotdex no longer lists the plugin. See all
 plugins or read the About page."
+
+## Icons and screenshots (M113, M114)
+
+Approved at the M113 and M114 plan question set, 2026-11-07. Links are in
+brackets.
+
+- M113, About, new section **Icons** (`#icons`, after Descriptions): "A
+  plugin's icon is the one its author made for Zotero's Plugins window.
+  Zotdex doesn't look at icons before it shows them, and a maintainer can
+  hide one."
+- M113, About license line, replacing "Names, descriptions, and other text
+  from plugin authors keep their authors' terms.": "Names, descriptions,
+  icons, and other work from plugin authors keep their authors' terms."
+- M113, plugin page: the icon has empty alt text and adds no words.
+- M114, About: the section heading becomes **Icons and screenshots**, and
+  the section adds: "A screenshot comes from the plugin's owner, who asks
+  for it with the link on the plugin's page. A maintainer looks at each one
+  before it's shown."
+- M114, About license line: "Names, descriptions, icons, screenshots, and
+  other work from plugin authors keep their authors' terms."
+- M114, plugin page owner line, replacing "Is this your plugin? [Ask to
+  change its name or description].": "Is this your plugin? [Ask to change
+  its name or description] or [add a screenshot]."
