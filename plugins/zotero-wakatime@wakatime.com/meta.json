@@ -1,0 +1,8 @@
+{
+  "id": "zotero-wakatime@wakatime.com",
+  "name": "Zotero WakaTime",
+  "description": "WakaTime time tracking integration for Zotero",
+  "homepage": "https://github.com/wakatime/zotero-wakatime#readme",
+  "repoUrl": "https://github.com/wakatime/zotero-wakatime",
+  "updateUrl": "https://github.com/wakatime/zotero-wakatime/releases/download/release/update.json"
+}
