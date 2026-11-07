@@ -59,10 +59,6 @@ plugin" in About's reports line after the M111 claim audit (2026-11-07). `<v>` i
   "GitHub: …"
 - Owner links: "Is this your plugin? Ask to change its name or
   description." and "Ask to remove this plugin or report harm."
-- Badge card heading: "Badge for your README". Text: "If this is your
-  plugin, you can add this Markdown to its README. The badge shows the
-  Zotero versions where it passed Zotdex's startup check, or why it shows
-  none, and it links to this page."
 - About's quotes of these labels follow them: "Source code in the
   repository's top folder", the "Corrections by Zotdex" table, and its "In
   use" column.
@@ -153,11 +149,6 @@ library. A bot
 adds most new plugins, and a maintainer steps in when the bot flags one,
 mainly to keep out entries that mislead people about what a plugin is or who
 makes it.
-
-**README badge** (`#badge`). Plugin authors can add a Zotdex badge to their
-README. It names the Zotero versions where the plugin passed the startup
-check, such as "started in Zotero 7 · 8 · 9". The Markdown is at the bottom
-of each plugin page, and a change can take a few hours to show.
 
 **What Zotdex doesn't do** (`#not-vetted`). Zotdex is independent and
 unofficial, and it's not part of Zotero. It can't vet the plugins it lists,

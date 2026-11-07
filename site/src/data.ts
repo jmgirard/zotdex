@@ -13,7 +13,7 @@ import {
   ZOTERO_MAJORS,
   type MajorSupport,
 } from "../../src/site/version.ts";
-import { BASE, ORIGIN } from "./base.ts";
+import { BASE } from "./base.ts";
 
 export { BASE, CATEGORIES, categories, categoryOptions, declaredRange, languageName, languageOptions, majorStart, shownDescription };
 export type { Override, PluginRecord };
@@ -40,13 +40,6 @@ export function loadData(): PluginsFile {
 
 export function pluginHref(id: string): string {
   return `${BASE}plugins/${encodeURIComponent(id)}/`;
-}
-
-// The Markdown of a plugin's README badge (D-071): the shields.io image of its badge file,
-// linked to its page here.
-export function badgeSnippet(id: string): string {
-  const file = `${ORIGIN}${BASE}badges/${encodeURIComponent(id)}.json`;
-  return `[![Zotdex](https://img.shields.io/endpoint?url=${encodeURIComponent(file)})](${ORIGIN}${pluginHref(id)})`;
 }
 
 // The name after overrides, or the id when neither the manifest nor an override gives one.

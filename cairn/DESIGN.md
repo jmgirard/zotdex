@@ -160,19 +160,17 @@ release facts with dates from `longDay`, and the "Languages" fact (M024,
 M033, M110), with each override beside the upstream value it corrects under
 an h3, "Corrections by Zotdex" (M007, M015, M054, M110), and a
 `description` override beside each upstream text that is not blank (M088). It ends with links to the
-text-change form and the remove-plugin form (M079, M093). A "Badge for your
-README" card (`data-section="badge"`) comes last, with `badgeSnippet`'s
-Markdown in one `<code>` element (M105). The About page
+text-change form and the remove-plugin form (M079, M093). The About page
 (`site/src/pages/about.astro`) holds the method notes in short form, and
 its intro links `docs/site.md` for the full rules (M111, D-078): the
 supported range and its marks, the startup check, which reports count, and
 what corrections change (M054, M110), the categories, each with its `about`
 text (M066), what the lock means (M081), what the paid service mark means
 (M082), the grounds for removing a plugin (M093), how to install a plugin
-(M096), what the README badge says (M105), and the license terms in short
-form (M095, D-063). The home table marks an archived plugin with
-"Archived" after its name (M053), and the data carries the same `archived`
-fact (M013). A home row and a plugin page show a lock for a record with
+(M096), and the license terms in short form (M095, D-063). The home table
+marks an archived plugin with "Archived" after its name (M053), and the
+data carries the same `archived` fact (M013). A home row and a plugin page
+show a lock for a record with
 `sourceInRepo: false`, the fact that the top level of the repo's default branch
 holds no name that can be source code, and the Details card states it (M081,
 D-052). A home row and a plugin page show a card icon for a record with
@@ -248,14 +246,6 @@ The index runs on GitHub only: GitHub Actions, GitHub Pages, GitHub issues,
 and GitHub Discussions for feedback (M097), which no build reads. It has no
 server, no database, and no paid service. Thus every
 contributor needs a GitHub account.
-
-Each listed plugin also has a README badge file at the stable public path
-`https://zotdex.jmgirard.com/badges/<id>.json`, with the id percent-encoded.
-It is a shields.io endpoint file labeled Zotdex. Its message names the Zotero
-majors whose newest start result is `started`, never "works" (D-023, D-071).
-A record that keeps earlier facts gets the badge of those facts. Each
-plugin page shows the Markdown that embeds the badge through `img.shields.io`
-as text, and the site loads nothing from shields.io (M105).
 
 The generated JSON data is a public API at a stable URL, with a schema
 version. A breaking change gets a new schema version. The old version stays
@@ -576,8 +566,7 @@ user reports. The exception is a report that is abuse.
 - Site build (`src/site/`, `site/`): `pnpm site [--out <dir>]` writes the
   home page, the About page (M054), and one page per record into `dist/`,
   or `<dir>`, from the data file there. It also writes `404.html`,
-  `favicon.svg`, `sitemap.xml`, and `robots.txt` (M102),
-  `badges/<id>.json` for each record (M105), and `favicon.png`,
+  `favicon.svg`, `sitemap.xml`, and `robots.txt` (M102), and `favicon.png`,
   `apple-touch-icon.png`, and `preview.png` (M106), and `logo.svg`, the full
   mark with no background, which the README shows (`logoSvg`).
   `src/site/logo.ts` holds the Zotdex logo's shapes (D-072, D-074):
@@ -614,10 +603,9 @@ user reports. The exception is a report that is abuse.
   nothing from outside its body except built-ins and browser globals (M078).
   `site/src/data.ts` holds the template helpers, among them `homeOrder`,
   `shortLanguages`, and `monthYear` for the home table, `compatMajors`,
-  `majorReport`, and `startWords` for the plugin page's table (M054), and
-  `badgeSnippet` for its badge card (M105). `majorStart` lives in
-  `src/site/version.ts`, which `data.ts` re-exports, and
-  `src/site/badge.ts` holds `badgeFor` (M105).
+  `majorReport`, and `startWords` for the plugin page's table (M054).
+  `majorStart` lives in `src/site/version.ts`, which `data.ts` re-exports
+  (M105).
   `site/src/components/Icon.astro` draws the line icons, the lock
   (M081), the card (M082), the star, which `Base.astro` fills with `--star`
   inside `[data-repo-stars]` (M064) and with the count's color in `.row-stars`

@@ -25,7 +25,6 @@ import {
 } from "../site/src/data.ts";
 import type { PluginsFile } from "../src/build/build.ts";
 import { KEEP_MS } from "../src/build/keep.ts";
-import { badgeFor } from "../src/site/badge.ts";
 import { CATEGORIES, categories } from "../src/site/categories.ts";
 import { cutDescription, shownDescription } from "../src/site/description.ts";
 import { PAGE_SIZE, prePaintStyle } from "../src/site/home-filter.ts";
@@ -145,10 +144,8 @@ describe("pnpm site", () => {
     expect(locs.toSorted()).toEqual(canonicals.toSorted());
   });
 
-  test("writes one badge file for each record and no other", () => {
-    expect(readdirSync(join(out, "badges")).sort()).toEqual(ids.map((id) => `${id}.json`).sort());
-    for (const record of records) expect(JSON.parse(readFileSync(join(out, "badges", `${record.id}.json`), "utf8")), record.id).toEqual(badgeFor(record));
-    expect(JSON.parse(readFileSync(join(out, "badges", "no-range-plugin@example.org.json"), "utf8")).message).toBe("started in Zotero 7");
+  test("writes no badge files", () => {
+    expect(readdirSync(out)).not.toContain("badges");
   });
 
   test("writes a robots.txt at the top that allows every path and names the sitemap", () => {
@@ -639,7 +636,6 @@ describe("the plugin page", () => {
     expect(found.map(({ name, heading }) => [name, heading])).toEqual([
       ["compatibility", "Zotero versions"],
       ["details", "Details"],
-      ["badge", "Badge for your README"],
     ]);
     const body = (name: string) => found.find((section) => section.name === name)!.body;
     const holds: [string, string[]][] = [
@@ -942,13 +938,6 @@ describe("the About page", () => {
         "so look into a plugin before you trust it with your library. " +
         "A bot adds most new plugins, and a maintainer steps in when the bot flags one, " +
         "mainly to keep out entries that mislead people about what a plugin is or who makes it.",
-    ],
-    [
-      "badge",
-      "README badge",
-      "Plugin authors can add a Zotdex badge to their README. " +
-        'It names the Zotero versions where the plugin passed the startup check, such as "started in Zotero 7 · 8 · 9". ' +
-        "The Markdown is at the bottom of each plugin page, and a change can take a few hours to show.",
     ],
     [
       "not-vetted",
@@ -2163,32 +2152,12 @@ describe("the built site", () => {
     expect(readFileSync(join(out, "about/index.html"), "utf8")).not.toContain("data-text-change");
   });
 
-  test("gives each built plugin page one badge snippet for its own badge file and page", () => {
-    for (const id of readdirSync(join(out, "plugins"))) {
-      const html = page(id);
-      const badge = sections(html).filter(({ name }) => name === "badge");
-      expect(badge.map(({ heading }) => heading), id).toEqual(["Badge for your README"]);
-      const codes = [...badge[0]!.body.matchAll(/<code\b[^>]*>(.*?)<\/code>/gs)];
-      expect(codes, id).toHaveLength(1);
-      const file = `https://zotdex.jmgirard.com/badges/${encodeURIComponent(id)}.json`;
-      const canonical = /<link rel="canonical" href="([^"]*)"/.exec(html)![1]!;
-      expect(decoded(codes[0]![1]!), id).toBe(`[![Zotdex](https://img.shields.io/endpoint?url=${encodeURIComponent(file)})](${canonical})`);
-    }
-  });
-
-  test("says what the badge shows", () => {
-    const badge = sections(page("first-plugin@example.org")).find(({ name }) => name === "badge")!;
-    expect(mainText(`<main>${badge.body.replace(/<code\b.*?<\/code>/s, "")}</main>`)).toBe(
-      "If this is your plugin, you can add this Markdown to its README. The badge shows the Zotero versions where it passed Zotdex's startup check, or why it shows none, and it links to this page.",
-    );
-  });
-
-  test("names img.shields.io only in code text, and loads nothing from it", () => {
-    for (const file of htmlFiles(out)) {
+  test("offers no badge on any page", () => {
+    const files = htmlFiles(out);
+    expect(files).toHaveLength(ids.length + 3);
+    for (const file of files) {
       const html = readFileSync(join(out, file), "utf8");
-      expect(html.replace(/<code\b[^>]*>.*?<\/code>/gs, ""), file).not.toContain("img.shields.io");
-      const loads = [...html.matchAll(/\s(?:src|srcset)="([^"]*)"|url\(([^)]*)\)/g)].map((match) => match[1] ?? match[2]!);
-      expect(loads.filter((url) => url.includes("shields.io")), file).toEqual([]);
+      expect(html, file).not.toContain("img.shields.io");
     }
   });
 

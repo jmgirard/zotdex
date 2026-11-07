@@ -929,8 +929,7 @@ page, `dist/index.html`, the About page, `dist/about/index.html`, one page
 for each record, `dist/plugins/<id>/index.html`, and the "Page not found"
 page, `dist/404.html`. It also writes the favicon, `dist/favicon.svg`, and
 the three PNG files, such as `dist/preview.png`. It writes
-`dist/sitemap.xml`, `dist/robots.txt`, and one badge file for each record,
-`dist/badges/<id>.json`. It does not change the data file
+`dist/sitemap.xml` and `dist/robots.txt`. It does not change the data file
 or the schemas. It
 replaces each of those files and folders of an earlier run. So a page for a
 plugin that the data no longer lists goes away. Links between the pages, and
