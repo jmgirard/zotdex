@@ -201,7 +201,7 @@ describe("build.yml", () => {
         '            echo "scan=true" >> "$GITHUB_OUTPUT"\n          else\n            echo "scan=false" >> "$GITHUB_OUTPUT"\n          fi\n',
     );
     expect(job).toContain(
-      "      - id: clamav\n        if: steps.scan-day.outputs.scan == 'true'\n        continue-on-error: true\n        run: |\n" +
+      "      - id: clamav\n        if: steps.scan-day.outputs.scan == 'true'\n        continue-on-error: true\n        timeout-minutes: 4\n        run: |\n" +
         "          sudo apt-get update\n          sudo apt-get install -y clamav\n          sudo systemctl stop clamav-freshclam || true\n          sudo freshclam\n",
     );
     // Each pnpm malware-scan step: its if line and its run line.
@@ -224,7 +224,7 @@ describe("build.yml", () => {
     expect(hash).toBeGreaterThan(job.lastIndexOf("run: pnpm malware-scan"));
     expect(job.match(/- uses: actions\/upload-artifact@\S+\n(?: {8,}\S.*\n)*/g)).toEqual([
       "- uses: actions/upload-artifact@v7\n        with:\n          name: scan-results\n" +
-        "          path: ${{ runner.temp }}/scan/scan-results.json\n          if-no-files-found: error\n",
+        "          path: ${{ runner.temp }}/scan/scan-results.json\n          if-no-files-found: error\n          overwrite: true\n",
     ]);
   });
 

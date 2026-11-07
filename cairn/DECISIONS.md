@@ -1286,8 +1286,9 @@ rejected facts about what plugin code can reach, such as running programs,
 since bundled plugins make them noisy and they come close to a review.
 
 The scan runs once a week, on a scheduled run on a Monday (UTC) and on a run
-that a maintainer starts with the `malware-scan` input, and it scans every
-file each time. ClamAV asks its users not to download its full signature set
+that a maintainer starts with the `malware-scan` input. Each such run scans
+the files it downloads in 20 minutes, those with no result first and then
+the oldest results. ClamAV asks its users not to download its full signature set
 often, and D-010 bars a cache in the deploy build, since a job that a
 crafted file took over can save any key. A poisoned signature cache could
 add an allow-list that hides one plugin's malware. The user rejected a daily
@@ -1307,8 +1308,11 @@ cache, as D-023 and D-024 ask of the start-test job. The data digest check
 and the job's `scan-sha256` output keep plugin code in a start-test job from
 changing the data that the scan reads or the results that the site job
 adds. A file that takes over ClamAV can still forge the scan results of
-that run. GitHub's runners sit on a cloud that ClamAV's freshclam FAQ calls
-likely to be rate limited, and a refused freshclam skips that week's scan.
+that run. Plugin code in a start-test job, which runs at the same time, can
+also replace the `scan-results` artifact after the scan job uploads it.
+The site job then adds no result that run, and the earlier results stay.
+GitHub's runners sit on a cloud that ClamAV's freshclam FAQ calls likely to
+be rate limited, and a refused freshclam skips that week's scan.
 
 This choice is wrong if freshclam is refused from GitHub's runners in most
 weeks, if ClamAV flags many listed plugins falsely, or if readers take a

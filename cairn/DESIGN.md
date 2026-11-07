@@ -26,10 +26,11 @@ tags.
 
 The index lists plugins and links to the releases of each author. It does not
 host, mirror, or re-serve plugin files (XPI files). It does not review plugin
-code, and it does not endorse plugins. Since M115 the daily build scans each
-plugin file with ClamAV once a week. That scan is an automated match against
+code, and it does not endorse plugins. Since M115 the daily build scans the
+plugin files with ClamAV once a week, as many as it downloads in 20 minutes.
+That scan is an automated match against
 signatures of known malware, not a review of plugin code, and no artifact
-holds an XPI (D-082).
+holds an XPI (D-023, D-082).
 
 Each plugin page shows facts that a reader can check. These facts are the
 declared range of Zotero versions, source availability, whether GitHub marks
@@ -194,12 +195,13 @@ D-052). A home row and a plugin page show a card icon for a record with
 `paidService`, on a read record or a failure record, and the Details card gives
 its note, source link, and read date (M082, D-054). Each page's footer says:
 "Zotdex is an independent project, not part of Zotero, and it doesn't test the
-safety or features of the plugins it lists." (`DISCLAIMER`, M080, D-051,
-D-076), and it names the build's day and links to the data file and to the
+safety or features of the plugins it lists, beyond a malware scan by ClamAV."
+(`DISCLAIMER`, M080, D-051, D-076, M115, D-082), and it names the build's day and links to the data file and to the
 repository, which the top bar also links with a GitHub mark (M109). The home
 intro says in its own words that Zotdex is independent and unofficial and
-reviews no code (D-075). The holds and the start
-tests screen in part, and neither is a review of plugin code. The home intro
+reviews no code (D-075). The holds, the start
+tests, and the weekly ClamAV scan screen in part, and none is a review of
+plugin code (D-082). The home intro
 also says what the site shows, and it links to About's `#installing` section,
 which gives Zotero's install steps, a step for Firefox, Zotero's full-access
 warning, and how a bot and a maintainer add plugins (M096, D-064). A plugin page
@@ -579,7 +581,9 @@ user reports. The exception is a report that is abuse.
   `generatedAt` and not after it. A kept record stays build-level, counts as
   failed in both deploy bars, gets no start plan item, and keeps its start
   results through `pnpm add-start-results`, and `pnpm carry-start-results`
-  carries none from it. A failed read keeps nothing and warns (D-066, M100).
+  carries none from it. `pnpm carry-scan-results` keeps the deployed
+  `malwareScan` of a kept record too, since its `xpiSha256` is unchanged
+  (M115). A failed read keeps nothing and warns (D-066, M100).
   The reader returns the bytes of the file that the manifest's `icons` names
   (`pickIconPath` in `src/upstream/icon.ts`), and the build redraws them with
   `redrawIcon` as `upstream.icon`, unless the entry's `index.json` has
@@ -732,6 +736,20 @@ user reports. The exception is a report that is abuse.
   is missing, and drops a job result for a carried pair as `carried`;
   `parsePlan` refuses a `carried` list
   that is not a list of `started` results with distinct `zotero` strings.
+- Malware scan (`src/malware-scan/`, M115, D-082): `pnpm carry-scan-results
+  --data [--previous]` (`carryScans`, `carryScanFile` in `carry.ts`) copies
+  each deployed record's `malwareScan` whose `xpiSha256` equals this
+  build's, and exits 0 on a failed read. `pnpm malware-scan --data --out
+  [--scan]` (`scan`, `selectRecords` in `scan.ts`) writes an empty list
+  without `--scan`; with it, it downloads each file with `downloadXpi`,
+  files with no kept result first and then the oldest, starting none after
+  20 minutes, checks its SHA-256, and runs `clamscan` once with
+  `CLAMSCAN_OPTIONS`, stopped after 10 minutes. A file named on exactly one
+  OK or FOUND line gets a result, except a `Heuristics.Limits.Exceeded` or
+  `Heuristics.Encrypted` find. `pnpm add-scan-results --data --results
+  --expect` (`addScanResults`, `findLines` in `add-results.ts`) adds results
+  only from a file whose SHA-256 equals `--expect`, and prints a
+  `::warning::` line for each find.
 
 ## Conventions
 
@@ -1087,9 +1105,11 @@ reused._
   for that read, and `test/workflows.test.ts` checks both (M021). The reader
   marks a failure build-level beside its name, and `buildData` returns the
   marked ids outside the data, so the published file keeps its shape
-  (D-011); since M100 a kept record holds its failure in `kept` (D-066). Since M047 the workflow has four jobs. The build job runs
+  (D-011); since M100 a kept record holds its failure in `kept` (D-066). Since M047 the workflow has had four jobs, and since M115 it has
+  five, with the `malware-scan` job. The build job runs
   `pnpm build --plan start-plan.json`, with `--previous` since M100, then since M059 `pnpm
-  carry-start-results` on the plan, gives the plan's SHA-256 as the job
+  carry-start-results` on the plan, then since M115 `pnpm carry-scan-results`
+  on the data, gives the plan's SHA-256 as the job
   output `plan-sha256` and, since M069, the `pnpm data-digest --dir dist`
   value as `data-sha256`, and uploads `dist/` as `plugins-data` and the
   plan as `start-plan`. The site job checks the downloaded `dist/` with
@@ -1105,13 +1125,23 @@ reused._
   `start-results-<version>`; it holds
   `permissions: {}`, reads no secret, checks out with
   `persist-credentials: false`, and sets `cache-mode: none`, since plugin
-  code runs in it (D-023). The site job, whose `if:` is
+  code runs in it (D-023). The `malware-scan` job (M115, D-082) checks the
+  downloaded `dist/` against `data-sha256`, and on a scheduled run on a
+  Monday (UTC) or a dispatch with the `malware-scan` input it installs
+  ClamAV, runs `freshclam`, and runs `pnpm malware-scan --scan`; otherwise
+  it runs `pnpm malware-scan` alone. It uploads `scan-results` and gives its
+  SHA-256 as `scan-sha256`, and it holds `permissions: {}`, reads no secret,
+  checks out with `persist-credentials: false`, and sets
+  `cache-mode: none`, since ClamAV reads untrusted plugin files. The site
+  job, whose `if:` is
   `${{ !cancelled() && needs.build.result == 'success' }}`, runs
-  `pnpm add-start-results` and `pnpm site` and uploads `dist/` as the Pages
+  `pnpm add-start-results`, downloads `scan-results` with
+  `continue-on-error`, runs `pnpm add-scan-results` against `scan-sha256`,
+  runs `pnpm site`, and uploads `dist/` as the Pages
   artifact. A deploy job that needs the site job publishes it; its `if:`
   is `${{ !cancelled() && needs.site.result == 'success' }}`, since a job
   with a failed earlier job is skipped by default, so a failed start test
-  still deploys. A failed build deploys nothing, and the
+  or scan still deploys. A failed build deploys nothing, and the
   `github-pages` environment takes deploys from `main` only (M006).
   The build, start-test, and site jobs of `build.yml` restore no Actions
   cache (M047). The build job's rule came first: the job sets

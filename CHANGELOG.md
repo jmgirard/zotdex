@@ -8,10 +8,11 @@
   Mondays (UTC), and on a run that a maintainer starts with the new
   `malware-scan` input, as many as it downloads in 20 minutes. Between scans
   it keeps the published result for an unchanged file. A find hides
-  nothing, and it shows as a warning on the workflow run. The data's records gain an optional `malwareScan` field, so
-  the v1 schema changed. Fetch any saved copy of it again. The footer, the
-  install note, and About now name the scan, and About says that a clean
-  scan doesn't mean a plugin is safe.
+  nothing, and it shows as a warning on the workflow run. The data's
+  records gain an optional `malwareScan` field, so the v1 schema changed.
+  Fetch any saved copy of it again. The footer, the install note, and About
+  now name the scan, and About says that a clean scan doesn't mean a plugin
+  is safe.
 - A plugin's repository owner can ask for one screenshot with a new issue
   form, linked from the owner line on the plugin's page. A maintainer looks
   at the image and applies it with `pnpm screenshot-request`, which keeps a

@@ -21,7 +21,8 @@ below says, counts here as a record with that failure. If every record
 carries a failure, whatever its name, the build
 also deploys nothing. The build also deploys nothing in these cases: it
 cannot read the report issues, it cannot write the start plan,
-`pnpm add-start-results` fails, or the site build fails. If the data or
+`pnpm add-start-results` or `pnpm add-scan-results` fails, or the site
+build fails. If the data or
 the start plan that the site job downloads fails its check, the build
 deploys nothing too. "The daily build" in
 [maintaining.md](maintaining.md#the-daily-build) names the commands. A
@@ -166,7 +167,8 @@ When the index reads a new release of a plugin, its counts start over.
 A record can have a `kept` block in place of a `failure` block. Then the
 build failed to read the plugin for a build-level reason. The record holds
 the `upstream` block and the `startTests` list that an earlier build
-published. The `kept` block has two fields. `readAt` is the
+published. It can also keep that build's `malwareScan` result, since its
+file is unchanged. The `kept` block has two fields. `readAt` is the
 start time of the build that read those facts, as that build's
 `generatedAt` gives it. `failure` has this build's failure name and
 message. The record's `reports` list counts the reports that this build

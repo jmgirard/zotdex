@@ -201,8 +201,8 @@ jobs:
     runs-on: ubuntu-latest
     # `pnpm malware-scan` starts no download 20 minutes after it begins, a download that starts
     # by then takes at most 3 minutes, `clamscan --version` takes at most 1 minute, and `clamscan`
-    # is stopped after 10 minutes, which leaves 6 minutes for the install, `freshclam`, and the
-    # other steps.
+    # is stopped after 10 minutes: 34 minutes. The install and `freshclam` step stops at 4
+    # minutes, which leaves 2 minutes for the other steps.
     timeout-minutes: 40
     permissions: {}
     cache-mode: none
@@ -242,6 +242,7 @@ jobs:
       - id: clamav
         if: steps.scan-day.outputs.scan == 'true'
         continue-on-error: true
+        timeout-minutes: 4
         run: |
           sudo apt-get update
           sudo apt-get install -y clamav
@@ -253,11 +254,16 @@ jobs:
         run: pnpm malware-scan --data dist/v1/plugins.json --out "$RUNNER_TEMP/scan/scan-results.json"
       - id: scan-sha256
         run: echo "sha256=$(sha256sum "$RUNNER_TEMP/scan/scan-results.json" | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
+      # Plugin code in a start-test job, which runs at the same time, can upload an artifact named
+      # `scan-results` first, so this upload replaces any artifact of that name. Code that
+      # replaces it again after this upload only withholds this run's results, since the site job
+      # adds none whose SHA-256 is not this job's output.
       - uses: actions/upload-artifact@v7
         with:
           name: scan-results
           path: ${{ runner.temp }}/scan/scan-results.json
           if-no-files-found: error
+          overwrite: true
 
   # Adds the start and scan results to the data and builds the site. It runs once the build job
   # succeeded, whatever the start-test and malware-scan jobs' results, so a failed start test or

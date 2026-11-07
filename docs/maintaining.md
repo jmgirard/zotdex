@@ -1009,7 +1009,8 @@ stay.
 
 To build the site, first run `pnpm build`. To show start tests, also run
 `pnpm add-start-results` on `dist/v1/plugins.json`, as "Starting plugins in
-Zotero" says. Then run:
+Zotero" says. To show scan results, run `pnpm add-scan-results` on it too, as
+"Scanning plugins with ClamAV" says. Then run:
 
 ```bash
 pnpm site
