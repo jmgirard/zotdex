@@ -1,6 +1,6 @@
 # M108: Show the full Zotdex mark in the top bar
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
@@ -104,6 +104,8 @@ the icon" keeps its forced-colors and icon-pick items.
 - 2026-11-06: T4: the style hook flagged older sentences in `docs/site.md` and `CHANGELOG.md` (moved unchanged by M107, or released entries); none is in the sentences this milestone wrote, so they stay.
 - 2026-11-06: checkpoint: T1 to T5 code and docs done; site and logo tests 507 passed; four icon files byte-identical to the branch point's build (cmp); eight browser-pane views passed; full `pnpm test` and `pnpm check` running, tasks not ticked yet.
 - 2026-11-06: verify clean: `pnpm test` 37 files passed, 1 skipped, 2509 tests passed, 6 skipped; `pnpm check` 741 entries, 0 problems; T1 to T5 ticked; claim audit running.
+- 2026-11-06: claim audit: 19 claims read, 0 corrected — src/site/logo.ts, site/src/layouts/Base.astro, docs/site.md, CHANGELOG.md, test/site.test.ts
+- 2026-11-06: status review; handed to /milestone-review.
 
 ## Decisions
 
