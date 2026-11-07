@@ -145,3 +145,35 @@ Evidence gathered 2026-11-07 at `6c99a04e`; `origin/main` is still the plan comm
 - AC7: site tests "the icons section reads as the copy" and "the license section reads as the copy" pass; the built About page holds each M113 line of `cairn/references/plain-words-copy.md` once, word for word (joined-text grep); `docs/data.md` documents the `icon` field and `iconHidden`, and `docs/license.md` holds "Plugin icons also keep their authors' terms".
 - AC8: `pnpm test` at `6c99a04e` exits 0: 37 files passed, 1 skipped, 2551 tests passed, 6 skipped; `pnpm check` exits 0: 745 entries, 0 problems.
 - Consistency gate: `cairn_validate.py` passes (one advisory: 8 criteria over the ~7 tripwire, logged at plan); no principle changed, so `cairn_impact` is skipped; the generic profile names no toolchain checks.
+- spawned: diff-bug, blame-history, prior-review, ripple
+- diff-bug #1: `redrawIcon` has no time or memory bound, and an SVG's embedded `<image>` escapes `limitInputPixels`, so one crafted icon could hang or kill the daily build — fix now (draws stop after `ICON_DRAW_SECONDS` = 10 via sharp's timeout; an SVG with `<image` or `<feImage` gets no icon; tests for three such SVGs), fixed 88f58704
+- diff-bug #2: `.page-head`'s column gap stays on pages with no icon, so their head text ended 24 px (16 px on phones) short — fix now (the space is `.head-side`'s margin; browser: a page with no icon gives `.head-text` the whole head width, 343 and 1008 px), fixed 88f58704
+- diff-bug #3: `readPreviousIcons` checks only the SHA-256, so any bytes named for their hash would be served as an icon — fix now (also needs a PNG signature and an IHDR of 96 by 96; the kept-icon fixture is now a real 96 px PNG; tests for text and a 48 px PNG with matching names), fixed 88f58704
+- diff-bug #4: kept icons get their own `previousMs` window after the data read, up to 120 s together — reject, planned change: AC4 sets "within `previousMs`" for the icon reads, and `docs/maintaining.md` says the icon reads take 60 seconds apart from the data read
+- diff-bug #5: `writeData`'s default empty icon map would delete every icon if a later caller left it out — fix now (`icons` is required; four existing tests pass `new Map()`), fixed 88f58704
+- diff-bug #6: a failed cleanup of `v1/icons/` returned `ok: false` after `plugins.json` was written, withholding a deploy — fix now (cleanup is best-effort; stale files are named by no data), fixed 88f58704
+- diff-bug #7: `iconFormat` looks for `<svg` only in the first 4096 bytes, undocumented — fix now (the comment states the window), fixed 88f58704
+- diff-bug #8: a hash added to `TEMPLATE_ICONS` later does not remove a kept record's earlier icon for up to 7 days — reject, planned change: the keep rule (D-066) keeps the deployed facts as they were
+- diff-bug #9 (tests): the kept-icon test asserted `icon` again after an exact `toEqual` — fix now (dropped), fixed 88f58704
+- diff-bug #10 (tests): "writes no metadata" tests sharp's default — reject, false: it pins this code's output contract that the icon file carries no source metadata, the claim the claim audit asked to back
+- diff-bug #11 (tests): the SVG test pinned the red channel — fix now (it checks the alpha channel is opaque), fixed 88f58704
+- diff-bug #12 (tests): reader cases repeat pick-rule cases in `test/icon.test.ts` — reject, planned change: AC2 asks for one reader test per named case
+- blame-history #1: `icon.ts` imported sharp at module load, so the discovery bot and start-test loaded it through the reader, a use D-073 did not record — fix now (sharp is imported inside `redrawIcon`; D-080 names the data build's use of sharp under D-073's falsifier), fixed 88f58704
+- blame-history #2: the kept-icon read adds up to a minute outside `buildMs` — reject, planned change: as diff-bug #4
+- blame-history #3: a failed icon cleanup exits 1 after the data is written — fix now, as diff-bug #6, fixed 88f58704
+- blame-history #4: sharp might resolve an SVG's external `href` on the runner — reject, false: an SVG `<image>` pointing at a `file://` URL, an absolute path, a relative path, and an `http://` URL each drew nothing (alpha 0), while a `data:` image drew red at full alpha; and diff-bug #1's fix now refuses `<image` outright
+- prior-review #1: the approved About line "Zotdex doesn't look at icons before it shows them" is untrue because the build redraws each icon — reject, false: "look at" means a person viewing the icon, and no one does; the build checks format and size, not content; the claim auditor also judged it true; no wording change proposed
+- prior-review #2: README's license line omits icons — fix now (README names icons), fixed 88f58704
+- prior-review #3: the kept-icon read's time is not in the build's timing lines — reject, planned change: as diff-bug #4; the timing lines cover plugin reads only, as for the existing data read
+- prior-review #4: `border-radius: var(--space-6)` used a space token for a radius, and the token test does not see `column-gap` — fix now (`--radius` and `--radius-m`; the style-token test now covers `row-gap` and `column-gap`), fixed 88f58704
+- ripple #1: `cairn/references/plain-words-copy.md`'s M111 About entry still gave the old license line as current — fix now (it notes the sentence is replaced at M113 and M114), fixed 88f58704
+- ripple #2: README's license line — as prior-review #2, fixed 88f58704
+- ripple #3: `docs/maintaining.md` said the build "writes one file" — fix now, fixed 88f58704
+- ripple #4: `docs/maintaining.md`'s write-failure list omitted an icon write — fix now, fixed 88f58704
+- ripple #5: DESIGN's data build bullet omitted the icon writes — fix now, fixed 88f58704
+- ripple #6: DESIGN's workflow bullet omitted the icon writes — fix now, fixed 88f58704
+- ripple #7: `docs/maintaining.md` described `reason-not-blank` for overrides only — fix now, fixed 88f58704
+- ripple #8: DESIGN's reader bullet omitted the returned icon bytes — fix now, fixed 88f58704; the line in the `holds.ts` bullet names only what `draftEntry` reads, so it stays — reject, false
+- ripple #9: DESIGN's About topic list omitted icons — fix now, fixed 88f58704
+- ripple #10: the plugins.v1 schema's title line says the file is what `pnpm build` writes — reject, false: the data file is still exactly what that names
+- After the fixes at 88f58704: `pnpm test` 2556 passed, 6 skipped; `pnpm check` 745 entries, 0 problems; the AC6 look rerun passes at 375 and 1280 px in light and `data-theme="dark"` (tile edge 0 px, 0 of 20 text nodes, no scroll, white tile).
