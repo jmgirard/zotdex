@@ -158,6 +158,7 @@ signals for plugins, set aside by the user.
 - 2026-11-07: style-hook hits in docs/site.md and CHANGELOG.md left in place at the user's direction to set Simplified English aside.
 - 2026-11-07: claim audit: 45 claims read, 6 corrected — the lock text overstated the top-level check and the card text missed plugins sold by code, both put to the user, who chose "No obvious source code in its repository" and "Requires paying its maker" (substantive amendment: the copy block's lock and card lines, at the user's choice); a stale `DISCLAIMER` comment in data.ts, "Menus and settings" and "Stars" in docs/site.md, home-filter.ts, and DESIGN.md, and DESIGN's control names fixed — site/src/data.ts, docs/site.md, src/site/home-filter.ts, cairn/DESIGN.md
 - 2026-11-07: claim audit re-read at 3708f0ed: all 6 corrected claims hold; status review; handed to /milestone-review.
+- 2026-11-07: step-7 approval: m109-field-guide-home approved for merge
 - 2026-11-07: verify clean at 28520878: `pnpm test` 37 files passed, 1 skipped, 2511 tests passed, 6 skipped; `pnpm check` 741 entries, 0 problems; a build from the deployed data viewed at 1024 and 375 px, home and plugin page, scroll width equal to client width, no console errors; the user looked at the preview and said "Looks good, review it"; T1 to T6 ticked; claim audit running.
 
 ## Decisions
