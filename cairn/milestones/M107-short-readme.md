@@ -1,13 +1,13 @@
 # M107: Shorten the README and move its detail to docs/
 
-- **Status:** planned
+- **Status:** in-progress
 - **Priority:** normal
 - **Depends on:** —
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — the README, the docs, and the About page are what visitors read
-- **Branch/PR:** —
+- **Branch/PR:** m107-short-readme
 
 ## Goal
 
@@ -90,7 +90,7 @@ of the About change waits for a `Build data` run (offered after the merge).
 
 ## Tasks
 
-- [ ] T1: Write a split script in the session scratchpad (not committed) that
+- [x] T1: Write a split script in the session scratchpad (not committed) that
   cuts `git show main:README.md` at its headings into the five `docs/` files,
   each with its `#` title (`docs/license.md` raises `## License`), and run it.
 - [ ] T2: In the moved text, change link targets so they resolve from
@@ -131,6 +131,8 @@ of the About change waits for a `Build data` run (offered after the merge).
 - 2026-11-06: plan gate chose moving License to docs over keeping it in README, at the user's choice, at the cost of a site link and text change; falsified by readers or tools that expect the terms in the README.
 - 2026-11-06: criteria audit (full mode, first draft): 12 findings, all taken toward the narrower promise — form links as `issues/new?template=`; section bounds and level changes; AC2 bound to the text, not the script; heading uniqueness; links resolved per file; inline links only; references found by quoted names and above/below; the `"License" below` case; hits that say the README holds moved text; `#license` checked as a heading; `#` titles allowed.
 - 2026-11-06: criteria audit (full mode, revised draft): 8 findings, taken — AC2 limited to `##`/`###` sections; a `#` title may be the raised old heading; link-target changes allowed; AC4 names the file or files; `schemas/` added to AC4's search; AC3 names the file in place of above/below; AC5 says "license page"; AC5's test sentence is test scope. No finding on AC1, AC6, or decisions.
+- 2026-11-06: implement started on m107-short-readme; `.claude/` is untracked and stays unstaged.
+- 2026-11-06: T1 done: a scratchpad script cut `git show main:README.md` at its 21 headings into the five docs files (2,063 lines); site.md and license.md take their raised heading as title, data.md is "Data", requests.md "Requests", maintaining.md "Maintaining the index", and "Proposing a plugin with an issue" rose to `##`.
 
 ## Decisions
 
