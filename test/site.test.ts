@@ -2826,15 +2826,23 @@ describe("the site colors", () => {
       for (let at = 8; at < png.length; at += 12 + png.readUInt32BE(at)) names.push(png.toString("latin1", at + 4, at + 8));
       return names;
     }
+    const WHITE = [255, 255, 255];
     const COLORS: [Part, number[]][] = [
       ["body", [0x1d, 0x5f, 0xb8]],
       ["disc", [0xa9, 0xcb, 0xff]],
       ["z", [0x0e, 0x2f, 0x5c]],
-      ["ring", [255, 255, 255]],
+      ["ring", WHITE],
     ];
+    // The full mark's cuts, which only it has.
+    const FULL_CUTS: [Part, number[]][] = [
+      ["light", WHITE],
+      ["lid gap", WHITE],
+    ];
+    const SIZES: Record<string, number> = { "favicon.png": 32, "apple-touch-icon.png": 180, "preview.png": 1200 };
 
-    test.each(pictures)("writes %s at its size as 8-bit RGB with no transparency", (name, { size }) => {
+    test.each(pictures)("writes %s at its size as 8-bit RGB with no transparency", (name) => {
       const png = readFileSync(join(out, name));
+      const size = SIZES[name];
       expect(header(png)).toEqual({ width: size, height: size, depth: 8, type: 2 });
       expect(chunks(png).at(-1)).toBe("IEND");
       expect(chunks(png)).not.toContain("tRNS");
@@ -2852,7 +2860,7 @@ describe("the site colors", () => {
         return parts.size === 1 ? [...parts][0] : undefined;
       };
       const step = Math.max(1, Math.floor(size / 64));
-      for (const [part, color] of COLORS) {
+      for (const [part, color] of mark === "full" ? [...COLORS, ...FULL_CUTS] : COLORS) {
         let probe: [number, number] | undefined;
         for (let y = 0; y < size && !probe; y += step) for (let x = 0; x < size && !probe; x += step) if (partOf(x, y) === part) probe = [x, y];
         expect(probe, `${name} ${part}`).toBeDefined();
@@ -2886,7 +2894,8 @@ describe("the site colors", () => {
       }
     });
 
-    test("fills the rim, disc, and Z from each scheme's tokens, with CanvasText and Canvas in forced colors", () => {
+    test("fills the rim, disc, and Z from each scheme's tokens, with CanvasText and Canvas in forced colors, and leaves no square behind", () => {
+      expect(layout).not.toContain(".brand::before");
       const base = /\n {6}\.brand \.logo-rim \{\s*fill: var\(--accent\);\s*\}\s*\.brand \.logo-disc \{\s*fill: var\(--logo-disc\);\s*\}\s*\.brand \.logo-z \{\s*fill: var\(--logo-z\);/.exec(layout);
       const forced = /@media \(forced-colors: active\) \{\s*\.brand \.logo-rim,\s*\.brand \.logo-disc \{\s*fill: CanvasText;\s*\}\s*\.brand \.logo-z \{\s*fill: Canvas;/.exec(layout);
       expect(base).not.toBeNull();

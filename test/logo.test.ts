@@ -16,8 +16,11 @@ describe("the full mark", () => {
     ["lid gap", (point) => inPolygon(point, lidGap)],
   ];
 
-  test("has a rounded body in the site blue inside the 16 by 16 grid", () => {
-    expect(LIGHT.body).toBe("#1d5fb8");
+  test("fills the body in the site blue, the disc light blue, and the Z dark blue", () => {
+    expect(LIGHT).toEqual({ body: "#1d5fb8", disc: "#a9cbff", z: "#0e2f5c" });
+  });
+
+  test("has a rounded body inside the 16 by 16 grid", () => {
     expect(body.x).toBeGreaterThanOrEqual(0);
     expect(body.y).toBeGreaterThanOrEqual(0);
     expect(body.x + body.width).toBeLessThanOrEqual(16);
@@ -45,9 +48,7 @@ describe("the full mark", () => {
   });
 
   test("draws the disc inside the lens opening and the Z inside the disc", () => {
-    expect(disc.r).toBeLessThan(opening.r);
     expect(Math.hypot(disc.cx - opening.cx, disc.cy - opening.cy) + disc.r).toBeLessThan(opening.r);
     for (const corner of z) expect(inCircle(corner, disc), String(corner)).toBe(true);
-    expect([LIGHT.disc, LIGHT.z]).toEqual(["#a9cbff", "#0e2f5c"]);
   });
 });

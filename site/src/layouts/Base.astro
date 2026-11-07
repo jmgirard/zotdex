@@ -16,6 +16,7 @@ interface Props {
 const { title, description, path } = Astro.props;
 const { generatedAt } = loadData();
 const address = path === undefined ? undefined : `${ORIGIN}${path}`;
+const faviconSize = PICTURES["favicon.png"].size;
 
 const themeHead = `(${applySavedTheme})();`;
 const themeButton = `(${wireThemeButton})();`;
@@ -30,7 +31,7 @@ const themeButton = `(${wireThemeButton})();`;
     <meta name="description" content={description} />
     {address ? <link rel="canonical" href={address} /> : <meta name="robots" content="noindex" />}
     {/* The PNG is for a browser that shows no SVG icon. Its sizes value keeps Chrome from choosing it over the SVG. */}
-    <link rel="icon" type="image/png" sizes="32x32" href={`${BASE}favicon.png`} />
+    <link rel="icon" type="image/png" sizes={`${faviconSize}x${faviconSize}`} href={`${BASE}favicon.png`} />
     <link rel="icon" type="image/svg+xml" href={`${BASE}favicon.svg`} />
     <link rel="apple-touch-icon" href={`${BASE}apple-touch-icon.png`} />
     <link rel="sitemap" type="application/xml" href={`${BASE}sitemap.xml`} />

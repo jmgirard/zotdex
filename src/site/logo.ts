@@ -77,8 +77,10 @@ export interface LensMark {
   z: Point[];
 }
 
-// The full mark's lens and its rim, scaled so the rim's outer edge has radius LENS_RADIUS and
-// moved so the lens is centered on the grid. Nothing is redrawn, so the two marks stay one lens.
+// The full mark's lens opening, disc, and Z, scaled so the rim's outer edge has radius
+// LENS_RADIUS and moved so the lens is centered on the grid, so the two marks share one lens. The
+// rim is the opening grown by RIM_WIDTH all round, a whole ring, where the full mark's body is
+// narrower on the left.
 export function lensMark(full: FullMark = FULL_MARK): LensMark {
   const { opening } = full;
   const scale = LENS_RADIUS / (opening.r + RIM_WIDTH);
@@ -129,8 +131,8 @@ export function faviconSvg(): string {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><style>${dark}</style>${lensShapes(LIGHT)}</svg>\n`;
 }
 
-// The PNG files: each draws a mark in the light fills on a white square `size` pixels wide,
-// `margin` grid units wider than the 16 by 16 grid on each side.
+// The PNG files: each draws a mark in the light fills `size` pixels wide, over a view box
+// `margin` grid units wider than the 16 by 16 grid on each side. logo-png.ts puts it on white.
 export const PICTURES = {
   "favicon.png": { mark: "lens", margin: 0, size: 32 },
   "apple-touch-icon.png": { mark: "full", margin: 2, size: 180 },
@@ -143,10 +145,7 @@ export function pictureSvg(name: PictureName): string {
   const side = 16 + 2 * margin;
   const box = `${num(-margin)} ${num(-margin)} ${num(side)} ${num(side)}`;
   const shapes = mark === "lens" ? lensShapes(LIGHT) : fullShapes();
-  return (
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="${box}">` +
-    `<rect x="${num(-margin)}" y="${num(-margin)}" width="${num(side)}" height="${num(side)}" fill="#ffffff"/>${shapes}</svg>`
-  );
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="${box}">${shapes}</svg>`;
 }
 
 function fullShapes(full: FullMark = FULL_MARK): string {

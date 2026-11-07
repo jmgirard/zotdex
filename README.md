@@ -380,10 +380,9 @@ three PNG files from the same shapes:
 - `preview.png`, 1200 by 1200, the full logo, for link previews
 
 Each page also has tags for link previews. The tags are a meta description,
-Open Graph tags, a Twitter card tag,
-and a canonical link. A shared link can show the page's title,
-its description, and `preview.png`. A plugin page uses its shown
-description. The
+Open Graph tags, a Twitter card tag, and a canonical link. A shared link can
+show the page's title, its description, and `preview.png`. A plugin page uses
+its shown description. The
 page cuts a description of more than 200 characters at the last space in its
 first 200 characters. A space with only whitespace before it does not count. If
 that part has no other space, the page cuts the description at 200 characters.

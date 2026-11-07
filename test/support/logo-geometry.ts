@@ -18,10 +18,11 @@ export function inRoundedRect([x, y]: Point, { x: left, y: top, width, height, r
   return x >= left && x <= left + width && y >= top && y <= top + height && (x - nearX) ** 2 + (y - nearY) ** 2 <= radius * radius;
 }
 
-export type Part = "body" | "ring" | "disc" | "z" | "background";
+export type Part = "body" | "ring" | "disc" | "z" | "light" | "lid gap" | "background";
 
 // Which part of a mark a point of the 16 by 16 grid falls in. The ring is the gap between the
-// lens opening and the disc, where the background shows through.
+// lens opening and the disc, and the lights and lid gap are cut out of the body, so the
+// background shows through all three.
 export function partAt(mark: "full" | "lens", point: Point): Part {
   if (mark === "lens") {
     const lens = lensMark();
@@ -35,6 +36,7 @@ export function partAt(mark: "full" | "lens", point: Point): Part {
     if (!inCircle(point, disc)) return "ring";
     return inPolygon(point, z) ? "z" : "disc";
   }
-  if (!inRoundedRect(point, body) || lights.some((light) => inCircle(point, light)) || inPolygon(point, lidGap)) return "background";
-  return "body";
+  if (!inRoundedRect(point, body)) return "background";
+  if (lights.some((light) => inCircle(point, light))) return "light";
+  return inPolygon(point, lidGap) ? "lid gap" : "body";
 }
