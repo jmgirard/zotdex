@@ -26,29 +26,29 @@ check text requests at once" holds the same idea for text; icons → M113.
 
 ## Acceptance criteria
 
-- [ ] AC1: The repo has a `screenshot` label, and `.github/ISSUE_TEMPLATE/screenshot.yml` adds a form with that
+- [x] AC1: The repo has a `screenshot` label, and `.github/ISSUE_TEMPLATE/screenshot.yml` adds a form with that
       label and the fields Plugin id, Screenshot (an image attached to the issue), and Description of the
       screenshot; each plugin page links to it with the plugin id filled in, which a site test checks.
-- [ ] AC2: `pnpm screenshot-request <issue> --data <file>` reads an open issue labeled `screenshot` and runs the same
+- [x] AC2: `pnpm screenshot-request <issue> --data <file>` reads an open issue labeled `screenshot` and runs the same
       owner check as `pnpm text-request`. A Screenshot field that is blank or `_No response_` makes the request a
       removal, and the description is then ignored. Otherwise it exits 1 naming the problem when the field holds no
       image link or more than one; when the link or any redirect leaves the hosts in `SCREENSHOT_HOSTS`; when the
       download passes 10 MiB; when the bytes are not PNG, JPEG, or WebP; when sharp's metadata gives a width or
       height over 8000 px; or when `textProblems("description", text, shownName)` refuses the description. One
       test for each problem named here, with recorded responses.
-- [ ] AC3: With `--apply`, the command re-encodes the image with sharp as WebP, fit within 1600×2400 px with no
+- [x] AC3: With `--apply`, the command re-encodes the image with sharp as WebP, fit within 1600×2400 px with no
       metadata, exits 1 and writes nothing when the result is over 1 MiB, and otherwise writes
       `plugins/<id>/screenshot.webp` and sets `index.json`'s `screenshot` to the description and a reason naming
       the issue; a removal deletes both. `--file <path>` replaces only the download, and every other check of AC2
       still runs. Tests cover apply, the over-1 MiB result, removal, and `--file`.
-- [ ] AC4: `schemas/index.v1.schema.json` defines the optional `screenshot` object, and `pnpm check` fails an entry
+- [x] AC4: `schemas/index.v1.schema.json` defines the optional `screenshot` object, and `pnpm check` fails an entry
       when `index.json` names a screenshot and `screenshot.webp` is missing, when `screenshot.webp` exists and
       `index.json` names none, or when the file is not WebP, is wider than 1600 px or taller than 2400 px, or is
       over 1 MiB. Schema tests pass with and without the field, and one check test covers each failure.
-- [ ] AC5: `pnpm build` copies each entry's screenshot to `v1/screenshots/<sha>.webp`, `<sha>` the SHA-256 of its
+- [x] AC5: `pnpm build` copies each entry's screenshot to `v1/screenshots/<sha>.webp`, `<sha>` the SHA-256 of its
       bytes, and sets the record's optional `screenshot` to `{ "file": "screenshots/<sha>.webp", "alt": "<text>" }`;
       `schemas/plugins.v1.schema.json` defines the field, and the schema test passes with and without it.
-- [ ] AC6: The plugin page of a record with `screenshot` shows one `<a data-screenshot>` whose `href` is
+- [x] AC6: The plugin page of a record with `screenshot` shows one `<a data-screenshot>` whose `href` is
       `${BASE}v1/` followed by `screenshot.file`, holding an `<img>` whose `alt` is `screenshot.alt`. At viewport
       widths of 1024 px and 1280 px, the image's left edge is right of the right edge of each head text element
       the page has (`h1`, repo line, description, categories, `.actions`), its right edge is within `.page-head`'s,
@@ -57,11 +57,11 @@ check text requests at once" holds the same idea for text; icons → M113.
       page has no install note, no wider than the page's content box, and the page has no horizontal scroll at
       375 px. A browser-pane look in the Review checks these with one wide and one tall image; site tests check the
       attributes and the element order. A record without the field has no `[data-screenshot]` element.
-- [ ] AC7: Each line that `cairn/references/plain-words-copy.md` records for M114 appears word for word on the
+- [x] AC7: Each line that `cairn/references/plain-words-copy.md` records for M114 appears word for word on the
       built site (the plugin page's owner line, the About section "Icons and screenshots", and the license line);
       `docs/requests.md` documents the form and the command, `docs/data.md` the two `screenshot` fields, and
       `docs/license.md` says screenshots keep their owners' terms.
-- [ ] AC8: `pnpm test` and `pnpm check` pass.
+- [x] AC8: `pnpm test` and `pnpm check` pass.
 
 ## Coverage
 
@@ -123,3 +123,17 @@ check text requests at once" holds the same idea for text; icons → M113.
 - 2026-11-07: T7: About's `#icons` section keeps its id under the new heading; docs/requests.md "Adding a screenshot", docs/data.md (record block, entry field, third file), docs/license.md screenshot terms, DESIGN (contract boundary, About list, overrides, check, reader, build, text and screenshot requests), D-081, and the CHANGELOG entry; the simple-english lint hook still flags older lines in those docs, left as they were.
 - 2026-11-07: claim audit: 165 claims read, 5 corrected — Base.astro, src/screenshot-request/request.ts, src/text-request/owner.ts, docs/requests.md (fresh Opus reader; open points for review: About's license line says screenshots keep "their authors' terms" while docs/license.md says owners', an approved line left as is; `--file` skips the 10 MiB download cap by design of AC3).
 - 2026-11-07: implement done; status review.
+
+## Review
+
+Evidence at c4344954, 2026-11-07. Full `pnpm test` 2621 passed, 6 skipped; `pnpm check` 745 entries, 0 problems. Verbose run of the seven touched test files: 1269 passed, 1 skipped, 0 failed.
+
+- AC1: `gh label list --search screenshot` → `screenshot`; "the screenshot form" test passes (label, inputs plugin/screenshot/description with their labels, textarea for the image); "links each plugin page's owner line to the screenshot form with the plugin id" passes (one `data-screenshot-request` link per page with `template=screenshot.yml&plugin=<id>`, none on home or About).
+- AC2: "screenshotRequest's report" 21 tests pass, with recorded responses: blank and `_No response_` fields are removals that ignore a bad description; one test each exits 1 naming no-image-link, more-than-one-image, host-not-allowed (link off hosts, link with a port, redirect off hosts before the request), too-large (download past 10 MiB, reading stopped), not-an-image, too-many-pixels (8001 wide, 8001 tall), and description-<rule> from `textProblems("description", …)`; owner check is `readOwnerRequest`, shared with `pnpm text-request` (84 text-request tests pass), with a mismatch test.
+- AC3: "screenshotRequest with apply" 13 tests pass: 3200×2000→1600×1000, 1000×6000→400×2400, 640×400 kept, all WebP with index.json `screenshot: { description, reason: "…issue #9." }`; EXIF orientation applied and exif/icc/xmp absent; a 1600×2400 noise image's copy over 1 MiB exits 1 and writes nothing; removal deletes file and field; `--file` writes with no download and still runs the field, image, and description checks (report test); applied and removed entries pass `pnpm check`.
+- AC4: `schemas/index.v1.schema.json` defines optional `screenshot` {description, reason}; check tests pass: an entry with screenshot and file and one with neither give no finding; schema refuses a missing reason or blank description; `screenshot-file` findings, one test each, for named-but-missing, file-but-unnamed, PNG file, 1601 px wide, 2401 px tall, and over 1 MiB.
+- AC5: "buildData screenshots" 6 tests pass: a read and a failed record get `screenshot: { file: "screenshots/<sha256>.webp", alt }` with the bytes under that name; a tree with none gives unchanged data; the plugins.v1 schema takes a record with and without the field and refuses another path; `writeData` writes `v1/screenshots/` and clears stale files; a `pnpm build` run writes the file the data names.
+- AC6: site tests pass: one `<a class="screenshot" href="/v1/<file>" data-screenshot>` with `<img alt>` equal to `screenshot.alt` on first-plugin and a-cafe, none on the other 18 pages or home; it follows `.actions` and the icon and comes before the install note (a-cafe) or the version card (first-plugin). Browser-pane look on the fixture site rebuilt at c4344954, iframes at each width, wide 1600×1000 image with icon (first-plugin) and tall 800×2400 image with no icon (a-cafe): at 1280 and 1024 px the image is right of all 5 head text elements, inside `.page-head`, below the icon tile (first-plugin) or 0.00 px from the h1 top (a-cafe); at 1000 and 375 px it is after `.actions`, before the card or note, inside the content box, and 375 px has no horizontal scroll.
+- AC7: the three M114 lines of plain-words-copy.md read word for word from the built site text (About heading "Icons and screenshots" and its two added sentences, the license line, the owner line on first-plugin), and the About-page copy test and owner-line test pass; docs/requests.md:237 "Adding a screenshot" documents the form and `pnpm screenshot-request`, docs/data.md:87 and :277 the record block and the index.json field, docs/license.md:30 "Screenshots keep their owners' terms."
+- AC8: `pnpm test` exit 0 (type check, then 2621 passed, 6 skipped) and `pnpm check` exit 0 at c4344954.
+- gate: `cairn_validate.py` exit 0, all checks pass, 1 advisory (sizing: 8 criteria, judged at plan); no IP/GP changed, so no `cairn_impact`; generic profile names no toolchain checks.
