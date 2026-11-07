@@ -266,3 +266,4 @@ Pass 3, after review return 2, evidence at 422a6932, 2026-11-07. Default branch 
 - prior-review note (pass 3): raw format characters on main at test/check.test.ts:321, test/text-request.test.ts:103 and :220, test/upstream.test.ts:285 and :286, lines this branch did not change — follow-up: candidate row "Escape the raw format characters in tests", [low] because the tests pass and only M032's rule is broken, written at step 9 once its terminal-row prune frees a ROADMAP line
 - ripple #1 (pass 3): cairn/DESIGN.md:766 says an entry holds meta.json and index.json — fix now
 - ripple #2 (pass 3): cairn/DESIGN.md:453-455 names `reason-not-blank` for override reasons only — fix now
+- fixed e02d6c08: every pass-3 fix-now finding above; full `pnpm test` 2653 passed, 6 skipped, and `pnpm check` clean on that tree.
