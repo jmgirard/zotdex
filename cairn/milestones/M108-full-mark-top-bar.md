@@ -64,25 +64,25 @@ the icon" keeps its forced-colors and icon-pick items.
 
 ## Tasks
 
-- [ ] T1: In `src/site/logo.ts`, add an exported writer of the full mark's
+- [x] T1: In `src/site/logo.ts`, add an exported writer of the full mark's
   shapes that, like `lensShapes`, takes fills or writes the classes
   `logo-body`, `logo-disc`, and `logo-z`, and have `pictureSvg` use it with
   the light fills so its output stays byte-identical. Update the file's top
   comment, which names the top bar as a 16 px place.
-- [ ] T2: In `site/src/layouts/Base.astro`, draw the full mark in the brand
+- [x] T2: In `site/src/layouts/Base.astro`, draw the full mark in the brand
   link (line 1106) at 2rem, set the brand text to `var(--text-xl)`, fill the
   body from `--accent` and keep the disc and Z rules, and move the
   forced-colors rule to the body class (styles near lines 211-243).
-- [ ] T3: In `test/site.test.ts`, change "the logo" tests (near line 2872) and
+- [x] T3: In `test/site.test.ts`, change "the logo" tests (near line 2872) and
   the top-bar markup test (near line 2035) to the full mark per AC1 and AC2,
   keeping the favicon's own tests; see the search that AC5 names for test
   names that say "lens" or "favicon's three shapes".
-- [ ] T4: Run AC5's search and rewrite each sentence that says the top bar
+- [x] T4: Run AC5's search and rewrite each sentence that says the top bar
   shows the lens: the README or `docs/site.md` paragraph (whichever holds the
   logo text after M107), DESIGN.md near lines 577-579 and 1095-1099, the
   Unreleased CHANGELOG entry near line 75, and the comments in `logo.ts` and
   `Base.astro`.
-- [ ] T5: Build the site on the branch and at the branch point and `cmp` the
+- [x] T5: Build the site on the branch and at the branch point and `cmp` the
   four icon files (AC3); serve the build in the browser pane and check the
   eight views of AC4; run `pnpm test`.
 
@@ -103,6 +103,7 @@ the icon" keeps its forced-colors and icon-pick items.
 - 2026-11-06: T3 plant: with `lensShapes()` put back in the top bar, the new "is the full mark's three shapes" test failed on 404.html; restored.
 - 2026-11-06: T4: the style hook flagged older sentences in `docs/site.md` and `CHANGELOG.md` (moved unchanged by M107, or released entries); none is in the sentences this milestone wrote, so they stay.
 - 2026-11-06: checkpoint: T1 to T5 code and docs done; site and logo tests 507 passed; four icon files byte-identical to the branch point's build (cmp); eight browser-pane views passed; full `pnpm test` and `pnpm check` running, tasks not ticked yet.
+- 2026-11-06: verify clean: `pnpm test` 37 files passed, 1 skipped, 2509 tests passed, 6 skipped; `pnpm check` 741 entries, 0 problems; T1 to T5 ticked; claim audit running.
 
 ## Decisions
 
