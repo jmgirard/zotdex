@@ -1,0 +1,106 @@
+# M110: Use plain words on plugin pages
+
+- **Status:** planned
+- **Priority:** normal
+- **Depends on:** —
+- **Driving RR:** —
+- **Principles touched:** —
+- **Resolves:** —
+- **Surface tier:** user-facing — the text of every plugin page and the home row's Older data tooltip
+- **Branch/PR:** —
+
+## Goal
+
+A plugin page's text reads in the home page's plain words, as the user
+approved it in the "Plugin page (M110)" section of
+`cairn/references/plain-words-copy.md` (D-078).
+
+## Scope
+
+**In:** every line of that copy section on the plugin page template
+(`site/src/pages/plugins/[id]/index.astro`): the Older data badge title and
+note, the failure line, the categories label, the buttons, the install note,
+the version card, the Details card with dates in "Month D, YYYY" form, the
+Corrections table, and the badge card. Also the shared words in
+`site/src/data.ts` (`languagesText`, `upstreamLines`), the home row's Older
+data tooltip, and About's two quotes of renamed plugin page labels. The site
+tests, `docs/site.md`, DESIGN.md, and one Unreleased CHANGELOG entry follow.
+
+**Out:** the rest of About and the 404 page's text, which M111 holds; the
+badge file's text, which D-071 fixes and READMEs show; the home page's other
+text, which M109 set.
+
+## Acceptance criteria
+
+- [ ] AC1: Each line of the "Plugin page (M110)" section of
+  `cairn/references/plain-words-copy.md`, except its first and last, shows
+  on a built plugin page as written, with `{…}` and `<date>` filled from the
+  record, on one site-test fixture record that shows it (from the shared
+  fixtures or the kept-record build in `test/site.test.ts`), as site tests
+  show.
+- [ ] AC2: The "Older data" badge of the kept record in the site test's
+  kept-record build carries the copy's badge title on its home row and on
+  its plugin page, with the date from its `kept.readAt` written by
+  `longDay`, as a site test shows.
+- [ ] AC3: The built About page names "Source code in the repository's top
+  folder", the "Corrections by Zotdex" table, and its "In use" column where
+  it named the old labels, as a site test shows.
+- [ ] AC4: At the branch head, the text outside code comments of each file
+  under `site/src/pages/plugins/`, `site/src/data.ts`,
+  `site/src/pages/index.astro`, and `docs/site.md`, with line breaks joined
+  into spaces, holds none of "Zotero compatibility", "the release the index
+  read", "Release read by the index", "Declared range:", "Index categories",
+  "Manifest description", "Host of update.json", "Menus and settings in",
+  "Unknown (no translations found)", "Upstream value", "Override value",
+  "The last build could not read", "The build that wrote this page", "Facts
+  from an earlier build", "Source code at the repository's top level", and
+  "the index does not review its code"; and the joined text of
+  `cairn/DESIGN.md` holds none of the quoted labels "Zotero compatibility",
+  "Index categories", "Menus and settings in", and "Unknown (no translations
+  found)" outside a sentence that names them as earlier wording; as a search
+  of those files shows.
+- [ ] AC5: In the browser pane at 375 px and 1280 px, the plugin page of
+  `filetrans@euclpts.com` (corrections and a paid-service fact), from a site
+  built from the deployed data, shows its version card, Details card, and
+  Corrections table with the page's `documentElement.scrollWidth` equal to
+  its `clientWidth`; `pnpm test` passes; `CHANGELOG.md`'s Unreleased section
+  has one entry for the change.
+
+## Coverage
+
+- AC1 → T1, T2, T4
+- AC2 → T1, T3, T4
+- AC3 → T3, T4
+- AC4 → T5
+- AC5 → T6
+
+## Tasks
+
+- [ ] T1: In `site/src/data.ts`, set `languagesText`'s fallback to "Language
+  not listed" and `upstreamLines`' manifest label to "Plugin file:", add an
+  Older data title helper that uses `longDay`, and use `longDay` for the
+  plugin page's dates.
+- [ ] T2: In `site/src/pages/plugins/[id]/index.astro`, set every line of
+  the copy section that AC1 names.
+- [ ] T3: In `site/src/pages/index.astro`, set the home row's Older data
+  title from the T1 helper; in `site/src/pages/about.astro`, update the two
+  quotes of renamed labels (near lines 169 and 209).
+- [ ] T4: Update `test/site.test.ts` per AC1 to AC3, on the shared fixtures
+  and the kept-record build.
+- [ ] T5: Search the AC4 strings, update `docs/site.md` and DESIGN.md where
+  they quote them, and add the CHANGELOG entry.
+- [ ] T6: Build the site from the deployed data, check AC5 in the browser
+  pane, and run `pnpm test`.
+
+## Work log
+
+- 2026-11-07: created by /milestone-plan.
+- 2026-11-07: tier check: milestone — a change to the text that every plugin page visitor reads, with the wording a design choice.
+- 2026-11-07: idea vet: gap — the wording was open; settled with the user over four rounds into `cairn/references/plain-words-copy.md`; gap — how far About goes; the user chose a short About with the full rules in docs/site.md (M111); no flaw.
+- 2026-11-07: collision check: absorbs the candidate "Use plain words on plugin pages and About" with M111, and the parked "Name the build on the failure page" in full, since the failure line now names when this page was updated; D-037's own-grouping label kept as "Zotdex categories"; D-052's top-level meaning kept as "top folder"; D-064's install note sentence replaced by the footer's safety-or-features point (D-078); D-071's badge text unchanged; inbox sweep: 0 open issues, 14 open bot add-plugin pull requests, none overlapping.
+- 2026-11-07: lessons used: 2026-10-25 (M001) pnpm via npx; 2026-10-26 (M015) serve the built site for the browser pane; 2026-10-27 (M021) Astro drops the space before a link; 2026-10-28 (M035) download the deployed data for a hand check; 2026-10-28 (M036) end an Edit at a line break; 2026-10-26 (M018) search joined docs text; 2026-10-29 (M048) iframe width check; 2026-11-07 (M109) Astro writes an apostrophe as `&#39;` in inserted text, and dates need UTC.
+- 2026-11-07: question set: wording — the user approved the copy file's Plugin page and About sections on 2026-11-07, after asking for before-and-after views, the footer's safety-or-features sentence in place of "doesn't review anyone's code", and a shorter About.
+- 2026-11-07: criteria audit (full mode, fresh Opus) returned 15 findings, all taken: AC1 names the kept-record build and one fixture per line with values filled; AC4 searches DESIGN's quoted labels only, exempts earlier-wording notes, and skips code comments; AC5 measures the page, on a deployed record with corrections and a paid fact; the copy's range line says "Supported versions:", the reports rule names the major version, "a 10.0 release", "no known release", and the badge title says "in its latest update"; M111's empty docs criterion was dropped.
+- 2026-11-07: plan gate chose two milestones (plugin pages, then About) over one because the two pages ship apart and one would pass the criteria tripwire; falsified by M111 needing to undo M110 text.
+
+## Decisions

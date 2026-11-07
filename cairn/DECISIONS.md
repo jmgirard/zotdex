@@ -1182,3 +1182,21 @@ a declared range is not a test result and that a start does not show that a
 plugin works (D-023): the startup check line now says that features aren't
 tested, and About keeps both points. This choice is wrong if readers take a ✓
 or a ● on the home page to mean that the index tested a plugin's features.
+
+### D-078: Plugin pages and About use the home page's words, and About gives the short form with the full rules in docs/site.md, annotating D-037, D-052, D-064, and D-077
+
+2026-11-07, M110 plan. The user approved new wording for plugin pages, About,
+and the 404 page in the home page's tone, recorded in
+`cairn/references/plain-words-copy.md`. The plugin page's install note and
+About's install section now say that Zotdex doesn't test plugins' safety or
+features, as the footer does (D-076), in place of D-064's sentence that the
+index does not review a plugin's code before listing it. Zotero's full-access
+warning stays (D-064, D-075). "Index categories" becomes "Zotdex categories",
+which still labels them as the site's own grouping (D-037). The Details label
+"Source code in the repository's top folder" keeps D-052's top-level meaning.
+The user found the full About too long, so About states each point in short
+form and links docs/site.md for the full rules, such as the names the lock
+ignores, which D-077 kept on About. About still says that a range is not a
+test result and that passing the startup check does not mean a plugin works.
+This choice is wrong if readers take the short About to mean that Zotdex
+checks plugins, or need a rule that only docs/site.md states.
