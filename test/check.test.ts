@@ -191,7 +191,7 @@ describe("pnpm check <root>", () => {
     expectOnlyRule(root, "index-schema");
   });
 
-  // The README documents each of these limits on an override.
+  // docs/data.md documents each of these limits on an override.
   test.each([
     ["a field outside the listed facts", { field: "version_name", value: "x", reason: "r" }, "/overrides/0/field"],
     ["an empty value", { field: "name", value: "", reason: "r" }, "/overrides/0/value"],

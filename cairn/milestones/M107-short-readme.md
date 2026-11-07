@@ -100,7 +100,7 @@ of the About change waits for a `Build data` run (offered after the merge).
   License's own "this section" and "this README" statements name the files.
 - [x] T3: Write the new `README.md` per AC1, from same-session reads of the
   old opening, the issue forms, and `docs/license.md`.
-- [ ] T4: Update outside text that cites a moved section: `cairn/DESIGN.md`
+- [x] T4: Update outside text that cites a moved section: `cairn/DESIGN.md`
   (the two README "Building the data" mentions), `.github/workflows/build.yml`
   (comments near lines 58 and 66), the `test/check.test.ts:194` comment, the
   three README mentions in `schemas/plugins.v1.schema.json` (:78, :147) and
@@ -136,6 +136,7 @@ of the About change waits for a `Build data` run (offered after the merge).
 - 2026-11-06: T2 done: 23 paragraphs changed, each a link-target change (`../LICENSE`, `../schemas/…`, `license.md#license`) or a reference that now names its file; a scratchpad check (`check_move.py`) reports 0 structural problems, and planted defects (a dropped word, a bad anchor, a duplicated section) each showed. Same-file above/below references stay.
 - 2026-11-06: the simple-english style hook flags long sentences and modals in moved text; left as is, since the plan moves that text word for word (question set answer).
 - 2026-11-06: T3 done: new README of 55 lines with sections The site, The data, Asking for a change (the five forms as `issues/new?template=<file>`, as `site/src/data.ts` builds them, plus Discussions), Documentation, and License (6 lines); its links pass the check.
+- 2026-11-06: T4 done: all of `CHANGELOG.md` sits under `## Unreleased`, so AC4 covered 12 of its README mentions, now naming `docs/site.md`, `docs/data.md`, `docs/maintaining.md`, or `docs/license.md`; also DESIGN.md (2), build.yml (2), the check.test.ts comment, and 3 schema descriptions. Remaining hits name plugin authors' READMEs, the badge, or file names (T7 lists them).
 
 ## Decisions
 

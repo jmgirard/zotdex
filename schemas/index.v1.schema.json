@@ -69,7 +69,7 @@
             "minLength": 1
           },
           "reason": {
-            "description": "Why the upstream value is wrong, or, for English description text, the upstream source it was drawn from and, for the manifest and GitHub descriptions, whether each is missing, not in English, only repeats the name, has a CJK share of 0.5 or more as the README counts it, is in English with fewer than six words, or is in English and not shown. For a text that the repository's owner asks for, the issue that asks.",
+            "description": "Why the upstream value is wrong, or, for English description text, the upstream source it was drawn from and, for the manifest and GitHub descriptions, whether each is missing, not in English, only repeats the name, has a CJK share of 0.5 or more as docs/site.md counts it, is in English with fewer than six words, or is in English and not shown. For a text that the repository's owner asks for, the issue that asks.",
             "type": "string",
             "minLength": 1
           }
