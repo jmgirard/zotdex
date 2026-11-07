@@ -86,14 +86,14 @@ none. A plugin that doesn't say shows no mark. The range is what the author
 says, not a test result. Then: "This update counted these as the newest
 releases:", items "Zotero {N}: {release}" or "Zotero {N}: no known release".
 
-**Startup check** (`#start-test`). Zotdex installs each plugin in a new Zotero
-profile on Linux, in the tested release of each Zotero version that the
-plugin's own range covers, and waits 3 seconds. ● means Zotero lists it as active and it logged no startup error. ✕
+**Startup check** (`#start-test`). Zotdex installs each plugin in a clean Zotero
+setup, once for each Zotero version the plugin says it supports, and waits 3
+seconds. ● means Zotero lists it as active and it logged no startup error. ✕
 means it failed to load, didn't install, or didn't finish loading within 90
 seconds. Passing doesn't mean the plugin works, because the check doesn't use
 any of its features, and the plugin's own code can change its result. Zotdex
 checks a plugin again when its file changes, after a failed check, and once a
-week, so a result is most often up to a week old.
+week, so a result is usually less than a week old.
 
 **Older data** (`#older-data`). When Zotdex can't reach a plugin because of a
 time limit or a server problem, it keeps what it found in the past 7 days
@@ -102,17 +102,15 @@ reason, such as a deleted repository, shows "Not read".
 
 **User reports** (`#reports`). Anyone with a GitHub account can report that a
 plugin works or is broken, with the buttons on its page. A bot checks each
-report. Zotdex counts each person's newest report that passes the bot's
-checks, for a plugin and major Zotero version, only for the release on the plugin's page, so the counts
-start over with each new release. They show what people found, not what
-Zotdex tested.
+report, and Zotdex counts the ones that pass, keeping each person's latest
+for each Zotero version. The counts start over with each new release, and
+they show what people found, not what Zotdex tested.
 
 **Descriptions** (`#descriptions`). A plugin's description comes from its own
-file or its GitHub page. When its file gives its name and description in
-several languages, Zotdex reads the English ones first. When half or more of
-a description is Chinese, Japanese, or Korean, the site shows its part in
-Latin letters, if it has one. The Details card on a plugin page shows both
-texts when it has both.
+file or its GitHub page. If a plugin comes in several languages, Zotdex uses
+its English text. For a description that's mostly Chinese, Japanese, or
+Korean, Zotdex shows just the part in Latin letters, if there is one. The
+Details card shows both descriptions when a plugin has both.
 
 **Corrections** (`#overrides`). When a fact from a plugin is wrong and its
 author can't or won't fix it, Zotdex can correct it, such as its name,
@@ -142,7 +140,7 @@ still cost money, because new plugins get checked later.
 owner asks, when it's spam, when its entry misleads people about what it is
 or who makes it, or when someone shows evidence that it causes harm. To ask,
 use the form for removing a plugin or reporting harm (a link), or the link
-on the plugin's page. A removed plugin's repository stays off Zotdex.
+on the plugin's page. A removed plugin stays off Zotdex.
 
 **Installing a plugin** (`#installing`). Save the plugin's .xpi file, then in
 Zotero go to Tools → Plugins and drag the file onto the Plugins window. In
@@ -164,11 +162,10 @@ unofficial, and it's not part of Zotero. It can't vet the plugins it lists,
 because one person runs it and any plugin can change with each release. It
 doesn't host plugin files: download links go to each author's own file.
 
-**License** (`#license`). Zotdex's code is under the MIT License, apart from
-some third-party files. The facts it gathers, its categories, and text a
-maintainer wrote are under CC0 1.0. Plugin names, descriptions, and text an
-owner asked for keep their authors' terms. The license page (a link) gives the details,
-including the icons' licenses.
+**License** (`#license`). Zotdex's code is under the MIT License, and its
+data, categories, and own text are under CC0 1.0. Names, descriptions, and
+other text from plugin authors keep their authors' terms. The license page
+(a link) gives the details, including the exceptions.
 
 **404 page.** Heading "Page not found"; text: "No page is at this address. A
 plugin's page goes away when Zotdex no longer lists the plugin. See all
