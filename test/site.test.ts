@@ -420,7 +420,6 @@ describe("the compatibility table", () => {
       expect(section.body).not.toContain('data-fact="failure"');
     } else {
       expect(compatRows(section.body)).toBeUndefined();
-      // The fixture's generatedAt is 2026-10-25.
       expect(unescaped(fact(section.body, "failure")!)).toBe(
         `Zotdex couldn't read this plugin when it last updated this page, on October 25, 2026: ${record.failure!.name}: ${record.failure!.message}`,
       );
@@ -769,7 +768,10 @@ describe("the plugin page", () => {
   test("leaves the old languages label off every plugin page", () => {
     const pages = htmlFiles(join(out, "plugins"));
     expect(pages.length).toBe(ids.length);
-    for (const path of pages) expect(readFileSync(join(out, "plugins", path), "utf8"), path).not.toContain("Interface languages:");
+    for (const path of pages) {
+      const html = readFileSync(join(out, "plugins", path), "utf8");
+      for (const label of ["Interface languages:", "Menus and settings in"]) expect(html, path).not.toContain(label);
+    }
   });
 
   test.each([
@@ -1013,7 +1015,7 @@ describe("the About page", () => {
     }
   });
 
-  test("says which user reports count, how overrides and the Used column work, and that the index cannot vet plugins", () => {
+  test("says which user reports count, how overrides and the In use column work, and that the index cannot vet plugins", () => {
     const text = mainText(about());
     for (const line of [
       "The index counts a report only when the bot closed it as completed and the report names the plugin version that the index read.",
@@ -2171,10 +2173,14 @@ describe("the built site", () => {
       const file = `https://zotdex.jmgirard.com/badges/${encodeURIComponent(id)}.json`;
       const canonical = /<link rel="canonical" href="([^"]*)"/.exec(html)![1]!;
       expect(decoded(codes[0]![1]!), id).toBe(`[![Zotdex](https://img.shields.io/endpoint?url=${encodeURIComponent(file)})](${canonical})`);
-      expect(mainText(`<main>${badge[0]!.body.replace(/<code\b.*?<\/code>/s, "")}</main>`), id).toBe(
-        "If this is your plugin, you can add this Markdown to its README. The badge shows the Zotero versions where it passed Zotdex's startup check, or why it shows none, and it links to this page.",
-      );
     }
+  });
+
+  test("says what the badge shows", () => {
+    const badge = sections(page("first-plugin@example.org")).find(({ name }) => name === "badge")!;
+    expect(mainText(`<main>${badge.body.replace(/<code\b.*?<\/code>/s, "")}</main>`)).toBe(
+      "If this is your plugin, you can add this Markdown to its README. The badge shows the Zotero versions where it passed Zotdex's startup check, or why it shows none, and it links to this page.",
+    );
   });
 
   test("names img.shields.io only in code text, and loads nothing from it", () => {
@@ -2462,7 +2468,7 @@ describe("a kept record", () => {
       "Zotdex couldn't reach this plugin on November 5, 2026: <code>not-read</code>: the build reads no plugin after 18 minutes, its time limit. " +
         'This page shows what it found on November 3, 2026. <a href="/about/#older-data">About older data</a>',
     );
-    expect(page(KEPT)).toMatch(new RegExp(`<h1>[^<]*${BADGE}`));
+    expect(/<h1>.*?<\/h1>/s.exec(page(KEPT))![0]).toContain(BADGE);
     expect(page(TWIN)).not.toContain("data-kept");
     // The kept facts still show as the facts of a read record.
     expect(page(KEPT)).toContain('data-fact="read-version">For version 1.2.0, the release this page shows</p>');
@@ -2481,6 +2487,10 @@ describe("a kept record", () => {
   test("writes the footer's day in UTC, so a build just after midnight UTC names that day in any time zone", () => {
     expect(longDay("2026-10-26T02:00:00Z")).toBe("October 26, 2026");
     expect(longDay("2026-10-25T23:30:00Z")).toBe("October 25, 2026");
+  });
+
+  test("writes a text that is not a date as its first 10 characters", () => {
+    expect(longDay("not a date at all")).toBe("not a date");
   });
 
   test("says in the footer the day of the build the data comes from", () => {

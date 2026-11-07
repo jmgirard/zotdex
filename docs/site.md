@@ -293,7 +293,11 @@ left, the page shows "Language not listed". The description
 comes from the plugin's manifest, from the About text of its GitHub
 repository, or from an index override. So it can be in another language
 than the languages fact names. The card shows the manifest description and
-the GitHub description as two more facts, unless one is missing or blank. If
+the GitHub description as two more facts, unless one is missing or blank.
+Their labels are "Description in the plugin file" and "Description on
+GitHub". In the table
+below, a description override's upstream texts read "Plugin file:" and
+"GitHub:". If
 the index has overrides for the plugin, a "Corrections by Zotdex" table
 under its own heading in the card lists them.
 

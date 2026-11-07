@@ -202,9 +202,13 @@ export const FEEDBACK_HREF = "https://github.com/jmgirard/zotdex/discussions";
 // The index repo itself, linked from the top bar and the footer.
 export const REPO_HREF = "https://github.com/jmgirard/zotdex";
 
-// A timestamp's day in UTC with the month's English name, such as "October 25, 2026".
+// A timestamp's day in UTC with the month's English name, such as "October 25, 2026". The
+// schema does not check every date field, so a text that is not a date shows its first 10
+// characters, as the site did before.
 export function longDay(timestamp: string): string {
-  return new Date(timestamp).toLocaleDateString("en-US", { timeZone: "UTC", year: "numeric", month: "long", day: "numeric" });
+  const date = new Date(timestamp);
+  if (Number.isNaN(date.getTime())) return timestamp.slice(0, 10);
+  return date.toLocaleDateString("en-US", { timeZone: "UTC", year: "numeric", month: "long", day: "numeric" });
 }
 
 // The new-issue page with the works.yml or broken.yml form, its plugin and version fields
