@@ -156,3 +156,23 @@ of the About change waits for a `Build data` run (offered after the merge).
 - AC5 evidence (head 9aaac2da): `site/src/data.ts:182` sets `LICENSE_HREF` to `https://github.com/jmgirard/zotdex/blob/main/docs/license.md`; `about.astro:297` says "the files that the license page names" and `:302` has link text "license page"; `test/site.test.ts:907-910` asserts the target, the link text, and the sentence. `vitest run test/site.test.ts test/check.test.ts`: 2 files passed, 637 tests passed, 1 skipped. At implement the changed test failed on the old link first (work log T5).
 - AC6 evidence (head 9aaac2da): `CHANGELOG.md:5-9` is one `## Unreleased` entry saying the README holds an overview, naming the five docs files, and saying the About License link goes to `docs/license.md`. `npx -y pnpm@12.15.0 test` exit 0: 37 files passed, 1 skipped; 2508 tests passed, 6 skipped.
 - Consistency gate: `cairn_validate.py` exit 0, all checks passed; the generic profile names no toolchain checks; no principle changed, so no impact report.
+- spawned: diff-bug, blame-history, prior-review, ripple
+- diff-bug #1: the published schemas cite bare `docs/site.md` and `docs/data.md`, which a reader of the schema at zotdex.jmgirard.com cannot follow — fix now
+- diff-bug #2: the new License link reaches users only after a `Build data` run — reject (false as a defect): until then the live `zotdex#license` link still lands on the README's `## License` heading; the run is offered after the merge
+- diff-bug #3: README "The code is under the MIT License." omits the third-party exception — fix now
+- diff-bug #4: data.md's "description rule in [site.md](site.md)" has no anchor — reject (false): site.md has no heading for the rule, so the file link is the most exact target
+- diff-bug #5: site.md's "in "License" in [license.md]" reads with two "in"s — reject (style)
+- diff-bug #6: the workflow comment rewrap leaves a short line and lines of 81 to 83 characters — reject (style): comments only, neighbors run to 92
+- diff-bug #7: the changelog's "changed only links" — reject (false): each changed reference adds a link, the site's "License" one included
+- diff-bug #8: local `main` lags `origin/main`, so `git diff main..HEAD` shows M108's cairn files — reject (false as a defect): those files came in by the merge of origin/main and are not M107 work
+- diff-bug #9: AC5 and AC6 had no evidence — reject (false): evidence written at 9aaac2da..f250d79b
+- blame-history #1: `LICENSE_HREF` names a file that main lacks until the merge — reject (false): only a build from main deploys, after the merge
+- blame-history #2: the ragged workflow comment — reject (style)
+- blame-history #3: DESIGN.md:512 runs past its neighbors' width — reject (style)
+- blame-history #4: the schemas cite repo paths, not URLs — fix now (same as diff-bug #1)
+- prior-review #1: the ragged workflow comment — reject (style)
+- prior-review #2: five README form-link lines exceed 80 columns — reject (style): each is one unbreakable URL
+- prior-review #3: about.astro:297 is a 112-character line — reject (style): the line was long on main and the file wraps near 120
+- ripple #1: the new candidate row says M107 "moves" the lines — fix now
+- ripple #2: DESIGN.md:1016 "moved from README by M107" — reject (false): the note is true and points at the right file
+- ripple #3: CHANGELOG.md:116 "README or another of its upstream files" — reject (false): it names a plugin's README
