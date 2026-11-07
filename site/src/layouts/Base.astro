@@ -831,8 +831,48 @@ const themeButton = `(${wireThemeButton})();`;
         color: var(--text);
         text-decoration: underline;
       }
+      /* The text and the icon's column. The space between them is the column's margin, not a
+         column gap, so a page with no icon gives its text the whole width. */
       .page-head {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: start;
         padding: var(--space-6) 0 var(--space-10);
+      }
+      .head-side {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        margin-left: var(--space-6);
+      }
+      /* The plugin's icon on a white tile in every theme, so a dark icon shows on the dark page.
+         Forced colors would turn the tile's white into a system color, so the tile keeps it. */
+      .icon-tile {
+        display: block;
+        padding: var(--space-4);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: #ffffff;
+        line-height: 0;
+        forced-color-adjust: none;
+      }
+      .icon-tile img {
+        display: block;
+        width: 4rem;
+        height: 4rem;
+      }
+      @media (max-width: 47.5rem) {
+        .head-side {
+          margin-left: var(--space-4);
+        }
+        .icon-tile {
+          padding: var(--space-3);
+          border-radius: var(--radius-m);
+        }
+        .icon-tile img {
+          width: 3rem;
+          height: 3rem;
+        }
       }
       .page-head h1 {
         display: flex;

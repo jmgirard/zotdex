@@ -7,7 +7,7 @@ import { writeData } from "../src/build/build.ts";
 test("gives each schema that the build publishes the $id of its own published address", async () => {
   const out = mkdtempSync(join(tmpdir(), "zpi-schemas-"));
   try {
-    expect(await writeData(out, "{}")).toMatchObject({ ok: true });
+    expect(await writeData(out, "{}", new Map())).toMatchObject({ ok: true });
     const files = readdirSync(join(out, "schemas"));
     expect(files.length).toBeGreaterThan(0);
     for (const file of files) {

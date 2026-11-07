@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import process from "node:process";
 import { Inflate, strFromU8 } from "fflate";
 import { type Lookup, refusal, systemLookup } from "./host-guard.ts";
+import { pickIconPath } from "./icon.ts";
 
 export type Fetch = (url: string, init?: RequestInit) => Promise<Response>;
 
@@ -70,9 +71,11 @@ export type Failure =
 // buildLevelStatus counts. The build counts such failures to decide whether to deploy. It
 // is not part of the published data. Nor are `topics`, the repo's GitHub topics that are
 // strings, and `updateRoute`, each URL that the update.json read requested, in order, which
-// the discovery bot reads.
+// the discovery bot reads. Nor is `icon`, the bytes of the file that the manifest's `icons`
+// names (see pickIconPath), left out when the XPI has no such file or the reader refuses it;
+// the build redraws it (see redrawIcon).
 export type UpstreamResult =
-  | { ok: true; facts: UpstreamFacts; xpi: XpiRead; topics: string[]; updateRoute: string[] }
+  | { ok: true; facts: UpstreamFacts; xpi: XpiRead; topics: string[]; updateRoute: string[]; icon?: Uint8Array }
   | { ok: false; failure: Failure; message: string; buildLevel?: true };
 
 // The XPI whose manifest the reader read: the release asset's download URL, before any
@@ -206,7 +209,11 @@ function boundLookup(lookup: Lookup, signal: AbortSignal): Lookup {
   };
 }
 
-async function read(repoUrl: string, fetch: Fetch, download: Download): Promise<{ facts: UpstreamFacts; xpi: XpiRead; topics: string[]; updateRoute: string[] }> {
+async function read(
+  repoUrl: string,
+  fetch: Fetch,
+  download: Download,
+): Promise<{ facts: UpstreamFacts; xpi: XpiRead; topics: string[]; updateRoute: string[]; icon?: Uint8Array }> {
   const { owner, repo } = parseRepoUrl(repoUrl);
   const github = githubClient(fetch);
 
@@ -242,7 +249,7 @@ async function read(repoUrl: string, fetch: Fetch, download: Download): Promise<
     if (!notZotero7 || !(Date.parse(newest.release.published_at) > Date.parse(stable.release.published_at))) throw error;
     facts = await readRelease(download, newest.release, newest.xpi!);
   }
-  const { release, xpi, updateRoute, ...manifestFacts } = facts;
+  const { release, xpi, updateRoute, icon, ...manifestFacts } = facts;
 
   return {
     facts: {
@@ -260,6 +267,7 @@ async function read(repoUrl: string, fetch: Fetch, download: Download): Promise<
     xpi,
     topics: Array.isArray(meta.topics) ? meta.topics.filter((topic): topic is string => typeof topic === "string") : [],
     updateRoute,
+    ...(icon && { icon }),
   };
 }
 
@@ -278,13 +286,13 @@ type ReleaseFacts = Pick<
   | "updateUrl"
   | "updateHost"
   | "languages"
-> & { release: ReleaseJson; xpi: XpiRead; updateRoute: string[] };
+> & { release: ReleaseJson; xpi: XpiRead; updateRoute: string[]; icon?: Uint8Array };
 
 // Reads the manifest and the language tags of the locale folders (see localeLanguages) in one
 // release's XPI, and checks the update.json the manifest names.
 async function readRelease(download: Download, release: ReleaseJson, xpi: { browser_download_url: string }): Promise<ReleaseFacts> {
   const url = xpi.browser_download_url;
-  const { manifest, messages, languages, sha256 } = await readManifest(download, url, release.tag_name);
+  const { manifest, messages, languages, sha256, icon } = await readManifest(download, url, release.tag_name);
   const zotero = manifest.applications?.zotero;
   const id = stringOrUndefined(zotero?.id);
   if (!id) fail("no-zotero-id", `the manifest of ${release.tag_name} has no applications.zotero.id`);
@@ -312,6 +320,7 @@ async function readRelease(download: Download, release: ReleaseJson, xpi: { brow
     release,
     xpi: { url, sha256 },
     updateRoute,
+    ...(icon && { icon }),
   };
 }
 
@@ -343,6 +352,7 @@ interface ManifestJson {
   version?: unknown;
   default_locale?: unknown;
   applications?: { zotero?: Record<string, unknown> };
+  icons?: unknown;
 }
 
 // One _locales/<locale>/messages.json.
@@ -648,7 +658,7 @@ async function readManifest(
   download: Download,
   url: string,
   tag: string,
-): Promise<{ manifest: ManifestJson; messages: LocaleMessages; languages: string[]; sha256: string }> {
+): Promise<{ manifest: ManifestJson; messages: LocaleMessages; languages: string[]; sha256: string; icon?: Uint8Array }> {
   const { response, from } = await download(url);
   if (!response.ok) {
     fail("xpi-unreadable", `the XPI of ${tag} at ${url} returned HTTP ${response.status}`, buildLevelStatus(response.status, from));
@@ -684,12 +694,28 @@ async function readManifest(
     fail("xpi-unreadable", `the XPI of ${tag} is not a readable zip: ${(error as Error).message}`);
   }
   const sha256 = createHash("sha256").update(zip).digest("hex");
+  const icon = iconBytes(zip, (manifest as ManifestJson).icons, tag);
   return {
     manifest: manifest as ManifestJson,
     messages: { english, default: isObject ? (messages as Messages) : {} },
     languages,
     sha256,
+    ...(icon && { icon }),
   };
+}
+
+// The bytes of the file that a manifest's `icons` value names (see pickIconPath), or undefined
+// when it names none, the XPI lacks the file, or any read of it fails, such as a file over
+// UNZIPPED_MAX_BYTES, a name the zip holds twice, or one that inflates past its declared size.
+// A bad icon never fails the read.
+function iconBytes(zip: Uint8Array, icons: unknown, tag: string): Uint8Array | undefined {
+  const path = pickIconPath(icons);
+  if (!path) return undefined;
+  try {
+    return unzipOne(zip, path, tag);
+  } catch {
+    return undefined;
+  }
 }
 
 // The messages of one English folder's messages.json, as a list of one, or an empty list when

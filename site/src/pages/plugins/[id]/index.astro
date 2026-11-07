@@ -59,114 +59,125 @@ const { min, max } = declaredRange(record);
 <Base title={`${displayName(record)}: Zotdex`} description={previewDescription(record)} path={pluginHref(record.id)}>
   <a class="back" href={BASE} data-back><Icon name="back" />All plugins</a>
   <div class="page-head" data-page-head>
-    <h1>
-      {displayName(record)}
-      {
-        upstream?.archived === true && (
-          <>
-            {" "}
-            <span class="badge" data-archived>Archived</span>
-          </>
-        )
-      }
-      {
-        kept && (
-          <>
-            {" "}
-            <span class="badge" data-kept title={keptTitle(kept.readAt)}>Older data</span>
-          </>
-        )
-      }
-      {
-        upstream?.sourceInRepo === false && (
-          <>
-            {" "}
-            <NoSourceMark />
-          </>
-        )
-      }
-      {
-        paidService && (
-          <>
-            {" "}
-            <PaidServiceMark />
-          </>
-        )
-      }
-    </h1>
-    {
-      kept && (
-        <p class="fineprint kept-note" data-fact="kept">
-          Zotdex couldn't reach this plugin on {longDay(generatedAt)}: <code>{kept.failure.name}</code>:{" "}
-          {kept.failure.message}. This page shows what it found on {longDay(kept.readAt)}.{" "}
-          <a href={`${BASE}about/#older-data`}>About older data</a>
-        </p>
-      )
-    }
-    {
-      github && repoHref && (
-        <p class="repo-line" data-repo-line>
-          By <a href={`https://github.com/${github.owner}`} data-repo-owner>{github.owner}</a>{" "}
-          <span aria-hidden="true">·</span>{" "}
-          <a href={repoHref} data-repo-name>{github.repo}</a>
-          {upstream?.stars !== undefined && (
+    <div class="head-text">
+      <h1>
+        {displayName(record)}
+        {
+          upstream?.archived === true && (
             <>
               {" "}
-              <span aria-hidden="true">·</span>{" "}
-              <span data-repo-stars>
-                <span aria-hidden="true" title={starsText(upstream.stars)}><Icon name="star" /> {upstream.stars.toLocaleString("en")}</span>{" "}
-                <span class="visually-hidden">{starsText(upstream.stars)}</span>
-              </span>
+              <span class="badge" data-archived>Archived</span>
             </>
-          )}
-        </p>
-      )
-    }
-    {description && <p class="description" data-description>{description}</p>}
-    {
-      recordCategories.length > 0 && (
-        <p class="categories" data-categories>
-          <a href={`${BASE}about/#categories`} data-categories-about>Zotdex categories</a>:{" "}
-          {recordCategories.map((category, i) => (
+          )
+        }
+        {
+          kept && (
             <>
-              {i > 0 && ", "}
-              <a href={`${BASE}?category=${category.slug}`} aria-label={`${category.name}: plugins in this category`} data-category={category.slug}>{category.name}</a>
+              {" "}
+              <span class="badge" data-kept title={keptTitle(kept.readAt)}>Older data</span>
             </>
-          ))}
-        </p>
-      )
-    }
-    <div class="actions" data-links>
+          )
+        }
+        {
+          upstream?.sourceInRepo === false && (
+            <>
+              {" "}
+              <NoSourceMark />
+            </>
+          )
+        }
+        {
+          paidService && (
+            <>
+              {" "}
+              <PaidServiceMark />
+            </>
+          )
+        }
+      </h1>
       {
-        upstream && xpiHref && (
-          <a class="btn" href={xpiHref} data-link="download">
-            <Icon name="download" />
-            Download {upstream.version} (.xpi)
-          </a>
+        kept && (
+          <p class="fineprint kept-note" data-fact="kept">
+            Zotdex couldn't reach this plugin on {longDay(generatedAt)}: <code>{kept.failure.name}</code>:{" "}
+            {kept.failure.message}. This page shows what it found on {longDay(kept.readAt)}.{" "}
+            <a href={`${BASE}about/#older-data`}>About older data</a>
+          </p>
         )
       }
       {
-        repoHref ? (
-          <a class="btn" href={repoHref} data-link="source">
-            <Icon name="source" />
-            {upstream?.sourceInRepo === false ? "Repository" : "Source code"}
-          </a>
-        ) : (
-          <span class="link-text" data-link="source">{repoUrl}</span>
+        github && repoHref && (
+          <p class="repo-line" data-repo-line>
+            By <a href={`https://github.com/${github.owner}`} data-repo-owner>{github.owner}</a>{" "}
+            <span aria-hidden="true">·</span>{" "}
+            <a href={repoHref} data-repo-name>{github.repo}</a>
+            {upstream?.stars !== undefined && (
+              <>
+                {" "}
+                <span aria-hidden="true">·</span>{" "}
+                <span data-repo-stars>
+                  <span aria-hidden="true" title={starsText(upstream.stars)}><Icon name="star" /> {upstream.stars.toLocaleString("en")}</span>{" "}
+                  <span class="visually-hidden">{starsText(upstream.stars)}</span>
+                </span>
+              </>
+            )}
+          </p>
         )
       }
+      {description && <p class="description" data-description>{description}</p>}
       {
-        upstream &&
-          (repoHref ? (
-            <a class="btn" href={`${repoHref}/releases`} data-link="releases">
-              <Icon name="releases" />
-              Releases
+        recordCategories.length > 0 && (
+          <p class="categories" data-categories>
+            <a href={`${BASE}about/#categories`} data-categories-about>Zotdex categories</a>:{" "}
+            {recordCategories.map((category, i) => (
+              <>
+                {i > 0 && ", "}
+                <a href={`${BASE}?category=${category.slug}`} aria-label={`${category.name}: plugins in this category`} data-category={category.slug}>{category.name}</a>
+              </>
+            ))}
+          </p>
+        )
+      }
+      <div class="actions" data-links>
+        {
+          upstream && xpiHref && (
+            <a class="btn" href={xpiHref} data-link="download">
+              <Icon name="download" />
+              Download {upstream.version} (.xpi)
+            </a>
+          )
+        }
+        {
+          repoHref ? (
+            <a class="btn" href={repoHref} data-link="source">
+              <Icon name="source" />
+              {upstream?.sourceInRepo === false ? "Repository" : "Source code"}
             </a>
           ) : (
-            <span class="link-text" data-link="releases">{`${repoUrl}/releases`}</span>
-          ))
-      }
+            <span class="link-text" data-link="source">{repoUrl}</span>
+          )
+        }
+        {
+          upstream &&
+            (repoHref ? (
+              <a class="btn" href={`${repoHref}/releases`} data-link="releases">
+                <Icon name="releases" />
+                Releases
+              </a>
+            ) : (
+              <span class="link-text" data-link="releases">{`${repoUrl}/releases`}</span>
+            ))
+        }
+      </div>
     </div>
+    {
+      upstream?.icon && (
+        <div class="head-side">
+          <span class="icon-tile" data-icon-tile>
+            <img src={`${BASE}v1/${upstream.icon}`} alt="" width="64" height="64" data-icon />
+          </span>
+        </div>
+      )
+    }
   </div>
   {
     upstream && xpiHref && (

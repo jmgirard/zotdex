@@ -23,6 +23,10 @@ gives no license for it. In the data file, this text is in `upstream.name`,
 `value` and `reason` can hold it. The entries, the test files, the README,
 and the files under `docs/` can also hold or quote it.
 
+Plugin icons also keep their authors' terms. The build redraws the icon that
+a plugin's manifest names and publishes it under `v1/icons/`, which
+`upstream.icon` names. The index gives no license for these files.
+
 These files hold parts from a third party. Those parts keep their source's
 terms, and the rest of each file follows the terms above:
 

@@ -313,6 +313,22 @@ describe("checkTree", () => {
     ]);
   });
 
+  async function iconHiddenFindings(iconHidden: unknown) {
+    const root = treeWith((dir) => editJson(join(dir, "index.json"), (index) => (index.iconHidden = iconHidden)));
+    return (await checkTree(root, compileValidators({}))).findings;
+  }
+
+  test.each([" \t", "​"])("reason-not-blank: an iconHidden reason of %j", async (reason) => {
+    expect(await iconHiddenFindings({ reason })).toEqual([
+      { entry: ENTRY, rule: "reason-not-blank", message: "iconHidden.reason holds only whitespace or format characters" },
+    ]);
+  });
+
+  test("index-schema: an empty iconHidden reason, and none for a written one", async () => {
+    expect(await iconHiddenFindings({ reason: "" })).toEqual([expect.objectContaining({ rule: "index-schema" })]);
+    expect(await iconHiddenFindings({ reason: "The icon shows another product's logo." })).toEqual([]);
+  });
+
   test("passes a reason with a format character beside a letter", async () => {
     expect(await overrideFindings([{ field: "name", value: "First", reason: "ok\u200B" }])).toEqual([]);
   });

@@ -36,6 +36,19 @@
         }
       }
     },
+    "iconHidden": {
+      "description": "Set when a maintainer hides the icon that the plugin's manifest names, so the data and the site show none.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reason"],
+      "properties": {
+        "reason": {
+          "description": "Why the icon is hidden.",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
     "overrides": {
       "description": "Corrections to upstream facts that the plugin author cannot or will not fix upstream. A description override can also give English text for a plugin whose manifest and GitHub descriptions are each missing, not in English, only repeat the name, or are half or more Chinese, Japanese, or Korean. It can also replace an English description of fewer than six words that the site shows without the override. A repository's owner can also ask for a name or description override, whatever the upstream text says.",
       "type": "array",

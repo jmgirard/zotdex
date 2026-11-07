@@ -543,11 +543,12 @@ In each entry, the rule `registry-schema` checks `meta.json` against the
 registry schema, and `index-schema` checks `index.json` against its schema.
 A file can start with a UTF-8 byte-order mark (U+FEFF). Then the line names
 the mark, in place of "is not valid JSON". Save such a file as UTF-8
-without the mark. Besides `index-schema`, two rules check the overrides in
-`index.json`:
+without the mark. Besides `index-schema`, two rules check the reasons and
+overrides in `index.json`:
 
-- `reason-not-blank`: a reason must hold a character other than whitespace,
-  as JavaScript's `\s` defines it, and Unicode format characters. Most
+- `reason-not-blank`: a reason, of an override or of `iconHidden`, must hold
+  a character other than whitespace, as JavaScript's `\s` defines it, and
+  Unicode format characters. Most
   format characters, such as U+200B (zero width space), print nothing.
 - `unique-override`: two overrides must not have the same `field` and
   `version`. An override with no `version` repeats only another override
@@ -585,8 +586,8 @@ from the repository that `GITHUB_REPOSITORY` names. If that variable is not
 set, it reads them from `jmgirard/zotdex`. A fork that builds
 the data must have a label named `report`, or the build exits 1. Then it
 reads each plugin
-from GitHub in the same way as `pnpm add-plugin`. It writes one file,
-`dist/v1/plugins.json`. The file has a `schemaVersion` of `1`, a
+from GitHub in the same way as `pnpm add-plugin`. It writes
+`dist/v1/plugins.json` and the icon files in `dist/v1/icons/`. The file has a `schemaVersion` of `1`, a
 `generatedAt` time, an optional `zoteroRelease` from the read below, and
 one record for each entry. Each record keeps the upstream facts in an
 `upstream` block and the overrides of the entry, with their reasons, in an
@@ -603,7 +604,12 @@ against a saved copy of the schema, fetch the schema again. The `upstream`
 block also has a `prerelease` field, `true` or `false`. It says whether
 GitHub marks the release that the reader read as a prerelease. It also has
 a `languages` list and an `xpiUrl` field, which "Using the data" in
-[data.md](data.md#using-the-data) describes. Each record
+[data.md](data.md#using-the-data) describes. If the build drew the plugin's
+icon, the block has an `icon` field. The command writes each icon file to
+`dist/v1/icons/` before it writes `plugins.json`. It then removes each
+other file in `dist/v1/icons/`. A bad or missing icon never fails a read.
+To hide a plugin's icon, add `iconHidden` with a reason to its `index.json`,
+as [data.md](data.md#plugin-entries) says. Each record
 with an `upstream` block has a `reports` list, which "Using the data" in
 [data.md](data.md#using-the-data) describes. The command writes no
 `startTests` list, except on a record that keeps earlier facts. The daily build adds it with
@@ -635,7 +641,13 @@ block and `startTests` list, with a `kept` block:
 
 So a record that two builds in a row fail to read keeps the first
 `readAt`. The kept record also keeps this entry's own overrides and
-`paidService`, and gets the reports that this build counts. In every
+`paidService`, and gets the reports that this build counts. If the command
+reads the icon file back from the path resolved against the `--previous`
+address, the kept record keeps the published record's `icon`. It reads up
+to 8 icons at once, all within 60 seconds. Each file must be at most 64 KiB
+and have the SHA-256 in its name. If a read fails or the entry has
+`iconHidden`, the kept record has no `icon`. The exit status does not
+change. In every
 other case the record has a `failure` block, as above. If the command
 cannot read the published data, or its `generatedAt`, it keeps nothing. It
 prints one line that starts with `::warning::cannot read the deployed data`
@@ -779,10 +791,11 @@ The command writes no data file and exits with status 1 in these cases:
   more than 3 minutes in all. It prints a line that names the time limit,
   and it reads no plugin.
 - The file it built is not valid against the schema.
-- It cannot write the schema copies or the data file.
+- It cannot write an icon file, the schema copies, or the data file.
 
 A data file from an earlier run then stays in place. In the last case, the
-schema copies can already be in `dist/schemas/`. The command writes the
+icon files can already be in `dist/v1/icons/` and the schema copies in
+`dist/schemas/`. The command writes the
 data file before the start plan that `--plan` names. If it cannot write the
 plan, it prints `write-failed` with the plan's path and exits with status
 1. The new data file then stays in place.

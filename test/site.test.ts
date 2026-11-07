@@ -533,10 +533,15 @@ describe("the plugin page", () => {
     const main = html.slice(html.indexOf("<main>") + "<main>".length, html.indexOf("</main>"));
     const head = new RegExp(
       `^<a class="back" href="/" data-back>${ICON}All plugins</a>` +
-        `<div class="page-head" data-page-head>(.*?)<div class="actions" data-links>(.*?)</div></div>`,
+        `<div class="page-head" data-page-head><div class="head-text">(.*?)<div class="actions" data-links>(.*?)</div></div>((?:<div class="head-side">.*?</div>)?)</div>`,
       "s",
     ).exec(main.replace(/>\s+</g, "><").trim());
     const { upstream } = record;
+    expect(head?.[3]).toBe(
+      upstream?.icon
+        ? `<div class="head-side"><span class="icon-tile" data-icon-tile><img src="/v1/${upstream.icon}" alt="" width="64" height="64" data-icon></span></div>`
+        : "",
+    );
     const repoUrl = upstream?.repoUrl ?? record.repoUrl;
     const github = githubRepo(repoUrl);
     const shownCategories = CATEGORIES.filter(({ slug }) => categories(record).includes(slug)).map(
@@ -622,6 +627,8 @@ describe("the plugin page", () => {
     expect(records.some((record) => !record.upstream && repoFails(record))).toBe(true);
     expect(records.some((record) => record.upstream?.xpiUrl && !safeHref(record.upstream.xpiUrl))).toBe(true);
     expect(records.some((record) => record.upstream?.xpiUrl && safeHref(record.upstream.xpiUrl) && !repoFails(record))).toBe(true);
+    expect(records.some((record) => record.upstream?.icon)).toBe(true);
+    expect(records.some((record) => record.upstream && !record.upstream.icon)).toBe(true);
   });
 
   test.each(ids)("shows the sections of %s in order, each with its facts", (id) => {
@@ -896,6 +903,12 @@ describe("the About page", () => {
         "The Details card shows both descriptions when a plugin has both.",
     ],
     [
+      "icons",
+      "Icons",
+      "A plugin's icon is the one its author made for Zotero's Plugins window. " +
+        "Zotdex doesn't look at icons before it shows them, and a maintainer can hide one.",
+    ],
+    [
       "overrides",
       "Corrections",
       "When a fact from a plugin is wrong and its author can't or won't fix it, Zotdex can correct it, such as its name, description, or supported versions. " +
@@ -950,7 +963,7 @@ describe("the About page", () => {
       "license",
       "License",
       "Zotdex's code is under the MIT License, and its data, categories, and own text are under CC0 1.0. " +
-        "Names, descriptions, and other text from plugin authors keep their authors' terms. " +
+        "Names, descriptions, icons, and other work from plugin authors keep their authors' terms. " +
         "The license page gives the details, including the exceptions.",
     ],
   ];
@@ -2656,7 +2669,7 @@ describe("the site styles", () => {
       .filter(({ selector }) => selector !== ":root" && selector !== ".visually-hidden")
       .flatMap(({ selector, declarations }) =>
         declarations
-          .filter(([property]) => /^(?:border-radius|padding(?:-[a-z-]+)?|margin(?:-[a-z-]+)?|gap|font-size)$/.test(property))
+          .filter(([property]) => /^(?:border-radius|padding(?:-[a-z-]+)?|margin(?:-[a-z-]+)?|(?:row-|column-)?gap|font-size)$/.test(property))
           .map(([property, value]) => ({ selector, property, value })),
       );
     for (const property of ["border-radius", "padding", "margin", "margin-left", "gap", "font-size"]) {

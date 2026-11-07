@@ -159,7 +159,9 @@ doesn't host plugin files: download links go to each author's own file.
 **License** (`#license`). Zotdex's code is under the MIT License, and its
 data, categories, and own text are under CC0 1.0. Names, descriptions, and
 other text from plugin authors keep their authors' terms. The license page
-(a link) gives the details, including the exceptions.
+(a link) gives the details, including the exceptions. (The second sentence
+is replaced at M113 and again at M114, as "Icons and screenshots" below
+records.)
 
 **404 page.** Heading "Page not found"; text: "No page is at this address. A
 plugin's page goes away when Zotdex no longer lists the plugin. See all

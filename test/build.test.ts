@@ -5,6 +5,8 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { Ajv } from "ajv";
 import dns from "node:dns";
+import { strToU8, zipSync } from "fflate";
+import sharp from "sharp";
 import { afterAll, beforeAll, describe, expect, test, vi } from "vitest";
 import indexSchema from "../schemas/index.v1.schema.json" with { type: "json" };
 import pluginsSchema from "../schemas/plugins.v1.schema.json" with { type: "json" };
@@ -1514,6 +1516,89 @@ describe("buildData", () => {
   });
 });
 
+describe("buildData icons", () => {
+  const SECOND_XPI = "https://github.com/example/second-plugin/releases/download/v1.0.0/second-plugin.xpi";
+  let png: Uint8Array;
+  beforeAll(async () => {
+    png = new Uint8Array(await sharp({ create: { width: 48, height: 48, channels: 4, background: "#06c" } }).png().toBuffer());
+  });
+
+  // The responses in which SECOND's XPI holds `icon` at icon.png and its manifest names it.
+  function withSecondIcon(icon: Uint8Array): Responses {
+    const recorded = responses();
+    const manifest = { ...(recorded[SECOND_XPI].xpi!["manifest.json"] as object), icons: { "96": "icon.png" } };
+    const zip = zipSync({ "manifest.json": strToU8(JSON.stringify(manifest)), "icon.png": icon });
+    recorded[SECOND_XPI] = { base64: Buffer.from(zip).toString("base64") };
+    return recorded;
+  }
+
+  async function build(recorded: Responses, tree = TREE) {
+    const result = await buildData(tree, fixtureFetch(recorded).fetch);
+    if (!result.ok) throw new Error(result.problems.join("\n"));
+    return { result, output: JSON.parse(result.text) as Output };
+  }
+
+  test("names the drawn icon on the record and gives its bytes under that name", async () => {
+    const { result, output } = await build(withSecondIcon(png));
+    const icon = record(output, SECOND)?.upstream?.icon as string;
+    expect(icon).toMatch(/^icons\/[0-9a-f]{64}\.png$/);
+    expect([...result.icons.keys()]).toEqual([icon]);
+    const bytes = result.icons.get(icon)!;
+    expect(`icons/${createHash("sha256").update(bytes).digest("hex")}.png`).toBe(icon);
+    const { format, width, height } = await sharp(bytes).metadata();
+    expect({ format, width, height }).toEqual({ format: "png", width: 96, height: 96 });
+    expect(record(output, BETTER_NOTES)?.upstream).not.toHaveProperty("icon");
+    expect(checkOutput(output)).toEqual([]);
+  });
+
+  test("gives no icon, and the same record less the XPI's hash, for an icon file that is no image", async () => {
+    const { output: control } = await build(responses());
+    const { result, output } = await build(withSecondIcon(strToU8("not an image")));
+    const less = (plugin = record(output, SECOND)) => ({ ...plugin, upstream: { ...plugin!.upstream, xpiSha256: undefined } });
+    expect(less()).toEqual(less(record(control, SECOND)));
+    expect(result.icons.size).toBe(0);
+  });
+
+  test("gives no icon to a read record whose index.json hides it", async () => {
+    const tree = tempDir();
+    cpSync(TREE, tree, { recursive: true });
+    const index = join(tree, SECOND, "index.json");
+    writeFileSync(index, JSON.stringify({ ...JSON.parse(readFileSync(index, "utf8")), iconHidden: { reason: "Another product's logo." } }));
+    const { result, output } = await build(withSecondIcon(png), tree);
+    expect(record(output, SECOND)?.upstream).not.toHaveProperty("icon");
+    expect(result.icons.size).toBe(0);
+  });
+
+  test("the schema takes an upstream with or without an icon path and refuses another shape", async () => {
+    const { output } = await build(responses());
+    const index = output.plugins.findIndex((plugin) => plugin.id === SECOND);
+    expect(checkOutput(output)).toEqual([]);
+    output.plugins[index].upstream!.icon = `icons/${"a".repeat(64)}.png`;
+    expect(checkOutput(output)).toEqual([]);
+    output.plugins[index].upstream!.icon = "icons/icon.svg";
+    expect(checkOutput(output)).toEqual([`/plugins/${index}/upstream/icon must match pattern "^icons/[0-9a-f]{64}\\.png$"`]);
+  });
+
+  test("writeData writes no data file when an icon write fails", async () => {
+    const out = tempDir();
+    // A directory where the icon file would go makes its rename fail.
+    mkdirSync(join(out, "v1", "icons", `${"c".repeat(64)}.png`), { recursive: true });
+    const written = await writeData(out, "{}\n", new Map([[`icons/${"c".repeat(64)}.png`, png]]));
+    expect(written).toMatchObject({ ok: false, message: expect.stringContaining("cannot write") });
+    expect(existsSync(join(out, "v1", "plugins.json"))).toBe(false);
+  });
+
+  test("writeData writes each icon and removes other files in v1/icons", async () => {
+    const out = tempDir();
+    mkdirSync(join(out, "v1", "icons"), { recursive: true });
+    writeFileSync(join(out, "v1", "icons", "stale.png"), "old");
+    const name = `icons/${"b".repeat(64)}.png`;
+    expect(await writeData(out, "{}\n", new Map([[name, png]]))).toMatchObject({ ok: true });
+    expect(readdirSync(join(out, "v1", "icons"))).toEqual([`${"b".repeat(64)}.png`]);
+    expect(new Uint8Array(readFileSync(join(out, "v1", name)))).toEqual(png);
+  });
+});
+
 describe("buildData read timings", () => {
   test("times each read it starts, in id order, with readRecord's result, and the whole read phase", async () => {
     // An odd UTC day starts the reads in reverse id order, so id order is not the start order.
@@ -1694,6 +1779,81 @@ describe("buildData with the deployed data", () => {
     expect(record(output, SECOND)?.failure).toEqual(SECOND_FAILURE);
     expect(result.kept).toEqual([]);
   });
+
+  describe("and icons", () => {
+    const iconName = (bytes: Uint8Array) => `icons/${createHash("sha256").update(bytes).digest("hex")}.png`;
+    let ICON_BYTES: Uint8Array;
+    let ICON: string;
+    let ICON_URL: string;
+    let SMALL_PNG: Uint8Array;
+    beforeAll(async () => {
+      const square = (side: number) => sharp({ create: { width: side, height: side, channels: 4, background: "#06c" } }).png().toBuffer();
+      ICON_BYTES = new Uint8Array(await square(96));
+      SMALL_PNG = new Uint8Array(await square(48));
+      ICON = iconName(ICON_BYTES);
+      ICON_URL = `https://example.org/v1/${ICON}`;
+    });
+    // The deployed data in which SECOND names `icon`.
+    const withIcon = (icon = ICON) => {
+      const data = deployed();
+      (deployedRecord(data, SECOND).upstream as Record<string, unknown>).icon = icon;
+      return data;
+    };
+    // The kept record of SECOND with no icon.
+    const keptWithout = (data: Deployed) => {
+      const kept = keptSecond(data, READ_AT, SECOND_FAILURE);
+      const { icon: _icon, ...upstream } = kept.upstream as Record<string, unknown>;
+      return { ...kept, upstream };
+    };
+
+    test("keeps the icon of a kept record when the deployed file reads back with the SHA-256 in its name", async () => {
+      const data = withIcon();
+      const { result, output } = await rebuild({ ...failing(), [ICON_URL]: { base64: Buffer.from(ICON_BYTES).toString("base64") } }, { json: data });
+      expect(record(output, SECOND)).toEqual(keptSecond(data, READ_AT, SECOND_FAILURE));
+      expect(result.icons.get(ICON)).toEqual(ICON_BYTES);
+      expect(checkOutput(output)).toEqual([]);
+    });
+
+    test.each<[string, Recorded]>([
+      ["an answer other than 200", { status: 404, text: "Not Found" }],
+      ["a fetch that rejects", { error: "connection reset" }],
+      ["a read past its time limit", { stall: "headers" }],
+      ["a body over 64 KiB", { chunks: { size: 1024, count: 65 } }],
+      ["bytes whose SHA-256 is not in the name", { text: "another file" }],
+    ])("drops the kept icon and keeps the rest after %s", async (_case, answer) => {
+      const data = withIcon();
+      const { result, output } = await rebuild({ ...failing(), [ICON_URL]: answer }, { json: data }, NOW, { previousMs: 200 });
+      expect(record(output, SECOND)).toEqual(keptWithout(data));
+      expect(result.kept).toEqual([SECOND]);
+      expect(result.icons.size).toBe(0);
+      expect(record(output, BETTER_NOTES)).not.toHaveProperty("failure");
+    });
+
+    test.each<[string, () => Uint8Array]>([
+      ["text", () => strToU8("<html>not an icon</html>")],
+      ["a 48 by 48 PNG", () => SMALL_PNG],
+    ])("drops a kept icon whose file is %s with the SHA-256 in its name", async (_case, bytes) => {
+      const file = bytes();
+      const data = withIcon(iconName(file));
+      const url = `https://example.org/v1/${iconName(file)}`;
+      const { result, output } = await rebuild({ ...failing(), [url]: { base64: Buffer.from(file).toString("base64") } }, { json: data });
+      expect(record(output, SECOND)).toEqual(keptWithout(data));
+      expect(result.icons.size).toBe(0);
+    });
+
+    test("drops the kept icon of a record whose index.json hides it, with no read of the file", async () => {
+      const tree = tempDir();
+      cpSync(TREE, tree, { recursive: true });
+      const index = join(tree, SECOND, "index.json");
+      writeFileSync(index, JSON.stringify({ ...JSON.parse(readFileSync(index, "utf8")), iconHidden: { reason: "Another product's logo." } }));
+      const data = withIcon();
+      const { fetch, requests } = fixtureFetch({ ...failing(), [PREVIOUS]: { json: data }, [ICON_URL]: { base64: Buffer.from(ICON_BYTES).toString("base64") } });
+      const result = await buildData(tree, fetch, NOW, undefined, { previous: PREVIOUS });
+      if (!result.ok) throw new Error(result.problems.join("\n"));
+      expect(record(JSON.parse(result.text), SECOND)?.upstream).not.toHaveProperty("icon");
+      expect(requests.some(({ url }) => url === ICON_URL)).toBe(false);
+    });
+  });
 });
 
 describe("checkOutput", () => {
@@ -1773,7 +1933,7 @@ describe("writeData", () => {
   test("reports a directory it cannot make", async () => {
     const blocker = join(tempDir(), "file");
     writeFileSync(blocker, "");
-    expect(await writeData(join(blocker, "dist"), "{}\n")).toEqual({
+    expect(await writeData(join(blocker, "dist"), "{}\n", new Map())).toEqual({
       ok: false,
       message: expect.stringContaining(`cannot write ${join(blocker, "dist", "schemas", "plugins.v1.schema.json")}`),
     });
@@ -1782,7 +1942,7 @@ describe("writeData", () => {
   test("reports a data directory it cannot make after the schemas are written", async () => {
     const out = tempDir();
     writeFileSync(join(out, "v1"), "");
-    expect(await writeData(out, "{}\n")).toEqual({
+    expect(await writeData(out, "{}\n", new Map())).toEqual({
       ok: false,
       message: expect.stringContaining(`cannot write ${join(out, "v1", "plugins.json")}`),
     });
@@ -1792,7 +1952,7 @@ describe("writeData", () => {
   test("removes its temporary schema file when the schema cannot be replaced", async () => {
     const out = tempDir();
     mkdirSync(join(out, "schemas", "plugins.v1.schema.json", "taken"), { recursive: true });
-    expect(await writeData(out, "{}\n")).toEqual({
+    expect(await writeData(out, "{}\n", new Map())).toEqual({
       ok: false,
       message: expect.stringContaining(`cannot write ${join(out, "schemas", "plugins.v1.schema.json")}`),
     });
@@ -1803,7 +1963,7 @@ describe("writeData", () => {
   test("removes its temporary file when the file cannot be replaced", async () => {
     const out = tempDir();
     mkdirSync(join(out, "v1", "plugins.json", "taken"), { recursive: true });
-    expect((await writeData(out, "{}\n")).ok).toBe(false);
+    expect((await writeData(out, "{}\n", new Map())).ok).toBe(false);
     expect(readdirSync(join(out, "v1"))).toEqual(["plugins.json"]);
   });
 });

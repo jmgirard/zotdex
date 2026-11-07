@@ -84,6 +84,13 @@ const offered = new Set(categoryOptions(plugins).map(({ value }) => value));
       Latin letters, if there is one. The Details card shows both descriptions when a plugin has both.
     </p>
   </section>
+  <section class="card" id="icons" data-about="icons">
+    <h2>Icons</h2>
+    <p>
+      A plugin's icon is the one its author made for Zotero's Plugins window. Zotdex doesn't look at icons before it shows
+      them, and a maintainer can hide one.
+    </p>
+  </section>
   <section class="card" id="overrides" data-about="overrides">
     <h2>Corrections</h2>
     <p>
@@ -159,7 +166,7 @@ const offered = new Set(categoryOptions(plugins).map(({ value }) => value));
     <h2>License</h2>
     <p>
       Zotdex's code is under the MIT License, and its data, categories, and own text are under CC0 1.0. Names,
-      descriptions, and other text from plugin authors keep their authors' terms. The{" "}
+      descriptions, icons, and other work from plugin authors keep their authors' terms. The{" "}
       <a href={LICENSE_HREF} data-license-link>license page</a> gives the details, including the exceptions.
     </p>
   </section>
