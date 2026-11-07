@@ -285,7 +285,7 @@ type Git = (args: string[], env?: Record<string, string>) => Promise<string>;
 
 // Runs git in `gitDir` and returns its trimmed output. A process that passes `ms` is
 // killed, and the error says so.
-function gitRunner(gitDir: string, ms: number): Git & { bytes: (args: string[], input: string) => Promise<Buffer> } {
+function gitRunner(gitDir: string, ms: number): Git & { bytes: (args: string[], input?: string) => Promise<Buffer> } {
   // Runs git with `input`, if any, on its stdin, and returns its output as bytes.
   async function bytes(args: string[], input?: string, env: Record<string, string> = {}): Promise<Buffer> {
     try {
@@ -306,7 +306,7 @@ function gitRunner(gitDir: string, ms: number): Git & { bytes: (args: string[], 
     }
   }
   const git: Git = async (args, env = {}) => (await bytes(args, undefined, env)).toString("utf8").trim();
-  return Object.assign(git, { bytes: (args: string[], input: string) => bytes(args, input) });
+  return Object.assign(git, { bytes: (args: string[], input?: string) => bytes(args, input) });
 }
 
 // The most output one git process may write. The index's ls-tree listing takes about 300
@@ -444,7 +444,8 @@ export async function propose(options: ProposeOptions): Promise<{ proposed: Prop
         const kept = keptIndex === undefined ? [] : keptLines(JSON.parse(keptIndex));
         // The pull request keeps the entry's screenshot too, so the check reads it with the kept index.json.
         if (keptIndex !== undefined && (JSON.parse(keptIndex) as { screenshot?: unknown }).screenshot !== undefined) {
-          const shot = await git.bytes(["cat-file", "blob", `${baseCommit}:plugins/${id}/${SCREENSHOT_FILE}`], "");
+          // No input: git cat-file blob reads no stdin, and a write to it can fail as EPIPE.
+          const shot = await git.bytes(["cat-file", "blob", `${baseCommit}:plugins/${id}/${SCREENSHOT_FILE}`]);
           await writeFile(join(checkDir, id, SCREENSHOT_FILE), shot);
         }
         const checked = await check(checkDir);
