@@ -1,17 +1,16 @@
 # Roadmap
 
 _The only authority on milestone status. Grouped by status, not ID._
-_Last hygiene check: 2026-11-07 (M112 review: README badge removed; no rows graduated or added; 5 lessons marked used, none captured; M109 row pruned; caps and validate green)_
+_Last hygiene check: 2026-11-07 (M113 review: plugin icons shipped; no rows graduated; 12 lessons marked used, 1 captured, M089's evicted; M110 row pruned; caps and validate green)_
 
 ## Milestones
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M113 | Show each plugin's own icon on its page | review | — | normal | milestones/M113-plugin-icons.md |
 | M114 | Let a plugin's owner add a screenshot | planned | M113 | normal | milestones/M114-owner-screenshot.md |
+| M113 | Show each plugin's own icon on its page | done | — | normal | milestones/archive/M113-plugin-icons.md |
 | M112 | Remove the README badge | done | — | normal | milestones/archive/M112-remove-readme-badge.md |
 | M111 | Shorten About in the home page's words | done | M110 | normal | milestones/archive/M111-short-about.md |
-| M110 | Use plain words on plugin pages | done | — | normal | milestones/archive/M110-plain-plugin-pages.md |
 <!-- rows grouped by status, not by ID; keep the 3 most recent done/dropped rows; older ones: milestones/archive/ + git -->
 
 ## Candidates
