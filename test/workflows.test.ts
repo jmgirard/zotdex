@@ -61,7 +61,7 @@ describe("build.yml", () => {
     expect(jobText(build, "build")).toMatch(/^ {4}permissions:\n {6}contents: read\n {6}issues: read\n {4}\S/m);
   });
 
-  test.each(["build", "start-test", "site"])("sets cache-mode none on the %s job", (job) => {
+  test.each(["build", "start-test", "malware-scan", "site"])("sets cache-mode none on the %s job", (job) => {
     expect(jobText(build, job)).toMatch(/^ {4}cache-mode: none$/m);
   });
 
@@ -152,9 +152,89 @@ describe("build.yml", () => {
 
   test("runs the site job after a build that succeeded, whatever the start tests did, and deploys only after the site job", () => {
     const site = jobText(build, "site");
-    expect(site).toMatch(/^ {4}needs: \[build, start-test\]$/m);
+    expect(site).toMatch(/^ {4}needs: \[build, start-test, malware-scan\]$/m);
     expect(site).toMatch(/^ {4}if: \$\{\{ !cancelled\(\) && needs\.build\.result == 'success' \}\}$/m);
     expect(jobText(build, "deploy")).toMatch(/^ {4}needs: site$/m);
+  });
+
+  test("takes a malware-scan input on dispatch", () => {
+    expect(triggers(build)).toBe(
+      'schedule:\n    - cron: "17 6 * * *"\n  workflow_dispatch:\n    inputs:\n' +
+        "      malware-scan:\n        description: Scan every plugin file with ClamAV in this run\n        type: boolean\n        default: false",
+    );
+  });
+
+  test("carries scan results from the deployed data after pnpm build and before the data digest", () => {
+    const job = jobText(build, "build");
+    const carry = job.indexOf(`      - run: >-\n          pnpm carry-scan-results --data dist/v1/plugins.json\n          --previous ${PREVIOUS_URL}\n`);
+    expect(carry).toBeGreaterThan(job.indexOf("          pnpm build --plan start-plan.json\n"));
+    expect(job.indexOf("      - id: data-sha256\n")).toBeGreaterThan(carry);
+    expect(job.match(/^ {10}pnpm carry-scan-results /gm)).toHaveLength(1);
+  });
+
+  test("gives the malware-scan job no permission, no secret, no stored git credentials, and at most 40 minutes", () => {
+    const job = jobText(build, "malware-scan");
+    expect(job).toMatch(/^ {4}needs: build$/m);
+    expect(job).toMatch(/^ {4}permissions: \{\}$/m);
+    expect(job).toMatch(/- uses: actions\/checkout@v7\n {8}with:\n {10}persist-credentials: false\n/);
+    expect(job).not.toMatch(/secrets/);
+    const [, minutes] = job.match(/^ {4}timeout-minutes: (\d+)$/m) ?? [];
+    expect(Number(minutes)).toBeGreaterThan(0);
+    expect(Number(minutes)).toBeLessThanOrEqual(40);
+  });
+
+  test("checks the malware-scan job's data against the build job's digest before the scan", () => {
+    const job = jobText(build, "malware-scan");
+    const check = job.indexOf(
+      "      - env:\n          DATA_SHA256: ${{ needs.build.outputs.data-sha256 }}\n" +
+        '        run: pnpm --silent data-digest --dir dist --expect "$DATA_SHA256"\n',
+    );
+    expect(check).toBeGreaterThan(job.search(/^ {10}name: plugins-data$/m));
+    expect(job.indexOf("run: pnpm malware-scan")).toBeGreaterThan(check);
+  });
+
+  test("installs ClamAV, runs freshclam, and scans only on a Monday schedule run or a dispatch with malware-scan", () => {
+    const job = jobText(build, "malware-scan");
+    expect(job).toContain(
+      "      - id: scan-day\n        env:\n          EVENT: ${{ github.event_name }}\n          MANUAL: ${{ inputs.malware-scan }}\n" +
+        '        run: |\n          if { [ "$EVENT" = schedule ] && [ "$(date -u +%u)" = 1 ]; } || [ "$MANUAL" = true ]; then\n' +
+        '            echo "scan=true" >> "$GITHUB_OUTPUT"\n          else\n            echo "scan=false" >> "$GITHUB_OUTPUT"\n          fi\n',
+    );
+    expect(job).toContain(
+      "      - id: clamav\n        if: steps.scan-day.outputs.scan == 'true'\n        continue-on-error: true\n        run: |\n" +
+        "          sudo apt-get update\n          sudo apt-get install -y clamav\n          sudo systemctl stop clamav-freshclam || true\n          sudo freshclam\n",
+    );
+    // Each pnpm malware-scan step: its if line and its run line.
+    expect(job.match(/^ {6}- if: .*\n {8}run: pnpm malware-scan .*$/gm)).toEqual([
+      "      - if: steps.scan-day.outputs.scan == 'true' && steps.clamav.outcome == 'success'\n" +
+        '        run: pnpm malware-scan --data dist/v1/plugins.json --out "$RUNNER_TEMP/scan/scan-results.json" --scan',
+      "      - if: steps.scan-day.outputs.scan != 'true' || steps.clamav.outcome != 'success'\n" +
+        '        run: pnpm malware-scan --data dist/v1/plugins.json --out "$RUNNER_TEMP/scan/scan-results.json"',
+    ]);
+    expect(job.match(/clamav|freshclam/gi)?.length).toBeGreaterThan(0);
+    expect(job.match(/--scan\b/g)).toHaveLength(1);
+  });
+
+  test("uploads only the scan results, and gives their SHA-256 as a job output", () => {
+    const job = jobText(build, "malware-scan");
+    expect(job).toMatch(/^ {4}outputs:\n {6}scan-sha256: \$\{\{ steps\.scan-sha256\.outputs\.sha256 \}\}$/m);
+    const hash = job.indexOf(
+      '      - id: scan-sha256\n        run: echo "sha256=$(sha256sum "$RUNNER_TEMP/scan/scan-results.json" | cut -d \' \' -f 1)" >> "$GITHUB_OUTPUT"\n',
+    );
+    expect(hash).toBeGreaterThan(job.lastIndexOf("run: pnpm malware-scan"));
+    expect(job.match(/- uses: actions\/upload-artifact@\S+\n(?: {8,}\S.*\n)*/g)).toEqual([
+      "- uses: actions/upload-artifact@v7\n        with:\n          name: scan-results\n" +
+        "          path: ${{ runner.temp }}/scan/scan-results.json\n          if-no-files-found: error\n",
+    ]);
+  });
+
+  test("downloads the scan results in the site job without failing it when they are missing", () => {
+    const site = jobText(build, "site");
+    expect(site).toContain(
+      "      - uses: actions/download-artifact@v8\n        continue-on-error: true\n        with:\n          name: scan-results\n" +
+        "          path: ${{ runner.temp }}/scan\n",
+    );
+    expect(site.match(/^ {4}if:.*$/m)?.[0]).not.toContain("malware-scan");
   });
 
   // The github-pages environment refuses a deploy from any other branch, which failed the run.
