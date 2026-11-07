@@ -534,25 +534,28 @@ async function readText(response: Response, url: string): Promise<string> {
   }
 }
 
-// Reads the body until it ends or passes `max` bytes. Past `max` it cancels the body,
-// so it reads at most `max` bytes plus the chunk that crosses it.
-async function readCapped(response: Response, url: string, max: number, tooLarge: () => never): Promise<Uint8Array> {
+// Reads the body until it ends or passes `max` bytes. Past `max` it cancels the body and
+// calls `tooLarge`, so it reads at most `max` bytes plus the chunk that crosses it. What
+// `tooLarge` throws reaches the caller as it is.
+export async function readCapped(response: Response, url: string, max: number, tooLarge: () => never): Promise<Uint8Array> {
   const chunks: Uint8Array[] = [];
   let total = 0;
+  let over = false;
   try {
     const reader = response.body?.getReader();
     for (let chunk = await reader?.read(); chunk && !chunk.done; chunk = await reader!.read()) {
       total += chunk.value.byteLength;
       if (total > max) {
         await reader!.cancel().catch(() => {});
-        tooLarge();
+        over = true;
+        break;
       }
       chunks.push(chunk.value);
     }
   } catch (error) {
-    if (error instanceof ReadFailure) throw error;
     fail("request-failed", `GET ${url} failed while reading the body: ${(error as Error).message}`, true);
   }
+  if (over) tooLarge();
   const bytes = new Uint8Array(total);
   let offset = 0;
   for (const chunk of chunks) {
@@ -566,15 +569,16 @@ async function readCapped(response: Response, url: string, max: number, tooLarge
 // is github-release when a URL that the download requested, the first or a redirect, is a
 // GitHub release URL, for buildLevelStatus.
 // `route` is each URL it requested, in order.
-type Download = (url: string) => Promise<{ response: Response; from: "github-release" | "download"; route: string[] }>;
+export type Download = (url: string) => Promise<{ response: Response; from: "github-release" | "download"; route: string[] }>;
 
 const REDIRECTS = [301, 302, 303, 307, 308];
 export const MAX_REDIRECTS = 5;
 
 // Follows redirects itself, at most MAX_REDIRECTS, and checks the host of each URL
-// before it requests it. A `signal` that aborts while a redirect's body is canceled
-// fails the download as a cut read, since the cancel hides the abort.
-function downloader(fetch: Fetch, lookup: Lookup, signal?: AbortSignal): Download {
+// before it requests it. `check`, when given, also sees each URL before its request, and
+// what it throws reaches the caller as it is. A `signal` that aborts while a redirect's
+// body is canceled fails the download as a cut read, since the cancel hides the abort.
+export function downloader(fetch: Fetch, lookup: Lookup, signal?: AbortSignal, check?: (url: URL) => void): Download {
   return async (url) => {
     if (!URL.canParse(url) || !["http:", "https:"].includes(new URL(url).protocol)) {
       fail("request-failed", `${url} is not an http or https URL`);
@@ -583,6 +587,7 @@ function downloader(fetch: Fetch, lookup: Lookup, signal?: AbortSignal): Downloa
     let release = false;
     const route: string[] = [];
     for (let redirects = 0; ; redirects++) {
+      check?.(current);
       const refused = await refusal(current, lookup);
       if (refused) fail(refused.failure, refused.message, refused.buildLevel);
       release ||= isReleaseUrl(current);

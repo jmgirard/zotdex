@@ -79,7 +79,7 @@ check text requests at once" holds the same idea for text; icons → M113.
 - [x] T1: Run `gh label create screenshot` (granted at the question set); add `screenshot.yml` after
       `.github/ISSUE_TEMPLATE/text-change.yml`, a `screenshotHref` beside `textChangeHref` (`site/src/data.ts:220`),
       and the approved owner line at `site/src/pages/plugins/[id]/index.astro:388`, with a site test.
-- [ ] T2: Add `src/screenshot-request/` on the shape of `src/text-request/` (`request.ts` :72-148, `parse.ts`):
+- [x] T2: Add `src/screenshot-request/` on the shape of `src/text-request/` (`request.ts` :72-148, `parse.ts`):
       reuse the owner check, find image links in the field, and download with a host check on each redirect and a
       byte cap (export `downloader` and `readCapped` from `src/upstream/reader.ts`, or share them); check the
       format by magic bytes and the size by sharp's metadata; tests with recorded responses
@@ -115,3 +115,4 @@ check text requests at once" holds the same idea for text; icons → M113.
 - 2026-11-07: sizing: 8 criteria pass the ~7 tripwire only through the verify-slot criterion (AC8), so no split; tasks are 6 to 7.
 - 2026-11-07: implement started on branch m114-owner-screenshot.
 - 2026-11-07: T1: created the `screenshot` label, added `screenshot.yml` (Screenshot is a textarea so an image can be attached), `screenshotHref`, and the approved owner line with site tests; the form's own test lands with T2's labels.
+- 2026-11-07: T2: moved the issue, label, form, record, entry, and owner reads into `src/text-request/owner.ts` (`readOwnerRequest`, `formValues` in parse.ts) and put both requests on it; exported `downloader` with a per-URL `check` and `readCapped`, whose `tooLarge` now throws outside its catch; `SCREENSHOT_HOSTS` is github.com and the S3 host an attachment redirected to (curl, 2026-11-07); a non-https URL or a port also counts as off the hosts; a ReadFailure or HTTP error on the download is failure `download-failed` (exit 2); problems print as `problem: <name>: <detail>`, the description's as `description-<textProblems name>`; the form test lives in `test/screenshot-request.test.ts`.

@@ -24,6 +24,7 @@
     "refresh-holds": "node src/discover/refresh-holds-cli.ts",
     "propose": "node src/discover/propose-cli.ts",
     "report-issue": "node src/reports/issue-cli.ts",
+    "screenshot-request": "node src/screenshot-request/cli.ts",
     "site": "node src/site/cli.ts",
     "text-request": "node src/text-request/cli.ts",
     "start-test": "node src/start-test/cli.ts",
