@@ -96,7 +96,7 @@ right column under the icon → M114; owner-submitted icons (the user chose auto
       `.page-head`, with CSS in `site/src/layouts/Base.astro` (:834) that M114's screenshot can sit under. Add site
       tests and a fixture record with an icon (lesson 2026-10-30, M061: add it to each hand-kept id list). Look at
       375 px and 1280 px in light and dark in the browser pane (lessons 2026-10-26 M015, 2026-10-29 M048).
-- [ ] T5: Add the About "Icons" section and change the license line in `site/src/pages/about.astro` (:79, :158) to
+- [x] T5: Add the About "Icons" section and change the license line in `site/src/pages/about.astro` (:79, :158) to
       the lines in `cairn/references/plain-words-copy.md`; site tests match them (lessons 2026-10-27 M021,
       2026-11-07 M109).
 - [ ] T6: Document `upstream.icon` and `iconHidden` in `docs/data.md`, hiding an icon in `docs/maintaining.md`, and
@@ -127,3 +127,4 @@ right column under the icon → M114; owner-submitted icons (the user chose auto
 - 2026-11-07: T3 done: `readPreviousIcons` in `src/build/previous.ts` reads each kept icon from the path resolved against `--previous`, 8 at once under one `previousMs` limit, with a 64 KiB cap and a SHA-256 check against the file name; any failure drops that icon only; a hidden icon is never read; a planted skip of the hash check turned the mismatch test red; verify clean (2545 tests, 745 entries).
 - 2026-11-07: T4 done: `.page-head` is a two-column grid; its text moves into `.head-text`, and `.head-side` holds the white `.icon-tile` (`forced-color-adjust: none`), 4rem icon, 3rem at 47.5rem and under; the site fixture's first-plugin gains an icon, the head test checks the tile markup and its absence, and the coverage test needs a record with and one without an icon; hand check in the browser pane on a 40-character name, both badges, a kept note, and a 200-character description: at 375 and 1280 px the tile's right edge meets `.page-head`'s (0 px), its top is above the `h1`'s bottom, 0 of 20 text nodes meet it, no horizontal scroll, and it is white in light, `data-theme="dark"`, and system dark; verify clean (2545 tests, 745 entries).
 - 2026-11-07: implement chose a grid with a text column over a floated icon, because M114's screenshot must move below `.actions` at narrow widths, which a float cannot do.
+- 2026-11-07: T5 done: About gains the "Icons" section (`#icons`) after Descriptions and the license line reads "icons, and other work", both word for word from `cairn/references/plain-words-copy.md`; the About COPY table in `test/site.test.ts` holds both, so its order and prose tests match them; no other file held the old license line; verify clean (2546 tests, 745 entries).

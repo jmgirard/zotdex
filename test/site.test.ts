@@ -903,6 +903,12 @@ describe("the About page", () => {
         "The Details card shows both descriptions when a plugin has both.",
     ],
     [
+      "icons",
+      "Icons",
+      "A plugin's icon is the one its author made for Zotero's Plugins window. " +
+        "Zotdex doesn't look at icons before it shows them, and a maintainer can hide one.",
+    ],
+    [
       "overrides",
       "Corrections",
       "When a fact from a plugin is wrong and its author can't or won't fix it, Zotdex can correct it, such as its name, description, or supported versions. " +
@@ -957,7 +963,7 @@ describe("the About page", () => {
       "license",
       "License",
       "Zotdex's code is under the MIT License, and its data, categories, and own text are under CC0 1.0. " +
-        "Names, descriptions, and other text from plugin authors keep their authors' terms. " +
+        "Names, descriptions, icons, and other work from plugin authors keep their authors' terms. " +
         "The license page gives the details, including the exceptions.",
     ],
   ];
