@@ -55,7 +55,7 @@ the docs moved from README" holds.
   branch head that says what the About page states, found by searching
   their joined text for "About", names only points that the new About
   states.
-- [ ] AC6: In the browser pane at 375 px and 1280 px, the built About and
+- [x] AC6: In the browser pane at 375 px and 1280 px, the built About and
   404 pages have `documentElement.scrollWidth` equal to `clientWidth`;
   `pnpm test` passes; `CHANGELOG.md`'s Unreleased section names the About
   change.
@@ -119,3 +119,5 @@ the docs moved from README" holds.
 - AC3 evidence: site tests "about/index.html says none of the index's old names" and the 404 one pass; on the rebuilt pages with tags removed and lowercased, "the index", "start test", and "declared range" each occur 0 times, and "zotdex" 24 times on About and 5 on 404.
 - AC4 evidence: T3's fresh reader read the cut commit's about.astro (146 sentences: 59 kept by the copy, 73 in docs, 14 not); each of the 14 added rules is found once at the head (12 in docs/site.md, 1 each in docs/maintaining.md, docs/requests.md, docs/license.md); every docs line the branch removes is rewrapped with its rule kept, or is the old "The About page says" paragraph that T5 rewrote.
 - AC5 evidence: every sentence of docs/site.md and cairn/DESIGN.md at the head that names "About" (11 and 14) was read with the rewritten paragraph's follow-on sentences; each one that says what About states names points the new About states (the newest releases, the category list, the install section with steps, Firefox, the full-access warning, and the bot and maintainer, the short method notes, vetting and its reason, the short license and its link, Older data, the removal form, the license page's icon credit).
+- AC6 evidence: in the browser pane on the rebuilt site, About and 404 have `scrollWidth` equal to `clientWidth` at 375 px (375/375 each) and 1280 px (1280/1280 each); `pnpm test` 2503 passed, 6 skipped, 0 failed; `pnpm check` 0 problems; CHANGELOG.md's Unreleased section opens with the About entry ("The About page is now "How Zotdex works" …").
+- Consistency gate: `cairn_validate.py` exit 0 (all checks passed); no DESIGN principle changed, so `cairn_impact` was skipped; the generic profile names no toolchain checks.
