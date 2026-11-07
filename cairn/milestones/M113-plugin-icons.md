@@ -87,7 +87,7 @@ right column under the icon → M114; owner-submitted icons (the user chose auto
       redraw to a 96×96 PNG (`fit: contain`, transparent), and add `TEMPLATE_ICONS` with the hashes of
       zotero-plugin-template's `addon/content/icons/favicon.png` and `favicon@0.5x.png`, each with its commit. Tests
       in `test/upstream.test.ts` build XPIs with fflate as `manifestXpi` does (`test/start-test.test.ts:92`).
-- [ ] T2: In `src/build/build.ts`, write the icon bytes to `v1/icons/` in `writeData` (:389), set `upstream.icon`,
+- [x] T2: In `src/build/build.ts`, write the icon bytes to `v1/icons/` in `writeData` (:389), set `upstream.icon`,
       and drop it for `iconHidden`; add both schema fields and extend `reason-not-blank` in `src/check/check.ts`
       (:182). Check that `test/build.test.ts`'s fixed output takes the optional field (lesson 2026-11-02, M075).
 - [ ] T3: In the keep path (build.ts :305-338, `src/build/previous.ts`), fetch each kept icon from the URL resolved
@@ -123,3 +123,4 @@ right column under the icon → M114; owner-submitted icons (the user chose auto
 - 2026-11-07: sizing: 8 criteria pass the ~7 tripwire only through the verify-slot criterion (AC8), so no split; tasks are 6 to 7.
 - 2026-11-07: T1 done: `src/upstream/icon.ts` holds `pickIconPath`, `iconFormat`, `redrawIcon` (sharp, `fit: contain`, SVG drawn at the density that makes its longer side 96), and `TEMPLATE_ICONS` (two hashes, same bytes at template commits bf1ff3a and 1ab8af4); the reader returns the picked file's bytes as an unpublished `icon` beside `xpi`, and any failed read of that entry gives none; `test/icon.test.ts` and an `icon` block in `test/upstream.test.ts`; a planted throw in `iconBytes` turned 5 of them red; verify clean (2530 tests, 745 entries).
 - 2026-11-07: implement chose redrawing in the build rather than the reader, so the reader stays free of sharp and the discover bot, which also calls it, does no image work.
+- 2026-11-07: T2 done: the build redraws each read record's icon unless `iconHidden`, names it `upstream.icon`, and returns the bytes in `BuildResult.icons`; a record whose icon the build does not hold loses the field, so the data never names a missing file; `writeData` writes the icons before `plugins.json` and then removes other files in `v1/icons/`; a kept record drops a hidden icon; both schemas gain their field and `reason-not-blank` covers `iconHidden.reason`; a planted bypass of the hide turned its test red; verify clean (2538 tests, 745 entries).

@@ -170,6 +170,12 @@ async function checkEntry(dir: string, entry: string, validators: Validators, de
   const listedRepo = repo ? delisted.repos.get(repo) : undefined;
   if (listedRepo) add("delisted-repo", `delisted.json lists the repo ${repo}, removed in issue #${listedRepo.issue}`);
 
+  // \p{Cf} is the Unicode format characters, such as U+200B, most of which print nothing.
+  const blank = (reason: unknown) => typeof reason === "string" && reason.length > 0 && !/[^\s\p{Cf}]/u.test(reason);
+  const iconHidden = (index.value as { iconHidden?: unknown } | undefined)?.iconHidden;
+  if (blank((iconHidden as { reason?: unknown } | null | undefined)?.reason)) {
+    add("reason-not-blank", "iconHidden.reason holds only whitespace or format characters");
+  }
   const overrides = (index.value as { overrides?: unknown } | undefined)?.overrides;
   if (Array.isArray(overrides)) {
     // The index of the first override for each field and version. The site's usedOverride
@@ -177,8 +183,7 @@ async function checkEntry(dir: string, entry: string, validators: Validators, de
     const first = new Map<string, number>();
     overrides.forEach((override, i) => {
       const { reason, field, version } = (override ?? {}) as { reason?: unknown; field?: unknown; version?: unknown };
-      // \p{Cf} is the Unicode format characters, such as U+200B, most of which print nothing.
-      if (typeof reason === "string" && reason.length > 0 && !/[^\s\p{Cf}]/u.test(reason)) {
+      if (blank(reason)) {
         add("reason-not-blank", `overrides[${i}].reason holds only whitespace or format characters`);
       }
       if (typeof field !== "string" || !(version === undefined || typeof version === "string")) return;

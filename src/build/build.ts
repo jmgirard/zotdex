@@ -1,4 +1,4 @@
-import { copyFile, mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, readdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { basename, dirname, join } from "node:path";
 import { Ajv, type ErrorObject } from "ajv";
 import indexSchema from "../../schemas/index.v1.schema.json" with { type: "json" };
@@ -7,6 +7,7 @@ import { listEntries } from "../check/check.ts";
 import { countReports, type ReportCount } from "../reports/count.ts";
 import type { StartResultName } from "../start-test/start-test.ts";
 import { boundFetch, type Fetch, githubClient, ReadFailure, readUpstream, type UpstreamFacts, type XpiRead } from "../upstream/reader.ts";
+import { redrawIcon } from "../upstream/icon.ts";
 import { duration, READ_LIMIT_MS, withinLimit } from "../upstream/time-limit.ts";
 import { LAST_RELEASES } from "../site/version.ts";
 import { type Kept, keptFacts } from "./keep.ts";
@@ -37,8 +38,9 @@ export interface PluginRecord {
   // `xpiUrl` addresses the XPI file that the reader read, and `xpiSha256` is the SHA-256 of its
   // bytes, the one the start plan names; data written before the build wrote them has none.
   // `sourceInRepo` says whether the top level of the repo's default branch holds a name that can
-  // be source code; a failed read of those names leaves it out.
-  upstream?: UpstreamFacts & { xpiUrl?: string; xpiSha256?: string; sourceInRepo?: boolean };
+  // be source code; a failed read of those names leaves it out. `icon` is the path of the icon
+  // file that the build drew (see redrawIcon), relative to the data file's folder.
+  upstream?: UpstreamFacts & { xpiUrl?: string; xpiSha256?: string; sourceInRepo?: boolean; icon?: string };
   // The counted user reports on the version in upstream, by Zotero major. Every record with
   // upstream that the build writes has it; data written before reports existed has none.
   reports?: ReportCount[];
@@ -105,12 +107,14 @@ export interface StartPlan {
 // the read of the current Zotero release failed, when it did, and `sourceProblem` why the build
 // has no source fact for some records. `releaseWarnings` says where the
 // Zotero release lists in src/site/version.ts fall behind and which changelog reads failed, and
-// stays out of the data.
+// stays out of the data. `icons` holds the bytes of each icon file that a record of the data
+// names, keyed by that record's `upstream.icon`.
 export type BuildResult =
   | {
       ok: true;
       data: PluginsFile;
       text: string;
+      icons: Map<string, Uint8Array>;
       buildLevel: string[];
       kept: string[];
       timings: ReadTiming[];
@@ -211,7 +215,7 @@ export async function buildData(
   if (listed.length === 0) return { ok: false, problems: [`there are no entries in ${root}`] };
 
   const problems: string[] = [];
-  const entries: { id: string; repoUrl: string; paidService?: PaidService; overrides: Override[] }[] = [];
+  const entries: { id: string; repoUrl: string; paidService?: PaidService; iconHidden: boolean; overrides: Override[] }[] = [];
   for (const { name, readError } of listed) {
     const entry = readError ? { problem: `cannot read the entry: ${readError}` } : await readEntry(join(root, name));
     if ("problem" in entry) problems.push(`${name}: ${entry.problem}`);
@@ -255,6 +259,8 @@ export async function buildData(
   const records: PluginRecord[] = new Array(entries.length);
   const buildLevelAt = new Set<number>();
   const xpis = new Map<string, XpiRead>();
+  // The icon file of each read record that has one, keyed by its upstream.icon.
+  const drawn = new Map<string, Uint8Array>();
   const paced = pacedApi(fetch, apiGapMs);
   const timed: (ReadTiming | undefined)[] = new Array(entries.length);
   let firstStart: number | undefined;
@@ -262,7 +268,7 @@ export async function buildData(
   const readEntries = async () => {
     for (let next = order.shift(); next !== undefined; next = order.shift()) {
       const i = next;
-      const { id, repoUrl, paidService, overrides } = entries[i];
+      const { id, repoUrl, paidService, iconHidden, overrides } = entries[i];
       const paid = paidService ? { paidService } : {};
       if (performance.now() - startedAt >= buildMs) {
         const message = `the build reads no plugin after ${duration(buildMs)}, its time limit`;
@@ -272,13 +278,19 @@ export async function buildData(
       }
       const start = performance.now();
       firstStart ??= start;
-      const { buildLevel: counts, xpi, ...read } = await readRecord(repoUrl, paced, readMs);
+      const { buildLevel: counts, xpi, icon, ...read } = await readRecord(repoUrl, paced, readMs);
       const end = performance.now();
       lastEnd = Math.max(lastEnd ?? end, end);
       // The result before the facts check and the keep step below, as readRecord gave it.
       timed[i] = { id, ms: end - start, result: read.failure?.name ?? "read" };
       if (counts) buildLevelAt.add(i);
       if (xpi) xpis.set(id, xpi);
+      // After the timing, so drawing the icon does not count as read time.
+      const file = icon && !iconHidden ? await redrawIcon(icon) : undefined;
+      if (file && read.upstream) {
+        read.upstream.icon = `icons/${file.sha256}.png`;
+        drawn.set(read.upstream.icon, file.png);
+      }
       const record: PluginRecord = { id, repoUrl, ...paid, ...read, overrides };
       // Facts that the schema rejects, such as a repo body with no created_at, become this
       // record's failure, so one plugin cannot stop the whole file.
@@ -311,6 +323,7 @@ export async function buildData(
       for (const i of [...buildLevelAt].sort((a, b) => a - b)) {
         const { id, repoUrl, paidService, failure, overrides } = records[i];
         if (!failure) continue;
+        const { iconHidden } = entries[i];
         const facts = keptFacts<NonNullable<PluginRecord["upstream"]>, StartTestRecord>(
           id,
           repoUrl,
@@ -320,6 +333,8 @@ export async function buildData(
           (value) => validateRecord(value) === true,
         );
         if (!facts) continue;
+        // A hidden icon stays hidden on a kept record.
+        if (iconHidden && facts.upstream) delete facts.upstream.icon;
         const record: PluginRecord = { id, repoUrl, ...(paidService ? { paidService } : {}), ...facts, overrides };
         // The record as it will be written, with the report counts still to come.
         if (!validateRecord(JSON.parse(JSON.stringify({ ...record, reports: [] })))) continue;
@@ -337,6 +352,15 @@ export async function buildData(
     const tests = startTests ? { startTests } : {};
     return { id, repoUrl, ...paid, upstream, reports: reports.get(id) ?? [], ...tests, ...(keptFrom ? { kept: keptFrom } : {}), overrides };
   });
+  // Each icon a record names, from this build's drawing or the kept icons. A record whose icon
+  // file the build does not hold names none, so the data never names a file it lacks.
+  const icons = new Map<string, Uint8Array>();
+  for (const { upstream } of plugins) {
+    if (!upstream?.icon) continue;
+    const bytes = drawn.get(upstream.icon);
+    if (bytes) icons.set(upstream.icon, bytes);
+    else delete upstream.icon;
+  }
   // The changelog reads run at the same time as the release read, so all of them end within
   // `releaseMs`.
   const majors = Object.keys(LAST_RELEASES);
@@ -363,6 +387,7 @@ export async function buildData(
     ok: true,
     data,
     text,
+    icons,
     buildLevel,
     kept,
     timings: timed.filter((timing): timing is ReadTiming => timing !== undefined),
@@ -383,10 +408,26 @@ export function checkOutput(value: unknown): string[] {
 const SCHEMAS = join(import.meta.dirname, "..", "..", "schemas");
 const PUBLISHED_SCHEMAS = ["plugins.v1.schema.json", "index.v1.schema.json"];
 
-// Copies the published schemas to <outDir>/schemas/, then writes text to
-// <outDir>/v1/plugins.json. Each file goes through a temporary file, so a failed write
-// leaves any earlier file whole.
-export async function writeData(outDir: string, text: string): Promise<{ ok: true; path: string } | { ok: false; message: string }> {
+// Copies the published schemas to <outDir>/schemas/, writes each of `icons` to <outDir>/v1/
+// at its path, then writes text to <outDir>/v1/plugins.json, and last removes each other file
+// in <outDir>/v1/icons/. Each file goes through a temporary file, so a failed write leaves any
+// earlier file whole, and the data is written only after the icons it names.
+export async function writeData(
+  outDir: string,
+  text: string,
+  icons: ReadonlyMap<string, Uint8Array> = new Map(),
+): Promise<{ ok: true; path: string } | { ok: false; message: string }> {
+  for (const [name, bytes] of icons) {
+    const target = join(outDir, "v1", name);
+    try {
+      await mkdir(dirname(target), { recursive: true });
+      await writeFile(`${target}.tmp`, bytes);
+      await rename(`${target}.tmp`, target);
+    } catch (error) {
+      await rm(`${target}.tmp`, { force: true }).catch(() => {});
+      return { ok: false, message: `cannot write ${target}: ${(error as Error).message}` };
+    }
+  }
   for (const name of PUBLISHED_SCHEMAS) {
     const target = join(outDir, "schemas", name);
     try {
@@ -408,6 +449,13 @@ export async function writeData(outDir: string, text: string): Promise<{ ok: tru
     await rm(temporary, { force: true }).catch(() => {});
     return { ok: false, message: `cannot write ${path}: ${(error as Error).message}` };
   }
+  const iconDir = join(outDir, "v1", "icons");
+  try {
+    const keep = new Set([...icons.keys()].map((name) => basename(name)));
+    for (const name of await readdir(iconDir)) if (!keep.has(name)) await rm(join(iconDir, name), { force: true });
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") return { ok: false, message: `cannot clear ${iconDir}: ${(error as Error).message}` };
+  }
   return { ok: true, path };
 }
 
@@ -425,7 +473,9 @@ export async function writePlan(path: string, plan: StartPlan): Promise<{ ok: tr
   return { ok: true };
 }
 
-async function readEntry(dir: string): Promise<{ repoUrl: string; paidService?: PaidService; overrides: Override[] } | { problem: string }> {
+async function readEntry(
+  dir: string,
+): Promise<{ repoUrl: string; paidService?: PaidService; iconHidden: boolean; overrides: Override[] } | { problem: string }> {
   const meta = await readJson(join(dir, "meta.json"));
   if ("problem" in meta) return meta;
   const repoUrl = (meta.value as { repoUrl?: unknown } | null)?.repoUrl;
@@ -436,8 +486,8 @@ async function readEntry(dir: string): Promise<{ repoUrl: string; paidService?: 
   if (!validateIndex(index.value)) {
     return { problem: `index.json: ${(validateIndex.errors ?? []).map(describe).join("; ")}` };
   }
-  const { paidService, overrides } = index.value as { paidService?: PaidService; overrides?: Override[] };
-  return { repoUrl, ...(paidService ? { paidService } : {}), overrides: overrides ?? [] };
+  const { paidService, iconHidden, overrides } = index.value as { paidService?: PaidService; iconHidden?: unknown; overrides?: Override[] };
+  return { repoUrl, ...(paidService ? { paidService } : {}), iconHidden: iconHidden !== undefined, overrides: overrides ?? [] };
 }
 
 // A fetch that starts each request to the GitHub API at least `gapMs` after the one before it,
@@ -469,10 +519,12 @@ async function readRecord(
   repoUrl: string,
   fetch: Fetch,
   readMs: number,
-): Promise<Pick<PluginRecord, "upstream" | "failure"> & { buildLevel?: boolean; xpi?: XpiRead }> {
+): Promise<Pick<PluginRecord, "upstream" | "failure"> & { buildLevel?: boolean; xpi?: XpiRead; icon?: Uint8Array }> {
   try {
     const read = await withinLimit(readMs, (signal) => readUpstream(repoUrl, fetch, { signal }));
-    if (read.ok) return { upstream: { ...read.facts, xpiUrl: read.xpi.url, xpiSha256: read.xpi.sha256 }, xpi: read.xpi };
+    if (read.ok) {
+      return { upstream: { ...read.facts, xpiUrl: read.xpi.url, xpiSha256: read.xpi.sha256 }, xpi: read.xpi, ...(read.icon && { icon: read.icon }) };
+    }
     return { failure: { name: read.failure, message: read.message }, buildLevel: read.buildLevel };
   } catch (error) {
     // The reader names each problem it knows. Anything else is a bug or a surprise, and

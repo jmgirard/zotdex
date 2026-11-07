@@ -5,6 +5,8 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { Ajv } from "ajv";
 import dns from "node:dns";
+import { strToU8, zipSync } from "fflate";
+import sharp from "sharp";
 import { afterAll, beforeAll, describe, expect, test, vi } from "vitest";
 import indexSchema from "../schemas/index.v1.schema.json" with { type: "json" };
 import pluginsSchema from "../schemas/plugins.v1.schema.json" with { type: "json" };
@@ -1511,6 +1513,80 @@ describe("buildData", () => {
       const result = await build({ ...responses(), [ZOTERO_RELEASE_URL]: { json: { "linux-x86_64": "9.0.6" } } });
       expect(result.releaseWarnings).toEqual([]);
     });
+  });
+});
+
+describe("buildData icons", () => {
+  const SECOND_XPI = "https://github.com/example/second-plugin/releases/download/v1.0.0/second-plugin.xpi";
+  let png: Uint8Array;
+  beforeAll(async () => {
+    png = new Uint8Array(await sharp({ create: { width: 48, height: 48, channels: 4, background: "#06c" } }).png().toBuffer());
+  });
+
+  // The responses in which SECOND's XPI holds `icon` at icon.png and its manifest names it.
+  function withSecondIcon(icon: Uint8Array): Responses {
+    const recorded = responses();
+    const manifest = { ...(recorded[SECOND_XPI].xpi!["manifest.json"] as object), icons: { "96": "icon.png" } };
+    const zip = zipSync({ "manifest.json": strToU8(JSON.stringify(manifest)), "icon.png": icon });
+    recorded[SECOND_XPI] = { base64: Buffer.from(zip).toString("base64") };
+    return recorded;
+  }
+
+  async function build(recorded: Responses, tree = TREE) {
+    const result = await buildData(tree, fixtureFetch(recorded).fetch);
+    if (!result.ok) throw new Error(result.problems.join("\n"));
+    return { result, output: JSON.parse(result.text) as Output };
+  }
+
+  test("names the drawn icon on the record and gives its bytes under that name", async () => {
+    const { result, output } = await build(withSecondIcon(png));
+    const icon = record(output, SECOND)?.upstream?.icon as string;
+    expect(icon).toMatch(/^icons\/[0-9a-f]{64}\.png$/);
+    expect([...result.icons.keys()]).toEqual([icon]);
+    const bytes = result.icons.get(icon)!;
+    expect(`icons/${createHash("sha256").update(bytes).digest("hex")}.png`).toBe(icon);
+    const { format, width, height } = await sharp(bytes).metadata();
+    expect({ format, width, height }).toEqual({ format: "png", width: 96, height: 96 });
+    expect(record(output, BETTER_NOTES)?.upstream).not.toHaveProperty("icon");
+    expect(checkOutput(output)).toEqual([]);
+  });
+
+  test("gives no icon, and the same record less the XPI's hash, for an icon file that is no image", async () => {
+    const { output: control } = await build(responses());
+    const { result, output } = await build(withSecondIcon(strToU8("not an image")));
+    const less = (plugin = record(output, SECOND)) => ({ ...plugin, upstream: { ...plugin!.upstream, xpiSha256: undefined } });
+    expect(less()).toEqual(less(record(control, SECOND)));
+    expect(result.icons.size).toBe(0);
+  });
+
+  test("gives no icon to a read record whose index.json hides it", async () => {
+    const tree = tempDir();
+    cpSync(TREE, tree, { recursive: true });
+    const index = join(tree, SECOND, "index.json");
+    writeFileSync(index, JSON.stringify({ ...JSON.parse(readFileSync(index, "utf8")), iconHidden: { reason: "Another product's logo." } }));
+    const { result, output } = await build(withSecondIcon(png), tree);
+    expect(record(output, SECOND)?.upstream).not.toHaveProperty("icon");
+    expect(result.icons.size).toBe(0);
+  });
+
+  test("the schema takes an upstream with or without an icon path and refuses another shape", async () => {
+    const { output } = await build(responses());
+    const index = output.plugins.findIndex((plugin) => plugin.id === SECOND);
+    expect(checkOutput(output)).toEqual([]);
+    output.plugins[index].upstream!.icon = `icons/${"a".repeat(64)}.png`;
+    expect(checkOutput(output)).toEqual([]);
+    output.plugins[index].upstream!.icon = "icons/icon.svg";
+    expect(checkOutput(output)).toEqual([`/plugins/${index}/upstream/icon must match pattern "^icons/[0-9a-f]{64}\\.png$"`]);
+  });
+
+  test("writeData writes each icon before the data and removes other files in v1/icons", async () => {
+    const out = tempDir();
+    mkdirSync(join(out, "v1", "icons"), { recursive: true });
+    writeFileSync(join(out, "v1", "icons", "stale.png"), "old");
+    const name = `icons/${"b".repeat(64)}.png`;
+    expect(await writeData(out, "{}\n", new Map([[name, png]]))).toMatchObject({ ok: true });
+    expect(readdirSync(join(out, "v1", "icons"))).toEqual([`${"b".repeat(64)}.png`]);
+    expect(new Uint8Array(readFileSync(join(out, "v1", name)))).toEqual(png);
   });
 });
 
