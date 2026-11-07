@@ -24,8 +24,8 @@ draft, waiting for the user's approval at the plan question set — observed
 - Install note: "To install, save the .xpi file and drag it onto the Plugins
   window in Zotero (Tools → Plugins). In Firefox, right-click the download
   link and choose Save Link As. A plugin has full access to Zotero and your
-  computer, and Zotdex doesn't review anyone's code, so look into a plugin
-  before you trust it with your library. More about installing"
+  computer, and Zotdex doesn't test plugins' safety or features, so look into
+  a plugin before you trust it with your library. More about installing"
 - Version card heading: "Zotero versions". Line under it: "For version <v>,
   the release this page shows"
 - Table headers: "Zotero", "Supports", "Startup check", "User reports"
@@ -147,8 +147,9 @@ on the plugin's page. A removed plugin stays off Zotdex.
 **Installing a plugin** (`#installing`). Save the plugin's .xpi file, then in
 Zotero go to Tools → Plugins and drag the file onto the Plugins window. In
 Firefox, right-click the download link and choose Save Link As. A plugin has
-full access to Zotero and your computer, and Zotdex doesn't review anyone's
-code, so look into a plugin before you trust it with your library. A bot
+full access to Zotero and your computer, and Zotdex doesn't test plugins'
+safety or features, so look into a plugin before you trust it with your
+library. A bot
 adds most new plugins, and a maintainer steps in when the bot flags one,
 mainly to keep out entries that mislead people about what a plugin is or who
 makes it.
