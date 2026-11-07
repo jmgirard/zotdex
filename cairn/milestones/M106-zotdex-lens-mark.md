@@ -92,6 +92,7 @@ Replace the puzzle-piece logo with Zotdex's own mark, the lens alone at 16 px an
 - 2026-11-06: step-7 approval: m106-zotdex-lens-mark approved for merge
 - 2026-11-06: resume: PR #855 open with CI running, main unmoved at 10e690d5; re-entered at route (c), the PR conversation read empty, the merge chip re-posed.
 - 2026-11-06: step-7 approval: m106-zotdex-lens-mark approved for merge
+- 2026-11-06: hygiene checkpoint (half-done): PR #855 merged as 7e6a35e4 with 4 checks green; `build.yml` run 42321476423 started on main; lesson marks and ROADMAP row edits made; the live-file read, archive, and ROADMAP row to done wait for that run.
 
 ## Decisions
 
