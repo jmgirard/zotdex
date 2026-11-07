@@ -227,3 +227,16 @@ Pass 2, after review return 1, evidence at 84adfc1e, 2026-11-07. Default branch 
 - ripple #1 (pass 2): docs/maintaining.md:349-352 says the replaces-entry body names overrides and the paid-service mark "or says that it holds neither" — fix now
 - ripple #2 (pass 2): propose's fallback line omits the screenshot — fix now
 - ripple #3 (pass 2): docs/license.md:4-8 lists what CC0 covers in the data file — reject (false: it lists the index's own work, and its screenshot paragraph covers the rest)
+- fixed fdb67577 and 422a6932: every pass-2 fix-now finding above (diff-bug #4–#8, (c)1, (c)2, the (c)3, (c)4, and (c)5 removals and exact message; prior-review #2 escapes in ae24e9e5; ripple #1, #2); the floor-return items (diff-bug #1–#3, (a)1) by T9.
+
+Pass 3, after review return 2, evidence at 422a6932, 2026-11-07. Default branch unchanged; no site, schema, or form change since c4344954. Full `pnpm test` 2649 passed, 6 skipped, and `pnpm check` 745 entries, 0 problems, run on this tree before its commit. Verbose run of the nine touched test files: 1409 passed, 1 skipped, 0 failed.
+
+- AC1 (pass 3): form test and owner-line link test pass; label unchanged.
+- AC2 (pass 3): "screenshotRequest's report" 32 tests pass, each AC2 problem named with exit 1 (blank and `_No response_` removals; no link; two links; off-host, port, http, ftp, data, and non-URL links; off-host and ftp redirects before the request; over 10 MiB; not PNG/JPEG/WebP; over 8000 px both ways; cut and unreadable images; description rules); 13 parse tests pass, including a `src` inside another attribute and images in comments, fences, and code spans; owner check shared with text-request (84 tests pass).
+- AC3 (pass 3): "screenshotRequest with apply" 17 tests pass (fits, no metadata, replace, over-1 MiB copy writes nothing, removal, stray file, concurrent edit kept, both write failures leave the entry as it was, `pnpm check` after apply and removal); `--file` checks the field, the link's host, 10 MiB, the image, and the description.
+- AC4 (pass 3): 13 check tests pass (with and without the field; schema refusals with exact messages; each `screenshot-file` failure; leftover temporary file; format-only description and reason).
+- AC5 (pass 3): "buildData screenshots" 5 tests pass; the fixed-output build tests pass unchanged.
+- AC6 (pass 3): site tests pass; browser-pane look on the fixture site, iframes at 1280, 1024, 1000, 375 px, first-plugin and a-cafe: all eight measures true.
+- AC7 (pass 3): About-page copy test and owner-line test pass; docs sections present (pass 2 read, wording narrowed since, no page change).
+- AC8 (pass 3): `pnpm test` exit 0 (2649 passed, 6 skipped) and `pnpm check` exit 0 on the 422a6932 tree.
+- gate (pass 3): `cairn_validate.py` first failed `weight caps` (ROADMAP 60 lines) from this review's two M114 candidate rows; review merged its own two rows into "Give screenshot images their pixel size" and re-ran: all checks pass, 1 advisory (sizing). ROADMAP is 24,098 bytes, over its 24,000 budget, left to step 9's terminal-row prune.
