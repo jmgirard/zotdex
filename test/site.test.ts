@@ -698,7 +698,7 @@ describe("the plugin page", () => {
             ["Release on this page", "latest-release"],
             ["Releases with an .xpi file", "release-count"],
             ["Open issues and pull requests", "open-issues"],
-            ["Updates come from", "update-host"],
+            ["Checks for updates at", "update-host"],
             ["Languages", "languages"],
           ]
         : []),

@@ -5,7 +5,7 @@
 - Plugin pages now use the home page's plain words. The version card is
   "Zotero versions", with "Supports" and "Startup check" columns and a
   "Supported versions:" line. The Details card has labels such as
-  "Description in the plugin file", "Updates come from", and "Languages".
+  "Description in the plugin file", "Checks for updates at", and "Languages".
   It shows "Language not listed" when no language is left, and dates such as
   "March 14, 2023". Overrides show as "Corrections by Zotdex". The install
   note says that Zotdex doesn't test plugins' safety or features. A plugin

@@ -7,7 +7,7 @@ _Last hygiene check: 2026-11-07 (M109 review: field guide home copy; 1 row exten
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M110 | Use plain words on plugin pages | in-progress | — | normal | milestones/M110-plain-plugin-pages.md |
+| M110 | Use plain words on plugin pages | review | — | normal | milestones/M110-plain-plugin-pages.md |
 | M111 | Shorten About in the home page's words | planned | M110 | normal | milestones/M111-short-about.md |
 | M109 | Make the home page a field guide | done | — | high | milestones/archive/M109-field-guide-home.md |
 | M108 | Show the full Zotdex mark in the top bar | done | — | high | milestones/archive/M108-full-mark-top-bar.md |

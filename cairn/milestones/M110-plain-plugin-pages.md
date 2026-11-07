@@ -1,6 +1,6 @@
 # M110: Use plain words on plugin pages
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** normal
 - **Depends on:** —
 - **Driving RR:** —
@@ -107,5 +107,6 @@ text, which M109 set.
 - 2026-11-07: the M109 lesson on `&#39;` holds for inserted text but not for an attribute: a `title={…}` value keeps a raw apostrophe in the built page.
 - 2026-11-07: T5: updated `docs/site.md` (languages, categories, links, install note, version card, Details, Corrections, source label) and DESIGN.md's plugin page and About lines; added the CHANGELOG entry; the AC4 joined-text search over 4 files hits only DESIGN's "named … before M109" note; `pnpm test` 2515 passed.
 - 2026-11-07: T6: built 743 pages from the deployed `v1/plugins.json`; in the browser pane, `filetrans@euclpts.com` at 375 px and 1280 px shows "Zotero versions", "Details", and "Corrections by Zotdex" with `documentElement.scrollWidth` equal to `clientWidth` (375, 1280); a planted 900 px div made it 900, so the check can fail.
+- 2026-11-07: claim audit: 83 claims read, 1 corrected — `site/src/pages/plugins/[id]/index.astro`, `CHANGELOG.md`, `test/site.test.ts`; "Updates come from" became "Checks for updates at", since `updateHost` is the `update_url` host and the update file can download elsewhere; the "couldn't reach" Older data wording stays to match the approved home legend; both at the user's choice, shown old line, problem, and new line per CLAUDE.md.
 
 ## Decisions
