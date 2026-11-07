@@ -121,3 +121,26 @@ the docs moved from README" holds.
 - AC5 evidence: every sentence of docs/site.md and cairn/DESIGN.md at the head that names "About" (11 and 14) was read with the rewritten paragraph's follow-on sentences; each one that says what About states names points the new About states (the newest releases, the category list, the install section with steps, Firefox, the full-access warning, and the bot and maintainer, the short method notes, vetting and its reason, the short license and its link, Older data, the removal form, the license page's icon credit).
 - AC6 evidence: in the browser pane on the rebuilt site, About and 404 have `scrollWidth` equal to `clientWidth` at 375 px (375/375 each) and 1280 px (1280/1280 each); `pnpm test` 2503 passed, 6 skipped, 0 failed; `pnpm check` 0 problems; CHANGELOG.md's Unreleased section opens with the About entry ("The About page is now "How Zotdex works" …").
 - Consistency gate: `cairn_validate.py` exit 0 (all checks passed); no DESIGN principle changed, so `cairn_impact` was skipped; the generic profile names no toolchain checks.
+- spawned: diff-bug, blame-history, prior-review, ripple
+- diff-bug #1: the kept-record test "says on About when Zotdex keeps facts" checks static older-data prose that the copy test already compares whole — fix now, test removed, fixed bd97fac2
+- diff-bug #2: the ✓ ◐ – ● ✕ marks now sit in prose with no accessible name, so a screen reader can skip the dash and never say which mark means none — fix now, each mark has `role="img"` and the name docs/site.md gives it (check mark, half circle, dash, dot, cross), with a test; visible text unchanged, fixed bd97fac2
+- diff-bug #3: no test for the docs' `10.0.*` once 10.1 is out — reject (false): test/version.test.ts:135 covers `10.0.*` against 10.1.0 as "some"
+- diff-bug #4: "the past 7 days" on About is not tied to `KEEP_MS` — fix now, the 3 and 90 seconds test also checks `KEEP_MS`, fixed bd97fac2
+- diff-bug #5: docs/site.md's "Zotero's warning" for the install section now also covers Zotdex's own advice — reject (false): the section still gives Zotero's full-access warning, so the sentence names only what About states
+- diff-bug #6: new docs lines run to about 120 columns — reject (style)
+- blame-history #1: About links docs/site.md for the full rules, but the start-test schedule is in docs/data.md — fix now, docs/site.md's About paragraph names data.md's "Using the data" and "Plugin entries" and requests.md for the rules they hold, fixed bd97fac2
+- blame-history #2: "the bot does not propose a removed plugin again" is not in docs/site.md — fix now with #1 (docs/requests.md states it, and docs/site.md now points there), fixed bd97fac2
+- blame-history #3: no test covers the `[data-about] .start` style — reject (style): the test rules leave out cosmetic output
+- prior-review #1: plugin pages link to About as "How Zotdex reads plugins", which M080 had matched to the About title, but the h1 is now "How Zotdex works" — follow-up, low row "Match About's link text and heading", as both lines are approved wording and the link still names the page's subject
+- prior-review #2: "the start test is not a review of plugin code" left About and docs/site.md — reject (false): About says the check uses none of a plugin's features and Zotdex doesn't test safety, and docs/requests.md says the index does not review code
+- prior-review #3: the AC3 test reads the whole page, which M080 had scoped to sections — reject (planned change): AC3 names the text of the whole built pages
+- prior-review #4: DESIGN's icon-credit entry changed under its M095 acceptance — reject (false): DESIGN is current knowledge, corrected in place with its `corrected M111` mark as the record-correction rule asks
+- ripple #1: same as prior-review #1 — follow-up, the same low row
+- ripple #2: ROADMAP's candidate "Use plain words on plugin pages and About" still says About keeps older wording — reject (planned change): this milestone's post-merge hygiene graduates that row
+- ripple #3: the copy's "The category list stays as it is." is not on the page — reject (false): AC1 names that line as a direction, not page text
+- ripple #4: README says About covers "the declared range, the start tests" — reject (false): the short About still covers each named topic
+- ripple #5: docs/site.md says "start test" where About says "Startup check" — reject (style): the docs use "start test" throughout and name it Zotdex's startup check
+- ripple #6: About no longer explains the N.0 to N.9 count for an unknown release — reject (false): no line disagrees, and docs/site.md and DESIGN state the rule
+- ripple #7: docs/site.md's "gives the reason" still holds — reject (false): reported as consistent
+- snapshot: no snapshot files changed (`git diff --name-only main...HEAD` lists none under `_snaps` or `__snapshots__`)
+- After the fixes: site tests 496 passed (one removed, one added); `pnpm test` 2503 passed, 6 skipped; `pnpm check` 0 problems.
