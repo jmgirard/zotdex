@@ -1296,9 +1296,10 @@ scan of new versions only, since the signature download is the cost
 whatever the number of files and older files would never meet newer
 signatures. The user also rejected a signature cache with file checks.
 Between scans the build job keeps the published result for an unchanged
-file, so a failed scan loses no result, and a new release reads "Not
-scanned yet" until the next scan. A find hides nothing: the page shows it,
-the build log warns the maintainer, and a removal still follows D-062.
+file, so a failed scan loses no result, though a failed read of the
+published data loses every result until the next scan. A new release reads
+"Not scanned yet" until the next scan. A find hides nothing: the page shows
+it, the build log warns the maintainer, and a removal still follows D-062.
 
 A signature match by a third-party engine is not a review of plugin code,
 so D-051 stands: the index cannot vet plugins. D-076's footer sentence gains

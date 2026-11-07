@@ -202,7 +202,8 @@ describe("build.yml", () => {
     );
     expect(job).toContain(
       "      - id: clamav\n        if: steps.scan-day.outputs.scan == 'true'\n        continue-on-error: true\n        timeout-minutes: 4\n        run: |\n" +
-        "          sudo apt-get update\n          sudo apt-get install -y clamav\n          sudo systemctl stop clamav-freshclam || true\n          sudo freshclam\n",
+        "          sudo apt-get update\n          sudo apt-get install -y clamav\n          sudo systemctl stop clamav-freshclam || true\n          sudo freshclam\n" +
+        "          ls /var/lib/clamav/main.c[vl]d /var/lib/clamav/daily.c[vl]d\n",
     );
     // Each pnpm malware-scan step: its if line and its run line.
     expect(job.match(/^ {6}- if: .*\n {8}run: pnpm malware-scan .*$/gm)).toEqual([
@@ -211,7 +212,6 @@ describe("build.yml", () => {
       "      - if: steps.scan-day.outputs.scan != 'true' || steps.clamav.outcome != 'success'\n" +
         '        run: pnpm malware-scan --data dist/v1/plugins.json --out "$RUNNER_TEMP/scan/scan-results.json"',
     ]);
-    expect(job.match(/clamav|freshclam/gi)?.length).toBeGreaterThan(0);
     expect(job.match(/--scan\b/g)).toHaveLength(1);
   });
 

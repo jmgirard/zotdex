@@ -958,7 +958,9 @@ pnpm carry-scan-results --data <file> [--previous <url>]
 ```
 
 It prints one line. If it cannot read the published data, it keeps no
-result and exits 0. It exits with status 1 only for a usage error.
+result and exits 0. The deployed data then has no result, so the builds
+after it keep none either until the next scan run. It exits with status 1
+only for a usage error.
 
 In the malware-scan job, this command writes the new results to `--out`:
 

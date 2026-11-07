@@ -276,6 +276,8 @@ file gets no new result:
 - ClamAV reports that the file passed a scan limit or holds an encrypted
   entry. ClamAV then did not scan the whole file.
 - ClamAV prints no line for it, or more than one line.
+- ClamAV prints its line in another form, such as text before `OK`, or a
+  version line too long for the `clamav` field.
 - `clamscan` is stopped at its limit of 10 minutes, or `clamscan --version`
   gives no version. Then no file of the run gets a result.
 
@@ -283,8 +285,10 @@ A scan run that fails adds no result at all. Examples are a refused
 `freshclam`, a failed or stopped job, and a results file of the wrong
 shape. If a file with no new result has an earlier result, it keeps it. A
 file that the scan run did not reach keeps its earlier result too. If the
-build cannot read the published data, it keeps no result that day. Nor does
-it keep one for an id that two published records name.
+build cannot read the published data, it keeps no result that day. The next
+builds then have no result to keep either, so every page reads "Not scanned
+yet" until the next scan run. Nor does it keep a result for an id that two
+published records name.
 
 A clean scan does not show that a plugin is safe. ClamAV matches the file
 against signatures of known malware, and it finds nothing new. A find hides
