@@ -64,6 +64,24 @@ it removed. If GitHub gives no such text, or the text is blank, the field
 is absent. Data written before the build wrote this field has none. The
 site uses the field by the description rule in [site.md](site.md).
 
+An `upstream` block can have an `icon` field, such as
+`icons/<sha>.png`. It is the path of the plugin's icon, relative to the
+folder of `plugins.json`, so the file is at `v1/icons/<sha>.png`. The
+build takes the file that the manifest's `icons` names: of the keys that
+are whole numbers, the smallest at or above 96, else the largest. It
+redraws a PNG, JPEG, WebP, or SVG file as a 96 by 96 PNG and names the file
+by the SHA-256 of its bytes. In these cases the field is absent:
+
+- The manifest names no icon.
+- The build cannot read or draw the file.
+- The file is a stock icon of zotero-plugin-template.
+- A maintainer hid the icon with `iconHidden`.
+
+Data written before the build wrote this field has none. The
+field is new in schema v1. If you validate against a saved copy of the
+schema, fetch the schema again. The icon keeps its author's terms, as
+[license.md](license.md) says.
+
 An `upstream` block can have a `stars` field. It is the star count that
 the build read for the plugin's GitHub repository. If GitHub gives no
 whole number of 0 or more, the field is absent. Data written before the
@@ -235,6 +253,11 @@ only registry fields. Its `id` must equal the directory name.
   - `source`: the page that says so, as an address that starts with
     `https://`.
   - `read`: the date that the maintainer read that page, as `YYYY-MM-DD`.
+- `iconHidden`: set when a maintainer hides the icon that the plugin's
+  manifest names. Then the data and the site show no icon for the plugin.
+  This also holds for a record that keeps earlier facts. It has one
+  required field, `reason`: why the icon is hidden. The reason must hold a character other
+  than whitespace and Unicode format characters, as for an override.
 - `overrides`: a list of corrections to upstream facts. Use an override only
   when the plugin author cannot or will not fix the fact upstream, or in the
   cases that follow. A `description` override can also give English text for

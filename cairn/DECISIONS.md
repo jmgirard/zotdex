@@ -1213,3 +1213,23 @@ an error image from shields.io, because the file is gone. GitHub code search
 found no README outside this repo that embeds one (M112 plan). The start
 results stay on each plugin page and in the data. This choice is wrong if a
 plugin author asks for a badge or a README is found that relied on one.
+
+### D-080: Plugin pages show the icon that the release's manifest names, redrawn and served by the index, annotating DESIGN's Contract boundary and D-063
+
+2026-11-07, M113. The user asked for a logo or a screenshot in the empty space
+at the top right of the plugin page, and worried that showing images from any
+repo could show harmful content. At the plan question set the user chose icons that
+the build takes from each read release's manifest `icons` and shows with no
+review, with a maintainer hide (`iconHidden` in `index.json`). The user rejected
+icons that owners submit and the maintainer approves, which few plugins would
+get. The build redraws each icon as a 96 by 96 PNG, and the site serves that
+copy under `v1/icons/`. DESIGN says that the index does not re-serve plugin
+files (XPI files). A redrawn icon is an image taken from the plugin file, not
+the plugin file or its code, so that line holds. An SVG is drawn to pixels, so
+no SVG markup reaches a page. The icon is not a fact that a reader checks, so it
+sits apart from the facts, as D-037 sets categories apart. D-063 gives terms for
+text only, and icons keep their authors' terms, as docs/license.md says. The
+stock icon of zotero-plugin-template tells nothing about a plugin, so the build
+shows none for it. This choice is wrong if an icon that misleads or offends
+reaches a page before the maintainer hides it, or if authors ask the index not
+to show their icons faster than hides can follow.

@@ -99,7 +99,7 @@ right column under the icon → M114; owner-submitted icons (the user chose auto
 - [x] T5: Add the About "Icons" section and change the license line in `site/src/pages/about.astro` (:79, :158) to
       the lines in `cairn/references/plain-words-copy.md`; site tests match them (lessons 2026-10-27 M021,
       2026-11-07 M109).
-- [ ] T6: Document `upstream.icon` and `iconHidden` in `docs/data.md`, hiding an icon in `docs/maintaining.md`, and
+- [x] T6: Document `upstream.icon` and `iconHidden` in `docs/data.md`, hiding an icon in `docs/maintaining.md`, and
       icon terms in `docs/license.md`; update DESIGN's Contract boundary and sources and add a D-entry that the
       build serves a redrawn icon from the XPI, annotating DESIGN's Contract boundary and D-063; add the CHANGELOG
       entry.
@@ -128,3 +128,4 @@ right column under the icon → M114; owner-submitted icons (the user chose auto
 - 2026-11-07: T4 done: `.page-head` is a two-column grid; its text moves into `.head-text`, and `.head-side` holds the white `.icon-tile` (`forced-color-adjust: none`), 4rem icon, 3rem at 47.5rem and under; the site fixture's first-plugin gains an icon, the head test checks the tile markup and its absence, and the coverage test needs a record with and one without an icon; hand check in the browser pane on a 40-character name, both badges, a kept note, and a 200-character description: at 375 and 1280 px the tile's right edge meets `.page-head`'s (0 px), its top is above the `h1`'s bottom, 0 of 20 text nodes meet it, no horizontal scroll, and it is white in light, `data-theme="dark"`, and system dark; verify clean (2545 tests, 745 entries).
 - 2026-11-07: implement chose a grid with a text column over a floated icon, because M114's screenshot must move below `.actions` at narrow widths, which a float cannot do.
 - 2026-11-07: T5 done: About gains the "Icons" section (`#icons`) after Descriptions and the license line reads "icons, and other work", both word for word from `cairn/references/plain-words-copy.md`; the About COPY table in `test/site.test.ts` holds both, so its order and prose tests match them; no other file held the old license line; verify clean (2546 tests, 745 entries).
+- 2026-11-07: T6 done: `docs/data.md` documents `upstream.icon` and `iconHidden`, `docs/maintaining.md` the icon writes, the hide, and the kept-icon read, and `docs/license.md` the icons' terms; DESIGN's Contract boundary and the build's architecture note name the icon; D-080 records the choice; CHANGELOG gains the entry; `build.yml` uploads and digests all of `dist/`, so `v1/icons/` reaches the deploy with no workflow change; verify clean (2546 tests, 745 entries), `cairn_validate` green.

@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Plugin pages show the plugin's own icon, the one its manifest names for
+  Zotero's Plugins window, on a white tile at the top right of the page head.
+  The build redraws it as a 96 by 96 PNG under `v1/icons/`. The data's
+  `upstream` block gains an optional `icon` field with its path. A stock
+  plugin-template icon shows none, and a maintainer can hide an icon with
+  `iconHidden` in the entry's `index.json`. About gains an "Icons" section.
 - The About page is now "How Zotdex works": a short page in the home page's
   plain words, with sections such as "Supported Zotero versions" and
   "Startup check". Its intro links to the site docs on GitHub, which hold

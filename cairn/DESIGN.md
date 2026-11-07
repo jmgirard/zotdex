@@ -45,6 +45,11 @@ index still re-serves no plugin file. Since M059 the build reuses a
 deployed `started` result for an unchanged XPI (D-035). A page can also show
 that a plugin's main use needs a paid service from its maker, with a note, a
 source link, and a read date. A maintainer reads this one by hand (M082, D-054).
+A page also shows, at the top right of its head, the icon that the read
+release's manifest names, which the build redraws as a 96 by 96 PNG and the
+site serves under `v1/icons/`. The icon is an image from the plugin file, not
+the plugin file, and not a fact to check. A maintainer can hide one (M113,
+D-080).
 The data also carries the interface languages that the read XPI's locale
 folders name (M023), keeping a tag only when its files hold at least one
 message, judged by file type (M027), and at least half as many messages as
@@ -545,6 +550,13 @@ user reports. The exception is a report that is abuse.
   failed in both deploy bars, gets no start plan item, and keeps its start
   results through `pnpm add-start-results`, and `pnpm carry-start-results`
   carries none from it. A failed read keeps nothing and warns (D-066, M100).
+  The reader returns the bytes of the file that the manifest's `icons` names
+  (`pickIconPath` in `src/upstream/icon.ts`), and the build redraws them with
+  `redrawIcon` as `upstream.icon`, unless the entry's `index.json` has
+  `iconHidden`. A kept record keeps its icon only when `readPreviousIcons`
+  reads the deployed file back with the SHA-256 in its name. `writeData`
+  writes the icons to `v1/icons/` before `plugins.json`, and the data never
+  names an icon file the build does not hold (M113, D-080).
   After the plugin reads, `readZoteroRelease` in
   `src/build/zotero-release.ts` reads the current Zotero release from
   zotero.org with no token and a 30 s limit, and the build writes it as the
