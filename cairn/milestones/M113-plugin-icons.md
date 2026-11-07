@@ -1,13 +1,13 @@
 # M113: Show each plugin's own icon on its page
 
-- **Status:** planned
+- **Status:** in-progress
 - **Priority:** normal
 - **Depends on:** —
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — plugin pages and the published data gain an icon
-- **Branch/PR:** —
+- **Branch/PR:** m113-plugin-icons
 
 ## Goal
 
@@ -81,7 +81,7 @@ right column under the icon → M114; owner-submitted icons (the user chose auto
 
 ## Tasks
 
-- [ ] T1: In `src/upstream/reader.ts`, extend `ManifestJson` (:339) with `icons`, add the pick rule, and read the
+- [x] T1: In `src/upstream/reader.ts`, extend `ManifestJson` (:339) with `icons`, add the pick rule, and read the
       picked entry with a reader that returns no icon in place of throwing (`zipEntry` :899 and `unzipOne` :924
       throw `manifest-too-large` and `xpi-unreadable`). Sniff the format by magic bytes, check sharp's metadata,
       redraw to a 96×96 PNG (`fit: contain`, transparent), and add `TEMPLATE_ICONS` with the hashes of
@@ -121,3 +121,5 @@ right column under the icon → M114; owner-submitted icons (the user chose auto
 - 2026-11-07: criteria re-audit after the layout answer (full mode, same fresh reader): 10 findings on M113 AC6 and M114 AC6, all taken: the tile, not the image, meets the head's edge; the overlap check names a long-text fixture; both dark-theme routes and forced colors named; exact `src`; the look named as the check.
 - 2026-11-07: inbox sweep: 0 open issues; 10 open PRs, all bot "Add <repo>" PRs, none overlapping.
 - 2026-11-07: sizing: 8 criteria pass the ~7 tripwire only through the verify-slot criterion (AC8), so no split; tasks are 6 to 7.
+- 2026-11-07: T1 done: `src/upstream/icon.ts` holds `pickIconPath`, `iconFormat`, `redrawIcon` (sharp, `fit: contain`, SVG drawn at the density that makes its longer side 96), and `TEMPLATE_ICONS` (two hashes, same bytes at template commits bf1ff3a and 1ab8af4); the reader returns the picked file's bytes as an unpublished `icon` beside `xpi`, and any failed read of that entry gives none; `test/icon.test.ts` and an `icon` block in `test/upstream.test.ts`; a planted throw in `iconBytes` turned 5 of them red; verify clean (2530 tests, 745 entries).
+- 2026-11-07: implement chose redrawing in the build rather than the reader, so the reader stays free of sharp and the discover bot, which also calls it, does no image work.

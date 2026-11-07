@@ -1310,6 +1310,67 @@ describe("readUpstream", () => {
       expect(requests).toEqual([]);
     },
   );
+
+  describe("icon", () => {
+    const ICON = strToU8("icon bytes");
+    const OTHER = strToU8("other bytes");
+
+    // Reads the recorded plugin with the manifest's `icons` set to `icons` (left out when
+    // undefined), `files` added to the XPI, and the zip then changed by `edit`.
+    function readIcon(icons: unknown, files: Record<string, Uint8Array> = {}, edit = (zip: Uint8Array) => zip, change?: (m: Json) => void) {
+      return read((r) => {
+        const m = manifest(r);
+        if (icons !== undefined) m.icons = icons;
+        change?.(m);
+        r[XPI] = { base64: Buffer.from(edit(zipSync({ "manifest.json": strToU8(JSON.stringify(m)), ...files }))).toString("base64") };
+      });
+    }
+
+    test("gives the bytes of the file the picked key names", async () => {
+      const { result } = await readIcon({ "48": "content/small.png", "96": "content/icon.png" }, {
+        "content/small.png": OTHER,
+        "content/icon.png": ICON,
+      });
+      expect(result.ok && result.icon).toEqual(ICON);
+    });
+
+    test("reads a path with a leading slash without it", async () => {
+      const { result } = await readIcon({ "96": "/content/icon.png" }, { "content/icon.png": ICON });
+      expect(result.ok && result.icon).toEqual(ICON);
+    });
+
+    const setHeader = (fields: { compression?: number; originalSize?: number }) => (zip: Uint8Array) =>
+      editHeader(zip, "icon.png", (view, header) => {
+        if (fields.compression !== undefined) view.setUint16(header + 10, fields.compression, true);
+        if (fields.originalSize !== undefined) view.setUint32(header + 24, fields.originalSize, true);
+      });
+
+    test.each<[string, unknown, Record<string, Uint8Array>, ((zip: Uint8Array) => Uint8Array)?]>([
+      ["icons is not an object", "icon.png", { "icon.png": ICON }],
+      ["no key is a whole number", { large: "icon.png" }, { "icon.png": ICON }],
+      ["the picked value is not a string", { "96": ["icon.png"] }, { "icon.png": ICON }],
+      ["the picked path has a .. segment", { "96": "content/../icon.png" }, { "icon.png": ICON }],
+      ["the XPI lacks the picked file", { "96": "missing.png" }, { "icon.png": ICON }],
+      ["the file is over 1 MiB unzipped", { "96": "icon.png" }, { "icon.png": new Uint8Array(1_048_577) }],
+      ["the zip holds the file twice", { "96": "icon.png" }, { "icon.png": ICON }, (zip) => repeatEntry(zip, "icon.png", 1)],
+      ["the file inflates past its declared size", { "96": "icon.png" }, { "icon.png": ICON }, setHeader({ originalSize: 3 })],
+      ["the file uses an unknown compression", { "96": "icon.png" }, { "icon.png": ICON }, setHeader({ compression: 12 })],
+    ])("gives no icon and the same facts when %s", async (_name, icons, files, edit) => {
+      const { result: control } = await readIcon(undefined, files);
+      const { result } = await readIcon(icons, files, edit);
+      expect(result.ok).toBe(true);
+      expect(result.ok && "icon" in result).toBe(false);
+      expect(result.ok && result.facts).toEqual(control.ok && control.facts);
+    });
+
+    test("leaves a read's failure as it is without icons when the icon is bad", async () => {
+      const noUpdateUrl = (m: Json) => delete m.applications.zotero.update_url;
+      const { result: control } = await readIcon(undefined, {}, undefined, noUpdateUrl);
+      const { result } = await readIcon({ "96": "icon.png" }, { "icon.png": ICON }, setHeader({ compression: 12 }), noUpdateUrl);
+      expect(control.ok).toBe(false);
+      expect(result).toEqual(control);
+    });
+  });
 });
 
 describe("buildLevelStatus", () => {
