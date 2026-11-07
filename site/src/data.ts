@@ -61,7 +61,7 @@ export function previewDescription(record: PluginRecord): string {
   return cut.trim() === "" ? `${displayName(record)} is a Zotero plugin listed in Zotdex.` : cut;
 }
 
-// The records in the order of the built home table: the sort menu's Stars order.
+// The records in the order of the built home table: the sort menu's Most stars order.
 export function homeOrder(records: PluginRecord[]): PluginRecord[] {
   const order = sortOrder("");
   return records

@@ -1167,3 +1167,18 @@ same two points in plainer words, and the startup check is named as a basic
 check in the legend. D-069's home title becomes "Zotdex: your field guide to
 Zotero plugins"; the site name stays Zotdex. This choice is wrong if a reader
 takes the startup check or the footer to mean that the index checks plugins.
+
+### D-077: The home legend's lock, stars, and Older data lines use the user's plain words, and the declared-range note leaves the legend, annotating D-023, D-052, D-065, and D-066
+
+2026-11-07, M109 review. The user approved the home legend word by word. The
+lock line and mark read "No obvious source code in its repository" in place of
+D-052's "at the top level" wording: "obvious" carries that the index only looks
+at top-level names, and About keeps the full rule. The stars line says the list
+"shows popularity (not necessarily quality)" in place of D-065's "neither is a
+review by the index"; the footer and intro still say Zotdex reviews no code.
+The Older data line says Zotdex "couldn't reach this plugin today" for any
+build-level failure that D-066 keeps facts for. The legend drops the note that
+a declared range is not a test result and that a start does not show that a
+plugin works (D-023): the startup check line now says that features aren't
+tested, and About keeps both points. This choice is wrong if readers take a ✓
+or a ● on the home page to mean that the index tested a plugin's features.

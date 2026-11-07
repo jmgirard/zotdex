@@ -11,6 +11,7 @@ import {
   displayName,
   githubRepo,
   homeOrder,
+  longDay,
   majorReport,
   pluginHref,
   rangeText,
@@ -967,7 +968,7 @@ describe("the About page", () => {
     const text = mainText(about());
     expect(text).toContain("installs the plugin version that the index read in a new Zotero profile on Linux");
     expect(text).toContain("It waits 3 seconds after the install");
-    expect(text).toContain("✕ Gave no answer in time: no result came within 90 seconds.");
+    expect(text).toContain("✕ Didn't finish loading: no result came within 90 seconds.");
     expect(text).toContain("A start is not a report that the plugin works.");
     // The 3 seconds is the reporter's wait after the install, and the 90 the start's time limit.
     const reporter = readFileSync(resolve(ROOT, "src/start-test/reporter/bootstrap.js"), "utf8");
@@ -1321,7 +1322,7 @@ describe("the home page", () => {
       `${CARD_SVG} ${PAID_TEXT}`,
       '<span class="start" data-start="started" aria-hidden="true">●</span> Passed Zotdex\'s startup check: it installs and loads, but its features aren\'t tested',
       '<span class="start" data-start="start-error" aria-hidden="true">✕</span> Failed Zotdex\'s startup check: it didn\'t install or load',
-      expect.stringContaining("GitHub stars. The list is sorted by stars, which shows popularity (not necessarily quality)."),
+      `<span class="row-stars" aria-hidden="true">${STAR_SVG}</span> GitHub stars. The list is sorted by stars, which shows popularity (not necessarily quality).`,
     ]);
   });
 
@@ -2449,6 +2450,11 @@ describe("a kept record", () => {
     expect(text).toContain("If the published data holds facts about the plugin that a build read at most 7 days before, the site keeps them.");
     expect(text).toContain("A plugin with older data gets no start test, and it keeps the start results published with its facts.");
     expect(text).toContain('A plugin that the build cannot read for another reason, such as a deleted repository, shows "Not read".');
+  });
+
+  test("writes the footer's day in UTC, so a build just after midnight UTC names that day in any time zone", () => {
+    expect(longDay("2026-10-26T02:00:00Z")).toBe("October 26, 2026");
+    expect(longDay("2026-10-25T23:30:00Z")).toBe("October 25, 2026");
   });
 
   test("says in the footer the day of the build the data comes from", () => {

@@ -197,7 +197,7 @@ describe("sortOrder", () => {
   const row = (id: string, name: string, stars?: number, released?: string): SortRow => ({ id, name, stars, released });
   const order = (sort: string, rows: SortRow[]) => rows.toSorted(sortOrder(sort)).map(({ id }) => id);
 
-  test("Stars puts a higher count first, keeps 0 ahead of no count, and leaves ties in Name order", () => {
+  test("Most stars puts a higher count first, keeps 0 ahead of no count, and leaves ties in Name order", () => {
     const rows = [
       row("none", "A none"),
       row("zero", "Zero", 0),

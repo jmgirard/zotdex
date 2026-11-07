@@ -80,19 +80,19 @@ const offered = new Set(categoryOptions(plugins).map(({ value }) => value));
     </p>
     <ul class="about-list" role="list">
       <li>
-        <span class="start" data-start="started" aria-hidden="true">●</span> Started: Zotero lists the plugin as active, and
+        <span class="start" data-start="started" aria-hidden="true">●</span> Loaded: Zotero lists the plugin as active, and
         the plugin logged no startup error.
       </li>
       <li>
-        <span class="start" data-start="start-error" aria-hidden="true">✕</span> Failed at startup: the plugin's startup
+        <span class="start" data-start="start-error" aria-hidden="true">✕</span> Failed to load: the plugin's startup
         threw an error, or an async startup rejected, in those 3 seconds.
       </li>
       <li>
-        <span class="start" data-start="not-installed" aria-hidden="true">✕</span> Did not install: Zotero does not list
+        <span class="start" data-start="not-installed" aria-hidden="true">✕</span> Didn't install: Zotero does not list
         the plugin, or lists it as inactive.
       </li>
       <li>
-        <span class="start" data-start="timed-out" aria-hidden="true">✕</span> Gave no answer in time: no result came
+        <span class="start" data-start="timed-out" aria-hidden="true">✕</span> Didn't finish loading: no result came
         within 90 seconds.
       </li>
     </ul>

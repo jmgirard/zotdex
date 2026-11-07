@@ -187,7 +187,7 @@ above the table reads "M plugins",
 where M is the number of plugins in the index. While a filter is on, it
 reads "N of M plugins", where N is the number that the filters pass. The
 count covers the plugins on every page. If the filters pass no plugin, the
-count says that no plugins match these filters.
+count reads "No plugins match. Try removing a filter."
 
 The table shows 50 of the plugins that the filters pass at a time. When
 they pass more than 50, a pager below the table reads "Page p of P" between
@@ -255,7 +255,7 @@ row has three cells:
   range covers. The words are "Yes" (✓), "Partly" (◐), and "No" (a dash). If the
   plugin declares no range, the cell shows "No range".
 - Start test: the result of the newest tested release of that major, in
-  words, with that release, such as "Started Zotero 10.0.6". A dot (●)
+  words, with that release, such as "Loaded Zotero 10.0.6". A dot (●)
   marks a start, and a cross (✕) marks a failure. If no release of that
   major has a result, the cell shows "Not tested".
 - User reports: the number of "works" reports and of "broken" reports on
