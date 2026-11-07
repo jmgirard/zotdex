@@ -1,4 +1,4 @@
-# Zotdex
+# Zotdex <img src="https://zotdex.jmgirard.com/apple-touch-icon.png" align="right" height="139" alt="Zotdex logo" />
 
 Zotdex is a community index of plugins for Zotero 7 and later. The index
 lists plugins and links to the releases of each author. It does not host
