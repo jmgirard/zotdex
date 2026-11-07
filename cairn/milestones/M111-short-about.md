@@ -84,7 +84,7 @@ the docs moved from README" holds.
   AC3.
 - [x] T5: Update DESIGN.md's and docs/site.md's descriptions of About, and
   add the CHANGELOG entry.
-- [ ] T6: Build the site, check AC5 in the browser pane, and run
+- [x] T6: Build the site, check AC6's widths in the browser pane, and run
   `pnpm test`.
 
 ## Work log
@@ -104,5 +104,7 @@ the docs moved from README" holds.
 - 2026-11-07: T1, T2, T4 done: About and 404 follow the copy; the old wording tests in `test/site.test.ts` gave way to one test per copy section (text compared whole), the head and intro link, the two links, the 3 and 90 seconds against the code, and the AC3 phrase check on both pages; the section tests first failed on Astro joining an h2 to its paragraph, fixed in the test with `blockText`; `pnpm test` 2503 passed, `pnpm check` 0 problems.
 - 2026-11-07: T3 done (delegated read: one fresh Opus reader of the cut-commit about.astro against the copy and docs/*.md): 146 sentences, 59 kept by the new About, 73 already in `docs/`, 14 added: in `docs/site.md` the manifest fields of the range, the `10.0.*` example, several categories, the "In use" column and version-over-every-version rule, why a lock or card icon leaves a plugin listed, the payment forms, "from the plugin's own text", why an unmarked plugin can cost money, and that an author can open an issue; in `docs/maintaining.md` the maintainer's mislead check with "who controls its updates"; in `docs/requests.md` "does not endorse"; in `docs/license.md` the logo's terms; checked against `usedOverride`, `overrideUsed`, and the `10.0.*` tests.
 - 2026-11-07: T5 done: `docs/site.md`'s About paragraph now names the short points and drops the "In use" column, the start test as no code review, and how a maintainer adds plugins by hand; DESIGN's About note names the short form and the docs link; DESIGN's accepted icon-credit entry said About credits Lucide and Feather, which the approved copy dropped, so it now names `docs/license.md` (corrected M111); README's About line stays true and is unchanged; CHANGELOG has one Unreleased entry.
+- 2026-11-07: minor amendment: T6 said "check AC5 in the browser pane", where the browser check is AC6's; the text now says AC6.
+- 2026-11-07: T6 done: built the site from M110's 2026-11-07 data into the scratchpad (743 pages) and served it on port 4411; at 375 px and 1280 px, About and 404 have scrollWidth equal to clientWidth (375/375, 1280/1280); the prose marks stay inline; `pnpm test` 2503 passed, `pnpm check` 0 problems.
 
 ## Decisions
