@@ -533,10 +533,15 @@ describe("the plugin page", () => {
     const main = html.slice(html.indexOf("<main>") + "<main>".length, html.indexOf("</main>"));
     const head = new RegExp(
       `^<a class="back" href="/" data-back>${ICON}All plugins</a>` +
-        `<div class="page-head" data-page-head>(.*?)<div class="actions" data-links>(.*?)</div></div>`,
+        `<div class="page-head" data-page-head><div class="head-text">(.*?)<div class="actions" data-links>(.*?)</div></div>((?:<div class="head-side">.*?</div>)?)</div>`,
       "s",
     ).exec(main.replace(/>\s+</g, "><").trim());
     const { upstream } = record;
+    expect(head?.[3]).toBe(
+      upstream?.icon
+        ? `<div class="head-side"><span class="icon-tile" data-icon-tile><img src="/v1/${upstream.icon}" alt="" width="64" height="64" data-icon></span></div>`
+        : "",
+    );
     const repoUrl = upstream?.repoUrl ?? record.repoUrl;
     const github = githubRepo(repoUrl);
     const shownCategories = CATEGORIES.filter(({ slug }) => categories(record).includes(slug)).map(
@@ -622,6 +627,8 @@ describe("the plugin page", () => {
     expect(records.some((record) => !record.upstream && repoFails(record))).toBe(true);
     expect(records.some((record) => record.upstream?.xpiUrl && !safeHref(record.upstream.xpiUrl))).toBe(true);
     expect(records.some((record) => record.upstream?.xpiUrl && safeHref(record.upstream.xpiUrl) && !repoFails(record))).toBe(true);
+    expect(records.some((record) => record.upstream?.icon)).toBe(true);
+    expect(records.some((record) => record.upstream && !record.upstream.icon)).toBe(true);
   });
 
   test.each(ids)("shows the sections of %s in order, each with its facts", (id) => {
