@@ -743,10 +743,14 @@ user reports. The exception is a report that is abuse.
   [--scan]` (`scan`, `selectRecords` in `scan.ts`) writes an empty list
   without `--scan`; with it, it downloads each file with `downloadXpi`,
   files with no kept result first and then the oldest, starting none after
-  20 minutes, checks its SHA-256, and runs `clamscan` once with
-  `CLAMSCAN_OPTIONS`, stopped after 10 minutes. A file named on exactly one
-  OK or FOUND line gets a result, except a `Heuristics.Limits.Exceeded` or
-  `Heuristics.Encrypted` find. `pnpm add-scan-results --data --results
+  20 minutes, checks its SHA-256, and deals the files round-robin into
+  `min(SCAN_BATCHES_MAX (4), cores, files)` batches (`batchesOf`, M116), one
+  `clamscan` per batch with `CLAMSCAN_OPTIONS`, all started at once and each
+  stopped after 10 minutes. A file named on exactly one line of its own
+  batch, that line OK or FOUND, gets a result, a stopped batch's lines
+  included, except a `Heuristics.Limits.Exceeded` or `Heuristics.Encrypted`
+  find; the CLI prints `batchLine` for each batch.
+  `pnpm add-scan-results --data --results
   --expect` (`addScanResults`, `findLines` in `add-results.ts`) adds results
   only from a file whose SHA-256 equals `--expect`, and prints a
   `::warning::` line for each find.
