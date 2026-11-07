@@ -166,8 +166,8 @@ const offered = new Set(categoryOptions(plugins).map(({ value }) => value));
       each request. The text stays through new releases until the owner asks to remove it.
     </p>
     <p>
-      The Overrides table in a plugin's Details lists each override beside the upstream value. Its Used column says
-      "yes" for the override that applies to the plugin version that the index read. An override for that version wins
+      The "Corrections by Zotdex" table in a plugin's Details lists each override beside the upstream value. Its "In
+      use" column says "yes" for the override that applies to the plugin version that the index read. An override for that version wins
       over one for every version. The declared range uses the <code>strict_min_version</code> and{" "}
       <code>strict_max_version</code> overrides marked "yes". A description override lists both upstream texts, the
       manifest description and the GitHub description, when the plugin has them.
@@ -206,7 +206,7 @@ const offered = new Set(categoryOptions(plugins).map(({ value }) => value));
       updates. Any other name does.
     </p>
     <p>
-      The plugin page shows the result as "Source code at the repository's top level". "Yes" does not mean an open-source
+      The plugin page shows the result as "Source code in the repository's top folder". "Yes" does not mean an open-source
       license, and it does not mean that the XPI was built from that code. "Yes" can be wrong, because a name such as
       <code>LICENSE-MIT</code> counts. "No" can be wrong, because the index does not look inside folders. A plugin with
       the lock stays listed, because the index states this as a fact and does not judge plugins by it.

@@ -10,12 +10,13 @@ import {
   CATEGORIES,
   categories,
   compatMajors,
-  day,
   declaredRange,
   displayName,
   githubRepo,
+  keptTitle,
   languagesText,
   loadData,
+  longDay,
   majorReport,
   majorStart,
   overrideUsed,
@@ -73,7 +74,7 @@ const { min, max } = declaredRange(record);
         kept && (
           <>
             {" "}
-            <span class="badge" data-kept>Older data</span>
+            <span class="badge" data-kept title={keptTitle(kept.readAt)}>Older data</span>
           </>
         )
       }
@@ -97,8 +98,8 @@ const { min, max } = declaredRange(record);
     {
       kept && (
         <p class="fineprint kept-note" data-fact="kept">
-          The build that wrote this page, on {day(generatedAt)}, could not read this plugin: <code>{kept.failure.name}</code>:{" "}
-          {kept.failure.message}. These facts come from an earlier build, on {day(kept.readAt)}.{" "}
+          Zotdex couldn't reach this plugin on {longDay(generatedAt)}: <code>{kept.failure.name}</code>:{" "}
+          {kept.failure.message}. This page shows what it found on {longDay(kept.readAt)}.{" "}
           <a href={`${BASE}about/#older-data`}>About older data</a>
         </p>
       )
@@ -126,7 +127,7 @@ const { min, max } = declaredRange(record);
     {
       recordCategories.length > 0 && (
         <p class="categories" data-categories>
-          <a href={`${BASE}about/#categories`} data-categories-about>Index categories</a>:{" "}
+          <a href={`${BASE}about/#categories`} data-categories-about>Zotdex categories</a>:{" "}
           {recordCategories.map((category, i) => (
             <>
               {i > 0 && ", "}
@@ -149,7 +150,7 @@ const { min, max } = declaredRange(record);
         repoHref ? (
           <a class="btn" href={repoHref} data-link="source">
             <Icon name="source" />
-            {upstream?.sourceInRepo === false ? "Repository" : "Source"}
+            {upstream?.sourceInRepo === false ? "Repository" : "Source code"}
           </a>
         ) : (
           <span class="link-text" data-link="source">{repoUrl}</span>
@@ -172,26 +173,26 @@ const { min, max } = declaredRange(record);
     upstream && xpiHref && (
       <p class="install-note" data-fact="install-note">
         To install, save the .xpi file and drag it onto the Plugins window in Zotero (Tools → Plugins). In Firefox,
-        right-click the download link and choose Save Link As. A plugin has full access to your Zotero and your computer,
-        and the index does not review its code before listing it, so install only plugins from developers you
-        trust.{" "}
+        right-click the download link and choose Save Link As. A plugin has full access to Zotero and your computer, and
+        Zotdex doesn't test plugins' safety or features, so look into a plugin before you trust it with your
+        library.{" "}
         <a href={INSTALL_HREF}>More about installing</a>
       </p>
     )
   }
   <section class="card compat" data-section="compatibility">
-    <h2>Zotero compatibility</h2>
+    <h2>Zotero versions</h2>
     {
       upstream ? (
         <>
-          <p class="sub" data-fact="read-version">For version {upstream.version}, the release the index read</p>
+          <p class="sub" data-fact="read-version">For version {upstream.version}, the release this page shows</p>
           <div class="table-wrap">
             <table class="compat-table">
               <thead>
                 <tr>
                   <th scope="col">Zotero</th>
-                  <th scope="col">Declared</th>
-                  <th scope="col">Start test</th>
+                  <th scope="col">Supports</th>
+                  <th scope="col">Startup check</th>
                   <th scope="col">User reports</th>
                 </tr>
               </thead>
@@ -213,7 +214,7 @@ const { min, max } = declaredRange(record);
                             <span class="visually-hidden">{supportText(record, support, major)}</span>
                           </>
                         ) : (
-                          <span class="none">No range</span>
+                          <span class="none">Not stated</span>
                         )}
                       </td>
                       <td data-start-cell>
@@ -225,7 +226,7 @@ const { min, max } = declaredRange(record);
                             {startWords(start.result)} <span class="note">Zotero {start.zotero}</span>
                           </>
                         ) : (
-                          <span class="none">Not tested</span>
+                          <span class="none">Not checked</span>
                         )}
                       </td>
                       <td data-reports-cell>
@@ -246,10 +247,10 @@ const { min, max } = declaredRange(record);
           <p class="fineprint" data-about-line>
             {(min !== undefined || max !== undefined) && (
               <>
-                Declared range: <span data-fact="declared-range">{rangeText(record)}</span>.{" "}
+                Supported versions: <span data-fact="declared-range">{rangeText(record)}</span>.{" "}
               </>
             )}
-            <a href={`${BASE}about/`}>How the index reads plugins</a>
+            <a href={`${BASE}about/`}>How Zotdex reads plugins</a>
           </p>
           <div class="report-row" data-reports>
             <p id="report-prompt" data-fact="report-prompt">Tried version {upstream.version} on Zotero? Report what you found:</p>
@@ -263,10 +264,11 @@ const { min, max } = declaredRange(record);
         failure && (
           <>
             <p data-fact="failure">
-              The last build could not read this plugin: <code>{failure.name}</code>: {failure.message}
+              Zotdex couldn't read this plugin when it last updated this page, on {longDay(generatedAt)}:{" "}
+              <code>{failure.name}</code>: {failure.message}
             </p>
             <p class="fineprint" data-about-line>
-              <a href={`${BASE}about/`}>How the index reads plugins</a>
+              <a href={`${BASE}about/`}>How Zotdex reads plugins</a>
             </p>
           </>
         )
@@ -277,7 +279,7 @@ const { min, max } = declaredRange(record);
     <h2>Details</h2>
     <dl class="facts">
       <div>
-        <dt>Plugin id</dt>
+        <dt>Plugin ID</dt>
         <dd data-fact="id"><code>{record.id}</code></dd>
       </div>
       {
@@ -286,7 +288,7 @@ const { min, max } = declaredRange(record);
             <dt>{PAID_SERVICE_TEXT}</dt>
             <dd data-fact="paid-service">
               {paidService.note}{" "}
-              {paidHref ? <a href={paidHref} data-paid-source>Source of this fact</a> : paidService.source}, read {paidService.read}
+              {paidHref ? <a href={paidHref} data-paid-source>Source</a> : paidService.source}, checked {longDay(paidService.read)}
             </dd>
           </div>
         )
@@ -296,13 +298,13 @@ const { min, max } = declaredRange(record);
           <>
             {upstream.description !== undefined && upstream.description.trim() !== "" && (
               <div>
-                <dt>Manifest description</dt>
+                <dt>Description in the plugin file</dt>
                 <dd data-fact="manifest-description">{upstream.description}</dd>
               </div>
             )}
             {upstream.repoDescription !== undefined && (
               <div>
-                <dt>GitHub description</dt>
+                <dt>Description on GitHub</dt>
                 <dd data-fact="github-description">{upstream.repoDescription}</dd>
               </div>
             )}
@@ -314,23 +316,23 @@ const { min, max } = declaredRange(record);
             )}
             {typeof upstream.sourceInRepo === "boolean" && (
               <div>
-                <dt>Source code at the repository's top level</dt>
+                <dt>Source code in the repository's top folder</dt>
                 <dd data-fact="source-in-repo">{upstream.sourceInRepo ? "Yes" : "No"}</dd>
               </div>
             )}
             <div>
               <dt>Repository created</dt>
-              <dd data-fact="repo-created">{day(upstream.repoCreatedAt)}</dd>
+              <dd data-fact="repo-created">{longDay(upstream.repoCreatedAt)}</dd>
             </div>
             <div>
-              <dt>Release read by the index</dt>
+              <dt>Release on this page</dt>
               <dd data-fact="latest-release">
-                {upstream.version}, published {day(upstream.latestReleaseDate)}
+                {upstream.version}, published {longDay(upstream.latestReleaseDate)}
                 {upstream.prerelease === true && " (prerelease)"}
               </dd>
             </div>
             <div>
-              <dt>Releases with an .xpi</dt>
+              <dt>Releases with an .xpi file</dt>
               <dd data-fact="release-count">{upstream.releaseCount}</dd>
             </div>
             <div>
@@ -338,11 +340,11 @@ const { min, max } = declaredRange(record);
               <dd data-fact="open-issues">{upstream.openIssues}</dd>
             </div>
             <div>
-              <dt>Host of update.json</dt>
+              <dt>Checks for updates at</dt>
               <dd data-fact="update-host">{upstream.updateHost}</dd>
             </div>
             <div>
-              <dt>Menus and settings in</dt>
+              <dt>Languages</dt>
               <dd data-fact="languages">{languagesText(record)}</dd>
             </div>
           </>
@@ -352,17 +354,17 @@ const { min, max } = declaredRange(record);
     {
       overrides.length > 0 && (
         <div class="overrides" data-overrides>
-          <h3>Overrides</h3>
-          <p>The index corrects, fills in, or replaces these upstream facts.</p>
+          <h3>Corrections by Zotdex</h3>
+          <p>Zotdex corrects, fills in, or replaces these facts from the plugin's own files or GitHub page.</p>
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
-                  <th>Field</th>
-                  <th>Upstream value</th>
-                  <th>Override value</th>
+                  <th>Fact</th>
+                  <th>Plugin's value</th>
+                  <th>Zotdex's value</th>
                   <th>For version</th>
-                  <th>Used</th>
+                  <th>In use</th>
                   <th>Reason</th>
                 </tr>
               </thead>
@@ -393,8 +395,8 @@ const { min, max } = declaredRange(record);
   <section class="card" data-section="badge">
     <h2>Badge for your README</h2>
     <p class="fineprint">
-      If this is your plugin, you can add this Markdown to its README. The badge shows the Zotero versions it
-      started in here, or why it names none, and it links to this page.
+      If this is your plugin, you can add this Markdown to its README. The badge shows the Zotero versions where it
+      passed Zotdex's startup check, or why it shows none, and it links to this page.
     </p>
     <code class="badge-snippet" data-badge-snippet>{badgeSnippet(record.id)}</code>
   </section>

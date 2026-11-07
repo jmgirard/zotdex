@@ -45,7 +45,7 @@ describe("upstreamValue", () => {
 
 describe("upstreamLines", () => {
   test("leaves out a blank GitHub text", () => {
-    expect(upstreamLines(record({ description: "Keeps notes tidy.", repoDescription: " " }), "description")).toEqual(["Manifest: Keeps notes tidy."]);
+    expect(upstreamLines(record({ description: "Keeps notes tidy.", repoDescription: " " }), "description")).toEqual(["Plugin file: Keeps notes tidy."]);
   });
 });
 

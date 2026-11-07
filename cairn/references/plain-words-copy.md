@@ -48,7 +48,7 @@ user approved it at the plan question set — observed 2026-11-07. `<v>` is the 
   - "Release on this page": "<v>, published <date>" and " (prerelease)"
   - "Releases with an .xpi file"
   - "Open issues and pull requests"
-  - "Updates come from": the update host
+  - "Checks for updates at": the update host (corrected M110, at the user's choice after the claim audit)
   - "Languages": the names, or "Language not listed"
 - Corrections heading: "Corrections by Zotdex"
 - Corrections text: "Zotdex corrects, fills in, or replaces these facts from

@@ -169,7 +169,8 @@ text. A manifest edit shows once the index reads a new release with it. If the
 manifest's description is missing, only repeats the name, or is half or more
 Chinese, Japanese, or Korean, an About edit changes the description. A
 `description` override in the index comes before both upstream texts until
-someone removes it, and the plugin page's Overrides table lists it. A
+someone removes it, and the plugin page's "Corrections by Zotdex" table
+lists it. A
 repository's owner can also ask the index for another name or description, or
 for the removal of its override, through the link in the plugin page's Details
 card. It opens the form

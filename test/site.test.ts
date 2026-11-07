@@ -182,8 +182,8 @@ describe("how to install a plugin", () => {
   const INSTALL_NOTE =
     "To install, save the .xpi file and drag it onto the Plugins window in Zotero (Tools → Plugins). " +
     "In Firefox, right-click the download link and choose Save Link As. " +
-    "A plugin has full access to your Zotero and your computer, and the index does not review its code before listing it, " +
-    "so install only plugins from developers you trust. More about installing";
+    "A plugin has full access to Zotero and your computer, and Zotdex doesn't test plugins' safety or features, " +
+    "so look into a plugin before you trust it with your library. More about installing";
   const noteOf = (html: string) => [...html.matchAll(/<p class="install-note" data-fact="install-note">(.*?)<\/p>/gs)].map(([, text]) => text!);
   // Tags go with no space added, so a space that the template drops before a link shows here.
   const textOf = (html: string) => unescaped(html.replace(/<[^>]+>/g, "")).replace(/\s+/g, " ").trim();
@@ -354,8 +354,8 @@ function expectedRows(record: PluginRecord): CompatRow[] {
         declared: support ?? "no-range",
         ...(spoken === undefined ? {} : { spoken }),
         cells: [
-          support ? DECLARED_CELL[support]! : "No range",
-          start ? `${START_CELL[start.result]} Zotero ${start.zotero}` : "Not tested",
+          support ? DECLARED_CELL[support]! : "Not stated",
+          start ? `${START_CELL[start.result]} Zotero ${start.zotero}` : "Not checked",
           report ? `${report.works} works ${report.broken} broken` : "None yet",
         ],
       };
@@ -413,17 +413,22 @@ describe("the compatibility table", () => {
   test.each(ids)("shows the table of %s, or the failure of a record that was not read", (id) => {
     const record = records.find((r) => r.id === id)!;
     const section = sections(page(id)).find(({ name }) => name === "compatibility")!;
-    expect(section.heading).toBe("Zotero compatibility");
+    expect(section.heading).toBe("Zotero versions");
     if (record.upstream) {
       expect(compatRows(section.body)).toEqual(expectedRows(record));
-      expect(fact(section.body, "read-version")).toBe(`For version ${escaped(record.upstream.version)}, the release the index read`);
+      expect(fact(section.body, "read-version")).toBe(`For version ${escaped(record.upstream.version)}, the release this page shows`);
       expect(section.body).not.toContain('data-fact="failure"');
     } else {
       expect(compatRows(section.body)).toBeUndefined();
       expect(unescaped(fact(section.body, "failure")!)).toBe(
-        `The last build could not read this plugin: ${record.failure!.name}: ${record.failure!.message}`,
+        `Zotdex couldn't read this plugin when it last updated this page, on October 25, 2026: ${record.failure!.name}: ${record.failure!.message}`,
       );
     }
+  });
+
+  test("names the table's columns", () => {
+    const head = /<table class="compat-table"><thead>(.*?)<\/thead>/s.exec(page("first-plugin@example.org").replace(/>\s+</g, "><"))![1]!;
+    expect([...head.matchAll(/<th scope="col">(.*?)<\/th>/g)].map(([, text]) => text)).toEqual(["Zotero", "Supports", "Startup check", "User reports"]);
   });
 
   test("adds a row for each other major that reports or start results name, newest first, with the newest start result of a major", () => {
@@ -431,9 +436,9 @@ describe("the compatibility table", () => {
     expect(next.map(({ major }) => major)).toEqual(["12", "11", "10", "9", "8", "7"]);
     const cells = (major: string) => next.find((row) => row.major === major)!.cells;
     expect(cells("12")).toEqual(["– No", "✕ Didn't install Zotero 12.0.1", "None yet"]);
-    expect(cells("11")).toEqual(["✓ Yes", "Not tested", "2 works 1 broken"]);
+    expect(cells("11")).toEqual(["✓ Yes", "Not checked", "2 works 1 broken"]);
     expect(cells("8")).toEqual(["✓ Yes", "● Loaded Zotero 8.0.4", "1 works 0 broken"]);
-    expect(cells("7")).toEqual(["– No", "Not tested", "None yet"]);
+    expect(cells("7")).toEqual(["– No", "Not checked", "None yet"]);
     expect(compatRows(page("a-cafe@example.org"))!.find((row) => row.major === "8")!.cells[1]).toBe("● Loaded Zotero 8.0.10");
   });
 
@@ -553,7 +558,7 @@ describe("the plugin page", () => {
     );
     const categoryLine =
       shownCategories.length > 0
-        ? `<p class="categories" data-categories><a href="/about/#categories" data-categories-about>Index categories</a>: ` +
+        ? `<p class="categories" data-categories><a href="/about/#categories" data-categories-about>Zotdex categories</a>: ` +
           `${shownCategories.join(", ")}</p>`
         : "";
     const stars =
@@ -575,7 +580,7 @@ describe("the plugin page", () => {
       ...(upstream?.xpiUrl && safeHref(upstream.xpiUrl)
         ? [{ kind: "download", href: upstream.xpiUrl, text: `Download ${upstream.version} (.xpi)` }]
         : []),
-      repo ? { kind: "source", href: repoUrl, text: upstream?.sourceInRepo === false ? "Repository" : "Source" } : { kind: "source", text: repoUrl },
+      repo ? { kind: "source", href: repoUrl, text: upstream?.sourceInRepo === false ? "Repository" : "Source code" } : { kind: "source", text: repoUrl },
       ...(upstream
         ? [repo ? { kind: "releases", href: `${repoUrl}/releases`, text: "Releases" } : { kind: "releases", text: `${repoUrl}/releases` }]
         : []),
@@ -642,7 +647,7 @@ describe("the plugin page", () => {
     expect(main.split("<section").length - 1).toBe(found.length);
     expect(main.split("<h2").length - 1).toBe(found.length);
     expect(found.map(({ name, heading }) => [name, heading])).toEqual([
-      ["compatibility", "Zotero compatibility"],
+      ["compatibility", "Zotero versions"],
       ["details", "Details"],
       ["badge", "Badge for your README"],
     ]);
@@ -680,25 +685,25 @@ describe("the plugin page", () => {
     expect(facts!.split("<dt>").length - 1).toBe(items.length);
     const { upstream } = record;
     expect(items).toEqual([
-      ["Plugin id", "id"],
+      ["Plugin ID", "id"],
       ...(record.paidService ? [[PAID_TEXT, "paid-service"]] : []),
       ...(upstream
         ? [
-            ...(upstream.description?.trim() ? [["Manifest description", "manifest-description"]] : []),
-            ...(upstream.repoDescription !== undefined ? [["GitHub description", "github-description"]] : []),
+            ...(upstream.description?.trim() ? [["Description in the plugin file", "manifest-description"]] : []),
+            ...(upstream.repoDescription !== undefined ? [["Description on GitHub", "github-description"]] : []),
             ...(typeof upstream.archived === "boolean" ? [["Archived on GitHub", "archived"]] : []),
-            ...(typeof upstream.sourceInRepo === "boolean" ? [["Source code at the repository's top level", "source-in-repo"]] : []),
+            ...(typeof upstream.sourceInRepo === "boolean" ? [["Source code in the repository's top folder", "source-in-repo"]] : []),
             ["Repository created", "repo-created"],
-            ["Release read by the index", "latest-release"],
-            ["Releases with an .xpi", "release-count"],
+            ["Release on this page", "latest-release"],
+            ["Releases with an .xpi file", "release-count"],
             ["Open issues and pull requests", "open-issues"],
-            ["Host of update.json", "update-host"],
-            ["Menus and settings in", "languages"],
+            ["Checks for updates at", "update-host"],
+            ["Languages", "languages"],
           ]
         : []),
     ]);
     if (record.overrides.length > 0) {
-      const overrides = /<div class="overrides" data-overrides>\s*<h3>Overrides<\/h3>(.*?)<\/table>/s.exec(details)?.[1];
+      const overrides = /<div class="overrides" data-overrides>\s*<h3>Corrections by Zotdex<\/h3>(.*?)<\/table>/s.exec(details)?.[1];
       expect(overrides?.split("<tr data-override=").length).toBe(record.overrides.length + 1);
     } else {
       expect(details).not.toMatch(/\sdata-overrides[\s>]|<h3[\s>]/);
@@ -713,19 +718,32 @@ describe("the plugin page", () => {
 
   test("shows the repository facts", () => {
     const html = page("first-plugin@example.org");
-    expect(fact(html, "repo-created")).toBe("2023-03-14");
-    expect(fact(html, "latest-release")).toBe("1.2.0, published 2026-09-30");
+    expect(fact(html, "repo-created")).toBe("March 14, 2023");
+    expect(fact(html, "latest-release")).toBe("1.2.0, published September 30, 2026");
     expect(fact(html, "release-count")).toBe("27");
     expect(fact(html, "open-issues")).toBe("12");
     expect(fact(html, "update-host")).toBe("example.org");
     expect(fact(html, "disclaimer")).toBe(escaped(DISCLAIMER_TEXT));
   });
 
+  test("introduces the corrections and names their columns", () => {
+    const block = /<div class="overrides" data-overrides>(.*?)<tbody>/s.exec(page("first-plugin@example.org"))![1]!;
+    expect(/<p>(.*?)<\/p>/s.exec(block)?.[1]).toBe("Zotdex corrects, fills in, or replaces these facts from the plugin's own files or GitHub page.");
+    expect([...block.matchAll(/<th>(.*?)<\/th>/g)].map(([, text]) => unescaped(text!))).toEqual([
+      "Fact",
+      "Plugin's value",
+      "Zotdex's value",
+      "For version",
+      "In use",
+      "Reason",
+    ]);
+  });
+
   test("shows each override beside the upstream value", () => {
     const rows = [...page("first-plugin@example.org").matchAll(/<tr data-override="[^"]*">(.*?)<\/tr>/g)].map((row) =>
       [...row[1]!.matchAll(/<td>(.*?)<\/td>/g)].map((cell) => cell[1]!.replace(/<[^>]+>/g, "")),
     );
-    // Field, upstream value, override value, version, used, reason.
+    // Fact, plugin's value, Zotdex's value, version, in use, reason.
     expect(rows).toEqual([
       ["strict_max_version", "7.*", "8.*", "every version", "yes", "The author confirmed that the plugin works on Zotero 8."],
       ["strict_min_version", "7.0", "8.5", "0.9.0", "no", "Version 0.9.0 needs an API that Zotero 8.5 added."],
@@ -734,8 +752,8 @@ describe("the plugin page", () => {
 
   test.each([
     ["three upstream tags", "first-plugin@example.org", "English (United States), Spanish, Chinese (China)"],
-    ["an empty upstream list", "old-plugin@example.org", "Unknown (no translations found)"],
-    ["no languages field", "{c2a6e4c8-1b7d-4f3a-9e2b-5d8f0a1c3e7b}", "Unknown (no translations found)"],
+    ["an empty upstream list", "old-plugin@example.org", "Language not listed"],
+    ["no languages field", "{c2a6e4c8-1b7d-4f3a-9e2b-5d8f0a1c3e7b}", "Language not listed"],
     ["an override for every version, in its own order", "no-range-plugin@example.org", "French, German"],
     ["an override for another version only", "min-only-plugin@example.org", "Chinese (China), Chinese (Taiwan)"],
     ["an override for the version read beside one for every version", "locale-plugin@example.org", "Portuguese (Brazil), Spanish (Latin America)"],
@@ -743,14 +761,17 @@ describe("the plugin page", () => {
     expect(fact(page(id), "languages")).toBe(text);
   });
 
-  test("labels the languages fact as menus and settings", () => {
-    expect(page("first-plugin@example.org")).toMatch(/<dt>Menus and settings in<\/dt>\s*<dd data-fact="languages">/);
+  test("labels the languages fact as languages", () => {
+    expect(page("first-plugin@example.org")).toMatch(/<dt>Languages<\/dt>\s*<dd data-fact="languages">/);
   });
 
   test("leaves the old languages label off every plugin page", () => {
     const pages = htmlFiles(join(out, "plugins"));
     expect(pages.length).toBe(ids.length);
-    for (const path of pages) expect(readFileSync(join(out, "plugins", path), "utf8"), path).not.toContain("Interface languages:");
+    for (const path of pages) {
+      const html = readFileSync(join(out, "plugins", path), "utf8");
+      for (const label of ["Interface languages:", "Menus and settings in"]) expect(html, path).not.toContain(label);
+    }
   });
 
   test.each([
@@ -785,7 +806,7 @@ describe("the plugin page", () => {
     ["first-plugin@example.org", "Yes"],
     ["b-cafe@example.org", "No"],
   ])("shows whether the repo of %s holds source", (id, text) => {
-    expect(page(id)).toMatch(/<dt>Source code at the repository(?:'|&#39;)s top level<\/dt>\s*<dd data-fact="source-in-repo">/);
+    expect(page(id)).toMatch(/<dt>Source code in the repository's top folder<\/dt>\s*<dd data-fact="source-in-repo">/);
     expect(fact(page(id), "source-in-repo")).toBe(text);
   });
 
@@ -794,11 +815,11 @@ describe("the plugin page", () => {
   });
 
   test.each([
-    ["next-plugin@example.org", "Needs credits bought from the maker.", "https://example.org/pricing?plan=a&amp;b=c", "2026-11-02"],
-    ["repo-path@example.org", "Stops after a 7-day trial.", "https://example.org/trial", "2026-11-01"],
+    ["next-plugin@example.org", "Needs credits bought from the maker.", "https://example.org/pricing?plan=a&amp;b=c", "November 2, 2026"],
+    ["repo-path@example.org", "Stops after a 7-day trial.", "https://example.org/trial", "November 1, 2026"],
   ])("shows the paid service fact on %s", (id, note, href, read) => {
     const dd = /<dd data-fact="paid-service">(.*?)<\/dd>/s.exec(page(id))?.[1]?.replace(/\s+/g, " ").trim();
-    expect(dd).toBe(`${note} <a href="${href}" data-paid-source>Source of this fact</a>, read ${read}`);
+    expect(dd).toBe(`${note} <a href="${href}" data-paid-source>Source</a>, checked ${read}`);
   });
 
   test("shows no paid service words on a page without the field", () => {
@@ -806,12 +827,12 @@ describe("the plugin page", () => {
   });
 
   test("shows the mark and calls the link the repository only for false", () => {
-    const link = (id: string) => /data-link="source">\s*<svg[\s\S]*?<\/svg>\s*([A-Za-z]+)/.exec(page(id))?.[1];
+    const link = (id: string) => /data-link="source">\s*<svg[\s\S]*?<\/svg>\s*([A-Za-z ]+?)\s*<\/a>/.exec(page(id))?.[1];
     expect(page("b-cafe@example.org")).toContain(noSourceMark(LOCK_SVG));
     expect(link("b-cafe@example.org")).toBe("Repository");
     for (const id of ["first-plugin@example.org", "no-range-plugin@example.org"]) {
       expect(page(id)).not.toContain("data-no-source");
-      expect(link(id)).toBe("Source");
+      expect(link(id)).toBe("Source code");
     }
   });
 
@@ -819,14 +840,14 @@ describe("the plugin page", () => {
     expect(page("{c2a6e4c8-1b7d-4f3a-9e2b-5d8f0a1c3e7b}")).not.toMatch(/\sdata-fact="archived"/);
   });
 
-  test("labels the release fact as the release the index read", () => {
-    expect(page("first-plugin@example.org")).toMatch(/<dt>Release read by the index<\/dt>\s*<dd data-fact="latest-release">/);
+  test("labels the release fact as the release on this page", () => {
+    expect(page("first-plugin@example.org")).toMatch(/<dt>Release on this page<\/dt>\s*<dd data-fact="latest-release">/);
   });
 
   test.each([
-    ["old-plugin@example.org", "0.4.1, published 2024-07-01 (prerelease)"],
-    ["first-plugin@example.org", "1.2.0, published 2026-09-30"],
-    ["{c2a6e4c8-1b7d-4f3a-9e2b-5d8f0a1c3e7b}", "3.0.0+r1, published 2026-10-01"],
+    ["old-plugin@example.org", "0.4.1, published July 1, 2024 (prerelease)"],
+    ["first-plugin@example.org", "1.2.0, published September 30, 2026"],
+    ["{c2a6e4c8-1b7d-4f3a-9e2b-5d8f0a1c3e7b}", "3.0.0+r1, published October 1, 2026"],
   ])("marks the release of %s as a prerelease only when the record says so", (id, text) => {
     expect(fact(page(id), "latest-release")).toBe(text);
   });
@@ -994,13 +1015,15 @@ describe("the About page", () => {
     }
   });
 
-  test("says which user reports count, how overrides and the Used column work, and that the index cannot vet plugins", () => {
+  test("says which user reports count, how overrides and the In use column work, and that the index cannot vet plugins", () => {
     const text = mainText(about());
     for (const line of [
       "The index counts a report only when the bot closed it as completed and the report names the plugin version that the index read.",
       "A report with the label not-counted does not count.",
       "Of one GitHub account's reports on one plugin and Zotero major, only the newest counts.",
-      'Its Used column says "yes" for the override that applies to the plugin version that the index read.',
+      `The "Corrections by Zotdex" table in a plugin's Details lists each override beside the upstream value.`,
+      'Its "In use" column says "yes" for the override that applies to the plugin version that the index read.',
+      `The plugin page shows the result as "Source code in the repository's top folder".`,
       'The declared range uses the strict_min_version and strict_max_version overrides marked "yes".',
     ]) {
       expect(text).toContain(line);
@@ -1030,7 +1053,8 @@ describe("the About page", () => {
     const main = html.slice(html.indexOf("<main>"), html.indexOf("</main>"));
     expect(main.split('href="/about/"').length - 1).toBe(1);
     const line = /<p class="fineprint" data-about-line>(.*?)<\/p>/s.exec(main)?.[1];
-    expect(line).toMatch(/<a href="\/about\/">How the index reads plugins<\/a>\s*$/);
+    expect(line).toMatch(/<a href="\/about\/">How Zotdex reads plugins<\/a>\s*$/);
+    if (hasBound(records.find((r) => r.id === id)!)) expect(line).toMatch(/^\s*Supported versions: <span data-fact="declared-range">/);
     const card = sections(html).find(({ name }) => name === "compatibility")!.body;
     expect(card).toContain("data-about-line");
     if (records.find((r) => r.id === id)!.upstream) expectInOrder(card, ["</table>", "data-about-line", 'data-fact="report-prompt"']);
@@ -2152,6 +2176,13 @@ describe("the built site", () => {
     }
   });
 
+  test("says what the badge shows", () => {
+    const badge = sections(page("first-plugin@example.org")).find(({ name }) => name === "badge")!;
+    expect(mainText(`<main>${badge.body.replace(/<code\b.*?<\/code>/s, "")}</main>`)).toBe(
+      "If this is your plugin, you can add this Markdown to its README. The badge shows the Zotero versions where it passed Zotdex's startup check, or why it shows none, and it links to this page.",
+    );
+  });
+
   test("names img.shields.io only in code text, and loads nothing from it", () => {
     for (const file of htmlFiles(out)) {
       const html = readFileSync(join(out, file), "utf8");
@@ -2406,7 +2437,8 @@ describe("a kept record", () => {
   const home = () => readFileSync(join(dir, "index.html"), "utf8");
   const page = (id: string) => readFileSync(join(dir, "plugins", id, "index.html"), "utf8");
   const rowOf = (id: string) => new RegExp(`<tr data-plugin="${escaped(id)}"[\\s\\S]*?</tr>`).exec(home())![0];
-  const BADGE = '<span class="badge" data-kept title="Facts from an earlier build, on 2026-11-03">Older data</span>';
+  const BADGE =
+    `<span class="badge" data-kept title="Zotdex couldn't reach this plugin in its latest update, so these facts are from November 3, 2026">Older data</span>`;
 
   test("the data file is valid against the v1 schema", () => {
     const validate = new Ajv({ allErrors: true }).compile(pluginsSchema);
@@ -2433,13 +2465,13 @@ describe("a kept record", () => {
   test("says on the plugin page that the build of the data could not read it, with the failure and the day of the read", () => {
     const text = /<p class="fineprint kept-note" data-fact="kept">(.*?)<\/p>/s.exec(page(KEPT))?.[1].replace(/\s+/g, " ").trim();
     expect(text).toBe(
-      "The build that wrote this page, on 2026-11-05, could not read this plugin: <code>not-read</code>: the build reads no plugin after 18 minutes, its time limit. " +
-        'These facts come from an earlier build, on 2026-11-03. <a href="/about/#older-data">About older data</a>',
+      "Zotdex couldn't reach this plugin on November 5, 2026: <code>not-read</code>: the build reads no plugin after 18 minutes, its time limit. " +
+        'This page shows what it found on November 3, 2026. <a href="/about/#older-data">About older data</a>',
     );
-    expect(page(KEPT)).toMatch(/<h1>[^<]*<span class="badge" data-kept>Older data<\/span>/);
+    expect(/<h1>.*?<\/h1>/s.exec(page(KEPT))![0]).toContain(BADGE);
     expect(page(TWIN)).not.toContain("data-kept");
     // The kept facts still show as the facts of a read record.
-    expect(page(KEPT)).toContain('data-fact="read-version">For version 1.2.0, the release the index read</p>');
+    expect(page(KEPT)).toContain('data-fact="read-version">For version 1.2.0, the release this page shows</p>');
   });
 
   test("says on About when the index keeps facts and for how long", () => {
@@ -2455,6 +2487,10 @@ describe("a kept record", () => {
   test("writes the footer's day in UTC, so a build just after midnight UTC names that day in any time zone", () => {
     expect(longDay("2026-10-26T02:00:00Z")).toBe("October 26, 2026");
     expect(longDay("2026-10-25T23:30:00Z")).toBe("October 25, 2026");
+  });
+
+  test("writes a text that is not a date as its first 10 characters", () => {
+    expect(longDay("not a date at all")).toBe("not a date");
   });
 
   test("says in the footer the day of the build the data comes from", () => {
@@ -2512,31 +2548,31 @@ describe("the description facts", () => {
   }, 120_000);
   const pageOf = (id: string) => readFileSync(join(dir, "plugins", id, "index.html"), "utf8");
 
-  test("shows no Manifest description row for a blank text and keeps it for a text", () => {
-    expect(pageOf("blank-manifest@example.org")).not.toContain("<dt>Manifest description</dt>");
-    expect(pageOf("both-texts@example.org")).toMatch(/<dt>Manifest description<\/dt>\s*<dd data-fact="manifest-description">/);
+  test("shows no plugin file description row for a blank text and keeps it for a text", () => {
+    expect(pageOf("blank-manifest@example.org")).not.toContain("<dt>Description in the plugin file</dt>");
+    expect(pageOf("both-texts@example.org")).toMatch(/<dt>Description in the plugin file<\/dt>\s*<dd data-fact="manifest-description">/);
     expect(fact(pageOf("both-texts@example.org"), "manifest-description")).toBe("Keeps notes tidy.");
   });
 
-  // The Upstream value cell of an override, one item per line.
+  // The Plugin's value cell of an override, one item per line.
   const upstreamCell = (id: string, field: string) => {
     const row = new RegExp(`<tr data-override="${field}">(.*?)</tr>`).exec(pageOf(id))![1]!;
     return [...row.matchAll(/<td>(.*?)<\/td>/g)][1]![1]!.split(/<br\s*\/?>/);
   };
 
   test.each<[string, string[]]>([
-    ["both-texts@example.org", ["Manifest: Keeps notes tidy.", "GitHub: Sorts notes by date."]],
-    ["manifest-only@example.org", ["Manifest: Keeps notes tidy."]],
+    ["both-texts@example.org", ["Plugin file: Keeps notes tidy.", "GitHub: Sorts notes by date."]],
+    ["manifest-only@example.org", ["Plugin file: Keeps notes tidy."]],
     ["github-only@example.org", ["GitHub: Sorts notes by date."]],
     ["blank-with-github@example.org", ["GitHub: Sorts notes by date."]],
     ["blank-manifest@example.org", ["none"]],
     ["no-text@example.org", ["none"]],
     ["failed-read@example.org", ["none"]],
-  ])("the Upstream value cell of a description override on %s lists its texts", (id, lines) => {
+  ])("the Plugin's value cell of a description override on %s lists its texts", (id, lines) => {
     expect(upstreamCell(id, "description")).toEqual(lines);
   });
 
-  test("the Upstream value cell of another override keeps its one value", () => {
+  test("the Plugin's value cell of another override keeps its one value", () => {
     expect(upstreamCell("both-texts@example.org", "name")).toEqual([upstream.name]);
   });
 });

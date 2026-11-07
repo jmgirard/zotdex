@@ -102,12 +102,18 @@ export function supportText(record: PluginRecord, support: MajorSupport, major: 
   return `Doesn't support Zotero ${major}`;
 }
 
-// The names of the languages after overrides, in list order, or "Unknown (no translations
-// found)" when none is left. The list is empty when, for example, a plugin writes its text in
-// its code and ships no locale folders, so the index cannot tell which language that text is in.
+// The names of the languages after overrides, in list order, or "Language not listed" when
+// none is left. The list is empty when, for example, a plugin writes its text in its code and
+// ships no locale folders, so the index cannot tell which language that text is in.
 export function languagesText(record: PluginRecord): string {
   const tags = appliedLanguages(record);
-  return tags.length > 0 ? tags.map(languageName).join(", ") : "Unknown (no translations found)";
+  return tags.length > 0 ? tags.map(languageName).join(", ") : "Language not listed";
+}
+
+// The title of an Older data badge, on a home row and a plugin page, with the day that the
+// kept facts were read.
+export function keptTitle(readAt: string): string {
+  return `Zotdex couldn't reach this plugin in its latest update, so these facts are from ${longDay(readAt)}`;
 }
 
 // The language subtags a home row shows (see listedSubtags): all of them when there are 3
@@ -153,14 +159,14 @@ export function upstreamValue(record: PluginRecord, field: string): string | und
   return fields[field];
 }
 
-// The lines of the Overrides table's Upstream value cell: for a description, each upstream text
+// The lines of the Corrections table's Plugin's value cell: for a description, each upstream text
 // that is not blank under its label, and for another field, its one value; "none" with neither.
 export function upstreamLines(record: PluginRecord, field: string): string[] {
   const value = upstreamValue(record, field);
   const lines =
     field === "description"
       ? [
-          ...(record.upstream?.description?.trim() ? [`Manifest: ${record.upstream.description}`] : []),
+          ...(record.upstream?.description?.trim() ? [`Plugin file: ${record.upstream.description}`] : []),
           ...(record.upstream?.repoDescription?.trim() ? [`GitHub: ${record.upstream.repoDescription}`] : []),
         ]
       : value === undefined
@@ -196,9 +202,13 @@ export const FEEDBACK_HREF = "https://github.com/jmgirard/zotdex/discussions";
 // The index repo itself, linked from the top bar and the footer.
 export const REPO_HREF = "https://github.com/jmgirard/zotdex";
 
-// A timestamp's day in UTC with the month's English name, such as "October 25, 2026".
+// A timestamp's day in UTC with the month's English name, such as "October 25, 2026". The
+// schema does not check every date field, so a text that is not a date shows its first 10
+// characters, as the site did before.
 export function longDay(timestamp: string): string {
-  return new Date(timestamp).toLocaleDateString("en-US", { timeZone: "UTC", year: "numeric", month: "long", day: "numeric" });
+  const date = new Date(timestamp);
+  if (Number.isNaN(date.getTime())) return timestamp.slice(0, 10);
+  return date.toLocaleDateString("en-US", { timeZone: "UTC", year: "numeric", month: "long", day: "numeric" });
 }
 
 // The new-issue page with the works.yml or broken.yml form, its plugin and version fields
@@ -277,10 +287,6 @@ export function githubRepo(url: string): { owner: string; repo: string } | undef
 // A star count in words, such as "1 star on GitHub" or "1,234 stars on GitHub".
 export function starsText(stars: number): string {
   return `${stars.toLocaleString("en")} ${stars === 1 ? "star" : "stars"} on GitHub`;
-}
-
-export function day(timestamp: string): string {
-  return timestamp.slice(0, 10);
 }
 
 // The year and month of a timestamp in UTC, such as "2026-09".
