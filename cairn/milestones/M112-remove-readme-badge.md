@@ -31,26 +31,26 @@ chose removal).
 
 ## Acceptance criteria
 
-- [ ] AC1: A site build writes no badge files: a test in `test/site.test.ts`
+- [x] AC1: A site build writes no badge files: a test in `test/site.test.ts`
       builds the fixture site and asserts that its output folder holds no
       `badges` entry, and `site/src/pages/badges/`, `src/site/badge.ts`, and
       `test/badge.test.ts` no longer exist.
-- [ ] AC2: No built plugin page offers a badge: a test in `test/site.test.ts`
+- [x] AC2: No built plugin page offers a badge: a test in `test/site.test.ts`
       asserts that each fixture plugin page's sections are "Zotero versions"
       then "Details", with no `data-section="badge"` section, and that no
       built page in the fixture site's output holds the text `img.shields.io`.
-- [ ] AC3: The built About page has no README badge section: the About test
+- [x] AC3: The built About page has no README badge section: the About test
       in `test/site.test.ts` lists About's sections, and that list holds no
       `badge` section, while every other section keeps its current heading
       and text.
-- [ ] AC4: `git grep -n -iE 'readme badge|badges/|badge file|badge (names|says|shows|can)|badgeSnippet|badgeFor|badge-snippet|shields|badge for your|data-section="badge"|id="badge"|#badge' -- site src docs README.md CHANGELOG.md cairn/DESIGN.md cairn/references/plain-words-copy.md`
+- [x] AC4: `git grep -n -iE 'readme badge|badges/|badge file|badge (names|says|shows|can)|badgeSnippet|badgeFor|badge-snippet|shields|badge for your|data-section="badge"|id="badge"|#badge' -- site src docs README.md CHANGELOG.md cairn/DESIGN.md cairn/references/plain-words-copy.md`
       prints no line.
-- [ ] AC5: `cairn/DECISIONS.md` holds a new entry that supersedes D-071, says
+- [x] AC5: `cairn/DECISIONS.md` holds a new entry that supersedes D-071, says
       that the badge files, the plugin-page card, and About's section were
       removed and that the stable-address promise is withdrawn, says that a
       README embedding a badge then shows a shields.io error image, and gives
       the reason.
-- [ ] AC6: `pnpm test` and `pnpm check` pass (run as
+- [x] AC6: `pnpm test` and `pnpm check` pass (run as
       `npx -y pnpm@12.15.0 test` and `npx -y pnpm@12.15.0 check`).
 
 ## Coverage
@@ -105,3 +105,12 @@ chose removal).
 ## Decisions
 
 ## Review
+
+Evidence (2026-11-07, branch `m112-remove-readme-badge`, level with `origin/main`):
+
+- AC1: "writes no badge files" passes (`vitest run test/site.test.ts -t …`, verbose ✓); `site/src/pages/badges`, `src/site/badge.ts`, and `test/badge.test.ts` do not exist (`[ -e ]` per path).
+- AC2: the `test.each(ids)` test "shows the sections of %s in order" expects `compatibility`/"Zotero versions" then `details`/"Details" and counts every `<section>` and `<h2>` in main, and "offers no badge on any page" checks all `ids.length + 3` HTML files for `data-section="badge"` and `img.shields.io`; both pass. A site built from the deployed data had 0 files with either text.
+- AC3: "has the copy's sections in its order, each under its h2 and with its id" passes against `COPY`, which no longer holds `badge`; the per-section "the %s section reads as the copy" tests for the other 13 sections pass unchanged (`git diff main -- test/site.test.ts` removes only the `badge` entry from `COPY`).
+- AC4: the named `git grep` prints no line (exit 1).
+- AC5: `cairn/DECISIONS.md:1204` D-079 supersedes D-071; it names the removed files, card, and About section, withdraws the stable-address promise, says an embedding README shows a shields.io error image, and gives the user's reason.
+- AC6: `pnpm test` exit 0, 36 files passed, 2493 tests passed, 6 skipped; `pnpm check` 745 entries, 0 problems.
