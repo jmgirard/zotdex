@@ -27,8 +27,8 @@ the release that the index read, as the year and month in UTC, such as
 with a lock, and to the `.xpi` file.
 
 A version cell shows how much of that version the plugin's declared range
-covers. The declared range is the `strict_min_version` and
-`strict_max_version` fields of the plugin's manifest. A check mark (✓) means all of it, a half circle (◐) means part of
+covers. The declared range comes from the `strict_min_version`
+and `strict_max_version` fields of the plugin's manifest. A check mark (✓) means all of it, a half circle (◐) means part of
 it, and a dash means none of it. Hold the pointer over a mark to read
 its meaning and, for a half circle, the declared range. On a touch screen,
 open the plugin's page to read its declared range. A mark counts Zotero N
