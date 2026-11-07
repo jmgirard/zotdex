@@ -1,5 +1,5 @@
 ---
-import { lensShapes } from "../../../src/site/logo.ts";
+import { lensShapes, PICTURES } from "../../../src/site/logo.ts";
 import { applySavedTheme, wireThemeButton } from "../../../src/site/theme.ts";
 import { BASE, ORIGIN } from "../base.ts";
 import Icon from "../components/Icon.astro";
@@ -29,13 +29,20 @@ const themeButton = `(${wireThemeButton})();`;
     <title>{title}</title>
     <meta name="description" content={description} />
     {address ? <link rel="canonical" href={address} /> : <meta name="robots" content="noindex" />}
+    {/* The PNG is for a browser that shows no SVG icon. Its sizes value lets one that does show them pick the SVG. */}
+    <link rel="icon" type="image/png" sizes="32x32" href={`${BASE}favicon.png`} />
     <link rel="icon" type="image/svg+xml" href={`${BASE}favicon.svg`} />
+    <link rel="apple-touch-icon" href={`${BASE}apple-touch-icon.png`} />
     <link rel="sitemap" type="application/xml" href={`${BASE}sitemap.xml`} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Zotdex" />
     {address && <meta property="og:url" content={address} />}
+    <meta property="og:image" content={`${ORIGIN}${BASE}preview.png`} />
+    <meta property="og:image:width" content={String(PICTURES["preview.png"].size)} />
+    <meta property="og:image:height" content={String(PICTURES["preview.png"].size)} />
+    <meta property="og:image:alt" content="The Zotdex logo" />
     <meta name="twitter:card" content="summary" />
     <script is:inline set:html={themeHead} />
     <style is:global>

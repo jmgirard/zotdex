@@ -2276,6 +2276,19 @@ describe("the link preview tags", () => {
     }
   });
 
+  test("gives every page the preview picture, its size, and its alt text", () => {
+    const files = htmlFiles(out);
+    expect(files).toHaveLength(ids.length + 3);
+    for (const file of files) {
+      const page = read(file);
+      expect(tagValue(page, "property", "og:image"), file).toBe(`${SITE}preview.png`);
+      expect(tagValue(page, "property", "og:image:width"), file).toBe("1200");
+      expect(tagValue(page, "property", "og:image:height"), file).toBe("1200");
+      expect(tagValue(page, "property", "og:image:alt"), file).toBe("The Zotdex logo");
+      expect(tagValue(page, "name", "twitter:card"), file).toBe("summary");
+    }
+  });
+
   test("names the site Zotdex in every page's site name and title", () => {
     const files = htmlFiles(out);
     expect(files).toHaveLength(ids.length + 3);
@@ -2743,10 +2756,16 @@ describe("the site colors", () => {
   describe("the favicon", () => {
     const icon = () => readFileSync(join(out, "favicon.svg"), "utf8");
 
-    test("is linked once from every page, under the base path", () => {
-      for (const file of htmlFiles(out)) {
-        const html = readFileSync(join(out, file), "utf8");
-        expect(tagValue(html, "rel", "icon"), file).toBe("/favicon.svg");
+    test("is linked from every page as a PNG, then an SVG, beside the touch icon", () => {
+      const files = htmlFiles(out);
+      expect(files).toHaveLength(ids.length + 3);
+      for (const file of files) {
+        const icons = tagsOf(readFileSync(join(out, file), "utf8")).filter((tag) => tag.rel === "icon" || tag.rel === "apple-touch-icon");
+        expect(icons, file).toEqual([
+          { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon.png" },
+          { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
+          { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
+        ]);
       }
     });
 

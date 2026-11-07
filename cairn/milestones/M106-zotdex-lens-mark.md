@@ -57,7 +57,7 @@ Replace the puzzle-piece logo with Zotdex's own mark, the lens alone at 16 px an
 - [x] T2: `site/src/pages/favicon.svg.ts` writing the lens mark with both schemes' fills; delete `site/public/favicon.svg`; rewrite the favicon tests.
 - [x] T3: The top bar's logo from `logo.ts`, the logo tokens in all three scheme blocks, the forced-colors rule; drop `puzzle` from `Icon.astro` and `PUZZLE_PATH` uses; rewrite the logo tests.
 - [x] T4: Pin `sharp` 0.35.5; endpoints for `favicon.png`, `apple-touch-icon.png`, and `preview.png` (light fills, flattened on white); PNG header and pixel tests.
-- [ ] T5: The head tags in `Base.astro`; tests over every built page.
+- [x] T5: The head tags in `Base.astro`; tests over every built page.
 - [ ] T6: README, About, DESIGN, and CHANGELOG; the puzzle search over `site/`, `src/`, and the test build.
 - [ ] T7: Look at the built site in the browser pane: the tab icon and top bar in light, dark, and forced colors, and the three PNG files.
 
@@ -81,3 +81,4 @@ Replace the puzzle-piece logo with Zotdex's own mark, the lens alone at 16 px an
 - 2026-11-06: T2 done: `site/src/pages/favicon.svg.ts` writes `faviconSvg()`; `site/public/favicon.svg` deleted; three favicon tests replace the puzzle ones (shapes, fills and contrast, the crop computed in the test from `FULL_MARK.opening`); a Z shifted 0.01 fails the crop test; the logo test compares with `PUZZLE_PATH` until T3; verify green (2499 passed).
 - 2026-11-06: T3 done: the `.brand` link draws `lensShapes()` in `<svg class="logo">`; `--logo-disc` and `--logo-z` in all three scheme blocks, the rim on `--accent`; forced colors fill rim and disc `CanvasText`, Z `Canvas`; `puzzle` and its comments left `Icon.astro`, `PUZZLE_PATH` left the tests; a 4.9 disc radius in the top bar fails the logo test; verify green (2499 passed).
 - 2026-11-06: T4 done: `sharp` pinned at 0.35.5 (lockfile only re-marks it, no download); `PICTURES` in `logo.ts` sets each PNG's mark, margin, and size (lens 0 at 32, full 2 at 180, full 4 at 1200); `src/site/logo-png.ts` draws each SVG at its own size and flattens on white; three endpoints; `test/support/logo-geometry.ts` holds the shape tests shared by `logo.test.ts` and six new PNG tests; a blue disc in the full mark fails the pixel test; verify green (2505 passed).
+- 2026-11-06: T5 done: `Base.astro` links `favicon.png` (32x32) before `favicon.svg`, then `apple-touch-icon.png`, and adds `og:image`, its width and height from `PICTURES`, and the alt "The Zotdex logo"; two tests over every built page replace the one-icon link test; a dropped `sizes` and a changed alt fail them; verify green (2506 passed).
