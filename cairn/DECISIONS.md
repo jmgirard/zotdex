@@ -1318,3 +1318,23 @@ be rate limited, and a refused freshclam skips that week's scan.
 This choice is wrong if freshclam is refused from GitHub's runners in most
 weeks, if ClamAV flags many listed plugins falsely, or if readers take a
 clean scan to mean that a plugin is safe.
+
+### D-083: The malware scan runs parallel clamscan batches, and a stopped batch keeps the lines it printed, annotating D-082
+
+2026-11-07, M116 plan. The first scan run under D-082 downloaded every
+plugin file, but its one `clamscan` process was stopped at its 10-minute
+limit, and M115's rule gave no file of a stopped run a result, so every page
+read "Not scanned yet". The scan now deals the files into batches, at most
+4 and one per core, and runs one `clamscan` per batch at the same time. At
+the plan question set the user chose that a stopped batch keeps the result
+of each file whose line it printed, over keeping only finished batches. The
+last line of a stopped batch's output counts only when it ends with a line
+break, since the stop may have cut it. One check is weaker in a stopped
+batch: a file with one printed line cannot be told from one whose second
+line never printed, which matters
+little, since ClamAV prints one line per file without `--allmatch`. The plan
+rejected clamd, a daemon that loads the signatures once, as a second package
+and service, and many small batches in a pool, since each `clamscan` loads
+the whole signature set. This choice is wrong if a measured run shows the
+signature load taking most of a batch's 10 minutes, or one batch stopped
+while the others end early.

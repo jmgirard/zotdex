@@ -743,10 +743,14 @@ user reports. The exception is a report that is abuse.
   [--scan]` (`scan`, `selectRecords` in `scan.ts`) writes an empty list
   without `--scan`; with it, it downloads each file with `downloadXpi`,
   files with no kept result first and then the oldest, starting none after
-  20 minutes, checks its SHA-256, and runs `clamscan` once with
-  `CLAMSCAN_OPTIONS`, stopped after 10 minutes. A file named on exactly one
-  OK or FOUND line gets a result, except a `Heuristics.Limits.Exceeded` or
-  `Heuristics.Encrypted` find. `pnpm add-scan-results --data --results
+  20 minutes, checks its SHA-256, and deals the files round-robin into
+  `min(SCAN_BATCHES_MAX (4), cores, files)` batches (`batchesOf`, M116), one
+  `clamscan` per batch with `CLAMSCAN_OPTIONS`, all started at once and each
+  stopped after 10 minutes. A file named on exactly one line of its own
+  batch, that line OK or FOUND, gets a result, a stopped batch's lines
+  included, except a `Heuristics.Limits.Exceeded` or `Heuristics.Encrypted`
+  find; the CLI prints `batchLine` for each batch.
+  `pnpm add-scan-results --data --results
   --expect` (`addScanResults`, `findLines` in `add-results.ts`) adds results
   only from a file whose SHA-256 equals `--expect`, and prints a
   `::warning::` line for each find.
@@ -1402,7 +1406,11 @@ reused._
   adds no new result that run, so a plugin can keep its own new find off its
   page. Running the scan job after the start tests would close this at the
   cost of a later Monday deploy (M115, D-082). Accepted at the M115 gate
-- A `clamscan` run stopped at its 10-minute limit gives no file a result, and
-  no scan of every plugin file has been timed yet. The `clamav` package's own
-  freshclam service also asks ClamAV's servers for signatures before the job
-  stops it, a second request each scan run (M115). Accepted at the M115 gate
+- A `clamscan` batch stopped at its 10-minute limit gives no result to the
+  files whose lines it had not printed (corrected M116: before M116 one
+  stopped run gave no file a result). On 2026-11-07 four batches of 185 or
+  186 files each took 191 to 235 seconds, signature load included, in
+  `Build data` run 42417346897 on the M116 branch. The `clamav` package's
+  own freshclam service also asks ClamAV's servers for signatures before the
+  job stops it, a second request each scan run (M115). Accepted at the M115
+  gate

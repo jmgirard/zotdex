@@ -6,8 +6,10 @@
   ClamAV found known malware in the plugin's file, with the scan's date, or
   "Not scanned yet". The daily build scans the plugin files with ClamAV on
   Mondays (UTC), and on a run that a maintainer starts with the new
-  `malware-scan` input, as many as it downloads in 20 minutes. Between scans
-  it keeps the published result for an unchanged file. A find hides
+  `malware-scan` input, as many as it downloads in 20 minutes. It scans them
+  in up to 4 `clamscan` batches at the same time. A batch stopped at its
+  10-minute limit keeps the results it printed. Between scans it keeps the
+  published result for an unchanged file. A find hides
   nothing, and it shows as a warning on the workflow run. The data's
   records gain an optional `malwareScan` field, so the v1 schema changed.
   Fetch any saved copy of it again. The footer, the install note, and About
