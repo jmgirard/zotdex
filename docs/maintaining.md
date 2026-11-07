@@ -347,9 +347,10 @@ the maintainer". They give the facts behind the hold:
   "none". If no entry lists the id from another GitHub repository now, one line
   says so in place of the listed repository's line. The new repository's line
   then goes too, unless a `name-match` names or counts an entry. More lines
-  name each
-  override and each value of the paid-service mark that the kept `index.json`
-  holds, or say that it holds neither.
+  name what the kept `index.json` holds: each override, each value of the
+  paid-service mark, and the screenshot. If it holds none, one line says so. The
+  listed repository's owner asked for that screenshot, so decide whether it
+  stays.
 - For every hold, the day that the owner's GitHub account was made, or a
   note that the bot did not get that day.
 

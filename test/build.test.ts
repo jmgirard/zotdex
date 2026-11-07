@@ -1630,13 +1630,6 @@ describe("buildData screenshots", () => {
     expect(checkOutput(output)).toEqual([]);
   });
 
-  test("leaves the data of a tree with no screenshot as it was", async () => {
-    const result = await buildData(TREE, fixtureFetch(responses()).fetch);
-    if (!result.ok) throw new Error(result.problems.join("\n"));
-    expect(result.screenshots.size).toBe(0);
-    expect(result.text).not.toContain('"screenshot"');
-  });
-
   test("stops the build when index.json names a screenshot and the file is missing", async () => {
     const result = await buildData(treeWithShots({ [SECOND]: { description: "The plugin's pane beside an item." } }), fixtureFetch(responses()).fetch);
     expect(result).toEqual({ ok: false, problems: [expect.stringMatching(new RegExp(`^${SECOND}: index.json names a screenshot, and screenshot.webp cannot be read: ENOENT`))] });

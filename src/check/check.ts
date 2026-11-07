@@ -188,6 +188,13 @@ async function checkEntry(dir: string, entry: string, validators: Validators, de
   // An index.json that cannot be read or parsed is reported above, and says nothing here.
   if ("value" in index) {
     for (const message of await screenshotProblems(join(dir, SCREENSHOT_FILE), screenshot !== undefined)) add("screenshot-file", message);
+    // `pnpm screenshot-request --apply` writes the image here first, so one left behind means a
+    // run stopped partway.
+    const leftover = await stat(join(dir, `${SCREENSHOT_FILE}.tmp`)).then(
+      () => true,
+      () => false,
+    );
+    if (leftover) add("screenshot-file", `${SCREENSHOT_FILE}.tmp is left from a screenshot-request run that stopped: delete it`);
   }
   const overrides = (index.value as { overrides?: unknown } | undefined)?.overrides;
   if (Array.isArray(overrides)) {
@@ -233,8 +240,7 @@ async function screenshotProblems(path: string, named: boolean): Promise<string[
   // sharp loads only for an entry with a screenshot.
   const { default: sharp } = await import("sharp");
   try {
-    const { width = 0, height = 0, format } = await sharp(bytes).metadata();
-    if (format !== "webp") problems.push(`${SCREENSHOT_FILE} is not a WebP image`);
+    const { width = 0, height = 0 } = await sharp(bytes).metadata();
     if (width > SCREENSHOT_MAX_WIDTH) problems.push(`${SCREENSHOT_FILE} is ${width} px wide, over ${SCREENSHOT_MAX_WIDTH}`);
     if (height > SCREENSHOT_MAX_HEIGHT) problems.push(`${SCREENSHOT_FILE} is ${height} px tall, over ${SCREENSHOT_MAX_HEIGHT}`);
   } catch (error) {

@@ -2,6 +2,7 @@
 // maintainer runs this by hand, looks at the image, and answers the issue.
 import { createHash } from "node:crypto";
 import { readFile, rename, rm, stat, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import sharp from "sharp";
 import { failed, type IssueOptions, ownerLines, quoted, readOwnerRequest, type RequestResult } from "../text-request/owner.ts";
@@ -31,7 +32,13 @@ export interface ScreenshotOptions extends IssueOptions {
   lookup?: Lookup;
   apply?: boolean;
   ownerChecked?: boolean;
+  // Where the report writes the copy for the maintainer to look at; the system temporary folder
+  // by default.
+  previewDir?: string;
 }
+
+// The preview file of one issue's copy, which each run replaces or, with no copy, removes.
+export const previewPath = (dir: string, issue: number) => join(dir, `zotdex-screenshot-${issue}.webp`);
 
 // A rule that the request breaks, found while checking the link or reading the image.
 class Problem extends Error {}
@@ -83,15 +90,16 @@ async function encode(bytes: Uint8Array): Promise<{ data: Buffer; width: number;
 async function readImage(bytes: Uint8Array): Promise<{ problems: string[]; lines: string[]; copy?: Buffer }> {
   const format = imageFormat(bytes);
   if (!format) return { problems: ["not-an-image: the file is not PNG, JPEG, or WebP"], lines: [] };
-  let width: number | undefined;
-  let height: number | undefined;
+  let width: number;
+  let height: number;
   try {
-    ({ width, height } = await sharp(bytes).metadata());
+    // A size that sharp does not give reads as 0, and the encode below then fails.
+    ({ width = 0, height = 0 } = await sharp(bytes).metadata());
   } catch (error) {
     return { problems: [`unreadable-image: ${(error as Error).message}`], lines: [] };
   }
-  if (width === undefined || height === undefined) return { problems: ["unreadable-image: sharp reads no width or height"], lines: [] };
-  // The SHA-256 lets the maintainer match the image looked at with the one --apply writes.
+  // The SHA-256 lets the maintainer match the report run, whose copy they looked at, with the
+  // --apply run.
   const sha256 = createHash("sha256").update(bytes).digest("hex");
   const lines = [`image: ${format} ${width}x${height} ${bytes.byteLength} bytes sha256 ${sha256}`];
   if (width > IMAGE_MAX_PIXELS || height > IMAGE_MAX_PIXELS) {
@@ -129,7 +137,7 @@ const writeIndex = (path: string, index: EntryIndex) => writeFile(path, `${JSON.
 // screenshot for a blank field. Status 0 with `apply` and a removal from an entry with no
 // screenshot writes nothing.
 export async function screenshotRequest(options: ScreenshotOptions): Promise<RequestResult> {
-  const { fetch, file, lookup = systemLookup, issue, apply = false, ownerChecked = false } = options;
+  const { fetch, file, lookup = systemLookup, issue, apply = false, ownerChecked = false, previewDir = tmpdir() } = options;
   const read = await readOwnerRequest(options, SCREENSHOT_LABEL, parseScreenshotRequest);
   if (!read.ok) return read.result;
   const { request, record, entry, matches, organization } = read.read;
@@ -146,6 +154,9 @@ export async function screenshotRequest(options: ScreenshotOptions): Promise<Req
   const lines = [`plugin: ${quoted(record.id)}`];
   const problems: string[] = [];
   let copy: Buffer | undefined;
+  if (removal && file !== undefined) {
+    return failed("file-with-removal", "the Screenshot field is blank, so the request removes the screenshot and reads no --file image");
+  }
   if (removal) {
     lines.push("request: remove the screenshot, since the Screenshot field is blank", ...ownerLines(read.read));
     if (current) lines.push(`removes-screenshot: ${quoted(String(current.description))}`);
@@ -176,6 +187,19 @@ export async function screenshotRequest(options: ScreenshotOptions): Promise<Req
       lines.push(...image.lines);
       problems.push(...image.problems);
       copy = image.copy;
+    }
+    // The maintainer looks at this file, the copy that --apply writes, and not at the issue page,
+    // which can show another image than the link that the command reads.
+    const preview = previewPath(previewDir, issue);
+    try {
+      if (copy) {
+        await writeFile(preview, copy);
+        lines.push(`preview: ${quoted(preview)}`);
+      } else {
+        await rm(preview, { force: true });
+      }
+    } catch (error) {
+      return failed("preview-failed", `${preview}: ${(error as Error).message}`);
     }
     for (const problem of textProblems("description", request.description, shownName(record))) problems.push(`description-${problem}`);
   }

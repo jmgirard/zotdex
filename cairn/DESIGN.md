@@ -461,8 +461,9 @@ user reports. The exception is a report that is abuse.
   `screenshot.webp`, a file that `index.json` does not name, and a file that
   is not WebP or passes 1600 px wide, 2400 px tall, or 1 MiB, with sharp
   loaded only for an entry that has the file, which the discovery bot's merge
-  check also runs (M114, D-081). It refuses a screenshot description of only
-  whitespace and format characters as `reason-not-blank`.
+  check also runs (M114, D-081), and a `screenshot.webp.tmp` that a stopped
+  apply left. It refuses a screenshot description of only whitespace and
+  format characters as `reason-not-blank`.
 - Upstream reader (`src/upstream/`): `readUpstream(repoUrl, fetch, {
   lookup, signal })` returns the facts of one GitHub repo with the URL and
   SHA-256 of the XPI it read (M047), the repo's topics (M056), and each URL
@@ -679,7 +680,11 @@ user reports. The exception is a report that is abuse.
   `screenshot` issue through `readOwnerRequest`, checks the one image link's
   host, downloads it with the reader's `downloader` and the same check on each
   redirect against `SCREENSHOT_HOSTS` (a `--file` image skips only the
-  redirects), makes the WebP copy in the report, and with `--apply` writes the
+  redirects), makes the WebP copy in the report and writes it to
+  `zotdex-screenshot-<issue>.webp` in the system temporary folder for the
+  maintainer to look at, since the issue page can show another image than the
+  link `imageLinks` reads (it skips comments, code, and a `src` inside another
+  attribute), and with `--apply` writes the
   copy and `index.json`'s `screenshot`, or removes both, re-reading
   `index.json` just before it writes. The exit statuses are `pnpm
   text-request`'s (M114, D-081). `readOwnerRequest` reads the entry's

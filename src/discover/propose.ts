@@ -597,7 +597,7 @@ export function keptLines(index: unknown): string[] {
     // A screenshot comes from the listed repo's owner (D-081), so the maintainer decides whether it stays.
     ...(screenshot ? [`- Kept screenshot that the listed repo's owner asked for: ${code(String(screenshot.description))}, ${code(String(screenshot.reason))}`] : []),
   ];
-  return lines.length > 0 ? lines : ["- Kept from `index.json`: no override and no paid-service mark"];
+  return lines.length > 0 ? lines : ["- Kept from `index.json`: no override, no paid-service mark, and no screenshot"];
 }
 
 // The lines under DETAILS_HEADING. A name goes in a code span, so it cannot add a line or

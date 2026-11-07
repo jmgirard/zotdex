@@ -857,7 +857,7 @@ describe("the write step checks the bot pull requests again and the index at the
       pushFromClone(remote, tempDir(), { [`plugins/${ID}/meta.json`]: meta("bob/copy"), [`plugins/${ID}/index.json`]: `${JSON.stringify({ schemaVersion: 1 })}\n` });
       const { fetch, requests } = fixtureFetch(opened);
       await proposeHandoff({ fetch, indexRepo: "example/index", gitDir: work, check: async () => ({ status: 0, output: "" }), entries: [replacing()] });
-      expect(JSON.parse(requests.find(({ method, url }) => method === "POST" && url === PULLS)!.body!).body).toContain("- Kept from `index.json`: no override and no paid-service mark");
+      expect(JSON.parse(requests.find(({ method, url }) => method === "POST" && url === PULLS)!.body!).body).toContain("- Kept from `index.json`: no override, no paid-service mark, and no screenshot");
     });
 
     test("names a kept override's version, and says not read for a release it could not read", () => {

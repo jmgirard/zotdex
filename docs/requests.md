@@ -248,7 +248,8 @@ The request follows these rules. `src/screenshot-request/rules.ts` holds their
 hosts and limits:
 
 - The Screenshot field holds one image link. An image link is a Markdown
-  image or an `<img>` element, which GitHub writes for an attached image.
+  image or the `src` attribute of an `<img>` element, which GitHub writes for
+  an attached image. An image in an HTML comment or in code does not count.
 - The link and each redirect use HTTPS and stay on the hosts in
   `SCREENSHOT_HOSTS`. GitHub's attachment links are on `github.com` and
   redirect to its file host. A link of any other scheme, such as `data:` or
@@ -273,9 +274,10 @@ The command reads the issue and the owner of the entry's repository, and checks
 the owner as `pnpm text-request` does. It downloads the image and prints the
 plugin, each image link, the description, the issue's author, the owner, and
 whether the two match. It also prints the image's format, its sizes in pixels
-and in bytes, and the SHA-256 of its bytes. Compare that SHA-256 in the
-`--apply` run with the image that you looked at. It makes the index's copy and
-prints the copy's size in pixels and in bytes. It prints the description of the
+and in bytes, and the SHA-256 of its bytes. It makes the index's copy, prints
+the copy's size in pixels and in bytes, and writes the copy to
+`zotdex-screenshot-<issue>.webp` in the system temporary folder. The `preview:`
+line names that file. It prints the description of the
 screenshot that the request replaces or removes, and the age of the data file.
 It prints each rule that the request breaks as a `problem:` line. A rule of the
 description prints as `description-` and the name that `pnpm text-request`
@@ -283,19 +285,27 @@ gives the rule.
 
 The command has the three exit statuses of `pnpm text-request`. A download
 that fails or gets an HTTP error is a named failure, so it exits 2. A removal
-from an entry with no screenshot writes nothing and exits 0.
+from an entry with no screenshot writes nothing and exits 0. A removal with
+`--file` is a named failure.
 
-If the download does not work, save the image by hand, look at it, and run the
-command with `--file <path>`. The command then reads that file in place of the
+If the download does not work, save the image by hand and run the command
+with `--file <path>`. The command then reads that file in place of the
 download. It still checks the Screenshot field, the link's own host, the
-image, its size, and the description. Only the redirects go unchecked.
+image, its size, and the description. Only the redirects go unchecked. If a
+redirect goes to a host that is not in `SCREENSHOT_HOSTS`, the command prints
+`host-not-allowed` with that address. If the address is GitHub's own file host,
+use `--file`.
 
 The command makes the index's copy with sharp. Sharp turns the image upright
 by its orientation tag. It makes the image fit within 1600 by 2400 pixels, but
 never larger. It saves the copy as WebP with no metadata. If the copy is more
 than 1 MiB, ask the owner for a smaller image.
 
-Look at the image before you apply it. With `--apply`, the command writes the
+Before you apply a screenshot, open the preview file and look at it. Do not
+rely on the issue page, which can show another image than the one the command
+reads. The `--apply` run reads the image again, so make sure that its SHA-256
+is the same as in the run whose preview you looked at. With `--apply`, the
+command writes the
 copy to `plugins/<id>/screenshot.webp` and sets the `screenshot` field of the
 entry's `index.json`, as [data.md](data.md#plugin-entries) says. It reads
 `index.json` again just before it writes, so it keeps other edits to the file.

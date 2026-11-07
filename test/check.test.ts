@@ -349,7 +349,9 @@ describe("checkTree", () => {
 
   test("index-schema: a screenshot with no reason or a blank description", async () => {
     const file = await webp(10, 10);
-    expect(await screenshotFindings({ description: SCREENSHOT.description }, file)).toEqual([expect.objectContaining({ rule: "index-schema" })]);
+    expect(await screenshotFindings({ description: SCREENSHOT.description }, file)).toEqual([
+      { entry: ENTRY, rule: "index-schema", message: "index.json: /screenshot must have required property 'reason'" },
+    ]);
     // minLength and pattern each refuse the empty text.
     expect(await screenshotFindings({ ...SCREENSHOT, description: "" }, file)).toEqual([
       { entry: ENTRY, rule: "index-schema", message: "index.json: /screenshot/description must NOT have fewer than 1 characters" },
@@ -389,6 +391,13 @@ describe("checkTree", () => {
     const file = Buffer.concat([Buffer.from("RIFF\x10\x00\x00\x00WEBP", "latin1"), Buffer.from("junk junk junk")]);
     expect(await screenshotFindings(SCREENSHOT, file)).toEqual([
       { entry: ENTRY, rule: "screenshot-file", message: expect.stringMatching(/^screenshot\.webp is not a readable image: /) },
+    ]);
+  });
+
+  test("screenshot-file: a temporary file that a stopped screenshot-request run left", async () => {
+    const root = treeWith((dir) => writeFileSync(join(dir, "screenshot.webp.tmp"), "partial"));
+    expect((await checkTree(root, compileValidators({}))).findings).toEqual([
+      { entry: ENTRY, rule: "screenshot-file", message: "screenshot.webp.tmp is left from a screenshot-request run that stopped: delete it" },
     ]);
   });
 

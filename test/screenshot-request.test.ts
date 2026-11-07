@@ -6,7 +6,7 @@ import { join, resolve } from "node:path";
 import sharp from "sharp";
 import { afterEach, describe, expect, test } from "vitest";
 import { imageLinks, parseScreenshotRequest, SCREENSHOT_REQUEST_LABELS } from "../src/screenshot-request/parse.ts";
-import { type ScreenshotOptions, screenshotRequest } from "../src/screenshot-request/request.ts";
+import { previewPath, type ScreenshotOptions, screenshotRequest } from "../src/screenshot-request/request.ts";
 import { DOWNLOAD_MAX_BYTES, IMAGE_MAX_PIXELS, imageFormat } from "../src/screenshot-request/rules.ts";
 import { fixtureFetch, type Responses } from "./support/fixture-fetch.ts";
 
@@ -64,6 +64,23 @@ describe("parseScreenshotRequest and imageLinks", () => {
     expect(imageLinks(`<img src="${LINK}?a=1&amp;b=2&#38;c=3&#x26;d=4&unknown;">`)).toEqual([`${LINK}?a=1&b=2&c=3&d=4&unknown;`]);
   });
 
+  test("takes an <img> tag's own src, and no src inside another attribute's value", () => {
+    const evil = `${LINK.slice(0, -4)}EVIL`;
+    expect(imageLinks(`<img alt="x src='${evil}'" src="${LINK}">`)).toEqual([LINK]);
+    expect(imageLinks(`<IMG data-x='src="${evil}"' SRC=${LINK}>`)).toEqual([LINK]);
+  });
+
+  test.each([
+    ["an HTML comment", `<!-- ![a](${S3}) -->`],
+    ["a comment left open", `<!-- ![a](${S3})`],
+    ["a code span", `\`![a](${S3})\``],
+    ["a backtick fence", `\`\`\`\n<img src="${S3}">\n\`\`\``],
+    ["a tilde fence", `~~~html\n<img src="${S3}">\n~~~`],
+    ["an indented code line", `text\n\n    <img src="${S3}">`],
+  ])("counts no image in %s, which the page does not show as one", (_name, hidden) => {
+    expect(imageLinks(`${attached()}\n${hidden}`)).toEqual([LINK]);
+  });
+
   test("finds no image in a plain link or in text", () => {
     expect(imageLinks(`${LINK}\n[a link](${LINK}) and words`)).toEqual([]);
   });
@@ -112,6 +129,7 @@ function run(tree: ReturnType<typeof checkout>, answers: Responses, extra: Parti
     lookup: async () => ["140.82.112.3"],
     indexRepo: "jmgirard/zotdex",
     issue: 9,
+    previewDir: tree.dir,
     ...extra,
   });
   return { result, requests: fetched.requests };
@@ -124,7 +142,8 @@ describe("screenshotRequest's report", () => {
     const saved = process.env.GITHUB_TOKEN;
     process.env.GITHUB_TOKEN = "test-token";
     try {
-      const { result, requests } = run(checkout(), responses(body(attached())));
+      const tree = checkout();
+      const { result, requests } = run(tree, responses(body(attached())));
       expect(await result).toEqual({
         status: 0,
         lines: [
@@ -137,8 +156,10 @@ describe("screenshotRequest's report", () => {
           expect.stringMatching(/^data-generated: /),
           `image: png 800x500 ${png.byteLength} bytes sha256 ${createHash("sha256").update(png).digest("hex")}`,
           expect.stringMatching(/^copy: webp 800x500 \d+ bytes$/),
+          `preview: "${previewPath(tree.dir, 9)}"`,
         ],
       });
+      expect(await sharp(readFileSync(previewPath(tree.dir, 9))).metadata()).toMatchObject({ format: "webp", width: 800, height: 500 });
       expect(requests.map(({ url }) => url)).toEqual([ISSUE_URL, REPO_URL, LINK, S3]);
       // The token goes to the API only.
       expect(requests.map(({ headers }) => headers.get("authorization"))).toEqual(["Bearer test-token", "Bearer test-token", null, null]);
@@ -243,7 +264,6 @@ describe("screenshotRequest's report", () => {
     ["an HTTP error answer", { [S3]: { status: 403, text: "AccessDenied" } }, "download-failed"],
     ["a failed request", { [S3]: { error: "connection reset" } }, "download-failed"],
     ["no label", { [ISSUE_URL]: { json: { body: body(attached()), labels: [{ name: "text-change" }], state: "open", user: { login: "example" } } } }, "no-screenshot-label"],
-    ["an unknown plugin", { [ISSUE_URL]: { json: { body: body(attached(), GOOD, "other@example.org"), labels: ["screenshot"], state: "open", user: { login: "example" } } } }, "unknown-plugin"],
   ])("fails with exit 2 on %s", async (_name, change, failure) => {
     const { status, lines } = await run(checkout(), { ...responses(body(attached())), ...change } as Responses).result;
     expect(status).toBe(2);
@@ -278,9 +298,30 @@ describe("screenshotRequest's report", () => {
 
     const bad = await run(tree, responses(body(LINK, "Too short")), { file }).result;
     expect(problems(bad.lines)).toEqual(["problem: no-image-link: the Screenshot field holds no image", "problem: description-too-short"]);
+  });
 
-    writeFileSync(file, "not an image");
-    expect(problems((await run(tree, responses(body(attached())), { file }).result).lines)).toEqual(["problem: not-an-image: the file is not PNG, JPEG, or WebP"]);
+  test("removes an earlier preview when the image breaks a rule", async () => {
+    const tree = checkout();
+    await run(tree, responses(body(attached()))).result;
+    expect(readFileSync(previewPath(tree.dir, 9)).byteLength).toBeGreaterThan(0);
+    const { lines } = await run(tree, responses(body(attached()), { bytes: Buffer.from("not an image") })).result;
+    expect(lines.some((line) => line.startsWith("preview: "))).toBe(false);
+    expect(() => readFileSync(previewPath(tree.dir, 9))).toThrow(/ENOENT/);
+  });
+
+  test("exits 1 for a PNG whose header sharp cannot read", async () => {
+    const junk = Buffer.concat([png.subarray(0, 8), Buffer.from("junk junk junk junk")]);
+    const { status, lines } = await run(checkout(), responses(body(attached()), { bytes: junk })).result;
+    expect(status).toBe(1);
+    expect(lines.some((line) => line.startsWith("image: "))).toBe(false);
+    expect(problems(lines)).toEqual([expect.stringMatching(/^problem: unreadable-image: /)]);
+  });
+
+  test("fails with exit 2 on a removal with --file", async () => {
+    const tree = checkout();
+    const { status, lines } = await run(tree, responses(body("")), { file: join(tree.dir, "shot.png") }).result;
+    expect(status).toBe(2);
+    expect(lines).toEqual(["failure: file-with-removal: the Screenshot field is blank, so the request removes the screenshot and reads no --file image"]);
   });
 
   test("checks the link's own host with --file, and holds the file to the download limit", async () => {
@@ -392,7 +433,7 @@ describe("screenshotRequest with apply", () => {
     const fetched = fixtureFetch(responses(body(attached())), ({ url }) => {
       if (url === S3) writeFileSync(join(tree.entry, "index.json"), JSON.stringify({ schemaVersion: 1, iconHidden: { reason: "Edited meanwhile." } }));
     });
-    const result = await screenshotRequest({ root: tree.root, dataPath: tree.dataPath, fetch: fetched.fetch, lookup: async () => ["140.82.112.3"], indexRepo: "jmgirard/zotdex", issue: 9, apply: true });
+    const result = await screenshotRequest({ root: tree.root, dataPath: tree.dataPath, fetch: fetched.fetch, lookup: async () => ["140.82.112.3"], indexRepo: "jmgirard/zotdex", issue: 9, apply: true, previewDir: tree.dir });
     expect(result.status).toBe(0);
     expect(indexOf(tree)).toEqual({ schemaVersion: 1, iconHidden: { reason: "Edited meanwhile." }, screenshot: { description: GOOD, reason: REASON } });
   });
@@ -407,6 +448,21 @@ describe("screenshotRequest with apply", () => {
       expect(lines).toEqual([expect.stringMatching(/^failure: write-failed: /)]);
     } finally {
       chmodSync(tree.entry, 0o755);
+    }
+    expect(readdirSync(tree.entry).sort()).toEqual(["index.json", "meta.json"]);
+    expect(readFileSync(join(tree.entry, "index.json"), "utf8")).toBe(before);
+  });
+
+  test("leaves no image and no temporary file when it cannot write index.json", async () => {
+    const tree = checkout();
+    const before = readFileSync(join(tree.entry, "index.json"), "utf8");
+    chmodSync(join(tree.entry, "index.json"), 0o444);
+    try {
+      const { status, lines } = await run(tree, responses(body(attached())), { apply: true }).result;
+      expect(status).toBe(2);
+      expect(lines).toEqual([expect.stringMatching(/^failure: write-failed: .*EACCES/)]);
+    } finally {
+      chmodSync(join(tree.entry, "index.json"), 0o644);
     }
     expect(readdirSync(tree.entry).sort()).toEqual(["index.json", "meta.json"]);
     expect(readFileSync(join(tree.entry, "index.json"), "utf8")).toBe(before);

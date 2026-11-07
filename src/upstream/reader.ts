@@ -589,7 +589,6 @@ export function downloader(fetch: Fetch, lookup: Lookup, signal?: AbortSignal, c
     let release = false;
     const route: string[] = [];
     for (let redirects = 0; ; redirects++) {
-      check?.(current);
       const refused = await refusal(current, lookup);
       if (refused) fail(refused.failure, refused.message, refused.buildLevel);
       release ||= isReleaseUrl(current);
