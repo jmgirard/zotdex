@@ -48,8 +48,9 @@ export const FULL_MARK: FullMark = {
     { cx: 13.1, cy: 4.8, r: 0.75 },
     { cx: 13.1, cy: 7, r: 0.75 },
   ],
-  // Level under the lens, a slope up past it, then level to the right edge, 1 unit tall.
-  // It ends above the body's lower corners, so it cuts only the body's straight sides.
+  // Level under the lens, a slope up past it, then level to the right edge, each level part 1
+  // unit tall. It reaches down to y = 13, where the body's lower corners begin, so it cuts only
+  // the body's straight sides.
   lidGap: [
     [1, 12],
     [10.5, 12],

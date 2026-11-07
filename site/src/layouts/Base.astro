@@ -29,7 +29,7 @@ const themeButton = `(${wireThemeButton})();`;
     <title>{title}</title>
     <meta name="description" content={description} />
     {address ? <link rel="canonical" href={address} /> : <meta name="robots" content="noindex" />}
-    {/* The PNG is for a browser that shows no SVG icon. Its sizes value lets one that does show them pick the SVG. */}
+    {/* The PNG is for a browser that shows no SVG icon. Its sizes value keeps Chrome from choosing it over the SVG. */}
     <link rel="icon" type="image/png" sizes="32x32" href={`${BASE}favicon.png`} />
     <link rel="icon" type="image/svg+xml" href={`${BASE}favicon.svg`} />
     <link rel="apple-touch-icon" href={`${BASE}apple-touch-icon.png`} />
