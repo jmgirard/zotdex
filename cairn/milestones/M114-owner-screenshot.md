@@ -1,6 +1,6 @@
 # M114: Let a plugin's owner add a screenshot
 
-- **Status:** review
+- **Status:** in-progress
 - **Priority:** normal
 - **Depends on:** M113
 - **Driving RR:** —
@@ -123,6 +123,7 @@ check text requests at once" holds the same idea for text; icons → M113.
 - 2026-11-07: T7: About's `#icons` section keeps its id under the new heading; docs/requests.md "Adding a screenshot", docs/data.md (record block, entry field, third file), docs/license.md screenshot terms, DESIGN (contract boundary, About list, overrides, check, reader, build, text and screenshot requests), D-081, and the CHANGELOG entry; the simple-english lint hook still flags older lines in those docs, left as they were.
 - 2026-11-07: claim audit: 165 claims read, 5 corrected — Base.astro, src/screenshot-request/request.ts, src/text-request/owner.ts, docs/requests.md (fresh Opus reader; open points for review: About's license line says screenshots keep "their authors' terms" while docs/license.md says owners', an approved line left as is; `--file` skips the 10 MiB download cap by design of AC3).
 - 2026-11-07: implement done; status review.
+- 2026-11-07: review return 1: AC2 and AC3 fail as written — a Screenshot link or redirect with a scheme other than http(s) exits 2 `download-failed` instead of 1 host-not-allowed, and with `--file` the link's own host is never checked; the review's fix-now findings (Review section, diff-bug #1, #2, #5–#8, #10–#12, prior-review #1, #2, #4, ripple #1–#11) ride on the same return.
 
 ## Review
 
@@ -137,3 +138,37 @@ Evidence at c4344954, 2026-11-07. Full `pnpm test` 2621 passed, 6 skipped; `pnpm
 - AC7: the three M114 lines of plain-words-copy.md read word for word from the built site text (About heading "Icons and screenshots" and its two added sentences, the license line, the owner line on first-plugin), and the About-page copy test and owner-line test pass; docs/requests.md:237 "Adding a screenshot" documents the form and `pnpm screenshot-request`, docs/data.md:87 and :277 the record block and the index.json field, docs/license.md:30 "Screenshots keep their owners' terms."
 - AC8: `pnpm test` exit 0 (type check, then 2621 passed, 6 skipped) and `pnpm check` exit 0 at c4344954.
 - gate: `cairn_validate.py` exit 0, all checks pass, 1 advisory (sizing: 8 criteria, judged at plan); no IP/GP changed, so no `cairn_impact`; generic profile names no toolchain checks.
+- spawned: diff-bug, blame-history, prior-review, ripple
+- diff-bug #1: a `replaces-entry` proposal keeps the old entry's index.json, so an old `screenshot` makes propose's check run fail falsely (no screenshot.webp copied into the check folder), and `keptLines` does not tell the maintainer that the old owner's screenshot stays — fix now
+- diff-bug #2: a truncated image passes `metadata()` in the report and fails at `--apply` as `write-failed` (exit 2) — fix now: the report makes the copy, so a decode failure is `unreadable-image` and the copy's size shows before apply
+- diff-bug #3: a link or redirect with a scheme other than http(s) (`data:`, `ftp:`) leaves the hosts but exits 2 `download-failed` — floor return (AC2 failing)
+- diff-bug #4: with `--file` the link's host is never checked — floor return (AC3: every other AC2 check still runs); the same return applies the 10 MiB limit to the file
+- diff-bug #5: across awaits — apply downloads again after the report, so print the image's SHA-256 in the report: fix now; index.json is read before the encode and written after: fix now (re-read at write time); stat-then-rm and build readEntry — reject (false: one CLI process, and the build reads a CI checkout nothing writes during it)
+- diff-bug #6: a failed write can leave screenshot.webp and index.json out of step — fix now (write order: temp image, index.json, rename; removal writes index.json first)
+- diff-bug #7: text-request's overrides read moved after the owner API read, changing which failure prints when both fail — fix now (readOwnerRequest reads the entry's index.json before the owner)
+- diff-bug #8: a missing width or height reads as `too-many-pixels` with `undefinedxundefined` — fix now (`unreadable-image`)
+- diff-bug #9: the download has no timeout — reject (false: `request` in src/upstream/reader.ts:521 sets `AbortSignal.timeout` on every request)
+- diff-bug #10: `pnpm check` now loads sharp for an entry with a screenshot, so the discovery bot's merge check loads it, which D-080 said it does not — fix now (D-081, drafted on this branch, says so)
+- diff-bug #11: `imageLinks` decodes only `&amp;` — fix now (decode numeric and named ampersand and quote entities)
+- diff-bug #12: tests — the token assertion cannot fail, the description case repeats the next test, the site order check compares against -1 for a page with no icon, the check over-1 MiB test is not exact, and new branches lack tests (unreadable-image, file-unreadable, entry-unreadable, the https part of the host check, removal of a stray file, check's non-ENOENT read and unreadable WebP) — fix now; the fixture's orientation precondition assertion — reject (false: it proves the input carries the metadata the test then shows removed, not sharp's behavior)
+- diff-bug #13: the screenshot `<img>` has no width or height, so the page shifts as it loads — follow-up: candidate row "Give screenshot images their pixel size", [low] because no AC asks for it and the shift is cosmetic
+- blame-history #1: same as diff-bug #7 — fix now (with #7)
+- blame-history #2: `readCapped` no longer rethrows ReadFailure from inside its try — reject (false: every caller's `tooLarge` throws a ReadFailure and now reaches the caller unwrapped, as its comment states; planned by T2)
+- blame-history #3: the build reads screenshot.webp with no byte cap — reject (false: .github/workflows/build.yml:56 runs `pnpm check`, which holds the 1 MiB limit, before the build)
+- blame-history #4: `check` runs before `refusal` on each hop — reject (false: informational, no conflict found)
+- prior-review #1: a description of only format characters passes `pnpm check` (the M032 gap) — fix now (`reason-not-blank` also covers `screenshot.description`)
+- prior-review #2: CHANGELOG does not tell schema users to fetch v1 again (D-007) — fix now
+- prior-review #3: README's license line omits screenshots — fix now (with ripple #2)
+- prior-review #4: check reads the whole file before its size test — fix now (stat first); the build and `--file` parts — reject for the build (false, as blame-history #3), and `--file` goes with the floor return
+- ripple #1: cairn/references/plain-words-copy.md:61-62 still shows the old owner line in the plugin-page list — fix now (mark it replaced at M114)
+- ripple #2: README.md:54-55 license line omits screenshots — fix now
+- ripple #3: README.md:27-33 lists five issue forms, not the screenshot form — fix now
+- ripple #4: docs/site.md:280-281 Details card links omit the screenshot form — fix now
+- ripple #5: cairn/DESIGN.md:171-172 page-end links omit the screenshot form — fix now
+- ripple #6: docs/maintaining.md:546-549 names two index.json rules and `reason-not-blank` without screenshot — fix now
+- ripple #7: docs/maintaining.md:608-610 writes and clears only `dist/v1/icons/` — fix now
+- ripple #8: docs/maintaining.md:590 build output omits `dist/v1/screenshots/` — fix now
+- ripple #9: cairn/DESIGN.md:527-528 and :1054-1055 build writes omit screenshots — fix now
+- ripple #10: docs/maintaining.md:796-797 partial write names only icon files — fix now
+- ripple #11: CHANGELOG.md Unreleased says About gains an "Icons" section while the M114 entry renames it — fix now (one entry names "Icons and screenshots")
+- ripple #12: propose and merge texts say a new entry has only its two files — reject (false: still true of a new entry, which never holds a screenshot)
