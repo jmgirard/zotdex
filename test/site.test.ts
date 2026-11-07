@@ -889,7 +889,7 @@ describe("the About page", () => {
       "User reports",
       "Anyone with a GitHub account can report that a plugin works or is broken, with the buttons on its page. " +
         "A bot checks each report, and Zotdex counts the ones that pass, keeping each person's latest for each Zotero version. " +
-        "The counts start over with each new release, and they show what people found, not what Zotdex tested.",
+        "The counts start over with each new release of the plugin, and they show what people found, not what Zotdex tested.",
     ],
     [
       "descriptions",
