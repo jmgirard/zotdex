@@ -32,20 +32,20 @@ text, which M109 set.
 
 ## Acceptance criteria
 
-- [ ] AC1: Each line of the "Plugin page (M110)" section of
+- [x] AC1: Each line of the "Plugin page (M110)" section of
   `cairn/references/plain-words-copy.md`, except its first and last, shows
   on a built plugin page as written, with `{…}` and `<date>` filled from the
   record, on one site-test fixture record that shows it (from the shared
   fixtures or the kept-record build in `test/site.test.ts`), as site tests
   show.
-- [ ] AC2: The "Older data" badge of the kept record in the site test's
+- [x] AC2: The "Older data" badge of the kept record in the site test's
   kept-record build carries the copy's badge title on its home row and on
   its plugin page, with the date from its `kept.readAt` written by
   `longDay`, as a site test shows.
-- [ ] AC3: The built About page names "Source code in the repository's top
+- [x] AC3: The built About page names "Source code in the repository's top
   folder", the "Corrections by Zotdex" table, and its "In use" column where
   it named the old labels, as a site test shows.
-- [ ] AC4: At the branch head, the text outside code comments of each file
+- [x] AC4: At the branch head, the text outside code comments of each file
   under `site/src/pages/plugins/`, `site/src/data.ts`,
   `site/src/pages/index.astro`, and `docs/site.md`, with line breaks joined
   into spaces, holds none of "Zotero compatibility", "the release the index
@@ -59,7 +59,7 @@ text, which M109 set.
   "Index categories", "Menus and settings in", and "Unknown (no translations
   found)" outside a sentence that names them as earlier wording; as a search
   of those files shows.
-- [ ] AC5: In the browser pane at 375 px and 1280 px, the plugin page of
+- [x] AC5: In the browser pane at 375 px and 1280 px, the plugin page of
   `filetrans@euclpts.com` (corrections and a paid-service fact), from a site
   built from the deployed data, shows its version card, Details card, and
   Corrections table with the page's `documentElement.scrollWidth` equal to
@@ -110,3 +110,13 @@ text, which M109 set.
 - 2026-11-07: claim audit: 83 claims read, 1 corrected — `site/src/pages/plugins/[id]/index.astro`, `CHANGELOG.md`, `test/site.test.ts`; "Updates come from" became "Checks for updates at", since `updateHost` is the `update_url` host and the update file can download elsewhere; the "couldn't reach" Older data wording stays to match the approved home legend; both at the user's choice, shown old line, problem, and new line per CLAUDE.md.
 
 ## Decisions
+
+## Review
+
+- AC1: `pnpm test` at 14444191, 2515 passed, 6 skipped. Each copy line has a passing site test on a fixture record: the kept note (kept-record build), the failure line ("shows the table of %s"), "Zotdex categories" and the buttons ("opens the main content of %s"), the install note, "Zotero versions" and its line under it, the headers ("names the table's columns"), the cells (`expectedRows`, the extra-majors test), "Supported versions:" (the About-link test), the report line and buttons, every Details label and value (the Details list test, the paid, archived, source, repository, prerelease, and languages tests), the Corrections heading, text, headers, and "Plugin file:" lines, the two owner links, and the badge card text.
+- AC2: vitest by name at 14444191, passed: "a kept record > shows the row … plus an Older data badge" asserts the home row's badge title "Zotdex couldn't reach this plugin in its latest update, so these facts are from <date>", the date being the fixture `readAt` 2026-11-03 written by `longDay`, and "says on the plugin page that the build …" asserts the same badge in the plugin page's h1.
+- AC3: vitest by name at 14444191, passed: "the About page > says which user reports count, …" asserts About's "Corrections by Zotdex" table sentence, its "In use" column sentence, and "Source code in the repository's top folder".
+- AC4: a node script (scratchpad `ac4.mjs`) joins each file's lines, drops `//` comments, and searches the 4 files (`site/src/pages/plugins/[id]/index.astro`, `site/src/data.ts`, `site/src/pages/index.astro`, `docs/site.md`) for the 16 strings, and DESIGN's joined text for the 4 quoted labels: at 14444191, 1 hit, DESIGN's "(named "Menus and settings in" before M109)", an earlier-wording sentence the criterion exempts; the same script on main's files finds 28 hits, so it can fail.
+- AC5: site rebuilt at 14444191 from the deployed `v1/plugins.json` (743 pages); in the browser pane, `filetrans@euclpts.com` in 375 px and 1280 px iframes shows the version card, Details card, and Corrections table, with `documentElement.scrollWidth` 375 and 1280 equal to `clientWidth` (T6's planted 900 px div showed the check can fail); `pnpm test` 2515 passed (AC1 run); `CHANGELOG.md` Unreleased has one entry for the change, its first bullet.
+- Consistency gate: `cairn_validate.py` all checks passed (after rewording one Review line that quoted a long-form date); no principle changed, so no `cairn_impact`; the generic profile names no toolchain checks.
+- spawned: diff-bug, blame-history, prior-review, ripple
