@@ -319,6 +319,14 @@ jobs:
         with:
           name: scan-results
           path: ${{ runner.temp }}/scan
+      # Plugin code in a start-test job can upload an artifact under any name, so results whose
+      # SHA-256 is not the malware-scan job's output add nothing. It prints a warning line for
+      # each plugin whose file ClamAV flagged.
+      - env:
+          SCAN_SHA256: ${{ needs.malware-scan.outputs.scan-sha256 }}
+        run: >-
+          pnpm add-scan-results --data dist/v1/plugins.json --results "$RUNNER_TEMP/scan/scan-results.json"
+          --expect "$SCAN_SHA256"
       # Writes the site pages into dist/ beside the data. A failed site build deploys
       # nothing.
       - run: pnpm site

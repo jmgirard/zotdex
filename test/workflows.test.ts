@@ -237,6 +237,19 @@ describe("build.yml", () => {
     expect(site.match(/^ {4}if:.*$/m)?.[0]).not.toContain("malware-scan");
   });
 
+  test("adds the scan results in the site job, checked against the malware-scan job's SHA-256, before the site build", () => {
+    const site = jobText(build, "site");
+    const download = site.search(/^ {10}name: scan-results$/m);
+    const add = site.indexOf(
+      "      - env:\n          SCAN_SHA256: ${{ needs.malware-scan.outputs.scan-sha256 }}\n        run: >-\n" +
+        '          pnpm add-scan-results --data dist/v1/plugins.json --results "$RUNNER_TEMP/scan/scan-results.json"\n' +
+        '          --expect "$SCAN_SHA256"\n',
+    );
+    expect(download).toBeGreaterThan(site.indexOf("pnpm add-start-results"));
+    expect(add).toBeGreaterThan(download);
+    expect(site.indexOf("      - run: pnpm site\n")).toBeGreaterThan(add);
+  });
+
   // The github-pages environment refuses a deploy from any other branch, which failed the run.
   test("deploys only for a scheduled run or a dispatched run on the default branch", () => {
     expect(jobText(build, "deploy").match(/^ {4}if:.*$/gm)).toEqual([

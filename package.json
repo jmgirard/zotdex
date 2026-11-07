@@ -11,6 +11,7 @@
   },
   "scripts": {
     "add-plugin": "node src/add-plugin/cli.ts",
+    "add-scan-results": "node src/malware-scan/add-results-cli.ts",
     "add-start-results": "node src/start-test/add-results-cli.ts",
     "build": "node src/build/cli.ts",
     "carry-scan-results": "node src/malware-scan/carry-cli.ts",
