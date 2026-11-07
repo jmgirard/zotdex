@@ -7,7 +7,7 @@ _Last hygiene check: 2026-11-06 (M106 review: lens mark live on the site; 2 icon
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M107 | Shorten the README and move its detail to docs/ | in-progress | — | normal | milestones/M107-short-readme.md |
+| M107 | Shorten the README and move its detail to docs/ | review | — | normal | milestones/M107-short-readme.md |
 | M108 | Show the full Zotdex mark in the top bar | planned | — | high | milestones/M108-full-mark-top-bar.md |
 | M106 | Replace the puzzle piece with the Zotdex lens mark | done | — | high | milestones/archive/M106-zotdex-lens-mark.md |
 | M105 | Offer plugin authors a README badge | done | — | high | milestones/archive/M105-author-badge.md |
@@ -53,4 +53,5 @@ _Last hygiene check: 2026-11-06 (M106 review: lens mark live on the site; 2 icon
 - [parked] Tighten link previews and the icon: no mark at a cut; a cut can keep stray spaces or leave a short or U+200B-only text; over 200 opening spaces drops the text; `ORIGIN` repeats the address; About gives no source for stars and other facts (M094 review); no one looked at the logo in forced colors or at which icon Chrome picks under the PNG's `sizes`, and no `/favicon.ico` serves tools that skip link tags (M106 review); promote when a user reports it — added 2026-11-04 — M094
 - [parked] Name the build on the failure page: an unread plugin's page says "The last build could not read this plugin", which is false after a build that deploys nothing, since the page then comes from an earlier build; M100 gave the kept note "The build that wrote this page, on <day>, …" (M100 review); promote when a user reports it — added 2026-11-05 — M100
 - [parked] Print each entry id on one log line: Print entry ids on one line in the build log: `pnpm build` prints each failed record's entry id as it is, and no schema limits an id, so an id holding a line break can start a workflow command line; the timing lines already write one as a space (M101 review); promote when a user reports it — added 2026-11-05 — M101
+- [parked] Say that an override value needs text: `pnpm check` refuses an override whose `value` is empty (`test/check.test.ts`), but `docs/data.md` states only the field and reason limits (M107 claim audit); promote when a user reports it — added 2026-11-06 — M107
 <!-- one line per idea, high → normal → low → parked: `- [token] short title: detail — added YYYY-MM-DD — links`; tracking-rules "Candidate priority token" and "Candidate short title" have the rules -->

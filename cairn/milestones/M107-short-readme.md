@@ -1,6 +1,6 @@
 # M107: Shorten the README and move its detail to docs/
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** normal
 - **Depends on:** —
 - **Driving RR:** —
@@ -140,6 +140,10 @@ of the About change waits for a `Build data` run (offered after the merge).
 - 2026-11-06: T5 done: the license test, changed first, failed on the old `#license` link (Received `https://github.com/jmgirard/zotdex#license`), then passed after `LICENSE_HREF` and the About card changed.
 - 2026-11-06: T6 done: one `## Unreleased` entry naming the five docs files and the License link.
 - 2026-11-06: T7 done: README 55 lines; `check_move.py` 0 structural problems, 23 changed paragraphs (all link or reference edits); AC4 search leaves only plugin-README, badge, file-name, and docs-naming hits; long-line check rewrapped 6 CHANGELOG lines and 2 workflow comments; `pnpm test` 2508 passed, 6 skipped; `pnpm check` 741 entries, 0 problems.
+- 2026-11-06: merged origin/main (M108 plan, cairn/ only) into the branch; the ROADMAP conflict kept both rows; `pnpm test` 2508 passed, 6 skipped, and `pnpm check` 0 problems after the merge.
+- 2026-11-06: claim audit: 74 claims read, 3 corrected — README.md (About names four topics, not "each fact"), CHANGELOG.md (the move also changed two license sentences), test/check.test.ts (the comment claimed an empty-value limit that no docs file states, a gap from before this branch); the same reader re-read all three as OK.
+- 2026-11-06: the docs never state that an override's `value` must not be empty; filed as parked candidate row "Say that an override value needs text", since the moved text stays unchanged here.
+- 2026-11-06: after the last full `pnpm test`, only README and CHANGELOG prose and one test comment changed; status set to review.
 
 ## Decisions
 

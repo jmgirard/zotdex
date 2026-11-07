@@ -9,7 +9,8 @@ plugins it lists.
 ## The site
 
 The website <https://zotdex.jmgirard.com/> shows the index. Its About page
-says how the index reads each fact.
+says how the index reads the declared range, the start tests, the user
+reports, and the descriptions.
 
 ## The data
 
