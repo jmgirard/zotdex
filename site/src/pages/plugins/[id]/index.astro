@@ -45,7 +45,7 @@ export function getStaticPaths() {
 
 const { record } = Astro.props as { record: PluginRecord };
 const { zoteroRelease, generatedAt } = loadData();
-const { upstream, failure, overrides, paidService, kept } = record;
+const { upstream, failure, overrides, paidService, kept, screenshot } = record;
 const paidHref = paidService && safeHref(paidService.source);
 const repoUrl = upstream?.repoUrl ?? record.repoUrl;
 const repoHref = safeHref(repoUrl);
@@ -171,11 +171,22 @@ const { min, max } = declaredRange(record);
       </div>
     </div>
     {
-      upstream?.icon && (
-        <div class="head-side">
-          <span class="icon-tile" data-icon-tile>
-            <img src={`${BASE}v1/${upstream.icon}`} alt="" width="64" height="64" data-icon />
-          </span>
+      (upstream?.icon || screenshot) && (
+        <div class:list={["head-side", screenshot && "with-screenshot"]}>
+          {
+            upstream?.icon && (
+              <span class="icon-tile" data-icon-tile>
+                <img src={`${BASE}v1/${upstream.icon}`} alt="" width="64" height="64" data-icon />
+              </span>
+            )
+          }
+          {
+            screenshot && (
+              <a class="screenshot" href={`${BASE}v1/${screenshot.file}`} data-screenshot>
+                <img src={`${BASE}v1/${screenshot.file}`} alt={screenshot.alt} decoding="async" />
+              </a>
+            )
+          }
         </div>
       )
     }

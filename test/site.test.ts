@@ -533,15 +533,15 @@ describe("the plugin page", () => {
     const main = html.slice(html.indexOf("<main>") + "<main>".length, html.indexOf("</main>"));
     const head = new RegExp(
       `^<a class="back" href="/" data-back>${ICON}All plugins</a>` +
-        `<div class="page-head" data-page-head><div class="head-text">(.*?)<div class="actions" data-links>(.*?)</div></div>((?:<div class="head-side">.*?</div>)?)</div>`,
+        `<div class="page-head" data-page-head><div class="head-text">(.*?)<div class="actions" data-links>(.*?)</div></div>((?:<div class="head-side[^"]*">.*?</div>)?)</div>`,
       "s",
     ).exec(main.replace(/>\s+</g, "><").trim());
-    const { upstream } = record;
-    expect(head?.[3]).toBe(
-      upstream?.icon
-        ? `<div class="head-side"><span class="icon-tile" data-icon-tile><img src="/v1/${upstream.icon}" alt="" width="64" height="64" data-icon></span></div>`
-        : "",
-    );
+    const { upstream, screenshot } = record;
+    const icon = upstream?.icon ? `<span class="icon-tile" data-icon-tile><img src="/v1/${upstream.icon}" alt="" width="64" height="64" data-icon></span>` : "";
+    const shot = screenshot
+      ? `<a class="screenshot" href="/v1/${screenshot.file}" data-screenshot><img src="/v1/${screenshot.file}" alt="${escaped(screenshot.alt).replaceAll("&#39;", "'")}" decoding="async"></a>`
+      : "";
+    expect(head?.[3]).toBe(icon || shot ? `<div class="head-side${shot ? " with-screenshot" : ""}">${icon}${shot}</div>` : "");
     const repoUrl = upstream?.repoUrl ?? record.repoUrl;
     const github = githubRepo(repoUrl);
     const shownCategories = CATEGORIES.filter(({ slug }) => categories(record).includes(slug)).map(
@@ -2177,6 +2177,34 @@ describe("the built site", () => {
     }
     expect(home()).not.toContain("data-screenshot-request");
     expect(readFileSync(join(out, "about/index.html"), "utf8")).not.toContain("data-screenshot-request");
+  });
+
+  test("shows a record's screenshot as one link to its file holding an image with its alt text, and none on another page", () => {
+    const withShot = records.filter(({ screenshot }) => screenshot);
+    expect(withShot.map(({ id }) => id).sort()).toEqual(["a-cafe@example.org", "first-plugin@example.org"]);
+    for (const { id, screenshot } of records) {
+      const html = page(id);
+      const links = [...html.matchAll(/<a class="screenshot" href="([^"]*)" data-screenshot><img src="([^"]*)" alt="([^"]*)"/g)];
+      expect(html.match(/data-screenshot[\s>]/g) ?? [], id).toHaveLength(screenshot ? 1 : 0);
+      if (!screenshot) continue;
+      expect(links, id).toHaveLength(1);
+      expect(unescaped(links[0]![1]!), id).toBe(`/v1/${screenshot.file}`);
+      expect(unescaped(links[0]![3]!), id).toBe(screenshot.alt);
+    }
+    expect(home()).not.toMatch(/data-screenshot[\s>]/);
+  });
+
+  test("puts the screenshot after the links and before the install note, or before the version card with no note", () => {
+    for (const id of ["first-plugin@example.org", "a-cafe@example.org"]) {
+      const html = page(id);
+      const at = html.indexOf("data-screenshot>");
+      const next = html.includes('data-fact="install-note"') ? html.indexOf('data-fact="install-note"') : html.indexOf('data-section="compatibility"');
+      expect(at, id).toBeGreaterThan(html.indexOf('<div class="actions" data-links>'));
+      expect(at, id).toBeGreaterThan(html.indexOf("data-icon-tile"));
+      expect(at, id).toBeLessThan(next);
+    }
+    expect(page("a-cafe@example.org")).toContain('data-fact="install-note"');
+    expect(page("first-plugin@example.org")).not.toContain('data-fact="install-note"');
   });
 
   test("offers no badge on any page", () => {

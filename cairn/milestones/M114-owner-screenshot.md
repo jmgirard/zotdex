@@ -89,7 +89,7 @@ check text requests at once" holds the same idea for text; icons → M113.
       :143 reads only the two JSON files today); tests.
 - [x] T5: Copy screenshots in `src/build/build.ts` `writeData` and add the record field and plugins.v1 schema entry;
       tests, with the fixed output of `test/build.test.ts` in mind (lesson 2026-11-02, M075).
-- [ ] T6: Make `.page-head` two columns above 62.5rem, the icon over the screenshot on the right, and put the
+- [x] T6: Make `.page-head` two columns above 62.5rem, the icon over the screenshot on the right, and put the
       screenshot below `.actions` at 62.5rem and under; site tests and a fixture with a screenshot (lesson
       2026-10-30, M061); look at 375, 1000, 1024, and 1280 px in light and dark (lessons 2026-10-29 M048,
       2026-11-06 M108).
@@ -119,3 +119,4 @@ check text requests at once" holds the same idea for text; icons → M113.
 - 2026-11-07: T3: `--apply` auto-orients, fits inside 1600×2400 without growing, and writes WebP at quality 80 (sharp drops metadata); `index.json`'s field is `screenshot: { description, reason }`; `--owner-checked` works as in text-request; the over-1 MiB test uses seeded noise; the check run after apply waits for T4's schema.
 - 2026-11-07: T4: `screenshot` in index.v1 requires `description` (non-blank) and `reason`; `pnpm check` adds the rule `screenshot-file`, reads the limits from `src/screenshot-request/rules.ts`, and loads sharp only for an entry with a screenshot.webp; a blank `screenshot.reason` is `reason-not-blank`; the T3 apply and removal now pass `pnpm check` in a test.
 - 2026-11-07: T5: every record of an entry with a screenshot gets `screenshot`, a failed read included; `BuildResult.screenshots` and a required fourth `writeData` argument, which also clears stale files in `v1/screenshots/`; a named screenshot with no readable file stops the build; data of a tree with no screenshot is unchanged (lesson M075).
+- 2026-11-07: T6: the screenshot link sits in `.head-side` after the icon (DOM order: actions, icon, screenshot, then install note or version card); above 62.5rem `.head-side.with-screenshot` is a 20rem column, the image at most 30rem tall and right-aligned; at 62.5rem and under the column is `display: contents`, so the icon keeps its place beside the name and the screenshot takes row 2 under the links; fixture screenshots on first-plugin (icon, no install note) and a-cafe (no icon, install note); browser look at 1280, 1024, 1000, 375 px with a wide and a tall image, dark and light: every AC6 measure held, no horizontal scroll at 375.
