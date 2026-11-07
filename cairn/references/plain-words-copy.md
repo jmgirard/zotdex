@@ -7,7 +7,8 @@ Pagination: none.
 Extraction: first-hand, so it has nothing to re-verify against. Status: the
 user approved it at the plan question set — observed 2026-11-07. The user approved "of the
 plugin" in About's reports line after the M111 claim audit (2026-11-07). The user approved the
-icon and screenshot lines at the M113 and M114 plan question set (2026-11-07). `<v>` is the release version. `<date>` is a day in UTC written as
+icon and screenshot lines at the M113 and M114 plan question set (2026-11-07), and the
+malware scan lines at the M115 plan question set (2026-11-07). `<v>` is the release version. `<date>` is a day in UTC written as
 "November 7, 2026". `{…}` is a value that the page fills in.
 
 ## Plugin page (M110)
@@ -190,3 +191,26 @@ brackets.
 - M114, plugin page owner line, replacing "Is this your plugin? [Ask to
   change its name or description].": "Is this your plugin? [Ask to change
   its name or description] or [add a screenshot]."
+
+## Malware scan (M115)
+
+Approved at the M115 plan question set, 2026-11-07. Each change below
+replaces the line that the sections above record. Links are in brackets.
+
+- Plugin page, Details row "Malware scan", after "Release on this page":
+  "None of {n} [VirusTotal] scanners flagged this file (<date>)", "{k} of
+  {n} [VirusTotal] scanners flagged this file (<date>)", or "Not scanned
+  yet". The link goes to VirusTotal's page for the file.
+- Footer, replacing D-076's sentence: "Zotdex is an independent project,
+  not part of Zotero, and it doesn't test the safety or features of the
+  plugins it lists, beyond a malware scan by VirusTotal."
+- Install note and About's Installing section, replacing "A plugin has
+  full access to Zotero and your computer, and Zotdex doesn't test plugins'
+  safety or features, so look into a plugin before you trust it with your
+  library.": "A plugin has full access to Zotero and your computer, and
+  Zotdex doesn't test plugins' safety or features beyond a malware scan, so
+  look into a plugin before you trust it with your library."
+- About's Installing section, right after that sentence: "The malware scan
+  looks up each plugin file on VirusTotal, which checks it with about 70
+  antivirus scanners. It finds known malware only, so a clean scan doesn't
+  mean a plugin is safe."
