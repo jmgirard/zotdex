@@ -9,7 +9,7 @@ export interface Filter {
   options: readonly string[];
 }
 
-// Whether a filter is on: its value is not "" (All languages, Any) and an option
+// Whether a filter is on: its value is not "" (Any language, Any) and an option
 // has it.
 export function filterOn(filter: Filter): boolean {
   return filter.value !== "" && filter.options.includes(filter.value);
@@ -46,7 +46,7 @@ export function rowShows(row: HomeRow, language: Filter, zotero: Filter, query: 
 }
 
 // The chosen value for an address parameter: the parameter when an option has it, else ""
-// (All languages, Any).
+// (Any language, Any).
 export function chosenValue(asked: string | null, options: readonly string[]): string {
   return asked !== null && options.includes(asked) ? asked : "";
 }
@@ -90,7 +90,7 @@ export function sortOrder(sort: string): (a: SortRow, b: SortRow) => number {
 export function filterStatus(shown: number, total: number, filtering: boolean): string {
   const plugins = total === 1 ? "plugin" : "plugins";
   if (!filtering) return `${total} ${plugins}`;
-  if (shown === 0) return "No plugins match these filters.";
+  if (shown === 0) return "No plugins match. Try removing a filter.";
   return `${shown} of ${total} ${plugins}`;
 }
 

@@ -3,7 +3,8 @@
 The website <https://zotdex.jmgirard.com/> shows the index.
 A top bar on every page links to the home page and to the About page. It
 also links to the "Add a plugin" issue form, to the repository's GitHub
-Discussions as "Feedback", and to the data file. With
+Discussions as "Feedback", to the data file, and, with a GitHub mark
+labeled "Zotdex on GitHub", to the repository. With
 JavaScript, it also has a button that flips the page between the light and
 dark color schemes. The home
 page lists every plugin in one table, with the most GitHub stars first, as
@@ -47,11 +48,12 @@ Under the declared mark, a version cell shows the result of the start
 tests on that major, which "Using the data" in
 [data.md](data.md#using-the-data) describes. If more than
 one release of that major has a result, the cell shows the result of the
-newest release. A dot (●) means that the plugin started. A cross (✕) means
-that it failed at startup, did not install, or gave no answer in time. A
+newest release. A dot (●) means that the plugin loaded. A cross (✕) means
+that it failed to load, didn't install, or didn't finish loading. A
 cell with neither has no start result. A legend under the table names each
-mark. It also says that the star count comes from GitHub, that the default
-order comes from that count, and that neither is a review by the index. A
+mark. It calls the start test Zotdex's startup check and says that it tests
+no features, and it says that the list is sorted by GitHub stars, which show
+popularity, not necessarily quality. A
 plugin with no declared range shows no declared marks. If the last
 build failed to read a plugin, its row shows "Not read" in place of the
 version cells. There is one exception: a read that failed for a
@@ -62,7 +64,7 @@ the failure. "Building the data" in
 [maintaining.md](maintaining.md#building-the-data) says which failures are
 build-level.
 
-The "Menus and settings" cell shows the language codes of the plugin's
+The "Languages" cell shows the language codes of the plugin's
 languages list, after overrides, in list order. Regional forms such as
 `zh-CN` and `zh-TW` share one code. Hold the pointer over a code to read its
 name. If the list has more than 3 codes, the cell shows the first 2 and "+N"
@@ -143,19 +145,19 @@ assigns them from words in a plugin's name and descriptions. It also adds
 or removes some by hand. So a category can be wrong or missing. The About
 page lists them.
 
-The home page has a "Menus and settings in" menu. It lists each language on
+The home page has a "Language" menu. It lists each language on
 at least one plugin's languages list, after overrides, with the number of
 those plugins, such as "Chinese (2)". The languages with the most plugins
 come first, and languages with the same number of plugins come in order of
 their names. If you pick a language, the table shows only the plugins whose
 languages list includes it. The menu groups the regional forms of a
 language, so a plugin with `zh-CN` or `zh-TW` counts under Chinese.
-"All languages" passes every plugin. The page keeps your choice in the
+"Any language" passes every plugin. The page keeps your choice in the
 `language` query parameter of its address, such as `?language=zh`, so you
 can link to the filtered table. If the parameter names no language in the
 menu, the page passes every plugin and removes the parameter.
 
-The home page also has "Declares Zotero" buttons: "Any" and one button for
+The home page also has "Supports Zotero" buttons: "Any" and one button for
 each Zotero major from 7 to 10. If you press a major, the table shows only
 the plugins whose declared range covers all or part of that version. These
 are the plugins with a ✓ or ◐ mark for it. A plugin with no declared range,
@@ -165,12 +167,13 @@ your choice in the `zotero` query parameter of its address, such as
 `?zotero=8`. If the parameter names no button, the page acts as if "Any" is
 pressed and removes the parameter.
 
-The home page has a "Sort by" menu above the table, with the options Stars,
-Name, and Latest release. Stars is the default. It puts a higher GitHub star
-count first, and 0 counts as a value. Latest release puts a later release date
-first, for the release that the index read. Name ignores letter case and
-accents, and names that are then equal sort by plugin id. Under Stars and
-Latest release, a plugin with no such value comes after every plugin that has
+The home page has a "Sort by" menu above the table, with the options Most
+stars, Name, and Recently updated. Most stars is the default. It puts a higher
+GitHub star count first, and 0 counts as a value. Recently updated puts a later
+release date first, for the release that the index read. Name ignores letter
+case and accents, and names that are then equal sort by plugin id. Under Most
+stars and Recently updated, a plugin with no such value comes after every
+plugin that has
 one, and plugins that tie stay in Name order. A star count is a fact from
 GitHub. It is not a review. If you change the menu, the table shows page 1 in
 the new order. The
@@ -222,8 +225,8 @@ trailing slash is allowed. The line reads `By <owner> · <repo>`. The
 owner links to the owner's GitHub page, and the repository name links to
 the repository. If the data has a star count for the plugin, the line
 ends with a gold star icon and the count, such as "★ 8,400". A tooltip
-gives the count with its label, such as "8,400 GitHub Stars", or
-"1 GitHub Star" for a count of 1. Screen readers skip the icon and the
+gives the count with its label, such as "8,400 stars on GitHub", or
+"1 star on GitHub" for a count of 1. Screen readers skip the icon and the
 number and read hidden text with the same words. For any other address,
 the page has no repository line. If the plugin has categories, a line
 after the description lists them after the words "Index categories". Each
@@ -293,14 +296,17 @@ lists them.
 The About page says how the index shows the declared range and how the
 start test runs. It says which user reports count. It also says how
 overrides and the Used column of the Overrides table work. Each page's footer
-and the home page's intro say: "This index is unofficial and not affiliated
-with or endorsed by Zotero, and it cannot vet the plugins it lists." The About
-page gives the reason, and it says that the start test is not a review of
+says: "Zotdex is an independent project, not part of Zotero, and it doesn't
+test the safety or features of the plugins it lists." The home page's intro
+says that Zotdex is independent and unofficial and doesn't review anyone's
+code. The About page says that the index cannot vet the plugins it lists,
+gives the reason, and says that the start test is not a review of
 plugin code. It also states the terms in "License" in
 [license.md](license.md), and it links there.
 Its "Older data" section says when a row shows the facts of an earlier
 build. Each page's footer also names the day of the build that the data
-comes from.
+comes from, such as "Updated November 7, 2026.", and links to the data file
+as "Get all the data as JSON" and to the repository as "Zotdex on GitHub".
 The home page's intro also says what the site shows, and it links to the About
 page's "Installing a plugin" section (`#installing`). That section gives
 Zotero's install steps, the step for Firefox, and Zotero's warning. It also

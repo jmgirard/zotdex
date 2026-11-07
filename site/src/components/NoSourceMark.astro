@@ -1,9 +1,8 @@
 ---
 // The mark of a plugin whose repo shows no source code at its top level (D-052). The icon and
 // its tooltip are hidden from screen readers, so the hidden span carries the words once.
+import { NO_SOURCE_TEXT as TEXT } from "../data.ts";
 import Icon from "./Icon.astro";
-
-const TEXT = "No source code at the top level of the repository";
 ---
 
 <span class="no-source" data-no-source><span aria-hidden="true" title={TEXT}><Icon name="lock" /></span><span class="visually-hidden">{TEXT}</span></span>

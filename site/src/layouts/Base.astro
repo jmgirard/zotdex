@@ -3,7 +3,7 @@ import { fullShapes, PICTURES } from "../../../src/site/logo.ts";
 import { applySavedTheme, wireThemeButton } from "../../../src/site/theme.ts";
 import { BASE, ORIGIN } from "../base.ts";
 import Icon from "../components/Icon.astro";
-import { ADD_PLUGIN_HREF, day, DISCLAIMER, FEEDBACK_HREF, loadData } from "../data.ts";
+import { ADD_PLUGIN_HREF, DISCLAIMER, FEEDBACK_HREF, loadData, longDay, REPO_HREF } from "../data.ts";
 
 interface Props {
   title: string;
@@ -261,6 +261,13 @@ const themeButton = `(${wireThemeButton})();`;
       .topbar nav a:hover {
         color: var(--text);
         text-decoration: underline;
+      }
+      /* The GitHub mark sits in a box the size of the theme button beside it. */
+      .topbar nav .repo-link {
+        display: inline-grid;
+        place-items: center;
+        width: 1.75rem;
+        height: 1.75rem;
       }
       [data-theme-toggle] {
         display: inline-grid;
@@ -1111,6 +1118,7 @@ const themeButton = `(${wireThemeButton})();`;
           <a href={ADD_PLUGIN_HREF} data-add-plugin>Add a plugin</a>
           <a href={FEEDBACK_HREF} data-feedback>Feedback</a>
           <a href={`${BASE}v1/plugins.json`}>Data</a>
+          <a href={REPO_HREF} class="repo-link" data-repo title="Zotdex on GitHub" aria-label="Zotdex on GitHub"><Icon name="source" /></a>
           <button type="button" data-theme-toggle hidden>
             <span data-theme-icon="moon"><Icon name="moon" /></span>
             <span data-theme-icon="sun"><Icon name="sun" /></span>
@@ -1125,8 +1133,9 @@ const themeButton = `(${wireThemeButton})();`;
     <footer class="foot">
       <div class="foot-inner foot-rule">
         <p data-fact="disclaimer">{DISCLAIMER}</p>
-        <p>The data comes from the build of {day(generatedAt)}.</p>
-        <p>Data file: <a href={`${BASE}v1/plugins.json`}>v1/plugins.json</a></p>
+        <p>Updated {longDay(generatedAt)}.</p>
+        <p><a href={`${BASE}v1/plugins.json`}>Get all the data as JSON</a></p>
+        <p><a href={REPO_HREF} data-repo-footer>Zotdex on GitHub</a></p>
       </div>
     </footer>
   </body>

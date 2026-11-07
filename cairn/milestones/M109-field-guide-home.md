@@ -1,13 +1,13 @@
 # M109: Make the home page a field guide
 
-- **Status:** planned
+- **Status:** in-progress
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — the home page's text, every page's footer and top bar, and shared tooltip words
-- **Branch/PR:** —
+- **Branch/PR:** m109-field-guide-home
 
 ## Goal
 
@@ -98,7 +98,10 @@ signals for plugins, set aside by the user.
   "did not install", "gave no answer in time", "No plugins match these
   filters", "Menus and settings", "All languages", "Declares Zotero",
   "cannot vet the plugins", "The data comes from the build of", "Data
-  file:", "No mark:", and "Started in the start test", lists no line.
+  file:", "No mark:", and "Started in the start test", lists no line other
+  than "Menus and settings" in `site/src/pages/plugins/[id]/index.astro`,
+  "cannot vet the plugins" in `site/src/pages/about.astro`, and
+  `docs/site.md` lines that quote those two, which Out keeps.
 - [ ] AC7: In the browser pane at 375 px and 1280 px, the built home page's
   heading, footer, and GitHub links, and one plugin page's footer and
   GitHub links, are visible, with `scrollWidth` equal to `clientWidth`;
@@ -145,6 +148,14 @@ signals for plugins, set aside by the user.
 - 2026-11-07: plan widened before implement at the user's request ("widen M109 to do all of this"): from the heading and intro to the whole home page's text, the footer, shared tooltip words, and a GitHub link; 7 criteria, at the split line, kept as one milestone at the user's request.
 - 2026-11-07: question set: home copy — the copy block, approved line by line by the user in chat.
 - 2026-11-07: criteria audit (full mode, fresh Opus) of the widened criteria returned 8 findings, all taken: "Language not listed" shows only on plugin pages, so it moved to Out; AC2 covers the lock and card marks' shared text; AC3 pins the hidden start text, the plugin page's start cells, and `rangeText`; AC4 names the fixture date; AC6 lists the exact old strings and greps `site/src/`, `src/site/`, `docs/site.md`, and README.md; AC7 names what must be visible.
+
+- 2026-11-07: implement started on m109-field-guide-home, cut from main at cefc5ba6; status in-progress.
+- 2026-11-07: user rule for review: the copy block is the user's approved wording and no reviewer or fix may change it; a finding that some copy is false goes to the user, never to a rewording on the branch; reviewers are told so.
+- 2026-11-07: T2/T3 choices: `NO_SOURCE_TEXT` joins `PAID_SERVICE_TEXT` in `data.ts` so the lock mark and its legend line share one string; the top bar reuses the `source` icon, which is already Lucide's GitHub mark; `longDay` formats the footer date in UTC; `day` stays for its other uses.
+- 2026-11-07: T1 to T5 done: home page, shared words, footer, top bar link, tests, docs/site.md, DESIGN.md, CHANGELOG; site and home-filter tests 619 passed; a plant that removed the top bar's GitHub link failed "puts the top bar and the footer on every page"; Astro escapes an apostrophe in an inserted expression (`&#39;`) but not in template text, so tests compare unescaped text where an expression writes it.
+- 2026-11-07: substantive amendment: AC6 now allows "Menus and settings" in the plugin page, "cannot vet the plugins" on About, and docs/site.md lines that quote those two, which Out keeps; the first wording listed them as failures. Wording only; what users see is unchanged.
+- 2026-11-07: re-audit: AC6 (full) — the first carve-out exempted whole files, which would hide stale strings on plugin pages; narrowed to the two strings and the docs lines that quote them, as written.
+- 2026-11-07: style-hook hits in docs/site.md and CHANGELOG.md left in place at the user's direction to set Simplified English aside.
 
 ## Decisions
 

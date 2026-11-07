@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- The home page is now "Your field guide to Zotero plugins", with an intro
+  about finding plugins and plainer words throughout: the controls, the
+  table, the tooltips, and the legend, which now calls the start test
+  Zotdex's startup check and says that it tests no features. The footer on
+  every page says that Zotdex is independent and doesn't test plugins' safety
+  or features, gives the build's day as "Updated <month> <day>, <year>.", and
+  links to the data and to Zotdex on GitHub, which the top bar also links
+  with a GitHub mark. Plugin pages use the same tooltip and start-result
+  words.
 - The README now holds a short overview. Its other text moved to
   `docs/site.md`, `docs/data.md`, `docs/requests.md`, `docs/maintaining.md`,
   and `docs/license.md`. The move changed only links and two sentences in
