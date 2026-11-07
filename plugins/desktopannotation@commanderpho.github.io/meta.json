@@ -1,0 +1,8 @@
+{
+  "id": "desktopannotation@commanderpho.github.io",
+  "name": "Zotero Desktop Annotation",
+  "description": "Desktop refinements for Zotero 7 PDF reader annotations: tool hotkeys, text style memory, copy/paste, and smaller note icons.",
+  "homepage": "https://github.com/CommanderPho/zotero-desktop-annotation#readme",
+  "repoUrl": "https://github.com/CommanderPho/zotero-desktop-annotation",
+  "updateUrl": "https://github.com/CommanderPho/zotero-desktop-annotation/releases/download/release/update.json"
+}
