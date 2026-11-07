@@ -1,0 +1,8 @@
+{
+  "id": "synced-collections@zotero.plugin",
+  "name": "Synced Collections",
+  "description": "Create synchronized copies of Zotero collections so item add/remove stays in sync",
+  "homepage": "https://github.com/PeihengLu/zotero-synced-collections#readme",
+  "repoUrl": "https://github.com/PeihengLu/zotero-synced-collections",
+  "updateUrl": "https://github.com/PeihengLu/zotero-synced-collections/releases/download/release/update.json"
+}
