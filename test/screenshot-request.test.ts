@@ -328,6 +328,15 @@ describe("screenshotRequest with apply", () => {
     expect(() => readFileSync(shotOf(tree))).toThrow(/ENOENT/);
   });
 
+  test("leaves an entry that passes pnpm check after it writes and after it removes", async () => {
+    const check = (root: string) => spawnSync(process.env.npm_execpath!, ["--silent", "check", root], { encoding: "utf8", cwd: ROOT, timeout: 50_000 });
+    const tree = checkout();
+    expect((await run(tree, responses(body(attached())), { apply: true }).result).status).toBe(0);
+    expect(check(tree.root)).toMatchObject({ status: 0 });
+    expect((await run(tree, responses(body("")), { apply: true }).result).status).toBe(0);
+    expect(check(tree.root)).toMatchObject({ status: 0 });
+  });
+
   test("writes nothing for a removal from an entry with no screenshot", async () => {
     const tree = checkout();
     const before = readFileSync(join(tree.entry, "index.json"), "utf8");

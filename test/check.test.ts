@@ -2,6 +2,7 @@ import { spawnSync } from "node:child_process";
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import sharp from "sharp";
 import { afterEach, describe, expect, test } from "vitest";
 import { caseClashes, checkTree, compileValidators, entryNameProblem } from "../src/check/check.ts";
 
@@ -327,6 +328,53 @@ describe("checkTree", () => {
   test("index-schema: an empty iconHidden reason, and none for a written one", async () => {
     expect(await iconHiddenFindings({ reason: "" })).toEqual([expect.objectContaining({ rule: "index-schema" })]);
     expect(await iconHiddenFindings({ reason: "The icon shows another product's logo." })).toEqual([]);
+  });
+
+  const SCREENSHOT = { description: "The plugin's pane beside an item.", reason: "The repository's owner asked for this screenshot in issue #9." };
+  const webp = (width: number, height: number) => sharp({ create: { width, height, channels: 3, background: "#336699" } }).webp().toBuffer();
+
+  // The findings for ENTRY with `named` as index.json's screenshot and `file` as screenshot.webp.
+  async function screenshotFindings(named: unknown, file?: Uint8Array | string) {
+    const root = treeWith((dir) => {
+      if (named !== undefined) editJson(join(dir, "index.json"), (index) => (index.screenshot = named));
+      if (file !== undefined) writeFileSync(join(dir, "screenshot.webp"), file);
+    });
+    return (await checkTree(root, compileValidators({}))).findings;
+  }
+
+  test("index-schema and screenshot-file: passes an entry with a screenshot and its file, as one without both", async () => {
+    expect(await screenshotFindings(SCREENSHOT, await webp(1600, 2400))).toEqual([]);
+    expect(await screenshotFindings(undefined)).toEqual([]);
+  });
+
+  test("index-schema: a screenshot with no reason or a blank description", async () => {
+    const file = await webp(10, 10);
+    expect(await screenshotFindings({ description: SCREENSHOT.description }, file)).toEqual([expect.objectContaining({ rule: "index-schema" })]);
+    expect(await screenshotFindings({ ...SCREENSHOT, description: " " }, file)).toEqual([expect.objectContaining({ rule: "index-schema" })]);
+  });
+
+  test("reason-not-blank: a screenshot reason of only a format character", async () => {
+    expect(await screenshotFindings({ ...SCREENSHOT, reason: "​" }, await webp(10, 10))).toEqual([
+      { entry: ENTRY, rule: "reason-not-blank", message: "screenshot.reason holds only whitespace or format characters" },
+    ]);
+  });
+
+  test.each<[string, unknown, () => Promise<Uint8Array | string | undefined>, string]>([
+    ["a named screenshot with no file", SCREENSHOT, async () => undefined, "index.json names a screenshot, and screenshot.webp is missing"],
+    ["a file that index.json does not name", undefined, () => webp(10, 10), "screenshot.webp exists, and index.json names no screenshot"],
+    ["a PNG file", SCREENSHOT, () => sharp({ create: { width: 10, height: 10, channels: 3, background: "#000" } }).png().toBuffer(), "screenshot.webp is not a WebP image"],
+    ["a file 1601 px wide", SCREENSHOT, () => webp(1601, 10), "screenshot.webp is 1601 px wide, over 1600"],
+    ["a file 2401 px tall", SCREENSHOT, () => webp(10, 2401), "screenshot.webp is 2401 px tall, over 2400"],
+  ])("screenshot-file: %s", async (_name, named, file, message) => {
+    expect(await screenshotFindings(named, await file())).toEqual([{ entry: ENTRY, rule: "screenshot-file", message }]);
+  });
+
+  test("screenshot-file: a file over 1 MiB", async () => {
+    // A WebP header with more bytes after it; the size is checked before the image is read.
+    const file = Buffer.concat([await webp(10, 10), Buffer.alloc(1024 * 1024)]);
+    const findings = await screenshotFindings(SCREENSHOT, file);
+    expect(findings).toContainEqual({ entry: ENTRY, rule: "screenshot-file", message: `screenshot.webp is ${file.byteLength} bytes, over 1048576` });
+    expect(findings.every(({ rule }) => rule === "screenshot-file")).toBe(true);
   });
 
   test("passes a reason with a format character beside a letter", async () => {
