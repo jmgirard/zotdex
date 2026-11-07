@@ -3,6 +3,16 @@
 A community index of Zotero 7+ plugins. See `cairn/DESIGN.md` for purpose and
 design.
 
+## Approved page wording
+
+The user approves the site's wording line by line, as in
+`cairn/references/plain-words-copy.md`. Approved wording changes only after
+the user says yes to the new line. If a review, an audit, or a reviewer
+finds a problem in approved wording, write the smallest fix that keeps the
+page's tone and clarity. Then show the user the old line, the problem, and
+the new line, and apply it only after the user agrees. A precise rule that
+does not fit the page's tone goes in `docs/`, not on the page.
+
 ## Project tracking (cairn)
 
 This repo uses the cairn plugin. **Before acting on any request, classify it
