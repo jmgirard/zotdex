@@ -104,3 +104,28 @@ Fresh run on the branch at 1e4a7932, main at 10e690d5 (no new commits): `pnpm te
 - AC6: `git grep -i -e puzzle -e 'M15.39 4.39' -- site src` exits 1. "leaves nothing of the old puzzle piece in any built file" passes over every file of the test build, PNGs included; "Puzzle" planted in the alt text fails it (T6 work log). README's Lucide list names `Icon.astro`, `test/site.test.ts`, and the two mockup files, not `favicon.svg`, and says "the other three files point to it"; each of the three names `Icon.astro` (claim audit re-read).
 - AC7: README's favicon paragraph names the lens mark in the tab and top bar, the full logo, and the three PNG files with their uses, and its preview paragraph says a shared link shows `preview.png`. CHANGELOG's Unreleased icon entry now describes the lens mark and full logo, and no `puzzle` remains in CHANGELOG or README. About's License says "The Zotdex logo is the index's own drawing, under the same terms as its code" and credits Lucide and Feather for the other icons; its test passes. DESIGN names `src/site/logo.ts`, the four built files, `logo-png.ts`, and `sharp`; `grep` finds no `public/favicon` or `puzzle` in DESIGN.
 - Consistency gate: `cairn_validate` all checks passed (exit 0); no principle changed, so no `cairn_impact`; the generic profile names no toolchain checks.
+- spawned: diff-bug, blame-history, prior-review, ripple
+- diff-bug #1: the PNG size test reads sizes from `PICTURES`, the code under test, and `sizes="32x32"` is a separate literal, so a changed favicon size passes every test — fix now
+- diff-bug #2: no test checks that the full-mark PNGs show the three lights and the lid gap; dropping either cut passes — fix now
+- diff-bug #3: the lens mark's rim is the opening grown by 1, not a crop (the full body is 0.5 wide left of the lens), so the `lensMark` comment "nothing is redrawn" overstates — fix now (comment; AC2 defines the rim this way)
+- diff-bug #4: `favicon.png` is opaque white outside the lens, so a browser that uses it shows a white square on a dark tab strip — reject, planned change: AC4 asks for no alpha on a white background
+- diff-bug #5: the white background is drawn twice, by the SVG `<rect>` and by `flatten` — fix now (drop the rect)
+- diff-bug #6: the forced-colors rule was not rendered in a browser — follow-up: absorbed into the parked row "Tighten link previews and the icon", which keeps `promote when a user reports it`
+- diff-bug #7: ROADMAP's "Tighten link previews and the icon" still lists the PNG icon gap, and "Add a picture to link previews" is done — reject, planned change: step 9's hygiene narrows and removes them
+- diff-bug #8: Base.astro's comment that `sizes` keeps Chrome from choosing the PNG is not tested here — follow-up: absorbed into the same parked row (check which icon Chrome shows)
+- diff-bug #9: no `/favicon.ico` for tools that skip link tags — follow-up: absorbed into the same parked row; not a regression
+- diff-bug #10: ragged wraps in CHANGELOG ("link previews. A") and README ("description. The") — fix now
+- diff-bug #11 (question c): `expect(disc.r).toBeLessThan(opening.r)` in `logo.test.ts` is a weaker check before an exact one — fix now (drop it)
+- diff-bug #12 (question c): fill constants are checked inside two geometry tests of `logo.test.ts` — fix now (one fills test)
+- diff-bug #13 (question c): the name "leaves nothing of the old puzzle piece" refers to past code — reject, style; AC6 asks for the output search
+- diff-bug #14 (question c): the header test runs three times over one path and checks sharp's output format — reject, planned change: AC4 asks for each file's type and size
+- diff-bug #15 (question c): the two every-page loops run one layout path — reject, planned change: AC5 says every page
+- blame-history #1: the PNG favicon comes first and has no dark form, against M094's both-accents favicon — reject, planned change: AC4 and AC5 set an opaque PNG fallback first; the SVG keeps both schemes
+- blame-history #2: M099's guard `not.toContain(".brand::before")` was dropped with the old logo test — fix now (restore it)
+- blame-history #3: picture in link previews reverses M094's text-only choice — reject, planned change: the user asked for it at the M106 question set
+- blame-history #4: the 404 page now carries `og:image` — reject, planned change: AC5 covers every page, and no rule forbids it
+- prior-review #1: picture in previews reverses M094 — reject, planned change (as blame-history #3)
+- prior-review #2: ragged wraps — fix now (as diff-bug #10)
+- prior-review #3: M095's license-pointer test for `favicon.svg` removed — reject, planned change: the favicon holds no Lucide path
+- ripple #1: ROADMAP row "Tighten link previews and the icon" lists the PNG gap — reject, planned change (step 9 narrows it)
+- ripple #2: ROADMAP row "Add a picture to link previews" still parked — reject, planned change (step 9 removes it)
