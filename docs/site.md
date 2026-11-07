@@ -330,10 +330,10 @@ lists its corrections. Each page's footer
 says: "Zotdex is an independent project, not part of Zotero, and it doesn't
 test the safety or features of the plugins it lists, beyond a malware scan
 by ClamAV." The About page's "Installing a plugin" section says that the
-scan checks each plugin file once a week with ClamAV, that it finds known
-malware only, and that a clean scan doesn't mean a plugin is safe. The home
-page's intro says that Zotdex is independent and unofficial and doesn't review anyone's
-code. The About page says that the index cannot vet the plugins it lists,
+scan checks the plugin files about once a week with ClamAV, that it finds
+known malware only, and that a clean scan doesn't mean a plugin is safe. The
+home page's intro says that Zotdex is independent and unofficial and doesn't
+review anyone's code. The About page says that the index cannot vet the plugins it lists,
 and it gives the reason. It also states the terms of "License" in
 [license.md](license.md) in short form, and it links there.
 Its "Older data" section says when a row shows the facts of an earlier

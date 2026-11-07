@@ -963,7 +963,7 @@ describe("the About page", () => {
         "In Firefox, right-click the download link and choose Save Link As. " +
         "A plugin has full access to Zotero and your computer, and Zotdex doesn't test plugins' safety or features beyond a malware scan, " +
         "so look into a plugin before you trust it with your library. " +
-        "The malware scan checks each plugin file once a week with ClamAV, a free antivirus scanner. " +
+        "The malware scan checks the plugin files about once a week with ClamAV, a free antivirus scanner. " +
         "It finds known malware only, so a clean scan doesn't mean a plugin is safe. " +
         "A bot adds most new plugins, and a maintainer steps in when the bot flags one, " +
         "mainly to keep out entries that mislead people about what a plugin is or who makes it.",
