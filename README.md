@@ -48,9 +48,9 @@ For other feedback, use the
 
 ## License
 
-The code is under the [MIT License](LICENSE). The index's facts, its
+The code is under the [MIT License](LICENSE), except the third-party parts
+that [docs/license.md](docs/license.md) names. The index's facts, its
 categories, and its maintainer's text are under
 [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/). Plugin names,
-descriptions, and other text keep their authors' terms.
-[docs/license.md](docs/license.md) gives the details and names the files
-with third-party parts.
+descriptions, and other text keep their authors' terms. The license page
+gives the details.
