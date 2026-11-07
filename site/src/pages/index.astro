@@ -9,7 +9,6 @@ import {
   BASE,
   categoryOptions,
   day,
-  DISCLAIMER,
   INSTALL_HREF,
   PAID_SERVICE_TEXT,
   displayName,
@@ -20,6 +19,7 @@ import {
   loadData,
   majorStart,
   monthYear,
+  NO_SOURCE_TEXT,
   pluginHref,
   rowCategoriesAttribute,
   rowLanguagesAttribute,
@@ -51,15 +51,17 @@ const prePaint = `if ("noModule" in HTMLScriptElement.prototype) {
 ---
 
 <Base
-  title="Zotdex: a Zotero plugin index"
-  description="An unofficial community index of plugins for Zotero 7 and later, with facts that a daily build reads from each plugin's GitHub repository and releases."
+  title="Zotdex: your field guide to Zotero plugins"
+  description="Your field guide to Zotero plugins: browse hundreds of them and see what each one does, who makes it, and which Zotero versions it supports."
   path={BASE}
 >
   <div class="hero">
-    <h1>Plugins for Zotero 7 and later</h1>
+    <h1>Your field guide to Zotero plugins</h1>
     <p class="intro">
-      See which Zotero versions each plugin declares, whether it starts, and what users report. {DISCLAIMER}{" "}
-      <a href={INSTALL_HREF}>How to install a plugin</a>.
+      Zotero can do a lot more with the right plugins. Browse hundreds of them, from AI assistants and translation tools
+      to better ways to read PDFs and take notes. Each entry tells you what a plugin does, who makes it, and which Zotero
+      versions it supports. Zotdex is independent and unofficial, and it doesn't review anyone's code, so look into a
+      plugin before you trust it with your library. <a href={INSTALL_HREF}>How to install a plugin</a>.
     </p>
   </div>
   <script is:inline set:html={prePaint} />
@@ -78,14 +80,14 @@ const prePaint = `if ("noModule" in HTMLScriptElement.prototype) {
         </select>
       </p>
       <p class="language-filter">
-        <label for="language">Menus and settings in</label>{" "}
+        <label for="language">Language</label>{" "}
         <select id="language" data-language-filter autocomplete="off">
-          <option value="">All languages</option>
+          <option value="">Any language</option>
           {languageOptions(plugins).map(({ value, text }) => <option value={value}>{text}</option>)}
         </select>
       </p>
       <div class="version-filter">
-        <span id="version-filter-label">Declares Zotero</span>
+        <span id="version-filter-label">Supports Zotero</span>
         <div role="group" aria-labelledby="version-filter-label" data-version-filter>
           <button type="button" aria-pressed="true">Any</button>
           {
@@ -103,9 +105,9 @@ const prePaint = `if ("noModule" in HTMLScriptElement.prototype) {
       <p class="sort-menu">
         <label for="sort">Sort by</label>{" "}
         <select id="sort" data-sort autocomplete="off">
-          <option value="">Stars</option>
+          <option value="">Most stars</option>
           <option value="name">Name</option>
-          <option value="latest">Latest release</option>
+          <option value="latest">Recently updated</option>
         </select>
       </p>
     </div>
@@ -122,7 +124,7 @@ const prePaint = `if ("noModule" in HTMLScriptElement.prototype) {
       <thead>
         <tr class="group">
           <td></td>
-          <th scope="colgroup" colspan={ZOTERO_MAJORS.length}><span>Declares Zotero</span></th>
+          <th scope="colgroup" colspan={ZOTERO_MAJORS.length}><span>Supports Zotero</span></th>
           <td class="lang"></td>
           <td class="date"></td>
           <td></td>
@@ -136,7 +138,7 @@ const prePaint = `if ("noModule" in HTMLScriptElement.prototype) {
               </th>
             ))
           }
-          <th scope="col" class="lang">Menus and settings</th>
+          <th scope="col" class="lang">Languages</th>
           <th scope="col" class="date">Latest release</th>
           <th scope="col"><span class="visually-hidden">Links</span></th>
         </tr>
@@ -219,7 +221,7 @@ const prePaint = `if ("noModule" in HTMLScriptElement.prototype) {
                         {start && (
                           <span class="start" data-start={start.result} title={startText(start)}>
                             <span aria-hidden="true">{start.result === "started" ? "●" : "✕"}</span>
-                            <span class="visually-hidden">Start test: {startText(start)}</span>
+                            <span class="visually-hidden">{startText(start)}</span>
                           </span>
                         )}
                       </td>
@@ -275,20 +277,15 @@ const prePaint = `if ("noModule" in HTMLScriptElement.prototype) {
     </nav>
   </div>
   <ul class="legend" role="list" data-legend>
-    <li><span class="mark" data-support="all" aria-hidden="true">{MARKS.all}</span> Declares every release of that Zotero version, up to its newest release</li>
-    <li><span class="mark" data-support="some" aria-hidden="true">{MARKS.some}</span> Declares part of it</li>
-    <li><span class="mark" data-support="none" aria-hidden="true">{MARKS.none}</span> Declares none of it</li>
-    <li>No mark: the plugin declares no range</li>
-    <li data-legend-kept><span class="badge" aria-hidden="true">Older data</span> The build of this data could not read the plugin, so the row shows the facts of an earlier build, read at most 7 days before it</li>
-    <li><Icon name="lock" /> No source code at the top level of the repository</li>
+    <li><span class="mark" data-support="all" aria-hidden="true">{MARKS.all}</span> Supports this version of Zotero</li>
+    <li><span class="mark" data-support="some" aria-hidden="true">{MARKS.some}</span> Supports some releases of this version</li>
+    <li><span class="mark" data-support="none" aria-hidden="true">{MARKS.none}</span> Doesn't support this version</li>
+    <li data-legend-kept><span class="badge" aria-hidden="true">Older data</span> Zotdex couldn't reach this plugin today, so this row shows what it found in the past week</li>
+    <li><Icon name="lock" /> {NO_SOURCE_TEXT}</li>
     <li><Icon name="card" /> {PAID_SERVICE_TEXT}</li>
-    <li><span class="start" data-start="started" aria-hidden="true">●</span> Started in the start test</li>
-    <li><span class="start" data-start="start-error" aria-hidden="true">✕</span> Failed to install, start, or answer in the start test</li>
-    <li data-legend-stars><span class="row-stars" aria-hidden="true"><Icon name="star" /></span> The count of stars that GitHub gives. The default order comes from this count, and neither is a review by the index.</li>
-    <li data-legend-note>
-      A declared range comes from the plugin's manifest and the index's overrides, not from a test. A start test does not
-      show that a plugin works.
-    </li>
+    <li><span class="start" data-start="started" aria-hidden="true">●</span> Passed Zotdex's startup check: it installs and loads, but its features aren't tested</li>
+    <li><span class="start" data-start="start-error" aria-hidden="true">✕</span> Failed Zotdex's startup check: it didn't install or load</li>
+    <li data-legend-stars><span class="row-stars" aria-hidden="true"><Icon name="star" /></span> GitHub stars. The list is sorted by stars, which shows popularity (not necessarily quality).</li>
   </ul>
 </Base>
 

@@ -19,7 +19,10 @@ export { BASE, CATEGORIES, categories, categoryOptions, declaredRange, languageN
 export type { Override, PluginRecord };
 
 // The words of the paid service mark, its legend line, and its Details fact (D-054).
-export const PAID_SERVICE_TEXT = "Needs a paid service from its maker";
+export const PAID_SERVICE_TEXT = "Requires paying its maker";
+
+// The words of the no-source mark and its legend line (D-052).
+export const NO_SOURCE_TEXT = "No obvious source code in its repository";
 
 let loaded: { path: string; data: PluginsFile } | undefined;
 
@@ -58,7 +61,7 @@ export function previewDescription(record: PluginRecord): string {
   return cut.trim() === "" ? `${displayName(record)} is a Zotero plugin listed in Zotdex.` : cut;
 }
 
-// The records in the order of the built home table: the sort menu's Stars order.
+// The records in the order of the built home table: the sort menu's Most stars order.
 export function homeOrder(records: PluginRecord[]): PluginRecord[] {
   const order = sortOrder("");
   return records
@@ -94,9 +97,9 @@ export const SUPPORT_WORDS: Record<MajorSupport, string> = { all: "Yes", some: "
 
 // The words for one major's declared support, as a mark's title and hidden text say them.
 export function supportText(record: PluginRecord, support: MajorSupport, major: string): string {
-  if (support === "all") return `Declares all of Zotero ${major}`;
-  if (support === "some") return `Declares part of Zotero ${major}. Declared range: ${rangeText(record)}`;
-  return `Does not declare Zotero ${major}`;
+  if (support === "all") return `Supports Zotero ${major}`;
+  if (support === "some") return `Supports some of Zotero ${major} (${rangeText(record)})`;
+  return `Doesn't support Zotero ${major}`;
 }
 
 // The names of the languages after overrides, in list order, or "Unknown (no translations
@@ -172,8 +175,8 @@ export function overrideUsed(record: PluginRecord, override: Override): boolean 
   return usedOverride(record, override.field) === override;
 }
 
-// What every page's footer and the home page's intro say about the index itself.
-export const DISCLAIMER = "This index is unofficial and not affiliated with or endorsed by Zotero, and it cannot vet the plugins it lists.";
+// What every page's footer says about the index itself.
+export const DISCLAIMER = "Zotdex is an independent project, not part of Zotero, and it doesn't test the safety or features of the plugins it lists.";
 
 // The About page's section on installing a plugin.
 export const INSTALL_HREF = `${BASE}about/#installing`;
@@ -189,6 +192,14 @@ export const ADD_PLUGIN_HREF = `${NEW_ISSUE}?template=add-plugin.yml`;
 
 // Where the top bar sends general feedback.
 export const FEEDBACK_HREF = "https://github.com/jmgirard/zotdex/discussions";
+
+// The index repo itself, linked from the top bar and the footer.
+export const REPO_HREF = "https://github.com/jmgirard/zotdex";
+
+// A timestamp's day in UTC with the month's English name, such as "October 25, 2026".
+export function longDay(timestamp: string): string {
+  return new Date(timestamp).toLocaleDateString("en-US", { timeZone: "UTC", year: "numeric", month: "long", day: "numeric" });
+}
 
 // The new-issue page with the works.yml or broken.yml form, its plugin and version fields
 // filled in with the record's id and the version the index read.
@@ -214,18 +225,19 @@ export function removeHref(record: PluginRecord): string {
 
 // Each start-test result in words.
 const START_WORDS: Record<StartTestRecord["result"], string> = {
-  started: "started",
-  "start-error": "failed at startup",
-  "not-installed": "did not install",
-  "timed-out": "gave no answer in time",
+  started: "loaded",
+  "start-error": "failed to load",
+  "not-installed": "didn't install",
+  "timed-out": "didn't finish loading",
 };
 
-// One start-test result in words, such as "Zotero 8.0.4 failed at startup".
+// One start-test result as a home mark's title and hidden text say it, such as "Startup check:
+// failed to load in Zotero 8.0.4".
 export function startText({ zotero, result }: StartTestRecord): string {
-  return `Zotero ${zotero} ${START_WORDS[result]}`;
+  return `Startup check: ${START_WORDS[result]} in Zotero ${zotero}`;
 }
 
-// One start-test result in words that open a table cell, such as "Failed at startup".
+// One start-test result in words that open a table cell, such as "Failed to load".
 export function startWords(result: StartTestRecord["result"]): string {
   const words = START_WORDS[result];
   return words[0]!.toUpperCase() + words.slice(1);
@@ -262,9 +274,9 @@ export function githubRepo(url: string): { owner: string; repo: string } | undef
   return match ? { owner: match[1]!, repo: match[2]! } : undefined;
 }
 
-// A star count in words, such as "1 GitHub Star" or "1,234 GitHub Stars".
+// A star count in words, such as "1 star on GitHub" or "1,234 stars on GitHub".
 export function starsText(stars: number): string {
-  return `${stars.toLocaleString("en")} ${stars === 1 ? "GitHub Star" : "GitHub Stars"}`;
+  return `${stars.toLocaleString("en")} ${stars === 1 ? "star" : "stars"} on GitHub`;
 }
 
 export function day(timestamp: string): string {

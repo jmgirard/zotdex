@@ -65,7 +65,7 @@ sensitivity and then by id (M097, D-065). The menu's `name` value is that name
 order (M053), and its `latest` value puts a later `latestReleaseDate` first,
 with a missing or unreadable date last and ties in name order. The script
 reorders the rows on a change and shows page 1, keeps `name` or `latest` in
-`?sort=`, and removes any other value. Going back to Stars restores the built
+`?sort=`, and removes any other value. Going back to Most stars restores the built
 order. Without JavaScript the menu stays hidden and the rows keep the built
 order. The home page's script shows
 the rows the filters pass 50 at a time, with a pager below the table, and
@@ -84,12 +84,12 @@ last one, also hides rows that the script then shows. For an address with
 a non-blank `?q=`, it hides every row until the script runs. The script
 removes the style after its first pass, and the classic script removes it
 on any error the window reports, such as a module script that throws or
-cannot parse (M060). The home page's "Menus and
-settings in" menu filters the table by language subtag,
+cannot parse (M060). The home page's "Language" menu (named "Menus and
+settings in" before M109) filters the table by language subtag,
 run by the home page's script (D-014, D-026, M024, M033). The menu lists the
 languages with the most plugins first, and languages with the same number
 of plugins in code-unit order of their English names (M035). The home
-page's "Declares Zotero" buttons, "Any" and one per major of
+page's "Supports Zotero" buttons, "Any" and one per major of
 `ZOTERO_MAJORS`, filter the table to the plugins whose mark for the pressed
 major is all or part, one major at a time, together with the language menu; the
 same script runs them and keeps the choice in `?zotero=` (D-019, M037).
@@ -175,9 +175,13 @@ fact (M013). A home row and a plugin page show a lock for a record with
 holds no name that can be source code, and the Details card states it (M081,
 D-052). A home row and a plugin page show a card icon for a record with
 `paidService`, on a read record or a failure record, and the Details card gives
-its note, source link, and read date (M082, D-054). Each page's footer and the home page's intro say: "This index
-is unofficial and not affiliated with or endorsed by Zotero, and it cannot vet
-the plugins it lists." (`DISCLAIMER`, M080, D-051). The holds and the start
+its note, source link, and read date (M082, D-054). Each page's footer says:
+"Zotdex is an independent project, not part of Zotero, and it doesn't test the
+safety or features of the plugins it lists." (`DISCLAIMER`, M080, D-051,
+D-076), and it names the build's day and links to the data file and to the
+repository, which the top bar also links with a GitHub mark (M109). The home
+intro says in its own words that Zotdex is independent and unofficial and
+reviews no code (D-075). The holds and the start
 tests screen in part, and neither is a review of plugin code. The home intro
 also says what the site shows, and it links to About's `#installing` section,
 which gives Zotero's install steps, a step for Firefox, Zotero's full-access
@@ -196,8 +200,9 @@ The plugin page's table keeps the declared range, the start result, and
 the reports in separate columns with no summary column, so it is not a
 combined verdict (M054). A home table cell
 shows the major's newest start-test result as a second mark in its own
-element, and a legend under the table names each mark and says that a
-declared range is not a test result (M053). The home table also shows the
+element, and a legend under the table names each mark (M053) and calls the
+start test Zotdex's startup check, which tests no features (M109). The home
+table also shows the
 language subtags in list order (the first 2 and "+N" past 3), the month of
 the release read, and source and `.xpi` links that pass `safeHref` (M053).
 The month is the UTC year and month as `YYYY-MM`, and its `<time datetime>`
@@ -209,9 +214,8 @@ stays on one line, an ellipsis cuts a long owner, and `contain: inline-size`
 keeps it from widening the table (M076). After the owner it shows the
 `upstream.stars` count with the star icon in `--muted`, with `starsText`'s words
 as its `title` and for screen readers, and only the owner is cut (M097). The
-legend says that the count comes from
-GitHub, that the default order comes from that count, and that neither is a
-review by the index (D-065).
+legend says that the list is sorted by GitHub stars, which show popularity,
+not necessarily quality (D-065, M109).
 An address with no page shows `404.html`, whose main content says so and links
 to the home page and About, with `noindex` and no canonical link or `og:url`
 (M097). `sitemap.xml` lists the canonical address of the home page, About, and

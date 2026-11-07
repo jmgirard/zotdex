@@ -11,6 +11,7 @@ import {
   displayName,
   githubRepo,
   homeOrder,
+  longDay,
   majorReport,
   pluginHref,
   rangeText,
@@ -35,7 +36,7 @@ import { themePage } from "./support/theme-page.ts";
 
 const ROOT = resolve(import.meta.dirname, "..");
 const FIXTURE = resolve(ROOT, "test/fixtures/site/plugins.json");
-const DISCLAIMER_TEXT = "This index is unofficial and not affiliated with or endorsed by Zotero, and it cannot vet the plugins it lists.";
+const DISCLAIMER_TEXT = "Zotdex is an independent project, not part of Zotero, and it doesn't test the safety or features of the plugins it lists.";
 const DATA_FILES = ["v1/plugins.json", "schemas/plugins.v1.schema.json", "schemas/index.v1.schema.json"];
 const fixture = JSON.parse(readFileSync(FIXTURE, "utf8")) as { plugins: { id: string }[] };
 const ids = fixture.plugins.map((plugin) => plugin.id);
@@ -233,12 +234,14 @@ function fact(html: string, name: string): string | undefined {
 const page = (id: string) => readFileSync(join(out, "plugins", id, "index.html"), "utf8");
 const home = () => readFileSync(join(out, "index.html"), "utf8");
 const records = (fixture as unknown as PluginsFile).plugins;
-const NO_SOURCE_TEXT = "No source code at the top level of the repository";
+const NO_SOURCE_TEXT = "No obvious source code in its repository";
 // The icon paths in this file come from Lucide and Feather. site/src/components/Icon.astro holds the notices.
 const LOCK_SVG =
   '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 11h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2z"></path><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
 const noSourceMark = (icon: string) => `<span class="no-source" data-no-source><span aria-hidden="true" title="${NO_SOURCE_TEXT}">${icon}</span><span class="visually-hidden">${NO_SOURCE_TEXT}</span></span>`;
-const PAID_TEXT = "Needs a paid service from its maker";
+const PAID_TEXT = "Requires paying its maker";
+const GITHUB_SVG =
+  '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"></path><path d="M9 18c-4.51 2-5-2-7-2"></path></svg>';
 const STAR_SVG =
   '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>';
 const CARD_SVG =
@@ -317,10 +320,10 @@ function compatRows(html: string): CompatRow[] | undefined {
 
 const DECLARED_CELL: Record<string, string> = { all: "✓ Yes", some: "◐ Partly", none: "– No" };
 const START_CELL: Record<string, string> = {
-  started: "● Started",
-  "start-error": "✕ Failed at startup",
-  "not-installed": "✕ Did not install",
-  "timed-out": "✕ Gave no answer in time",
+  started: "● Loaded",
+  "start-error": "✕ Failed to load",
+  "not-installed": "✕ Didn't install",
+  "timed-out": "✕ Didn't finish loading",
 };
 
 // The rows a record's table holds: each major of ZOTERO_MAJORS and each major its reports or
@@ -340,11 +343,11 @@ function expectedRows(record: PluginRecord): CompatRow[] {
       const report = record.reports?.find(({ zoteroMajor }) => String(zoteroMajor) === major);
       const spoken =
         support === "all"
-          ? `Declares all of Zotero ${major}`
+          ? `Supports Zotero ${major}`
           : support === "some"
-            ? `Declares part of Zotero ${major}. Declared range: ${rangeText(record)}`
+            ? `Supports some of Zotero ${major} (${rangeText(record)})`
             : support === "none"
-              ? `Does not declare Zotero ${major}`
+              ? `Doesn't support Zotero ${major}`
               : undefined;
       return {
         major,
@@ -427,20 +430,20 @@ describe("the compatibility table", () => {
     const next = compatRows(page("next-plugin@example.org"))!;
     expect(next.map(({ major }) => major)).toEqual(["12", "11", "10", "9", "8", "7"]);
     const cells = (major: string) => next.find((row) => row.major === major)!.cells;
-    expect(cells("12")).toEqual(["– No", "✕ Did not install Zotero 12.0.1", "None yet"]);
+    expect(cells("12")).toEqual(["– No", "✕ Didn't install Zotero 12.0.1", "None yet"]);
     expect(cells("11")).toEqual(["✓ Yes", "Not tested", "2 works 1 broken"]);
-    expect(cells("8")).toEqual(["✓ Yes", "● Started Zotero 8.0.4", "1 works 0 broken"]);
+    expect(cells("8")).toEqual(["✓ Yes", "● Loaded Zotero 8.0.4", "1 works 0 broken"]);
     expect(cells("7")).toEqual(["– No", "Not tested", "None yet"]);
-    expect(compatRows(page("a-cafe@example.org"))!.find((row) => row.major === "8")!.cells[1]).toBe("● Started Zotero 8.0.10");
+    expect(compatRows(page("a-cafe@example.org"))!.find((row) => row.major === "8")!.cells[1]).toBe("● Loaded Zotero 8.0.10");
   });
 
   test("tells screen readers how much of a major the range declares, with the range for part of one", () => {
     const spoken = compatRows(page("min-only-plugin@example.org"))!.map(({ major, spoken }) => [major, spoken]);
     expect(spoken).toEqual([
-      ["10", "Declares all of Zotero 10"],
-      ["9", "Declares all of Zotero 9"],
-      ["8", "Declares part of Zotero 8. Declared range: Zotero 8.0.1 or newer"],
-      ["7", "Does not declare Zotero 7"],
+      ["10", "Supports Zotero 10"],
+      ["9", "Supports Zotero 9"],
+      ["8", "Supports some of Zotero 8 (Zotero 8.0.1 or newer)"],
+      ["7", "Doesn't support Zotero 7"],
     ]);
     expect(page("no-range-plugin@example.org")).toMatch(/<span class="start" data-start="started" aria-hidden="true">●<\/span>/);
   });
@@ -590,9 +593,9 @@ describe("the plugin page", () => {
   });
 
   test.each<[string, string, string, string, string, string | undefined]>([
-    ["first-plugin@example.org", "https://github.com/example", "https://github.com/example/first-plugin", "first-plugin", "By example · first-plugin · 1,234", "1,234 GitHub Stars"],
-    ["old-plugin@example.org", "https://github.com/example", "https://github.com/example/old-plugin", "old-plugin", "By example · old-plugin · 1", "1 GitHub Star"],
-    ["{c2a6e4c8-1b7d-4f3a-9e2b-5d8f0a1c3e7b}", "https://github.com/example", "https://github.com/example/guid-plugin", "guid-plugin", "By example · guid-plugin · 0", "0 GitHub Stars"],
+    ["first-plugin@example.org", "https://github.com/example", "https://github.com/example/first-plugin", "first-plugin", "By example · first-plugin · 1,234", "1,234 stars on GitHub"],
+    ["old-plugin@example.org", "https://github.com/example", "https://github.com/example/old-plugin", "old-plugin", "By example · old-plugin · 1", "1 star on GitHub"],
+    ["{c2a6e4c8-1b7d-4f3a-9e2b-5d8f0a1c3e7b}", "https://github.com/example", "https://github.com/example/guid-plugin", "guid-plugin", "By example · guid-plugin · 0", "0 stars on GitHub"],
     ["no-range-plugin@example.org", "https://github.com/example", "https://github.com/example/no-range-plugin", "no-range-plugin", "By example · no-range-plugin", undefined],
     ["broken-plugin@example.org", "https://github.com/example", "https://github.com/example/broken-plugin", "broken-plugin", "By example · broken-plugin", undefined],
   ])("shows the owner, the repo, and any stars of %s under the name", (id, ownerHref, repoHref, repoText, visible, words) => {
@@ -715,7 +718,7 @@ describe("the plugin page", () => {
     expect(fact(html, "release-count")).toBe("27");
     expect(fact(html, "open-issues")).toBe("12");
     expect(fact(html, "update-host")).toBe("example.org");
-    expect(fact(html, "disclaimer")).toBe(DISCLAIMER_TEXT);
+    expect(fact(html, "disclaimer")).toBe(escaped(DISCLAIMER_TEXT));
   });
 
   test("shows each override beside the upstream value", () => {
@@ -965,7 +968,7 @@ describe("the About page", () => {
     const text = mainText(about());
     expect(text).toContain("installs the plugin version that the index read in a new Zotero profile on Linux");
     expect(text).toContain("It waits 3 seconds after the install");
-    expect(text).toContain("✕ Gave no answer in time: no result came within 90 seconds.");
+    expect(text).toContain("✕ Didn't finish loading: no result came within 90 seconds.");
     expect(text).toContain("A start is not a report that the plugin works.");
     // The 3 seconds is the reporter's wait after the install, and the 90 the start's time limit.
     const reporter = readFileSync(resolve(ROOT, "src/start-test/reporter/bootstrap.js"), "utf8");
@@ -1150,9 +1153,9 @@ describe("the home page", () => {
     expect(home()).not.toMatch(/class="row-stars"[^>]*data-repo-stars/);
   });
 
-  test("says in the legend that the count comes from GitHub, that the default order comes from it, and that neither is a review", () => {
+  test("says in the legend that the stars come from GitHub, that the list is sorted by them, and that they show popularity", () => {
     const item = /<li data-legend-stars>(.*?)<\/li>/s.exec(home())?.[1]?.replace(/\s+/g, " ");
-    expect(item).toContain("The count of stars that GitHub gives. The default order comes from this count, and neither is a review by the index.");
+    expect(item).toContain("GitHub stars. The list is sorted by stars, which shows popularity (not necessarily quality).");
   });
 
   test("reads the owner of a repo URL with a trailing slash", () => {
@@ -1206,10 +1209,10 @@ describe("the home page", () => {
   }
 
   const START_WORDS: Record<string, string> = {
-    started: "started",
-    "start-error": "failed at startup",
-    "not-installed": "did not install",
-    "timed-out": "gave no answer in time",
+    started: "loaded",
+    "start-error": "failed to load",
+    "not-installed": "didn't install",
+    "timed-out": "didn't finish loading",
   };
 
   test.each(ids)("shows the version cells of %s: a declared mark and a start mark per major, or Not read", (id) => {
@@ -1223,10 +1226,10 @@ describe("the home page", () => {
     const marks: Record<string, string> = { all: "✓", some: "◐", none: "–" };
     const label = (major: string, support: string) =>
       support === "all"
-        ? `Declares all of Zotero ${major}`
+        ? `Supports Zotero ${major}`
         : support === "some"
-          ? `Declares part of Zotero ${major}. Declared range: ${rangeText(record)}`
-          : `Does not declare Zotero ${major}`;
+          ? `Supports some of Zotero ${major} (${rangeText(record)})`
+          : `Doesn't support Zotero ${major}`;
     expect(cells.map(({ attributes }) => attributes)).toEqual(ZOTERO_MAJORS.map((major) => ` class="v" data-major="${major}"`));
     ZOTERO_MAJORS.forEach((major, i) => {
       const found = MARK.exec(cells[i]!.html);
@@ -1235,13 +1238,13 @@ describe("the home page", () => {
       const declared = majorSupport(record, major);
       expect(support, major).toBe(declared);
       if (declared) {
-        expect([title, visible, hidden]).toEqual([escaped(label(major, declared)), marks[declared], escaped(label(major, declared))]);
+        expect([unescaped(title!), visible, unescaped(hidden!)]).toEqual([label(major, declared), marks[declared], label(major, declared)]);
       }
       const result = newestStart(record, major);
       expect(start, major).toBe(result?.result);
       if (result) {
-        const words = `Zotero ${result.zotero} ${START_WORDS[result.result]}`;
-        expect([startTitle, startVisible, startHidden]).toEqual([words, result.result === "started" ? "●" : "✕", `Start test: ${words}`]);
+        const words = `Startup check: ${START_WORDS[result.result]} in Zotero ${result.zotero}`;
+        expect([unescaped(startTitle!), startVisible, unescaped(startHidden!)]).toEqual([words, result.result === "started" ? "●" : "✕", words]);
       }
     });
   });
@@ -1249,7 +1252,7 @@ describe("the home page", () => {
   test("shows the newest start result of a major and none for a declared major with no result", () => {
     const cells = row("a-cafe@example.org").cells;
     const starts = cells.slice(1, 5).map(({ html }) => /<span class="start" data-start="([^"]+)" title="([^"]*)"/.exec(html)?.slice(1));
-    expect(starts).toEqual([["started", "Zotero 7.0.32 started"], ["started", "Zotero 8.0.10 started"], undefined, undefined]);
+    expect(starts).toEqual([["started", "Startup check: loaded in Zotero 7.0.32"], ["started", "Startup check: loaded in Zotero 8.0.10"], undefined, undefined]);
     const bare = row("no-range-plugin@example.org").cells.slice(1, 5).map(({ html }) => [html.includes('class="mark"'), /data-start="([^"]+)"/.exec(html)?.[1]]);
     expect(bare).toEqual([[false, "started"], [false, "start-error"], [false, "not-installed"], [false, "timed-out"]]);
   });
@@ -1304,24 +1307,22 @@ describe("the home page", () => {
     );
   });
 
-  test("names each declared mark and each start mark in a legend under the table, and says a range is not a test result", () => {
+  test("names each declared mark and each start mark in a legend under the table, and says the startup check tests no features", () => {
     const html = home();
     const legend = /<ul class="legend" role="list" data-legend>(.*?)<\/ul>/s.exec(html);
     expect(legend).not.toBeNull();
     expect(html.indexOf("<ul class=\"legend\"")).toBeGreaterThan(html.indexOf("</table>"));
     const items = [...legend![1]!.matchAll(/<li[^>]*>(.*?)<\/li>/gs)].map(([, item]) => item!.replace(/\s+/g, " "));
     expect(items).toEqual([
-      '<span class="mark" data-support="all" aria-hidden="true">✓</span> Declares every release of that Zotero version, up to its newest release',
-      '<span class="mark" data-support="some" aria-hidden="true">◐</span> Declares part of it',
-      '<span class="mark" data-support="none" aria-hidden="true">–</span> Declares none of it',
-      "No mark: the plugin declares no range",
-      '<span class="badge" aria-hidden="true">Older data</span> The build of this data could not read the plugin, so the row shows the facts of an earlier build, read at most 7 days before it',
+      '<span class="mark" data-support="all" aria-hidden="true">✓</span> Supports this version of Zotero',
+      '<span class="mark" data-support="some" aria-hidden="true">◐</span> Supports some releases of this version',
+      '<span class="mark" data-support="none" aria-hidden="true">–</span> Doesn\'t support this version',
+      '<span class="badge" aria-hidden="true">Older data</span> Zotdex couldn\'t reach this plugin today, so this row shows what it found in the past week',
       `${LOCK_SVG} ${NO_SOURCE_TEXT}`,
       `${CARD_SVG} ${PAID_TEXT}`,
-      '<span class="start" data-start="started" aria-hidden="true">●</span> Started in the start test',
-      '<span class="start" data-start="start-error" aria-hidden="true">✕</span> Failed to install, start, or answer in the start test',
-      expect.stringContaining("The count of stars that GitHub gives."),
-      "A declared range comes from the plugin's manifest and the index's overrides, not from a test. A start test does not show that a plugin works.",
+      '<span class="start" data-start="started" aria-hidden="true">●</span> Passed Zotdex\'s startup check: it installs and loads, but its features aren\'t tested',
+      '<span class="start" data-start="start-error" aria-hidden="true">✕</span> Failed Zotdex\'s startup check: it didn\'t install or load',
+      `<span class="row-stars" aria-hidden="true">${STAR_SVG}</span> GitHub stars. The list is sorted by stars, which shows popularity (not necessarily quality).`,
     ]);
   });
 
@@ -1336,13 +1337,13 @@ describe("the home page", () => {
     expect(facts["broken-plugin@example.org"]).toEqual([undefined, undefined]);
   });
 
-  test("holds a sort menu whose first option is Stars", () => {
+  test("holds a sort menu whose first option is Most stars", () => {
     const menu = /<p class="sort-menu"><label for="sort">Sort by<\/label> <select id="sort" data-sort autocomplete="off">(.*?)<\/select><\/p>/.exec(home());
     expect(menu).not.toBeNull();
     expect([...menu![1]!.matchAll(/<option value="([^"]*)">([^<]*)<\/option>/g)].map(([, value, text]) => [value, text])).toEqual([
-      ["", "Stars"],
+      ["", "Most stars"],
       ["name", "Name"],
-      ["latest", "Latest release"],
+      ["latest", "Recently updated"],
     ]);
   });
 
@@ -1387,7 +1388,7 @@ describe("the home page", () => {
   });
 
   test("holds version buttons, Any pressed, then one for each major", () => {
-    const group = /<div class="version-filter"><span id="([^"]+)">Declares Zotero<\/span><div role="group" aria-labelledby="([^"]+)" data-version-filter>(.*?)<\/div><\/div>/.exec(home());
+    const group = /<div class="version-filter"><span id="([^"]+)">Supports Zotero<\/span><div role="group" aria-labelledby="([^"]+)" data-version-filter>(.*?)<\/div><\/div>/.exec(home());
     expect(group).not.toBeNull();
     expect(group![2]).toBe(group![1]);
     const buttons = [...group![3]!.matchAll(/<button([^>]*)>([^<]*)<\/button>/g)].map(([, attributes, text]) => [attributes, text]);
@@ -1399,11 +1400,11 @@ describe("the home page", () => {
   });
 
   test("holds a language menu with one option for each subtag, most plugins first", () => {
-    const menu = /<p class="language-filter"><label for="language">Menus and settings in<\/label> <select id="language" data-language-filter autocomplete="off">(.*?)<\/select><\/p>/.exec(home());
+    const menu = /<p class="language-filter"><label for="language">Language<\/label> <select id="language" data-language-filter autocomplete="off">(.*?)<\/select><\/p>/.exec(home());
     expect(menu).not.toBeNull();
     const options = [...menu![1]!.matchAll(/<option value="([^"]*)">([^<]*)<\/option>/g)].map(([, value, text]) => [value, text]);
     expect(options).toEqual([
-      ["", "All languages"],
+      ["", "Any language"],
       ["en", "English (3)"],
       ["zh", "Chinese (2)"],
       ["fr", "French (2)"],
@@ -2034,18 +2035,22 @@ describe("the built site", () => {
       const html = readFileSync(join(out, path), "utf8");
       const bar = /<body><header class="topbar"><div class="topbar-inner">(.*?)<\/div><\/header><main>/s.exec(html)?.[1];
       // The logo's shapes have their own tests in "the logo".
-      expect(bar?.replace(/<button .*<\/script>/s, "").replace(/(<svg class="logo"[^>]*>).*?<\/svg>/s, "$1</svg>"), path).toBe(
+      // The GitHub mark is the source icon that each home row's repository link also draws.
+      expect(bar, path).toContain(`<a href="https://github.com/jmgirard/zotdex" class="repo-link" data-repo title="Zotdex on GitHub" aria-label="Zotdex on GitHub">${GITHUB_SVG}</a>`);
+      expect(bar?.replace(/<button .*<\/script>/s, "").replace(/(<svg class="logo"[^>]*>).*?<\/svg>/s, "$1</svg>").replace(/(data-repo [^>]*>).*?<\/a>/, "$1</a>"), path).toBe(
         '<a class="brand" href="/"><svg class="logo" viewBox="0 0 16 16" aria-hidden="true" focusable="false"></svg>Zotdex</a><nav aria-label="Site">' +
           '<a href="/about/">About</a>' +
           '<a href="https://github.com/jmgirard/zotdex/issues/new?template=add-plugin.yml" data-add-plugin>Add a plugin</a>' +
           '<a href="https://github.com/jmgirard/zotdex/discussions" data-feedback>Feedback</a>' +
-          '<a href="/v1/plugins.json">Data</a></nav>',
+          '<a href="/v1/plugins.json">Data</a>' +
+          '<a href="https://github.com/jmgirard/zotdex" class="repo-link" data-repo title="Zotdex on GitHub" aria-label="Zotdex on GitHub"></a></nav>',
       );
       const foot = /<\/main><footer class="foot"><div class="foot-inner foot-rule">(.*?)<\/div><\/footer><\/body>/s.exec(html)?.[1];
       expect(foot, path).toBe(
-        `<p data-fact="disclaimer">${DISCLAIMER_TEXT}</p>` +
-          "<p>The data comes from the build of 2026-10-25.</p>" +
-          '<p>Data file: <a href="/v1/plugins.json">v1/plugins.json</a></p>',
+        `<p data-fact="disclaimer">${escaped(DISCLAIMER_TEXT)}</p>` +
+          "<p>Updated October 25, 2026.</p>" +
+          '<p><a href="/v1/plugins.json">Get all the data as JSON</a></p>' +
+          '<p><a href="https://github.com/jmgirard/zotdex" data-repo-footer>Zotdex on GitHub</a></p>',
       );
     }
     expect(existsSync(join(ROOT, ".github/ISSUE_TEMPLATE/add-plugin.yml"))).toBe(true);
@@ -2055,11 +2060,27 @@ describe("the built site", () => {
     for (const file of htmlFiles(out)) expect(readFileSync(join(out, file), "utf8"), file).not.toContain("does not vet");
   });
 
-  test("says what the site is for in the home intro, with the disclaimer and the install link, above the table", () => {
+  test("calls the home page a field guide in its title, description, and their link-preview tags", () => {
+    const html = home();
+    const title = "Zotdex: your field guide to Zotero plugins";
+    const description = "Your field guide to Zotero plugins: browse hundreds of them and see what each one does, who makes it, and which Zotero versions it supports.";
+    expect(unescaped(/<title>(.*?)<\/title>/s.exec(html)![1]!)).toBe(title);
+    expect(unescaped(tagValue(html, "property", "og:title"))).toBe(title);
+    expect(unescaped(tagValue(html, "name", "description"))).toBe(description);
+    expect(unescaped(tagValue(html, "property", "og:description"))).toBe(description);
+  });
+
+  test("gives the home page one h1, its field guide heading", () => {
+    const h1s = [...home().matchAll(/<h1[\s>]/g)];
+    expect(h1s).toHaveLength(1);
+    expect(/<h1>([^<]*)<\/h1>/.exec(home())?.[1]).toBe("Your field guide to Zotero plugins");
+  });
+
+  test("says what Zotdex is for in the home intro, that it reviews no code, and links to the install steps, above the table", () => {
     const intro = /<p class="intro">(.*?)<\/p>/s.exec(home())![1]!;
     // Tags go with no space added, so a space that the template drops before the link shows here.
     expect(unescaped(intro.replace(/<[^>]+>/g, "")).replace(/\s+/g, " ").trim()).toBe(
-      `See which Zotero versions each plugin declares, whether it starts, and what users report. ${DISCLAIMER_TEXT} How to install a plugin.`,
+      "Zotero can do a lot more with the right plugins. Browse hundreds of them, from AI assistants and translation tools to better ways to read PDFs and take notes. Each entry tells you what a plugin does, who makes it, and which Zotero versions it supports. Zotdex is independent and unofficial, and it doesn't review anyone's code, so look into a plugin before you trust it with your library. How to install a plugin.",
     );
     expect(intro).toMatch(/<a href="\/about\/#installing">How to install a plugin<\/a>\./);
     expect(home().indexOf('<p class="intro">')).toBeLessThan(home().indexOf('<table class="plugins">'));
@@ -2299,7 +2320,7 @@ describe("the link preview tags", () => {
       const title = decoded(/<title>(.*?)<\/title>/s.exec(page)![1]!);
       expect(tagValue(page, "property", "og:site_name"), file).toBe("Zotdex");
       const home = file === "index.html";
-      if (home) expect(title).toBe("Zotdex: a Zotero plugin index");
+      if (home) expect(title).toBe("Zotdex: your field guide to Zotero plugins");
       else expect(title, file).toMatch(/: Zotdex$/);
       // Only the home page's title and og:title may say what Zotdex is.
       const rest = home ? page.replace(/<title>[^<]*<\/title>|<meta property="og:title" content="[^"]*">/g, "") : page;
@@ -2405,7 +2426,7 @@ describe("a kept record", () => {
 
   test("names the badge in the home legend", () => {
     expect(/<li data-legend-kept>(.*?)<\/li>/s.exec(home())?.[1]).toBe(
-      '<span class="badge" aria-hidden="true">Older data</span> The build of this data could not read the plugin, so the row shows the facts of an earlier build, read at most 7 days before it',
+      '<span class="badge" aria-hidden="true">Older data</span> Zotdex couldn\'t reach this plugin today, so this row shows what it found in the past week',
     );
   });
 
@@ -2431,8 +2452,13 @@ describe("a kept record", () => {
     expect(text).toContain('A plugin that the build cannot read for another reason, such as a deleted repository, shows "Not read".');
   });
 
-  test("says in the footer which build the data comes from", () => {
-    expect(home()).toContain("<p>The data comes from the build of 2026-11-05.</p>");
+  test("writes the footer's day in UTC, so a build just after midnight UTC names that day in any time zone", () => {
+    expect(longDay("2026-10-26T02:00:00Z")).toBe("October 26, 2026");
+    expect(longDay("2026-10-25T23:30:00Z")).toBe("October 25, 2026");
+  });
+
+  test("says in the footer the day of the build the data comes from", () => {
+    expect(home()).toContain("<p>Updated November 5, 2026.</p>");
   });
 });
 
@@ -2555,7 +2581,7 @@ describe("the newest Zotero release", () => {
   test("with zoteroRelease 10.0.7, marks a maximum of 10.0.* as all of 10 and leaves 10 out of a 10.1 minimum's row", () => {
     expect(row(homeOf("known"), UP_TO)).toEqual({ majors: "7 8 9 10", mark: "all" });
     expect(declared(pageOf("known", UP_TO))).toBe("all");
-    expect(pageOf("known", UP_TO)).toContain('<span class="visually-hidden">Declares all of Zotero 10</span>');
+    expect(pageOf("known", UP_TO)).toContain('<span class="visually-hidden">Supports Zotero 10</span>');
     expect(row(homeOf("known"), FROM)).toEqual({ majors: "", mark: "none" });
   });
 

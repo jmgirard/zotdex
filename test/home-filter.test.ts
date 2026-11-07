@@ -105,7 +105,7 @@ describe("filterOn", () => {
 describe("filterStatus", () => {
   test.each([
     ["no filter is on", 42, 42, false, "42 plugins"],
-    ["a filter hides every row", 0, 42, true, "No plugins match these filters."],
+    ["a filter hides every row", 0, 42, true, "No plugins match. Try removing a filter."],
     ["a filter shows some rows", 8, 42, true, "8 of 42 plugins"],
     ["the table holds one row", 1, 1, true, "1 of 1 plugin"],
   ])("says the count when %s", (_, shown, total, filtering, text) => {
@@ -197,7 +197,7 @@ describe("sortOrder", () => {
   const row = (id: string, name: string, stars?: number, released?: string): SortRow => ({ id, name, stars, released });
   const order = (sort: string, rows: SortRow[]) => rows.toSorted(sortOrder(sort)).map(({ id }) => id);
 
-  test("Stars puts a higher count first, keeps 0 ahead of no count, and leaves ties in Name order", () => {
+  test("Most stars puts a higher count first, keeps 0 ahead of no count, and leaves ties in Name order", () => {
     const rows = [
       row("none", "A none"),
       row("zero", "Zero", 0),
