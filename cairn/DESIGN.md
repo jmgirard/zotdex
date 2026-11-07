@@ -1393,3 +1393,16 @@ reused._
   whose XPI makes the reader throw, gets a build-level failure, so the site
   keeps that plugin's last facts for up to 7 days (D-066). Accepted at the
   M100 gate
+- A failed read of the published data in the build job's
+  `pnpm carry-scan-results` keeps no ClamAV result, and the builds after it
+  have none to keep, so every plugin page reads "Not scanned yet" until the
+  next scan run (M115, D-082). Accepted at the M115 gate
+- Plugin code in a start-test job runs beside the malware-scan job and can
+  replace its `scan-results` artifact after the upload. The site job then
+  adds no new result that run, so a plugin can keep its own new find off its
+  page. Running the scan job after the start tests would close this at the
+  cost of a later Monday deploy (M115, D-082). Accepted at the M115 gate
+- A `clamscan` run stopped at its 10-minute limit gives no file a result, and
+  no scan of every plugin file has been timed yet. The `clamav` package's own
+  freshclam service also asks ClamAV's servers for signatures before the job
+  stops it, a second request each scan run (M115). Accepted at the M115 gate
