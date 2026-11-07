@@ -1,10 +1,12 @@
 # Plain words for plugin pages and About
 
-**Provenance.** A first-hand record of page wording. It covers plugin pages
-(M110) and the About and 404 pages (M111). The M110 plan drafted it on
-2026-11-07 in the tone of the M109 home page. Status: draft, waiting for the
-user's approval at the plan question set — observed 2026-11-07. It quotes no outside source, so
-it has nothing to re-verify against. `<v>` is the release version. `<date>`
+**Provenance.** Ingested 2026-11-07 by the M110 plan, as a first-hand record
+of page wording in the tone of the M109 home page. It covers plugin pages
+(M110) and the About and 404 pages (M111).
+Pagination: none.
+Extraction: first-hand, so it has nothing to re-verify against. Status: a
+draft, waiting for the user's approval at the plan question set — observed
+2026-11-07. `<v>` is the release version. `<date>`
 is a day in UTC written as "November 7, 2026". `{…}` is a value that the page
 fills in.
 
