@@ -901,12 +901,13 @@ describe("the About page", () => {
     expect(text).toContain("A start does not show that a plugin works.");
   });
 
-  test("states the license terms and the icons' sources, and links to the README's License section", () => {
+  test("states the license terms and the icons' sources, and links to the license page", () => {
     const section = /<section class="card" id="license" data-about="license">(.*?)<\/section>/s.exec(about())![1]!;
     const link = /<a href="([^"]*)" data-license-link>([^<]*)<\/a>/.exec(section);
-    expect(link?.[1]).toBe("https://github.com/jmgirard/zotdex#license");
+    expect(link?.[1]).toBe("https://github.com/jmgirard/zotdex/blob/main/docs/license.md");
+    expect(link?.[2]).toBe("license page");
     const text = unescaped(section.replace(/<[^>]+>/g, "")).replace(/\s+/g, " ");
-    expect(text).toContain("The index's code is under the MIT License, except the third-party parts of the files that the README names.");
+    expect(text).toContain("The index's code is under the MIT License, except the third-party parts of the files that the license page names.");
     expect(text).toContain("The Zotdex logo is the index's own drawing, under the same terms as its code.");
     expect(text).toContain("The other icons on these pages come from Lucide, under the ISC License, and from Feather, under the MIT License.");
     expect(text).toContain("The facts that the index gathers, its categories, and text that a maintainer wrote are under CC0 1.0.");

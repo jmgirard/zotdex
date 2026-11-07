@@ -106,10 +106,10 @@ of the About change waits for a `Build data` run (offered after the merge).
   three README mentions in `schemas/plugins.v1.schema.json` (:78, :147) and
   `schemas/index.v1.schema.json` (:72), and the Unreleased badge entry of
   `CHANGELOG.md`; then run AC4's search for the rest.
-- [ ] T5: Change `LICENSE_HREF` in `site/src/data.ts`, the License card in
+- [x] T5: Change `LICENSE_HREF` in `site/src/data.ts`, the License card in
   `site/src/pages/about.astro`, and the license test in `test/site.test.ts`
   (its title included) per AC5.
-- [ ] T6: Add the `## Unreleased` entry of AC6.
+- [x] T6: Add the `## Unreleased` entry of AC6.
 - [ ] T7: Run the link check, the joined-line diff, the heading-uniqueness
   check, the long-line check
   (`git diff -U0 main | grep '^+' | awk 'length > 80'`), and
@@ -137,6 +137,8 @@ of the About change waits for a `Build data` run (offered after the merge).
 - 2026-11-06: the simple-english style hook flags long sentences and modals in moved text; left as is, since the plan moves that text word for word (question set answer).
 - 2026-11-06: T3 done: new README of 55 lines with sections The site, The data, Asking for a change (the five forms as `issues/new?template=<file>`, as `site/src/data.ts` builds them, plus Discussions), Documentation, and License (6 lines); its links pass the check.
 - 2026-11-06: T4 done: all of `CHANGELOG.md` sits under `## Unreleased`, so AC4 covered 12 of its README mentions, now naming `docs/site.md`, `docs/data.md`, `docs/maintaining.md`, or `docs/license.md`; also DESIGN.md (2), build.yml (2), the check.test.ts comment, and 3 schema descriptions. Remaining hits name plugin authors' READMEs, the badge, or file names (T7 lists them).
+- 2026-11-06: T5 done: the license test, changed first, failed on the old `#license` link (Received `https://github.com/jmgirard/zotdex#license`), then passed after `LICENSE_HREF` and the About card changed.
+- 2026-11-06: T6 done: one `## Unreleased` entry naming the five docs files and the License link.
 
 ## Decisions
 

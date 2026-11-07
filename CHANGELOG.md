@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- The README now holds a short overview. Its other text moved, unchanged
+  except for links, to `docs/site.md`, `docs/data.md`, `docs/requests.md`,
+  `docs/maintaining.md`, and `docs/license.md`. The About page's License
+  link now goes to `docs/license.md`.
 - Each plugin now has a README badge, labeled Zotdex, that names the Zotero
   versions it started in during the index's start tests, such as "started in
   Zotero 7 · 8 · 9", or says why it names none. The
