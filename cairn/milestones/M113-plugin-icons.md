@@ -27,7 +27,7 @@ right column under the icon → M114; owner-submitted icons (the user chose auto
 
 ## Acceptance criteria
 
-- [ ] AC1: For an XPI whose manifest.json `icons` object maps keys to string paths, the build picks among the keys
+- [x] AC1: For an XPI whose manifest.json `icons` object maps keys to string paths, the build picks among the keys
       that are base-10 whole numbers (others are ignored) the smallest at or above 96, else the largest. When the
       picked path names a file in the XPI that is PNG, JPEG, WebP, or SVG, judged by its bytes, `pnpm build` writes
       one 96×96 PNG to `v1/icons/<sha>.png` in its output, `<sha>` being the SHA-256 of the written bytes, and sets
@@ -35,26 +35,26 @@ right column under the icon → M114; owner-submitted icons (the user chose auto
       A path with a leading `/` or `./` is read without it. Tests cover each of the four formats, a non-numeric key,
       the smallest key at or above 96, the fall-back to the largest, and a leading `/`, and decode the written file
       as a 96×96 PNG.
-- [ ] AC2: The record has no `upstream.icon`, and its other fields and any failure are the same as for the same XPI
+- [x] AC2: The record has no `upstream.icon`, and its other fields and any failure are the same as for the same XPI
       with no `icons` field, when: `icons` is absent or not an object; no key is a whole number; the picked value is
       not a string or holds a `..` segment; the picked file is missing from the XPI; any read of that zip entry fails
       (over 1 MiB unzipped, a duplicate name, inflation past its declared size, an unknown compression method); the
       bytes are none of the four formats or fail to decode; sharp's metadata gives a width or height over 4096 px;
       or the SHA-256 of the bytes is in `TEMPLATE_ICONS`, each value recorded with its source path and commit. One
       test for each case named here; the template case injects a hash rather than the template's bytes.
-- [ ] AC3: `schemas/plugins.v1.schema.json` defines `upstream.icon` as an optional string matching
+- [x] AC3: `schemas/plugins.v1.schema.json` defines `upstream.icon` as an optional string matching
       `^icons/[0-9a-f]{64}\.png$`, and `schemas/index.v1.schema.json` defines an optional
       `iconHidden: { "reason": <string, minLength 1> }`; the schema tests pass with and without each field, and the
       plugins.v1 test passes on the data fixture written before this change.
-- [ ] AC4: A record that keeps deployed facts under the 7-day rule keeps the deployed `upstream.icon`, unless its
+- [x] AC4: A record that keeps deployed facts under the 7-day rule keeps the deployed `upstream.icon`, unless its
       `index.json` has `iconHidden`, and the build writes that icon file, fetched from the URL resolved against
       `--previous`, within `previousMs` and a size cap, and checked against the SHA-256 in its name. A failed or
       late fetch, a file over the cap, or wrong bytes leaves that record without `upstream.icon` and changes no
       other record and not the exit code. Tests cover the match, a failed fetch, a mismatch, and a hidden icon.
-- [ ] AC5: An `index.json` with `iconHidden` gives that plugin's record no `upstream.icon`, a kept record included,
+- [x] AC5: An `index.json` with `iconHidden` gives that plugin's record no `upstream.icon`, a kept record included,
       and the build writes no icon file for it. `pnpm check`'s `reason-not-blank` rule covers `iconHidden.reason`.
       Tests cover a hidden icon on a read record, an empty reason, and a whitespace-only reason.
-- [ ] AC6: The plugin page of a record with `upstream.icon` shows one `<img data-icon>` whose `src` is `${BASE}v1/`
+- [x] AC6: The plugin page of a record with `upstream.icon` shows one `<img data-icon>` whose `src` is `${BASE}v1/`
       followed by `upstream.icon`, with `alt=""`, `width="64"`, and `height="64"`, on a tile whose computed
       background is white in the light theme, with a dark system scheme and no saved theme, and with
       `data-theme="dark"`, and which sets `forced-color-adjust: none`. At viewport widths of 375 px and 1280 px, for
@@ -63,10 +63,10 @@ right column under the icon → M114; owner-submitted icons (the user chose auto
       bottom, no client rect of a text node in `.page-head` meets the tile's rect, and the page has no horizontal
       scroll at 375 px. A browser-pane look in the Review checks these; site tests check the attributes. A record
       without the field has no `[data-icon]` element.
-- [ ] AC7: Each line that `cairn/references/plain-words-copy.md` records for M113 appears word for word on the
+- [x] AC7: Each line that `cairn/references/plain-words-copy.md` records for M113 appears word for word on the
       built site (the About page's "Icons" section and the license line); `docs/data.md` documents `upstream.icon`
       and `iconHidden`, and `docs/license.md` says plugin icons keep their authors' terms.
-- [ ] AC8: `pnpm test` and `pnpm check` pass.
+- [x] AC8: `pnpm test` and `pnpm check` pass.
 
 ## Coverage
 
@@ -131,3 +131,17 @@ right column under the icon → M114; owner-submitted icons (the user chose auto
 - 2026-11-07: T6 done: `docs/data.md` documents `upstream.icon` and `iconHidden`, `docs/maintaining.md` the icon writes, the hide, and the kept-icon read, and `docs/license.md` the icons' terms; DESIGN's Contract boundary and the build's architecture note name the icon; D-080 records the choice; CHANGELOG gains the entry; `build.yml` uploads and digests all of `dist/`, so `v1/icons/` reaches the deploy with no workflow change; verify clean (2546 tests, 745 entries), `cairn_validate` green.
 - 2026-11-07: claim audit: 110 claims read, 4 corrected — src/build/build.ts, test/build.test.ts, docs/data.md, schemas/plugins.v1.schema.json; also backed 4 untested comments with tests in test/icon.test.ts and test/build.test.ts (SVG after a BOM, comment, and doctype; a tall source; no metadata; no read of a path of another shape; no data file after a failed icon write); the same reader re-read all 5 and found them true; verify clean (2551 tests, 745 entries).
 - 2026-11-07: implement complete; status review.
+
+## Review
+
+Evidence gathered 2026-11-07 at `6c99a04e`; `origin/main` is still the plan commit `6b4b290f`, so the branch needs no sync.
+
+- AC1: verbose vitest at `6c99a04e`: `pickIconPath` 13 cases pass (smallest key at or above 96, smallest above 96, fall-back to the largest, whole-number keys only, leading `/` and `./`); `redrawIcon` gives a 96×96 PNG whose SHA-256 is its name for PNG, JPEG, WebP, SVG, a viewBox-only SVG, and a 4096 px side; the reader test "gives the bytes of the file the picked key names" and "reads a path with a leading slash without it" pass; build test "names the drawn icon on the record and gives its bytes under that name" decodes the bytes as a 96×96 PNG named `icons/<sha>.png`.
+- AC2: reader tests "gives no icon and the same facts when …" pass for each named case: `icons` not an object, no whole-number key, a value that is not a string, a `..` segment, a missing file, over 1 MiB unzipped, a name held twice, inflation past the declared size, an unknown compression; "leaves a read's failure as it is without icons when the icon is bad" passes; `redrawIcon` gives none for text, an HTML page, a cut PNG, a side over 4096 px wide and one over 4096 px tall, and an injected template hash (and one for a non-matching hash); build test "gives no icon, and the same record less the XPI's hash, for an icon file that is no image" passes. A planted throw in `iconBytes` turned 5 reader tests red (T1).
+- AC3: `schemas/plugins.v1.schema.json` defines `upstream.icon` with pattern `^icons/[0-9a-f]{64}\.png$` and `schemas/index.v1.schema.json` defines `iconHidden.reason` with `minLength` 1; build test "the schema takes an upstream with or without an icon path and refuses another shape" passes; check test "index-schema: an empty iconHidden reason, and none for a written one" passes and `pnpm check` passes over 745 entries with none; `checkOutput` gives 0 problems for main's site fixture, `test/fixtures/build/mixed-failures.plugins.json`, the shelf data of 2026-11-03, and the local `dist/v1/plugins.json`, all written before this change.
+- AC4: build tests under "buildData with the deployed data > and icons" pass: the kept record keeps `icon` and the build holds the deployed bytes when they read back with the SHA-256 in the name; a 404, a rejected fetch, a read past a 200 ms `previousMs`, a body over 64 KiB, and wrong bytes each leave the kept record equal to its kept form without `icon`, with `result.ok` true, the record still kept, and Better Notes unchanged; a hidden icon is dropped with no request for the file. `readPreviousIcons` resolves the path against `--previous` (`src/build/previous.ts`) under one `withinLimit(previousMs)`; a planted skip of the hash check turned the mismatch test red (T3).
+- AC5: build tests "gives no icon to a read record whose index.json hides it" (no `icon`, `result.icons` empty) and "drops the kept icon of a record whose index.json hides it, with no read of the file" pass; check tests "reason-not-blank: an iconHidden reason of \" \\t\"" and of U+200B pass with the rule and message `iconHidden.reason holds only whitespace or format characters`, and an empty reason fails `index-schema`. A planted bypass of the hide turned its test red (T2).
+- AC6: site test "opens the main content of …" passes for every fixture id, checking the exact tile markup `<img src="/v1/<icon>" alt="" width="64" height="64" data-icon>` on first-plugin and an empty head side elsewhere, and the coverage test needs a record with and one without `icon`. Browser-pane look on a site built from `6c99a04e` with a fixture record of a 40-character name, Archived and Older data badges, a kept note, and a 200-character description: at 375 and 1280 px, in light and with `data-theme="dark"`, the tile's right edge is 0 px from `.page-head`'s, its top is above the `h1`'s bottom, 0 of 20 head text nodes meet it, horizontal scroll is 0, the background is `rgb(255, 255, 255)`, `forced-color-adjust` is `none`, and the image loads at 96 px; with a dark system scheme and no saved theme the tile is white on the `rgb(22, 22, 21)` page at both widths; old-plugin, with no icon, has no `[data-icon]`.
+- AC7: site tests "the icons section reads as the copy" and "the license section reads as the copy" pass; the built About page holds each M113 line of `cairn/references/plain-words-copy.md` once, word for word (joined-text grep); `docs/data.md` documents the `icon` field and `iconHidden`, and `docs/license.md` holds "Plugin icons also keep their authors' terms".
+- AC8: `pnpm test` at `6c99a04e` exits 0: 37 files passed, 1 skipped, 2551 tests passed, 6 skipped; `pnpm check` exits 0: 745 entries, 0 problems.
+- Consistency gate: `cairn_validate.py` passes (one advisory: 8 criteria over the ~7 tripwire, logged at plan); no principle changed, so `cairn_impact` is skipped; the generic profile names no toolchain checks.
