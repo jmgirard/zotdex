@@ -235,9 +235,6 @@ const NO_SOURCE_TEXT = "No source code at the top level of the repository";
 // The icon paths in this file come from Lucide and Feather. site/src/components/Icon.astro holds the notices.
 const LOCK_SVG =
   '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 11h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2z"></path><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
-// The `puzzle` path of lucide-static 1.68.0, unchanged.
-const PUZZLE_PATH =
-  "M15.39 4.39a1 1 0 0 0 1.68-.474 2.5 2.5 0 1 1 3.014 3.015 1 1 0 0 0-.474 1.68l1.683 1.682a2.414 2.414 0 0 1 0 3.414L19.61 15.39a1 1 0 0 1-1.68-.474 2.5 2.5 0 1 0-3.014 3.015 1 1 0 0 1 .474 1.68l-1.683 1.682a2.414 2.414 0 0 1-3.414 0L8.61 19.61a1 1 0 0 0-1.68.474 2.5 2.5 0 1 1-3.014-3.015 1 1 0 0 0 .474-1.68l-1.683-1.682a2.414 2.414 0 0 1 0-3.414L4.39 8.61a1 1 0 0 1 1.68.474 2.5 2.5 0 1 0 3.014-3.015 1 1 0 0 1-.474-1.68l1.683-1.682a2.414 2.414 0 0 1 3.414 0z";
 const noSourceMark = (icon: string) => `<span class="no-source" data-no-source><span aria-hidden="true" title="${NO_SOURCE_TEXT}">${icon}</span><span class="visually-hidden">${NO_SOURCE_TEXT}</span></span>`;
 const PAID_TEXT = "Needs a paid service from its maker";
 const STAR_SVG =
@@ -2032,8 +2029,9 @@ describe("the built site", () => {
     for (const path of files) {
       const html = readFileSync(join(out, path), "utf8");
       const bar = /<body><header class="topbar"><div class="topbar-inner">(.*?)<\/div><\/header><main>/s.exec(html)?.[1];
-      expect(bar?.replace(/<button .*<\/script>/s, ""), path).toBe(
-        `<a class="brand" href="/"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="${PUZZLE_PATH}"></path></svg>Zotdex</a><nav aria-label="Site">` +
+      // The logo's shapes have their own tests in "the logo".
+      expect(bar?.replace(/<button .*<\/script>/s, "").replace(/(<svg class="logo"[^>]*>).*?<\/svg>/s, "$1</svg>"), path).toBe(
+        '<a class="brand" href="/"><svg class="logo" viewBox="0 0 16 16" aria-hidden="true" focusable="false"></svg>Zotdex</a><nav aria-label="Site">' +
           '<a href="/about/">About</a>' +
           '<a href="https://github.com/jmgirard/zotdex/issues/new?template=add-plugin.yml" data-add-plugin>Add a plugin</a>' +
           '<a href="https://github.com/jmgirard/zotdex/discussions" data-feedback>Feedback</a>' +
@@ -2798,27 +2796,29 @@ describe("the site colors", () => {
   });
 
   describe("the logo", () => {
-    test("is the favicon's shape, hidden from screen readers, before the site's name on every page", () => {
-      const drawn = PUZZLE_PATH;
+    test("is the favicon's three shapes, hidden from screen readers, before the site's name on every page", () => {
+      const favicon = lensParts(readFileSync(join(out, "favicon.svg"), "utf8")).tags.map((tag) => tag.replace(/ fill="#[0-9a-f]{6}"/, ""));
+      expect(favicon).toHaveLength(3);
       for (const file of htmlFiles(out)) {
         const brand = /<a class="brand"[^>]*>(.*?)<\/a>/s.exec(readFileSync(join(out, file), "utf8"))![1]!;
         const icons = brand.match(/<svg\b.*?<\/svg>/gs);
         expect(icons, file).toHaveLength(1);
         expect(icons![0], file).toContain('aria-hidden="true"');
-        expect(/<path\b[^>]*\bd="([^"]+)"/.exec(icons![0]!)?.[1], file).toBe(drawn);
+        expect(lensParts(icons![0]!).tags, file).toEqual(favicon);
         expect(brand.startsWith(icons![0]!), file).toBe(true);
         expect(brand.replace(icons![0]!, ""), file).toBe("Zotdex");
       }
     });
 
-    test("fills with --accent and no stroke, with CanvasText in forced colors, and leaves no square behind", () => {
-      const base = /\n {6}\.brand \.icon \{[^}]*fill: var\(--accent\);[^}]*stroke: none;/.exec(layout);
-      const forced = /@media \(forced-colors: active\) \{\s*\.brand \.icon \{\s*fill: CanvasText;/.exec(layout);
+    test("fills the rim, disc, and Z from each scheme's tokens, with CanvasText and Canvas in forced colors", () => {
+      const base = /\n {6}\.brand \.logo-rim \{\s*fill: var\(--accent\);\s*\}\s*\.brand \.logo-disc \{\s*fill: var\(--logo-disc\);\s*\}\s*\.brand \.logo-z \{\s*fill: var\(--logo-z\);/.exec(layout);
+      const forced = /@media \(forced-colors: active\) \{\s*\.brand \.logo-rim,\s*\.brand \.logo-disc \{\s*fill: CanvasText;\s*\}\s*\.brand \.logo-z \{\s*fill: Canvas;/.exec(layout);
       expect(base).not.toBeNull();
       expect(forced).not.toBeNull();
-      // Both rules have one specificity, so the forced-colors fill wins only when it comes later.
+      // The rules have one specificity, so the forced-colors fills win only when they come later.
       expect(forced!.index).toBeGreaterThan(base!.index);
-      expect(layout).not.toContain(".brand::before");
+      expect(layout.match(/--logo-disc: #[0-9a-f]{6};/g)).toEqual(["--logo-disc: #a9cbff;", "--logo-disc: #1d5fb8;", "--logo-disc: #1d5fb8;"]);
+      expect(layout.match(/--logo-z: #[0-9a-f]{6};/g)).toEqual(["--logo-z: #0e2f5c;", "--logo-z: #ffffff;", "--logo-z: #ffffff;"]);
     });
   });
 
