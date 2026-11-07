@@ -1,16 +1,15 @@
 # Roadmap
 
 _The only authority on milestone status. Grouped by status, not ID._
-_Last hygiene check: 2026-11-07 (M111 review: short About; 1 row graduated, 1 low row added; 7 lessons marked used, none captured; M108 row pruned; caps and validate green)_
+_Last hygiene check: 2026-11-07 (M112 review: README badge removed; no rows graduated or added; 5 lessons marked used, none captured; M109 row pruned; caps and validate green)_
 
 ## Milestones
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M112 | Remove the README badge | review | — | normal | milestones/M112-remove-readme-badge.md |
+| M112 | Remove the README badge | done | — | normal | milestones/archive/M112-remove-readme-badge.md |
 | M111 | Shorten About in the home page's words | done | M110 | normal | milestones/archive/M111-short-about.md |
 | M110 | Use plain words on plugin pages | done | — | normal | milestones/archive/M110-plain-plugin-pages.md |
-| M109 | Make the home page a field guide | done | — | high | milestones/archive/M109-field-guide-home.md |
 <!-- rows grouped by status, not by ID; keep the 3 most recent done/dropped rows; older ones: milestones/archive/ + git -->
 
 ## Candidates
