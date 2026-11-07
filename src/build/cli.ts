@@ -61,7 +61,7 @@ async function main(): Promise<number> {
   // A failed read of the deployed data keeps no earlier facts, and the build goes on as it did
   // before it kept them, so this read does not change the exit code either.
   if (built.previousProblem) console.log(`::warning::cannot read the deployed data, so no record keeps earlier facts: ${oneLine(built.previousProblem)}`);
-  const written = await writeData(outDir, built.text, built.icons);
+  const written = await writeData(outDir, built.text, built.icons, built.screenshots);
   if (!written.ok) {
     console.error(`write-failed: ${written.message}`);
     return 1;

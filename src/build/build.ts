@@ -1,9 +1,11 @@
+import { createHash } from "node:crypto";
 import { copyFile, mkdir, readdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { basename, dirname, join } from "node:path";
 import { Ajv, type ErrorObject } from "ajv";
 import indexSchema from "../../schemas/index.v1.schema.json" with { type: "json" };
 import pluginsSchema from "../../schemas/plugins.v1.schema.json" with { type: "json" };
 import { listEntries } from "../check/check.ts";
+import { SCREENSHOT_FILE } from "../screenshot-request/rules.ts";
 import { countReports, type ReportCount } from "../reports/count.ts";
 import type { StartResultName } from "../start-test/start-test.ts";
 import { boundFetch, type Fetch, githubClient, ReadFailure, readUpstream, type UpstreamFacts, type XpiRead } from "../upstream/reader.ts";
@@ -35,6 +37,9 @@ export interface PluginRecord {
   id: string;
   repoUrl: string;
   paidService?: PaidService;
+  // The screenshot that the entry's owner asked for: the image's path relative to the data file's
+  // folder, named by the SHA-256 of its bytes, and its description.
+  screenshot?: { file: string; alt: string };
   // `xpiUrl` addresses the XPI file that the reader read, and `xpiSha256` is the SHA-256 of its
   // bytes, the one the start plan names; data written before the build wrote them has none.
   // `sourceInRepo` says whether the top level of the repo's default branch holds a name that can
@@ -108,13 +113,15 @@ export interface StartPlan {
 // has no source fact for some records. `releaseWarnings` says where the
 // Zotero release lists in src/site/version.ts fall behind and which changelog reads failed, and
 // stays out of the data. `icons` holds the bytes of each icon file that a record of the data
-// names, keyed by that record's `upstream.icon`.
+// names, keyed by that record's `upstream.icon`, and `screenshots` the bytes of each
+// screenshot, keyed by its record's `screenshot.file`.
 export type BuildResult =
   | {
       ok: true;
       data: PluginsFile;
       text: string;
       icons: Map<string, Uint8Array>;
+      screenshots: Map<string, Uint8Array>;
       buildLevel: string[];
       kept: string[];
       timings: ReadTiming[];
@@ -217,7 +224,7 @@ export async function buildData(
   if (listed.length === 0) return { ok: false, problems: [`there are no entries in ${root}`] };
 
   const problems: string[] = [];
-  const entries: { id: string; repoUrl: string; paidService?: PaidService; iconHidden: boolean; overrides: Override[] }[] = [];
+  const entries: ({ id: string } & Entry)[] = [];
   for (const { name, readError } of listed) {
     const entry = readError ? { problem: `cannot read the entry: ${readError}` } : await readEntry(join(root, name));
     if ("problem" in entry) problems.push(`${name}: ${entry.problem}`);
@@ -354,11 +361,20 @@ export async function buildData(
   const buildLevel = entries.flatMap(({ id }, i) => (buildLevelAt.has(i) ? [id] : []));
   const kept = entries.flatMap(({ id }, i) => (keptAt.has(i) ? [id] : []));
   const reports = countReports(issues, records);
-  const plugins = records.map(({ id, repoUrl, paidService, upstream, startTests, kept: keptFrom, failure, overrides }): PluginRecord => {
+  // Each screenshot that an entry names, keyed by its record's screenshot.file.
+  const screenshots = new Map<string, Uint8Array>();
+  const plugins = records.map(({ id, repoUrl, paidService, upstream, startTests, kept: keptFrom, failure, overrides }, i): PluginRecord => {
     const paid = paidService ? { paidService } : {};
-    if (!upstream) return { id, repoUrl, ...paid, failure, overrides };
+    const shot = entries[i].screenshot;
+    let shown = {};
+    if (shot) {
+      const file = `screenshots/${createHash("sha256").update(shot.bytes).digest("hex")}.webp`;
+      screenshots.set(file, shot.bytes);
+      shown = { screenshot: { file, alt: shot.description } };
+    }
+    if (!upstream) return { id, repoUrl, ...paid, ...shown, failure, overrides };
     const tests = startTests ? { startTests } : {};
-    return { id, repoUrl, ...paid, upstream, reports: reports.get(id) ?? [], ...tests, ...(keptFrom ? { kept: keptFrom } : {}), overrides };
+    return { id, repoUrl, ...paid, ...shown, upstream, reports: reports.get(id) ?? [], ...tests, ...(keptFrom ? { kept: keptFrom } : {}), overrides };
   });
   // Each icon a record names, from this build's drawing or the kept icons. A record whose icon
   // file the build does not hold names none, so the data never names a file it lacks.
@@ -396,6 +412,7 @@ export async function buildData(
     data,
     text,
     icons,
+    screenshots,
     buildLevel,
     kept,
     timings: timed.filter((timing): timing is ReadTiming => timing !== undefined),
@@ -416,18 +433,19 @@ export function checkOutput(value: unknown): string[] {
 const SCHEMAS = join(import.meta.dirname, "..", "..", "schemas");
 const PUBLISHED_SCHEMAS = ["plugins.v1.schema.json", "index.v1.schema.json"];
 
-// Writes each of `icons` to <outDir>/v1/ at its path, copies the published schemas to
-// <outDir>/schemas/, then writes text to <outDir>/v1/plugins.json, and last removes each other
-// file in <outDir>/v1/icons/. Each file goes through a temporary file, so a failed write leaves any
-// earlier file whole, and the data is written only after the icons it names. `icons` is required,
-// so a caller cannot remove the icons by leaving it out. A failed removal leaves stale files,
-// which no data names, and does not fail the write.
+// Writes each of `icons` and `screenshots` to <outDir>/v1/ at its path, copies the published
+// schemas to <outDir>/schemas/, then writes text to <outDir>/v1/plugins.json, and last removes each
+// other file in <outDir>/v1/icons/ and <outDir>/v1/screenshots/. Each file goes through a temporary
+// file, so a failed write leaves any earlier file whole, and the data is written only after the
+// images it names. Both maps are required, so a caller cannot remove the images by leaving one
+// out. A failed removal leaves stale files, which no data names, and does not fail the write.
 export async function writeData(
   outDir: string,
   text: string,
   icons: ReadonlyMap<string, Uint8Array>,
+  screenshots: ReadonlyMap<string, Uint8Array>,
 ): Promise<{ ok: true; path: string } | { ok: false; message: string }> {
-  for (const [name, bytes] of icons) {
+  for (const [name, bytes] of [...icons, ...screenshots]) {
     const target = join(outDir, "v1", name);
     try {
       await mkdir(dirname(target), { recursive: true });
@@ -459,10 +477,15 @@ export async function writeData(
     await rm(temporary, { force: true }).catch(() => {});
     return { ok: false, message: `cannot write ${path}: ${(error as Error).message}` };
   }
-  const iconDir = join(outDir, "v1", "icons");
-  const keep = new Set([...icons.keys()].map((name) => basename(name)));
-  const names = await readdir(iconDir).catch(() => [] as string[]);
-  for (const name of names) if (!keep.has(name)) await rm(join(iconDir, name), { force: true, recursive: true }).catch(() => {});
+  for (const [folder, files] of [
+    ["icons", icons],
+    ["screenshots", screenshots],
+  ] as const) {
+    const dir = join(outDir, "v1", folder);
+    const keep = new Set([...files.keys()].map((name) => basename(name)));
+    const names = await readdir(dir).catch(() => [] as string[]);
+    for (const name of names) if (!keep.has(name)) await rm(join(dir, name), { force: true, recursive: true }).catch(() => {});
+  }
   return { ok: true, path };
 }
 
@@ -480,9 +503,18 @@ export async function writePlan(path: string, plan: StartPlan): Promise<{ ok: tr
   return { ok: true };
 }
 
-async function readEntry(
-  dir: string,
-): Promise<{ repoUrl: string; paidService?: PaidService; iconHidden: boolean; overrides: Override[] } | { problem: string }> {
+interface Entry {
+  repoUrl: string;
+  paidService?: PaidService;
+  iconHidden: boolean;
+  // index.json's screenshot description and the bytes of screenshot.webp.
+  screenshot?: { description: string; bytes: Uint8Array };
+  overrides: Override[];
+}
+
+// Reads one entry. `pnpm check` holds screenshot.webp to its rules, and the build reads only that
+// index.json's screenshot has a file.
+async function readEntry(dir: string): Promise<Entry | { problem: string }> {
   const meta = await readJson(join(dir, "meta.json"));
   if ("problem" in meta) return meta;
   const repoUrl = (meta.value as { repoUrl?: unknown } | null)?.repoUrl;
@@ -493,8 +525,27 @@ async function readEntry(
   if (!validateIndex(index.value)) {
     return { problem: `index.json: ${(validateIndex.errors ?? []).map(describe).join("; ")}` };
   }
-  const { paidService, iconHidden, overrides } = index.value as { paidService?: PaidService; iconHidden?: unknown; overrides?: Override[] };
-  return { repoUrl, ...(paidService ? { paidService } : {}), iconHidden: iconHidden !== undefined, overrides: overrides ?? [] };
+  const { paidService, iconHidden, screenshot, overrides } = index.value as {
+    paidService?: PaidService;
+    iconHidden?: unknown;
+    screenshot?: { description: string };
+    overrides?: Override[];
+  };
+  let shot: Entry["screenshot"];
+  if (screenshot) {
+    try {
+      shot = { description: screenshot.description, bytes: await readFile(join(dir, SCREENSHOT_FILE)) };
+    } catch (error) {
+      return { problem: `index.json names a screenshot, and ${SCREENSHOT_FILE} cannot be read: ${(error as Error).message}` };
+    }
+  }
+  return {
+    repoUrl,
+    ...(paidService ? { paidService } : {}),
+    iconHidden: iconHidden !== undefined,
+    ...(shot ? { screenshot: shot } : {}),
+    overrides: overrides ?? [],
+  };
 }
 
 // A fetch that starts each request to the GitHub API at least `gapMs` after the one before it,
