@@ -1236,3 +1236,31 @@ data build too; sharp loads only when an icon is drawn, so the discovery bot,
 which also runs the reader, does not load it. This choice is wrong if an icon that misleads or offends
 reaches a page before the maintainer hides it, or if authors ask the index not
 to show their icons faster than hides can follow.
+
+### D-081: A repository's owner can ask for one screenshot, which a maintainer looks at and the index keeps as its own copy, annotating D-049, D-062, D-063, and D-080
+
+2026-11-07, M114 plan. D-080 filled the top right of the plugin page with the
+icon, and the user also wanted a screenshot there. At the plan question set the
+user chose one screenshot for each plugin, shown under the icon. The owner of
+the plugin's repository asks for it, replaces it, or removes it through an
+issue form, and the maintainer looks at the image and applies it by hand with
+`pnpm screenshot-request`, as D-049 does for text. The command runs D-049's
+owner check. The user rejected screenshots that the build reads from READMEs,
+because the build cannot tell a screenshot from other images and the user did
+not want images that no one looked at. Unlike an icon, so, a screenshot shows
+only after a maintainer looks at it.
+
+The index commits a copy, `plugins/<id>/screenshot.webp`, and serves it under
+`v1/screenshots/`, rather than linking the attachment, so the owner cannot
+change the image after the maintainer looked at it. sharp re-encodes the copy
+as WebP with no metadata, which also drops any location tag. The limits live
+in `src/screenshot-request/rules.ts`, and `pnpm check` holds every entry to the
+file limits. Looking at a screenshot is not a review of plugin code, so D-051
+and D-062 stand: the index still cannot vet plugins, and a maintainer removes
+a plugin only on D-062's grounds. A screenshot is not a fact to check, as
+D-080 says of icons. D-063 gives terms for the index's own work only, so a
+screenshot and its description keep their owner's terms, as docs/license.md
+says.
+
+This choice is wrong if owners do not use the form while their READMEs hold
+screenshots, or if the committed images grow the repo enough to slow clones.

@@ -93,7 +93,7 @@ check text requests at once" holds the same idea for text; icons → M113.
       screenshot below `.actions` at 62.5rem and under; site tests and a fixture with a screenshot (lesson
       2026-10-30, M061); look at 375, 1000, 1024, and 1280 px in light and dark (lessons 2026-10-29 M048,
       2026-11-06 M108).
-- [ ] T7: Rename the About section and add its sentence, change the license line, document the form and command
+- [x] T7: Rename the About section and add its sentence, change the license line, document the form and command
       in `docs/requests.md` (after "Changing a plugin's name or description", :165), the fields in `docs/data.md`,
       and terms in `docs/license.md`; update DESIGN's sources and add a D-entry for owner screenshots, annotating
       D-049, D-062, and D-063; add the CHANGELOG entry.
@@ -120,3 +120,4 @@ check text requests at once" holds the same idea for text; icons → M113.
 - 2026-11-07: T4: `screenshot` in index.v1 requires `description` (non-blank) and `reason`; `pnpm check` adds the rule `screenshot-file`, reads the limits from `src/screenshot-request/rules.ts`, and loads sharp only for an entry with a screenshot.webp; a blank `screenshot.reason` is `reason-not-blank`; the T3 apply and removal now pass `pnpm check` in a test.
 - 2026-11-07: T5: every record of an entry with a screenshot gets `screenshot`, a failed read included; `BuildResult.screenshots` and a required fourth `writeData` argument, which also clears stale files in `v1/screenshots/`; a named screenshot with no readable file stops the build; data of a tree with no screenshot is unchanged (lesson M075).
 - 2026-11-07: T6: the screenshot link sits in `.head-side` after the icon (DOM order: actions, icon, screenshot, then install note or version card); above 62.5rem `.head-side.with-screenshot` is a 20rem column, the image at most 30rem tall and right-aligned; at 62.5rem and under the column is `display: contents`, so the icon keeps its place beside the name and the screenshot takes row 2 under the links; fixture screenshots on first-plugin (icon, no install note) and a-cafe (no icon, install note); browser look at 1280, 1024, 1000, 375 px with a wide and a tall image, dark and light: every AC6 measure held, no horizontal scroll at 375.
+- 2026-11-07: T7: About's `#icons` section keeps its id under the new heading; docs/requests.md "Adding a screenshot", docs/data.md (record block, entry field, third file), docs/license.md screenshot terms, DESIGN (contract boundary, About list, overrides, check, reader, build, text and screenshot requests), D-081, and the CHANGELOG entry; the simple-english lint hook still flags older lines in those docs, left as they were.

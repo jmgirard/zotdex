@@ -84,6 +84,19 @@ field is new in schema v1. If you validate against a saved copy of the
 schema, fetch the schema again. The icon keeps its author's terms, as
 [license.md](license.md) says.
 
+A record can have a `screenshot` block. If the entry's `index.json` has a
+`screenshot` field, the record has the block, also when its read failed.
+The block has two fields. `file` is the path of the image, such as
+`screenshots/<sha>.webp`, relative to the folder of `plugins.json`, so the
+file is at `v1/screenshots/<sha>.webp`. The build copies the entry's
+`screenshot.webp` and names the copy by the SHA-256 of its bytes. `alt` is
+the owner's description of the image, for a reader who cannot see it. The
+image is a WebP file at most 1600 pixels wide, 2400 pixels tall, and
+1 MiB. Data written before the build wrote this field has none. The field
+is new in schema v1. If you validate against a saved copy of the schema,
+fetch the schema again. The screenshot keeps its owner's terms, as
+[license.md](license.md) says.
+
 An `upstream` block can have a `stars` field. It is the star count that
 the build read for the plugin's GitHub repository. If GitHub gives no
 whole number of 0 or more, the field is absent. Data written before the
@@ -234,7 +247,8 @@ results the build keeps.
 
 Each plugin has one directory, `plugins/<id>/`, where `<id>` is the plugin id
 from its manifest, for example `plugins/first-plugin@example.org/`. The
-directory holds two files.
+directory holds two files, and a third, `screenshot.webp`, for a plugin with a
+screenshot.
 
 `meta.json` is an entry in the registry format. The registry is
 [zotero-plugin-registry](https://github.com/zotero-plugin-dev/zotero-plugin-registry),
@@ -260,6 +274,21 @@ only registry fields. Its `id` must equal the directory name.
   This also holds for a record that keeps earlier facts. It has one
   required field, `reason`: why the icon is hidden. The reason must hold a character other
   than whitespace and Unicode format characters, as for an override.
+- `screenshot`: set when the repository's owner asked for a screenshot and a
+  maintainer applied it with `pnpm screenshot-request`, as
+  [requests.md](requests.md#adding-a-screenshot) says. The image is
+  `screenshot.webp` in the entry's directory. It has two required fields:
+  - `description`: what the image shows, in the owner's words. It must hold
+    a character other than whitespace.
+  - `reason`: the issue that asks for the screenshot. It must hold a
+    character other than whitespace and Unicode format characters, as for an
+    override.
+
+  If `index.json` has this field and `screenshot.webp` is missing,
+  `pnpm check` fails the entry. If the file exists and `index.json` has no
+  such field, it also fails the entry. It also fails a file that is not
+  WebP, is more than 1600 pixels wide or 2400 pixels tall, or is more than
+  1 MiB.
 - `overrides`: a list of corrections to upstream facts. Use an override only
   when the plugin author cannot or will not fix the fact upstream, or in the
   cases that follow. A `description` override can also give English text for

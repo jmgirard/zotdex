@@ -234,6 +234,67 @@ or the owner is an organization, check the author by hand, then add
 the `--apply` run. Then read the text, answer the issue, and open a pull
 request with the change.
 
+## Adding a screenshot
+
+A repository's owner can ask the index to show one screenshot on the plugin's
+page, or to remove it. The owner line in the plugin page's Details card links
+to the form `.github/ISSUE_TEMPLATE/screenshot.yml`, with the plugin id filled
+in. The form adds the label `screenshot`. It has three fields: the plugin id,
+the screenshot, which is an image attached to the issue, and a description of
+the screenshot. If the Screenshot field is blank, the request asks to remove
+the screenshot, and the command ignores the description.
+
+The request follows these rules, which `src/screenshot-request/rules.ts`
+holds:
+
+- The Screenshot field holds one image link. An image link is a Markdown
+  image or an `<img>` element, which GitHub writes for an attached image.
+- The link and each redirect use HTTPS and stay on the hosts in
+  `SCREENSHOT_HOSTS`. GitHub's attachment links are on `github.com` and
+  redirect to its file host.
+- The download is at most 10 MiB.
+- The image is a PNG, JPEG, or WebP file, by its first bytes, and sharp reads
+  it as at most 8000 pixels wide and 8000 pixels tall.
+- The description follows the rules for a description in "Changing a plugin's
+  name or description".
+
+No bot answers the form. To check a request, download the deployed data file
+and run the command with the issue's number:
+
+```sh
+curl -sSLo plugins.json https://zotdex.jmgirard.com/v1/plugins.json
+pnpm screenshot-request <issue> --data plugins.json
+```
+
+The command reads the issue and the owner of the entry's repository, and checks
+the owner as `pnpm text-request` does. It downloads the image and prints the
+plugin, each image link, the description, the issue's author, the owner, and
+whether the two match. It also prints the image's format and sizes, in pixels
+and in bytes. It prints the screenshot that the request replaces or removes,
+and the age of the data file. It prints each rule that the request breaks as a `problem:`
+line. A rule of the description prints as `description-` and the name that
+`pnpm text-request` gives the rule.
+
+The command has the three exit statuses of `pnpm text-request`. A download
+that fails or gets an HTTP error is a named failure, so it exits 2. A removal
+from an entry with no screenshot writes nothing and exits 0.
+
+If the download does not work, save the image by hand, look at it, and run the
+command with `--file <path>`. The command then reads that file in place of the
+download. It still checks the Screenshot field, the image, and the
+description.
+
+Look at the image before you apply it. With `--apply`, the command makes the
+index's copy with sharp. Sharp turns the image upright by its orientation tag.
+It makes the image fit within 1600 by 2400 pixels, but never larger. It saves
+the copy as WebP with no metadata. If the copy is more than 1 MiB, the command writes nothing
+and exits 1, so ask the owner for a smaller image. Otherwise it writes the
+copy to `plugins/<id>/screenshot.webp` and sets the `screenshot` field of the
+entry's `index.json`, as [data.md](data.md#plugin-entries) says. A removal
+deletes both. The command writes nothing past a broken rule, and
+`--owner-checked` works as in `pnpm text-request`. Then answer the issue and
+open a pull request with the change.
+
 ## Removing a plugin
 
 Anyone can ask to remove a plugin with the "Remove a plugin or report harm"

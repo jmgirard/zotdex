@@ -904,9 +904,11 @@ describe("the About page", () => {
     ],
     [
       "icons",
-      "Icons",
+      "Icons and screenshots",
       "A plugin's icon is the one its author made for Zotero's Plugins window. " +
-        "Zotdex doesn't look at icons before it shows them, and a maintainer can hide one.",
+        "Zotdex doesn't look at icons before it shows them, and a maintainer can hide one. " +
+        "A screenshot comes from the plugin's owner, who asks for it with the link on the plugin's page. " +
+        "A maintainer looks at each one before it's shown.",
     ],
     [
       "overrides",
@@ -963,7 +965,7 @@ describe("the About page", () => {
       "license",
       "License",
       "Zotdex's code is under the MIT License, and its data, categories, and own text are under CC0 1.0. " +
-        "Names, descriptions, icons, and other work from plugin authors keep their authors' terms. " +
+        "Names, descriptions, icons, screenshots, and other work from plugin authors keep their authors' terms. " +
         "The license page gives the details, including the exceptions.",
     ],
   ];

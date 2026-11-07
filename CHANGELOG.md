@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- A plugin's repository owner can ask for one screenshot with a new issue
+  form, linked from the owner line on the plugin's page. A maintainer looks
+  at the image and applies it with `pnpm screenshot-request`, which keeps a
+  WebP copy in the entry. Plugin pages show it under the icon, or under the
+  links on a narrow screen. The build publishes it under `v1/screenshots/`,
+  and the data's records gain an optional `screenshot` field with its path
+  and description. The About section "Icons" is now "Icons and screenshots".
 - Plugin pages show the plugin's own icon, the one its manifest names for
   Zotero's Plugins window, on a white tile at the top right of the page head.
   The build redraws it as a 96 by 96 PNG under `v1/icons/`. The data's
