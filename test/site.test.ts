@@ -688,6 +688,7 @@ describe("the plugin page", () => {
             ...(typeof upstream.sourceInRepo === "boolean" ? [["Source code in the repository's top folder", "source-in-repo"]] : []),
             ["Repository created", "repo-created"],
             ["Release on this page", "latest-release"],
+            ...(html.includes('data-link="download"') ? [["Malware scan", "malware-scan"]] : []),
             ["Releases with an .xpi file", "release-count"],
             ["Open issues and pull requests", "open-issues"],
             ["Checks for updates at", "update-host"],
@@ -2570,6 +2571,60 @@ describe("the description facts", () => {
 
   test("the Plugin's value cell of another override keeps its one value", () => {
     expect(upstreamCell("both-texts@example.org", "name")).toEqual([upstream.name]);
+  });
+});
+
+describe("the malware scan row", () => {
+  // The shared fixture has no scan, so these records get their own build.
+  const base = records.find((record) => record.id === "first-plugin@example.org")!;
+  const SHA = "a".repeat(64);
+  const CLAMAV = "ClamAV 1.5.4/27800/Sun Nov  8 09:00:00 2026";
+  const withFile = (id: string, extra: Partial<PluginRecord> = {}, xpiUrl = `https://github.com/example/${id}/releases/download/v1/p.xpi`): PluginRecord => ({
+    ...base,
+    id,
+    upstream: { ...base.upstream!, id, xpiUrl, xpiSha256: SHA },
+    reports: [],
+    overrides: [],
+    ...extra,
+  });
+  const plugins = [
+    withFile("clean@example.org", { malwareScan: { xpiSha256: SHA, scannedAt: "2026-11-09", clamav: CLAMAV } }),
+    withFile("found@example.org", { malwareScan: { xpiSha256: SHA, scannedAt: "2026-11-09", clamav: CLAMAV, found: "Win.Test.EICAR_HDB-1" } }),
+    withFile("none@example.org"),
+    // A result for another file.
+    withFile("other-file@example.org", { malwareScan: { xpiSha256: "b".repeat(64), scannedAt: "2026-11-09", clamav: CLAMAV } }),
+    // No download link, so no install note.
+    withFile("ftp@example.org", { malwareScan: { xpiSha256: SHA, scannedAt: "2026-11-09", clamav: CLAMAV } }, "ftp://example.org/p.xpi"),
+  ];
+  let dir = "";
+  beforeAll(() => {
+    dir = outWith(JSON.stringify({ schemaVersion: 1, generatedAt: "2026-11-09T06:17:00.000Z", plugins }));
+    const run = pnpmSite(["--out", dir]);
+    if (run.status !== 0) throw new Error(run.stderr);
+  }, 120_000);
+  const pageOf = (id: string) => readFileSync(join(dir, "plugins", id, "index.html"), "utf8");
+  const row = (id: string) => /<dt>Malware scan<\/dt>\s*<dd data-fact="malware-scan">(.*?)<\/dd>/s.exec(pageOf(id))?.[1];
+  const textOfRow = (id: string) => unescaped(row(id)!.replace(/<[^>]+>/g, "")).replace(/\s+/g, " ").trim();
+
+  test.each([
+    ["clean@example.org", "ClamAV found no known malware in this file (November 9, 2026)"],
+    ["found@example.org", "ClamAV flagged this file as Win.Test.EICAR_HDB-1 (November 9, 2026)"],
+    ["none@example.org", "Not scanned yet"],
+    ["other-file@example.org", "Not scanned yet"],
+  ])("shows the approved form for %s", (id, text) => {
+    expect(textOfRow(id)).toBe(text);
+  });
+
+  test("links ClamAV to its site when there is a result, and not otherwise", () => {
+    expect(row("clean@example.org")).toContain('<a href="https://www.clamav.net/" data-link="clamav">ClamAV</a>');
+    expect(row("found@example.org")).toContain('<a href="https://www.clamav.net/" data-link="clamav">ClamAV</a>');
+    expect(row("none@example.org")).not.toContain("<a ");
+  });
+
+  test("shows no row on a page with no install note", () => {
+    expect(pageOf("ftp@example.org")).not.toContain('data-fact="install-note"');
+    expect(row("ftp@example.org")).toBeUndefined();
+    expect(pageOf("clean@example.org")).toContain('data-fact="install-note"');
   });
 });
 
