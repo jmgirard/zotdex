@@ -543,11 +543,12 @@ In each entry, the rule `registry-schema` checks `meta.json` against the
 registry schema, and `index-schema` checks `index.json` against its schema.
 A file can start with a UTF-8 byte-order mark (U+FEFF). Then the line names
 the mark, in place of "is not valid JSON". Save such a file as UTF-8
-without the mark. Besides `index-schema`, two rules check the overrides in
-`index.json`:
+without the mark. Besides `index-schema`, two rules check the reasons and
+overrides in `index.json`:
 
-- `reason-not-blank`: a reason must hold a character other than whitespace,
-  as JavaScript's `\s` defines it, and Unicode format characters. Most
+- `reason-not-blank`: a reason, of an override or of `iconHidden`, must hold
+  a character other than whitespace, as JavaScript's `\s` defines it, and
+  Unicode format characters. Most
   format characters, such as U+200B (zero width space), print nothing.
 - `unique-override`: two overrides must not have the same `field` and
   `version`. An override with no `version` repeats only another override
@@ -585,8 +586,8 @@ from the repository that `GITHUB_REPOSITORY` names. If that variable is not
 set, it reads them from `jmgirard/zotdex`. A fork that builds
 the data must have a label named `report`, or the build exits 1. Then it
 reads each plugin
-from GitHub in the same way as `pnpm add-plugin`. It writes one file,
-`dist/v1/plugins.json`. The file has a `schemaVersion` of `1`, a
+from GitHub in the same way as `pnpm add-plugin`. It writes
+`dist/v1/plugins.json` and the icon files in `dist/v1/icons/`. The file has a `schemaVersion` of `1`, a
 `generatedAt` time, an optional `zoteroRelease` from the read below, and
 one record for each entry. Each record keeps the upstream facts in an
 `upstream` block and the overrides of the entry, with their reasons, in an
@@ -790,10 +791,11 @@ The command writes no data file and exits with status 1 in these cases:
   more than 3 minutes in all. It prints a line that names the time limit,
   and it reads no plugin.
 - The file it built is not valid against the schema.
-- It cannot write the schema copies or the data file.
+- It cannot write an icon file, the schema copies, or the data file.
 
 A data file from an earlier run then stays in place. In the last case, the
-schema copies can already be in `dist/schemas/`. The command writes the
+icon files can already be in `dist/v1/icons/` and the schema copies in
+`dist/schemas/`. The command writes the
 data file before the start plan that `--plan` names. If it cannot write the
 plan, it prints `write-failed` with the plan's path and exits with status
 1. The new data file then stays in place.

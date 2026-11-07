@@ -1781,13 +1781,22 @@ describe("buildData with the deployed data", () => {
   });
 
   describe("and icons", () => {
-    const ICON_BYTES = strToU8("deployed icon file");
-    const ICON = `icons/${createHash("sha256").update(ICON_BYTES).digest("hex")}.png`;
-    const ICON_URL = `https://example.org/v1/${ICON}`;
-    // The deployed data in which SECOND names ICON.
-    const withIcon = () => {
+    const iconName = (bytes: Uint8Array) => `icons/${createHash("sha256").update(bytes).digest("hex")}.png`;
+    let ICON_BYTES: Uint8Array;
+    let ICON: string;
+    let ICON_URL: string;
+    let SMALL_PNG: Uint8Array;
+    beforeAll(async () => {
+      const square = (side: number) => sharp({ create: { width: side, height: side, channels: 4, background: "#06c" } }).png().toBuffer();
+      ICON_BYTES = new Uint8Array(await square(96));
+      SMALL_PNG = new Uint8Array(await square(48));
+      ICON = iconName(ICON_BYTES);
+      ICON_URL = `https://example.org/v1/${ICON}`;
+    });
+    // The deployed data in which SECOND names `icon`.
+    const withIcon = (icon = ICON) => {
       const data = deployed();
-      (deployedRecord(data, SECOND).upstream as Record<string, unknown>).icon = ICON;
+      (deployedRecord(data, SECOND).upstream as Record<string, unknown>).icon = icon;
       return data;
     };
     // The kept record of SECOND with no icon.
@@ -1801,7 +1810,6 @@ describe("buildData with the deployed data", () => {
       const data = withIcon();
       const { result, output } = await rebuild({ ...failing(), [ICON_URL]: { base64: Buffer.from(ICON_BYTES).toString("base64") } }, { json: data });
       expect(record(output, SECOND)).toEqual(keptSecond(data, READ_AT, SECOND_FAILURE));
-      expect(record(output, SECOND)?.upstream?.icon).toBe(ICON);
       expect(result.icons.get(ICON)).toEqual(ICON_BYTES);
       expect(checkOutput(output)).toEqual([]);
     });
@@ -1819,6 +1827,18 @@ describe("buildData with the deployed data", () => {
       expect(result.kept).toEqual([SECOND]);
       expect(result.icons.size).toBe(0);
       expect(record(output, BETTER_NOTES)).not.toHaveProperty("failure");
+    });
+
+    test.each<[string, () => Uint8Array]>([
+      ["text", () => strToU8("<html>not an icon</html>")],
+      ["a 48 by 48 PNG", () => SMALL_PNG],
+    ])("drops a kept icon whose file is %s with the SHA-256 in its name", async (_case, bytes) => {
+      const file = bytes();
+      const data = withIcon(iconName(file));
+      const url = `https://example.org/v1/${iconName(file)}`;
+      const { result, output } = await rebuild({ ...failing(), [url]: { base64: Buffer.from(file).toString("base64") } }, { json: data });
+      expect(record(output, SECOND)).toEqual(keptWithout(data));
+      expect(result.icons.size).toBe(0);
     });
 
     test("drops the kept icon of a record whose index.json hides it, with no read of the file", async () => {
@@ -1913,7 +1933,7 @@ describe("writeData", () => {
   test("reports a directory it cannot make", async () => {
     const blocker = join(tempDir(), "file");
     writeFileSync(blocker, "");
-    expect(await writeData(join(blocker, "dist"), "{}\n")).toEqual({
+    expect(await writeData(join(blocker, "dist"), "{}\n", new Map())).toEqual({
       ok: false,
       message: expect.stringContaining(`cannot write ${join(blocker, "dist", "schemas", "plugins.v1.schema.json")}`),
     });
@@ -1922,7 +1942,7 @@ describe("writeData", () => {
   test("reports a data directory it cannot make after the schemas are written", async () => {
     const out = tempDir();
     writeFileSync(join(out, "v1"), "");
-    expect(await writeData(out, "{}\n")).toEqual({
+    expect(await writeData(out, "{}\n", new Map())).toEqual({
       ok: false,
       message: expect.stringContaining(`cannot write ${join(out, "v1", "plugins.json")}`),
     });
@@ -1932,7 +1952,7 @@ describe("writeData", () => {
   test("removes its temporary schema file when the schema cannot be replaced", async () => {
     const out = tempDir();
     mkdirSync(join(out, "schemas", "plugins.v1.schema.json", "taken"), { recursive: true });
-    expect(await writeData(out, "{}\n")).toEqual({
+    expect(await writeData(out, "{}\n", new Map())).toEqual({
       ok: false,
       message: expect.stringContaining(`cannot write ${join(out, "schemas", "plugins.v1.schema.json")}`),
     });
@@ -1943,7 +1963,7 @@ describe("writeData", () => {
   test("removes its temporary file when the file cannot be replaced", async () => {
     const out = tempDir();
     mkdirSync(join(out, "v1", "plugins.json", "taken"), { recursive: true });
-    expect((await writeData(out, "{}\n")).ok).toBe(false);
+    expect((await writeData(out, "{}\n", new Map())).ok).toBe(false);
     expect(readdirSync(join(out, "v1"))).toEqual(["plugins.json"]);
   });
 });

@@ -2669,7 +2669,7 @@ describe("the site styles", () => {
       .filter(({ selector }) => selector !== ":root" && selector !== ".visually-hidden")
       .flatMap(({ selector, declarations }) =>
         declarations
-          .filter(([property]) => /^(?:border-radius|padding(?:-[a-z-]+)?|margin(?:-[a-z-]+)?|gap|font-size)$/.test(property))
+          .filter(([property]) => /^(?:border-radius|padding(?:-[a-z-]+)?|margin(?:-[a-z-]+)?|(?:row-|column-)?gap|font-size)$/.test(property))
           .map(([property, value]) => ({ selector, property, value })),
       );
     for (const property of ["border-radius", "padding", "margin", "margin-left", "gap", "font-size"]) {

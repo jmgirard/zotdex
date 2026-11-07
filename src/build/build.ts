@@ -419,11 +419,13 @@ const PUBLISHED_SCHEMAS = ["plugins.v1.schema.json", "index.v1.schema.json"];
 // Writes each of `icons` to <outDir>/v1/ at its path, copies the published schemas to
 // <outDir>/schemas/, then writes text to <outDir>/v1/plugins.json, and last removes each other
 // file in <outDir>/v1/icons/. Each file goes through a temporary file, so a failed write leaves any
-// earlier file whole, and the data is written only after the icons it names.
+// earlier file whole, and the data is written only after the icons it names. `icons` is required,
+// so a caller cannot remove the icons by leaving it out. A failed removal leaves stale files,
+// which no data names, and does not fail the write.
 export async function writeData(
   outDir: string,
   text: string,
-  icons: ReadonlyMap<string, Uint8Array> = new Map(),
+  icons: ReadonlyMap<string, Uint8Array>,
 ): Promise<{ ok: true; path: string } | { ok: false; message: string }> {
   for (const [name, bytes] of icons) {
     const target = join(outDir, "v1", name);
@@ -458,12 +460,9 @@ export async function writeData(
     return { ok: false, message: `cannot write ${path}: ${(error as Error).message}` };
   }
   const iconDir = join(outDir, "v1", "icons");
-  try {
-    const keep = new Set([...icons.keys()].map((name) => basename(name)));
-    for (const name of await readdir(iconDir)) if (!keep.has(name)) await rm(join(iconDir, name), { force: true });
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code !== "ENOENT") return { ok: false, message: `cannot clear ${iconDir}: ${(error as Error).message}` };
-  }
+  const keep = new Set([...icons.keys()].map((name) => basename(name)));
+  const names = await readdir(iconDir).catch(() => [] as string[]);
+  for (const name of names) if (!keep.has(name)) await rm(join(iconDir, name), { force: true, recursive: true }).catch(() => {});
   return { ok: true, path };
 }
 

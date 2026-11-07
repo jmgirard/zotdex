@@ -172,7 +172,8 @@ supported range and its marks, the startup check, which reports count, and
 what corrections change (M054, M110), the categories, each with its `about`
 text (M066), what the lock means (M081), what the paid service mark means
 (M082), the grounds for removing a plugin (M093), how to install a plugin
-(M096), and the license terms in short form (M095, D-063). The home table
+(M096), the license terms in short form (M095, D-063), and where a plugin's
+icon comes from (M113, D-080). The home table
 marks an archived plugin with "Archived" after its name (M053), and the
 data carries the same `archived` fact (M013). A home row and a plugin page
 show a lock for a record with
@@ -450,7 +451,8 @@ user reports. The exception is a report that is abuse.
 - Upstream reader (`src/upstream/`): `readUpstream(repoUrl, fetch, {
   lookup, signal })` returns the facts of one GitHub repo with the URL and
   SHA-256 of the XPI it read (M047), the repo's topics (M056), and each URL
-  of its `update.json` read as `updateRoute` (M077), or one named
+  of its `update.json` read as `updateRoute` (M077), and the bytes of the
+  icon file its manifest names as `icon` (M113), or one named
   inclusion-bar failure. `readUpdateRoute` gives that route for one address
   and reads no body (M077).
   `downloadXpi` downloads one XPI with the same host check (M047). The
@@ -508,7 +510,8 @@ user reports. The exception is a report that is abuse.
 - Data build (`src/build/`): `pnpm build [<dir>] [--out <dir>] [--plan
   <file>]` writes
   `dist/v1/plugins.json`, one record per entry, with a failed upstream read
-  kept in that entry's record, and copies the two schemas to `dist/schemas/`.
+  kept in that entry's record, writes each drawn icon to `dist/v1/icons/`
+  before it (M113), and copies the two schemas to `dist/schemas/`.
   It exits 1 when more than half of the records carry a build-level failure,
   as "Building the data" in `docs/maintaining.md` defines it, and also when every record carries a
   failure, whatever its name, and, after writing the data, when it cannot
@@ -1018,7 +1021,8 @@ reused._
   then since M059 `pnpm carry-start-results`,
   daily and on manual dispatch, and keeps the data as a workflow artifact
   (M003); since M047 a later site job runs `pnpm site`. The build also
-  copies both schemas to `dist/schemas/`, and it exits 1 after it writes
+  copies both schemas to `dist/schemas/` and writes the icon files to
+  `dist/v1/icons/` (M113), and it exits 1 after it writes
   the file when more than half of the records carry a build-level
   failure, as "Building the data" in `docs/maintaining.md` defines it (M017;
   moved from README by M107), or when every

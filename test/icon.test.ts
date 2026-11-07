@@ -84,8 +84,16 @@ describe("redrawIcon", () => {
   test("draws an SVG's shapes, not an empty image", async () => {
     const icon = await redrawIcon(sources.svg, new Set());
     const { channels } = await sharp(icon!.png).stats();
-    // The red channel's mean is near 204 (#cc) where the square fills the whole icon.
-    expect(channels[0].mean).toBeGreaterThan(190);
+    // The square fills the whole icon, so the alpha channel is near opaque throughout.
+    expect(channels[3].mean).toBeGreaterThan(250);
+  });
+
+  test.each([
+    ["an image element", '<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8"><image href="data:image/png;base64,AAAA" width="8" height="8"/></svg>'],
+    ["a namespaced image element", '<svg xmlns="http://www.w3.org/2000/svg" xmlns:s="http://www.w3.org/2000/svg" width="8" height="8"><s:image href="x.png"/></svg>'],
+    ["an feImage filter", '<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8"><filter id="f"><feImage href="x.png"/></filter></svg>'],
+  ])("gives no icon for an SVG that holds %s", async (_name, svg) => {
+    expect(await redrawIcon(new TextEncoder().encode(svg), new Set())).toBeUndefined();
   });
 
   test.each<[string, () => Uint8Array]>([

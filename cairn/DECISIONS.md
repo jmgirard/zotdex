@@ -1230,6 +1230,9 @@ no SVG markup reaches a page. The icon is not a fact that a reader checks, so it
 sits apart from the facts, as D-037 sets categories apart. D-063 gives terms for
 text only, and icons keep their authors' terms, as docs/license.md says. The
 stock icon of zotero-plugin-template tells nothing about a plugin, so the build
-shows none for it. This choice is wrong if an icon that misleads or offends
+shows none for it. The data build draws the icons with sharp, the package that
+D-073 added for the site's own PNG icons, so D-073's falsifier now covers the
+data build too; sharp loads only when an icon is drawn, so the discovery bot,
+which also runs the reader, does not load it. This choice is wrong if an icon that misleads or offends
 reaches a page before the maintainer hides it, or if authors ask the index not
 to show their icons faster than hides can follow.

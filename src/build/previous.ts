@@ -57,7 +57,8 @@ const ICON_READS_AT_ONCE = 8;
 // The bytes of each deployed icon file in `icons`, paths such as `icons/<sha>.png` resolved
 // against `url`, the address of the deployed data. All the reads together stop at `limitMs`. A
 // path of another shape, an answer other than 200, a body over PREVIOUS_ICON_MAX_BYTES, a failed
-// or late read, and bytes whose SHA-256 is not the one in the file name each leave that icon out.
+// or late read, bytes whose SHA-256 is not the one in the file name, and bytes that are not a
+// PNG whose header gives 96 by 96 pixels each leave that icon out.
 export async function readPreviousIcons(url: string, icons: string[], fetch: Fetch, limitMs: number): Promise<Map<string, Uint8Array>> {
   const found = new Map<string, Uint8Array>();
   const queue = [...new Set(icons)];
@@ -73,7 +74,7 @@ export async function readPreviousIcons(url: string, icons: string[], fetch: Fet
             continue;
           }
           const bytes = await readCapped(response, PREVIOUS_ICON_MAX_BYTES);
-          if (bytes && createHash("sha256").update(bytes).digest("hex") === sha256) found.set(icon, bytes);
+          if (bytes && isIconPng(bytes) && createHash("sha256").update(bytes).digest("hex") === sha256) found.set(icon, bytes);
         } catch {
           // A failed or late read leaves this icon out.
         }
@@ -82,6 +83,15 @@ export async function readPreviousIcons(url: string, icons: string[], fetch: Fet
     await Promise.all(Array.from({ length: ICON_READS_AT_ONCE }, next));
   });
   return found;
+}
+
+// Whether `bytes` start with the PNG signature and an IHDR chunk that gives the size of the icon
+// files the build draws, 96 by 96 pixels.
+function isIconPng(bytes: Uint8Array): boolean {
+  const signature = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 13, 0x49, 0x48, 0x44, 0x52];
+  if (bytes.length < 24 || !signature.every((byte, i) => bytes[i] === byte)) return false;
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  return view.getUint32(16) === 96 && view.getUint32(20) === 96;
 }
 
 // The body's bytes, or undefined once more than `max` have arrived.

@@ -1,8 +1,10 @@
 import { createHash } from "node:crypto";
-import sharp from "sharp";
 
 // The side, in pixels, of each icon file that the build writes.
 export const ICON_SIZE = 96;
+
+// The longest one icon draw may take.
+export const ICON_DRAW_SECONDS = 10;
 
 // The widest or tallest source image the build redraws, as sharp's metadata gives it.
 export const ICON_MAX_SIDE = 4096;
@@ -41,7 +43,7 @@ export type IconFormat = "png" | "jpeg" | "webp" | "svg";
 
 // The image format of `bytes`, judged by their first bytes, or undefined for any other file.
 // An SVG is text whose first tag, after an optional byte-order mark, white space, XML
-// declaration, comments, and doctype, is `<svg`.
+// declaration, comments, and doctype, is `<svg`, within its first 4096 bytes.
 export function iconFormat(bytes: Uint8Array): IconFormat | undefined {
   const starts = (signature: number[], at = 0) => signature.every((byte, i) => bytes[at + i] === byte);
   if (starts([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])) return "png";
@@ -55,17 +57,22 @@ export function iconFormat(bytes: Uint8Array): IconFormat | undefined {
 // The icon file for the source bytes of a plugin's icon: a ICON_SIZE × ICON_SIZE PNG with
 // the image fit inside on a transparent background, and its SHA-256 in hex. It returns
 // undefined when the bytes are none of the four formats, fail to decode, have a side over
-// ICON_MAX_SIDE, or have a SHA-256 in `templates`. An SVG is drawn as pixels, so no SVG
-// reaches a page. sharp writes no metadata unless asked.
+// ICON_MAX_SIDE, have a SHA-256 in `templates`, or are an SVG that holds an `<image` or
+// `<feImage` element, whose embedded picture limitInputPixels does not bound. An SVG is drawn
+// as pixels, so no SVG reaches a page. sharp writes no metadata unless asked, and its timeout
+// option stops a draw after ICON_DRAW_SECONDS. sharp loads only here, so the reader's other
+// users, such as the discovery bot, do not load it.
 export async function redrawIcon(
   bytes: Uint8Array,
   templates: ReadonlySet<string> = TEMPLATE_ICONS,
 ): Promise<{ png: Uint8Array; sha256: string } | undefined> {
   const format = iconFormat(bytes);
   if (!format) return undefined;
+  if (format === "svg" && /<(?:\w+:)?(?:image|feImage)[\s/>]/i.test(new TextDecoder().decode(bytes))) return undefined;
   if (templates.has(createHash("sha256").update(bytes).digest("hex"))) return undefined;
   const limitInputPixels = ICON_MAX_SIDE * ICON_MAX_SIDE;
   try {
+    const { default: sharp } = await import("sharp");
     const { width, height } = await sharp(bytes, { limitInputPixels }).metadata();
     if (!width || !height || width > ICON_MAX_SIDE || height > ICON_MAX_SIDE) return undefined;
     // An SVG is drawn at the density that makes its longer side ICON_SIZE, so a small one is
@@ -74,6 +81,7 @@ export async function redrawIcon(
     const png = await sharp(bytes, { limitInputPixels, ...(density ? { density } : {}) })
       .resize(ICON_SIZE, ICON_SIZE, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } })
       .png({ compressionLevel: 9 })
+      .timeout({ seconds: ICON_DRAW_SECONDS })
       .toBuffer();
     return { png: new Uint8Array(png), sha256: createHash("sha256").update(png).digest("hex") };
   } catch {
