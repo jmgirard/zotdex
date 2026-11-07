@@ -84,7 +84,8 @@ signals for plugins, set aside by the user.
   for started, start-error, not-installed, and timed-out, and its support
   and stars tooltips read as the home ones.
 - [ ] AC4: Every built page's footer reads the copy block's four footer
-  lines, with the test build's date as "Updated October 25, 2026." in UTC,
+  lines, with the test build's date, 2026-10-25 in UTC, written as the
+  month's English name, the day, a comma, and the year after "Updated ",
   and its top bar holds one link to `https://github.com/jmgirard/zotdex`
   labeled "Zotdex on GitHub", as a site test over the build's page walk
   shows.
