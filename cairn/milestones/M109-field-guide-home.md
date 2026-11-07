@@ -31,10 +31,12 @@ the user set aside for now (no row: the user did not ask for one).
   text is "Your field guide to Zotero plugins", as a site test shows by
   matching `/<h1[\s>]/g` once in `index.html` and reading that tag's text.
 - [ ] AC2: The built home page's intro paragraph, with tags removed and spaces
-  joined, reads "Before you install a plugin, look it up here. See which
-  Zotero versions it supports, whether it actually starts, and what other
-  people have run into. Zotdex is independent and unofficial, and it doesn't
-  review anyone's code. How to install a plugin.", where
+  joined, reads "Zotero can do a lot more with the right plugins. Browse
+  hundreds of them, from AI assistants and translation tools to better ways
+  to read PDFs and take notes. Each entry tells you what a plugin does, who
+  makes it, and which Zotero versions it supports. Zotdex is independent and
+  unofficial, and it doesn't review anyone's code, so look into a plugin
+  before you trust it with your library. How to install a plugin.", where
   `<a href="/about/#installing">How to install a plugin</a>` is followed by
   ".", as the updated intro test shows.
 - [ ] AC3: `git diff main -- site/src` changes only the hero's heading and
@@ -85,6 +87,7 @@ the user set aside for now (no row: the user did not ask for one).
 - 2026-11-07: criteria audit (full mode, fresh Opus) ran four times as the wording changed; taken: AC3 limited the grep to site, test, docs, README, CHANGELOG, src, since a mockup and the plan's records quote the old heading; AC1 counts `<h1>` tags; AC2 names where the link's period sits; AC3 names the title test exactly and allows the import line; AC4 checks that the lowercase meta and README lines stay; D-075 annotates D-064 and DESIGN's intro line. The last audit read an earlier intro; AC2's final quoted text is the user's pick at the gate, entered at the user's request with no further wording audit (logged deviation).
 - 2026-11-07: plan gate chose the "Field guide" copy over "Spotted in the wild", "Sorted out", and "Plain reference" at the user's pick; falsified by the user asking for other wording.
 - 2026-11-07: question set: home copy — "Field guide", as AC1 and AC2 quote it.
+- 2026-11-07: plan revised before implement at the user's direction: the intro is framed around discovering plugins, not checking them first; AC2 now quotes the user's pick (option A with the ending "so look into a plugin before you trust it with your library"); the heading stays; the user may revise the copy again before the merge.
 
 ## Decisions
 
