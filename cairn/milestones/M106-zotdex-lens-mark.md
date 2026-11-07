@@ -1,13 +1,13 @@
 # M106: Replace the puzzle piece with the Zotdex lens mark
 
-- **Status:** planned
+- **Status:** in-progress
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — the icon in every browser tab, the top bar's logo, the phone home-screen icon, and the picture in link previews
-- **Branch/PR:** —
+- **Branch/PR:** m106-zotdex-lens-mark
 
 ## Goal
 
@@ -53,7 +53,7 @@ Replace the puzzle-piece logo with Zotdex's own mark, the lens alone at 16 px an
 
 ## Tasks
 
-- [ ] T1: `src/site/logo.ts` with the full mark and the lens mark as shape data and an SVG writer; tests for the full mark's parts and the lens crop.
+- [x] T1: `src/site/logo.ts` with the full mark and the lens mark as shape data and an SVG writer; tests for the full mark's parts and the lens crop.
 - [ ] T2: `site/src/pages/favicon.svg.ts` writing the lens mark with both schemes' fills; delete `site/public/favicon.svg`; rewrite the favicon tests.
 - [ ] T3: The top bar's logo from `logo.ts`, the logo tokens in all three scheme blocks, the forced-colors rule; drop `puzzle` from `Icon.astro` and `PUZZLE_PATH` uses; rewrite the logo tests.
 - [ ] T4: Pin `sharp` 0.35.5; endpoints for `favicon.png`, `apple-touch-icon.png`, and `preview.png` (light fills, flattened on white); PNG header and pixel tests.
@@ -76,3 +76,5 @@ Replace the puzzle-piece logo with Zotdex's own mark, the lens alone at 16 px an
 - 2026-11-06: question set: preview picture — square full mark, 1200 by 1200, on white.
 - 2026-11-06: question set: after the merge — run `build.yml` on main and read the live files.
 - 2026-11-06: design choice: the lens mark's rim is 1 unit of the full mark's grid wide and its outer circle has radius 7.5, leaving 0.5 at each edge of the 16 px icon; the touch icon and preview draw the full mark on white with a margin set at implement.
+- 2026-11-06: started on branch m106-zotdex-lens-mark, cut from main at 10e690d5.
+- 2026-11-06: T1 done: `src/site/logo.ts` holds `FULL_MARK`, `lensMark` (scale 7.5/6, lens centered at (8, 8)), the fills, and SVG writers; the lid gap sits at y 12 to 13 so it ends above the body's lower corners; `test/logo.test.ts` (4 tests) fails when a light overlaps the lens; verify green (2499 passed, check 0 problems).
