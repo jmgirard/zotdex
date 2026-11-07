@@ -1,13 +1,13 @@
 # M114: Let a plugin's owner add a screenshot
 
-- **Status:** planned
+- **Status:** in-progress
 - **Priority:** normal
 - **Depends on:** M113
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — owners gain a request form and plugin pages show the screenshot
-- **Branch/PR:** —
+- **Branch/PR:** m114-owner-screenshot
 
 ## Goal
 
@@ -76,7 +76,7 @@ check text requests at once" holds the same idea for text; icons → M113.
 
 ## Tasks
 
-- [ ] T1: Run `gh label create screenshot` (granted at the question set); add `screenshot.yml` after
+- [x] T1: Run `gh label create screenshot` (granted at the question set); add `screenshot.yml` after
       `.github/ISSUE_TEMPLATE/text-change.yml`, a `screenshotHref` beside `textChangeHref` (`site/src/data.ts:220`),
       and the approved owner line at `site/src/pages/plugins/[id]/index.astro:388`, with a site test.
 - [ ] T2: Add `src/screenshot-request/` on the shape of `src/text-request/` (`request.ts` :72-148, `parse.ts`):
@@ -113,3 +113,5 @@ check text requests at once" holds the same idea for text; icons → M113.
 - 2026-11-07: criteria re-audit after the layout answer: AC6 anchors on every head text element, not the optional description; names the slot before `.install-note`; keeps the image inside `.page-head`; a 1 px tolerance; a wide and a tall image in the look; exact `href`.
 - 2026-11-07: inbox sweep: 0 open issues; 10 open PRs, all bot "Add <repo>" PRs, none overlapping.
 - 2026-11-07: sizing: 8 criteria pass the ~7 tripwire only through the verify-slot criterion (AC8), so no split; tasks are 6 to 7.
+- 2026-11-07: implement started on branch m114-owner-screenshot.
+- 2026-11-07: T1: created the `screenshot` label, added `screenshot.yml` (Screenshot is a textarea so an image can be attached), `screenshotHref`, and the approved owner line with site tests; the form's own test lands with T2's labels.

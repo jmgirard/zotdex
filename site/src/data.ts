@@ -221,6 +221,12 @@ export function textChangeHref(record: PluginRecord): string {
   return `${NEW_ISSUE}?template=text-change.yml&plugin=${encodeURIComponent(record.id)}`;
 }
 
+// The issue form where a plugin repository's owner asks for a screenshot, with the plugin
+// filled in.
+export function screenshotHref(record: PluginRecord): string {
+  return `${NEW_ISSUE}?template=screenshot.yml&plugin=${encodeURIComponent(record.id)}`;
+}
+
 // The issue form that asks to remove a plugin or reports harm.
 export const REMOVE_PLUGIN_HREF = `${NEW_ISSUE}?template=remove-plugin.yml`;
 

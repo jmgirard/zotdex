@@ -25,6 +25,7 @@ import {
   rangeText,
   reportHref,
   removeHref,
+  screenshotHref,
   textChangeHref,
   safeHref,
   shownDescription,
@@ -396,7 +397,8 @@ const { min, max } = declaredRange(record);
       )
     }
     <p class="fineprint">
-      Is this your plugin? <a href={textChangeHref(record)} data-text-change>Ask to change its name or description</a>.
+      Is this your plugin? <a href={textChangeHref(record)} data-text-change>Ask to change its name or description</a> or{" "}
+      <a href={screenshotHref(record)} data-screenshot-request>add a screenshot</a>.
     </p>
     <p class="fineprint">
       <a href={removeHref(record)} data-remove-plugin>Ask to remove this plugin or report harm</a>.

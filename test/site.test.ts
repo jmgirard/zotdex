@@ -2159,10 +2159,24 @@ describe("the built site", () => {
       const details = html.indexOf('data-section="details"');
       expect(links[0]!.index, id).toBeGreaterThan(details);
       expect(links[0]!.index, id).toBeLessThan(html.indexOf("</section>", details));
-      expect(mainText(html), id).toContain("Is this your plugin? Ask to change its name or description.");
+      expect(mainText(html), id).toContain("Is this your plugin? Ask to change its name or description or add a screenshot.");
     }
     expect(home()).not.toContain("data-text-change");
     expect(readFileSync(join(out, "about/index.html"), "utf8")).not.toContain("data-text-change");
+  });
+
+  test("links each plugin page's owner line to the screenshot form with the plugin id, and no other page", () => {
+    for (const id of ids) {
+      const html = page(id);
+      const links = [...html.matchAll(/<a href="([^"]*)" data-screenshot-request>add a screenshot<\/a>/g)];
+      expect(links, id).toHaveLength(1);
+      expect(links[0]![1]!.replace(/&amp;/g, "&").replace(/&#38;/g, "&"), id).toBe(
+        `https://github.com/jmgirard/zotdex/issues/new?template=screenshot.yml&plugin=${encodeURIComponent(id)}`,
+      );
+      expect(links[0]!.index, id).toBeGreaterThan(html.indexOf("data-text-change>"));
+    }
+    expect(home()).not.toContain("data-screenshot-request");
+    expect(readFileSync(join(out, "about/index.html"), "utf8")).not.toContain("data-screenshot-request");
   });
 
   test("offers no badge on any page", () => {
