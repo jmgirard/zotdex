@@ -213,6 +213,8 @@ replaces the line that the sections above record. Links are in brackets.
   Zotdex doesn't test plugins' safety or features beyond a malware scan, so
   look into a plugin before you trust it with your library."
 - About's Installing section, right after that sentence: "The malware scan
-  checks each plugin file once a week with ClamAV, a free antivirus
+  checks the plugin files about once a week with ClamAV, a free antivirus
   scanner. It finds known malware only, so a clean scan doesn't mean a
-  plugin is safe."
+  plugin is safe." (corrected M115: the user approved "the plugin files
+  about once a week" in place of "each plugin file once a week" at the
+  merge question, since a scan run can leave files for a later week.)

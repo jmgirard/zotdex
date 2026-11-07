@@ -38,7 +38,8 @@ import { themePage } from "./support/theme-page.ts";
 
 const ROOT = resolve(import.meta.dirname, "..");
 const FIXTURE = resolve(ROOT, "test/fixtures/site/plugins.json");
-const DISCLAIMER_TEXT = "Zotdex is an independent project, not part of Zotero, and it doesn't test the safety or features of the plugins it lists.";
+const DISCLAIMER_TEXT =
+  "Zotdex is an independent project, not part of Zotero, and it doesn't test the safety or features of the plugins it lists, beyond a malware scan by ClamAV.";
 const DATA_FILES = ["v1/plugins.json", "schemas/plugins.v1.schema.json", "schemas/index.v1.schema.json"];
 const fixture = JSON.parse(readFileSync(FIXTURE, "utf8")) as { plugins: { id: string }[] };
 const ids = fixture.plugins.map((plugin) => plugin.id);
@@ -185,7 +186,7 @@ describe("how to install a plugin", () => {
   const INSTALL_NOTE =
     "To install, save the .xpi file and drag it onto the Plugins window in Zotero (Tools → Plugins). " +
     "In Firefox, right-click the download link and choose Save Link As. " +
-    "A plugin has full access to Zotero and your computer, and Zotdex doesn't test plugins' safety or features, " +
+    "A plugin has full access to Zotero and your computer, and Zotdex doesn't test plugins' safety or features beyond a malware scan, " +
     "so look into a plugin before you trust it with your library. More about installing";
   const noteOf = (html: string) => [...html.matchAll(/<p class="install-note" data-fact="install-note">(.*?)<\/p>/gs)].map(([, text]) => text!);
   // Tags go with no space added, so a space that the template drops before a link shows here.
@@ -203,6 +204,16 @@ describe("how to install a plugin", () => {
       expect(html.replace(/>\s+</g, "><")).toMatch(/<div class="page-head" data-page-head>.*?<div class="actions" data-links>.*?<\/div><\/div><p class="install-note" data-fact="install-note">/s);
       expect(noteOf(html)[0]).toMatch(/<a href="\/about\/#installing">More about installing<\/a>/);
     }
+  });
+
+  // The lines that the malware scan wording replaced (cairn/references/plain-words-copy.md).
+  test("no built page holds the footer line or the safety sentence that the scan wording replaced", () => {
+    const oldFooter = "it doesn't test the safety or features of the plugins it lists.";
+    const oldSentence = "Zotdex doesn't test plugins' safety or features, so look";
+    const pages = htmlFiles(out).map((file) => textOf(readFileSync(join(out, file), "utf8")));
+    expect(pages.length).toBeGreaterThan(3);
+    expect(pages.filter((text) => text.includes(oldFooter) || text.includes(oldSentence))).toEqual([]);
+    expect(pages.every((text) => text.includes(DISCLAIMER_TEXT))).toBe(true);
   });
 
   test("the note gives the steps, the Firefox step, and the risk", () => {
@@ -688,6 +699,7 @@ describe("the plugin page", () => {
             ...(typeof upstream.sourceInRepo === "boolean" ? [["Source code in the repository's top folder", "source-in-repo"]] : []),
             ["Repository created", "repo-created"],
             ["Release on this page", "latest-release"],
+            ...(html.includes('data-link="download"') ? [["Malware scan", "malware-scan"]] : []),
             ["Releases with an .xpi file", "release-count"],
             ["Open issues and pull requests", "open-issues"],
             ["Checks for updates at", "update-host"],
@@ -949,8 +961,10 @@ describe("the About page", () => {
       "Installing a plugin",
       "Save the plugin's .xpi file, then in Zotero go to Tools → Plugins and drag the file onto the Plugins window. " +
         "In Firefox, right-click the download link and choose Save Link As. " +
-        "A plugin has full access to Zotero and your computer, and Zotdex doesn't test plugins' safety or features, " +
+        "A plugin has full access to Zotero and your computer, and Zotdex doesn't test plugins' safety or features beyond a malware scan, " +
         "so look into a plugin before you trust it with your library. " +
+        "The malware scan checks the plugin files about once a week with ClamAV, a free antivirus scanner. " +
+        "It finds known malware only, so a clean scan doesn't mean a plugin is safe. " +
         "A bot adds most new plugins, and a maintainer steps in when the bot flags one, " +
         "mainly to keep out entries that mislead people about what a plugin is or who makes it.",
     ],
@@ -2570,6 +2584,59 @@ describe("the description facts", () => {
 
   test("the Plugin's value cell of another override keeps its one value", () => {
     expect(upstreamCell("both-texts@example.org", "name")).toEqual([upstream.name]);
+  });
+});
+
+describe("the malware scan row", () => {
+  // The shared fixture has no scan, so these records get their own build.
+  const base = records.find((record) => record.id === "first-plugin@example.org")!;
+  const SHA = "a".repeat(64);
+  const CLAMAV = "ClamAV 1.5.4/27800/Sun Nov  8 09:00:00 2026";
+  const withFile = (id: string, extra: Partial<PluginRecord> = {}, xpiUrl = `https://github.com/example/${id}/releases/download/v1/p.xpi`): PluginRecord => ({
+    ...base,
+    id,
+    upstream: { ...base.upstream!, id, xpiUrl, xpiSha256: SHA },
+    reports: [],
+    overrides: [],
+    ...extra,
+  });
+  const plugins = [
+    withFile("clean@example.org", { malwareScan: { xpiSha256: SHA, scannedAt: "2026-11-09", clamav: CLAMAV } }),
+    withFile("found@example.org", { malwareScan: { xpiSha256: SHA, scannedAt: "2026-11-09", clamav: CLAMAV, found: "Win.Test.EICAR_HDB-1" } }),
+    withFile("none@example.org"),
+    // A result for another file.
+    withFile("other-file@example.org", { malwareScan: { xpiSha256: "b".repeat(64), scannedAt: "2026-11-09", clamav: CLAMAV } }),
+    // No download link, so no install note.
+    withFile("ftp@example.org", { malwareScan: { xpiSha256: SHA, scannedAt: "2026-11-09", clamav: CLAMAV } }, "ftp://example.org/p.xpi"),
+  ];
+  let dir = "";
+  beforeAll(() => {
+    dir = outWith(JSON.stringify({ schemaVersion: 1, generatedAt: "2026-11-09T06:17:00.000Z", plugins }));
+    const run = pnpmSite(["--out", dir]);
+    if (run.status !== 0) throw new Error(run.stderr);
+  }, 120_000);
+  const pageOf = (id: string) => readFileSync(join(dir, "plugins", id, "index.html"), "utf8");
+  const row = (id: string) => /<dt>Malware scan<\/dt>\s*<dd data-fact="malware-scan">(.*?)<\/dd>/s.exec(pageOf(id))?.[1];
+  const textOfRow = (id: string) => unescaped(row(id)!.replace(/<[^>]+>/g, "")).replace(/\s+/g, " ").trim();
+
+  test.each([
+    ["clean@example.org", "ClamAV found no known malware in this file (November 9, 2026)"],
+    ["found@example.org", "ClamAV flagged this file as Win.Test.EICAR_HDB-1 (November 9, 2026)"],
+    ["none@example.org", "Not scanned yet"],
+    ["other-file@example.org", "Not scanned yet"],
+  ])("shows the approved form for %s", (id, text) => {
+    expect(textOfRow(id)).toBe(text);
+  });
+
+  test("links ClamAV to its site when there is a result, and not otherwise", () => {
+    expect(row("clean@example.org")).toContain('<a href="https://www.clamav.net/" data-link="clamav">ClamAV</a>');
+    expect(row("none@example.org")).not.toContain("<a ");
+  });
+
+  test("shows no row on a page with no install note", () => {
+    expect(pageOf("ftp@example.org")).not.toContain('data-fact="install-note"');
+    expect(row("ftp@example.org")).toBeUndefined();
+    expect(pageOf("clean@example.org")).toContain('data-fact="install-note"');
   });
 });
 

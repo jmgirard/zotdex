@@ -52,6 +52,10 @@ export interface PluginRecord {
   // Whether the version in upstream started in each tested Zotero release that its manifest
   // range covers, ordered by Zotero version. `pnpm add-start-results` adds it after the build.
   startTests?: StartTestRecord[];
+  // The newest ClamAV scan of the file that `upstream.xpiSha256` names. `pnpm carry-scan-results`
+  // keeps it from the deployed data in the build job, and `pnpm add-scan-results` replaces it
+  // with a new result in the site job.
+  malwareScan?: MalwareScan;
   // On a record whose read failed for a build-level reason, when it holds the upstream and
   // startTests of the deployed record of an earlier build (D-066): when that build started,
   // and this build's failure. Such a record has no `failure`.
@@ -63,6 +67,15 @@ export interface PluginRecord {
 export interface StartTestRecord {
   zotero: string;
   result: StartResultName;
+}
+
+// One ClamAV scan of a plugin file: the file's SHA-256, the UTC date of the scan, the first line
+// of `clamscan --version`, and the signature that ClamAV found, absent for a clean file.
+export interface MalwareScan {
+  xpiSha256: string;
+  scannedAt: string;
+  clamav: string;
+  found?: string;
 }
 
 export interface PluginsFile {

@@ -7,6 +7,7 @@ import Base from "../../../layouts/Base.astro";
 import {
   BASE,
   CATEGORIES,
+  CLAMAV_HREF,
   categories,
   compatMajors,
   declaredRange,
@@ -18,6 +19,7 @@ import {
   longDay,
   majorReport,
   majorStart,
+  malwareScanOf,
   overrideUsed,
   PAID_SERVICE_TEXT,
   pluginHref,
@@ -51,6 +53,7 @@ const repoUrl = upstream?.repoUrl ?? record.repoUrl;
 const repoHref = safeHref(repoUrl);
 const github = githubRepo(repoUrl);
 const xpiHref = upstream?.xpiUrl === undefined ? undefined : safeHref(upstream.xpiUrl);
+const scan = malwareScanOf(record);
 const description = shownDescription(record);
 const slugs = categories(record);
 const recordCategories = CATEGORIES.filter((category) => slugs.includes(category.slug));
@@ -196,8 +199,8 @@ const { min, max } = declaredRange(record);
       <p class="install-note" data-fact="install-note">
         To install, save the .xpi file and drag it onto the Plugins window in Zotero (Tools → Plugins). In Firefox,
         right-click the download link and choose Save Link As. A plugin has full access to Zotero and your computer, and
-        Zotdex doesn't test plugins' safety or features, so look into a plugin before you trust it with your
-        library.{" "}
+        Zotdex doesn't test plugins' safety or features beyond a malware scan, so look into a plugin before you trust it
+        with your library.{" "}
         <a href={INSTALL_HREF}>More about installing</a>
       </p>
     )
@@ -353,6 +356,22 @@ const { min, max } = declaredRange(record);
                 {upstream.prerelease === true && " (prerelease)"}
               </dd>
             </div>
+            {xpiHref && (
+              <div>
+                <dt>Malware scan</dt>
+                <dd data-fact="malware-scan">
+                  {scan ? (
+                    <>
+                      <a href={CLAMAV_HREF} data-link="clamav">ClamAV</a>
+                      {scan.found === undefined ? " found no known malware in this file" : ` flagged this file as ${scan.found}`}
+                      {` (${longDay(scan.scannedAt)})`}
+                    </>
+                  ) : (
+                    "Not scanned yet"
+                  )}
+                </dd>
+              </div>
+            )}
             <div>
               <dt>Releases with an .xpi file</dt>
               <dd data-fact="release-count">{upstream.releaseCount}</dd>

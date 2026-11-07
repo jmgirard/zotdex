@@ -175,7 +175,8 @@ export function overrideUsed(record: PluginRecord, override: Override): boolean 
 }
 
 // What every page's footer says about the index itself.
-export const DISCLAIMER = "Zotdex is an independent project, not part of Zotero, and it doesn't test the safety or features of the plugins it lists.";
+export const DISCLAIMER =
+  "Zotdex is an independent project, not part of Zotero, and it doesn't test the safety or features of the plugins it lists, beyond a malware scan by ClamAV.";
 
 // The About page's section on installing a plugin.
 export const INSTALL_HREF = `${BASE}about/#installing`;
@@ -197,6 +198,15 @@ export const FEEDBACK_HREF = "https://github.com/jmgirard/zotdex/discussions";
 
 // The index repo itself, linked from the top bar and the footer.
 export const REPO_HREF = "https://github.com/jmgirard/zotdex";
+
+// ClamAV's home page, which the plugin page's "Malware scan" row links.
+export const CLAMAV_HREF = "https://www.clamav.net/";
+
+// The record's ClamAV scan, when it names the record's own file.
+export function malwareScanOf(record: PluginRecord): PluginRecord["malwareScan"] {
+  const scan = record.malwareScan;
+  return scan && scan.xpiSha256 === record.upstream?.xpiSha256 ? scan : undefined;
+}
 
 // A timestamp's day in UTC with the month's English name, such as "October 25, 2026". The
 // schema does not check every date field, so a text that is not a date shows its first 10

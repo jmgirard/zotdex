@@ -21,7 +21,8 @@ below says, counts here as a record with that failure. If every record
 carries a failure, whatever its name, the build
 also deploys nothing. The build also deploys nothing in these cases: it
 cannot read the report issues, it cannot write the start plan,
-`pnpm add-start-results` fails, or the site build fails. If the data or
+`pnpm add-start-results` or `pnpm add-scan-results` fails, or the site
+build fails. If the data or
 the start plan that the site job downloads fails its check, the build
 deploys nothing too. "The daily build" in
 [maintaining.md](maintaining.md#the-daily-build) names the commands. A
@@ -166,7 +167,8 @@ When the index reads a new release of a plugin, its counts start over.
 A record can have a `kept` block in place of a `failure` block. Then the
 build failed to read the plugin for a build-level reason. The record holds
 the `upstream` block and the `startTests` list that an earlier build
-published. The `kept` block has two fields. `readAt` is the
+published. It can also keep that build's `malwareScan` result, since its
+file is unchanged. The `kept` block has two fields. `readAt` is the
 start time of the build that read those facts, as that build's
 `generatedAt` gives it. `failure` has this build's failure name and
 message. The record's `reports` list counts the reports that this build
@@ -242,6 +244,59 @@ place.
 "Starting plugins in Zotero" in
 [maintaining.md](maintaining.md#starting-plugins-in-zotero) says which
 results the build keeps.
+
+A record with an `upstream` block can have a `malwareScan` object. It holds
+the newest ClamAV scan of the file that `upstream.xpiSha256` names, such as
+`{ "xpiSha256": "…", "scannedAt": "2026-11-09", "clamav": "ClamAV 1.5.4/27800/Sun Nov  8 09:00:00 2026" }`.
+The object has these fields:
+
+- `xpiSha256`: the SHA-256 of the scanned file, which equals
+  `upstream.xpiSha256`.
+- `scannedAt`: the UTC date of the scan, as YYYY-MM-DD.
+- `clamav`: the first line that `clamscan --version` printed in the scan.
+  It names the ClamAV version and the version and date of its signatures.
+- `found`: the name of the signature that ClamAV found in the file. A file
+  in which ClamAV found nothing has no `found` field.
+
+The build scans the plugin files on a scheduled run on a Monday (UTC). It
+also scans on a run that a maintainer starts with the `malware-scan` input.
+ClamAV asks its users not to download the full signature set often, and the
+build keeps no cache. On every run, `pnpm carry-scan-results` keeps the
+published result of each record whose `xpiSha256` is unchanged. On other
+runs the build scans nothing. So a new release has no `malwareScan` until
+the next scan run. A published result is most often at most a week old. It
+is older when a scan run did not reach the file or failed. A scan run takes
+the files with no kept result first, then the files with the oldest
+results. It starts no download 20 minutes after it begins. In these cases a
+file gets no new result:
+
+- Its download fails.
+- Its SHA-256 differs from `upstream.xpiSha256`.
+- ClamAV reports an error for it.
+- ClamAV reports that the file passed a scan limit or holds an encrypted
+  entry. ClamAV then did not scan the whole file.
+- ClamAV prints no line for it, or more than one line.
+- ClamAV prints its line in another form, such as text before `OK`, or a
+  version line too long for the `clamav` field.
+- `clamscan` is stopped at its limit of 10 minutes, or `clamscan --version`
+  gives no version. Then no file of the run gets a result.
+
+A scan run that fails adds no result at all. Examples are a refused
+`freshclam`, a failed or stopped job, and a results file of the wrong
+shape. If a file with no new result has an earlier result, it keeps it. A
+file that the scan run did not reach keeps its earlier result too. If the
+build cannot read the published data, it keeps no result that day. The next
+builds then have no result to keep either, so every page reads "Not scanned
+yet" until the next scan run. Nor does it keep a result for an id that two
+published records name.
+
+A clean scan does not show that a plugin is safe. ClamAV matches the file
+against signatures of known malware, and it finds nothing new. A find hides
+nothing: the plugin stays listed, and a maintainer handles it as a report of
+harm. ClamAV reads the plugin files in its own job, which has no token
+permission and no secret. A file that takes over ClamAV in that job can
+forge the scan results of that run. The `malwareScan` field is new in schema v1. If you
+validate against a saved copy of the schema, fetch the schema again.
 
 ## Plugin entries
 

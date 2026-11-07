@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: "17 6 * * *"
   workflow_dispatch:
+    inputs:
+      malware-scan:
+        description: Scan the plugin files with ClamAV in this run
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -25,8 +30,8 @@ jobs:
     # data after it, made only when a record's read failed for a build-level
     # reason, takes at most 60 seconds, the Zotero release
     # and changelog reads after it run at the same time and take
-    # at most 30 seconds, and `pnpm
-    # carry-start-results` reads for at most 60 seconds: 26.5 minutes in all,
+    # at most 30 seconds, and `pnpm carry-start-results` and
+    # `pnpm carry-scan-results` each read for at most 60 seconds: 27.5 minutes in all,
     # which leaves time for the other steps before this limit (they took 10
     # seconds in run 42110419077, 2026-11-05).
     timeout-minutes: 30
@@ -76,6 +81,13 @@ jobs:
       # exits 0 and leaves the plan as it is when the deployed data cannot be read (D-024).
       - run: >-
           pnpm carry-start-results --plan start-plan.json --data dist/v1/plugins.json
+          --previous https://zotdex.jmgirard.com/v1/plugins.json
+      # Keeps the deployed ClamAV result of each record whose file's SHA-256 is unchanged, so a
+      # run that scans nothing, or whose scan fails, keeps the results. It exits 0 and keeps
+      # nothing when the deployed data cannot be read. It runs before the data digest, which
+      # covers its output.
+      - run: >-
+          pnpm carry-scan-results --data dist/v1/plugins.json
           --previous https://zotdex.jmgirard.com/v1/plugins.json
       - id: plan-sha256
         run: echo "sha256=$(sha256sum start-plan.json | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
@@ -177,10 +189,90 @@ jobs:
           path: ${{ runner.temp }}/results/start-results.json
           if-no-files-found: error
 
-  # Adds the start results to the data and builds the site. It runs once the build job
-  # succeeded, whatever the start-test jobs' results, so a failed start test still deploys.
+  # Scans each plugin file with ClamAV on a scheduled run on a Monday (UTC) and on a dispatched
+  # run whose malware-scan input is true, since ClamAV asks users not to download its full
+  # signature set often and this run keeps no cache (D-010). On other runs it downloads
+  # nothing, and the results that the build job carried stay. ClamAV reads plugin files, which
+  # are untrusted bytes, so this job holds no token permission, reads no secret, keeps no git
+  # credentials, and uses no cache, and the site job reads its results only when they match the
+  # SHA-256 this job gives as an output.
+  malware-scan:
+    needs: build
+    runs-on: ubuntu-latest
+    # `pnpm malware-scan` starts no download 20 minutes after it begins, a download that starts
+    # by then takes at most 3 minutes, `clamscan --version` takes at most 1 minute, and `clamscan`
+    # is stopped after 10 minutes: 34 minutes. The install and `freshclam` step stops at 4
+    # minutes, which leaves 2 minutes for the other steps.
+    timeout-minutes: 40
+    permissions: {}
+    cache-mode: none
+    outputs:
+      scan-sha256: ${{ steps.scan-sha256.outputs.sha256 }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@v8
+        with:
+          name: plugins-data
+          path: dist
+      # Plugin code in a start-test job can replace `plugins-data`, so a tree that is not the
+      # one the build job uploaded fails this job, and the carried results stay.
+      - env:
+          DATA_SHA256: ${{ needs.build.outputs.data-sha256 }}
+        run: pnpm --silent data-digest --dir dist --expect "$DATA_SHA256"
+      - id: scan-day
+        env:
+          EVENT: ${{ github.event_name }}
+          MANUAL: ${{ inputs.malware-scan }}
+        run: |
+          if { [ "$EVENT" = schedule ] && [ "$(date -u +%u)" = 1 ]; } || [ "$MANUAL" = true ]; then
+            echo "scan=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "scan=false" >> "$GITHUB_OUTPUT"
+          fi
+      # Installing the package starts its freshclam service, which holds the database lock, so
+      # the service is stopped before freshclam runs once. freshclam can be refused with a 429
+      # from a cloud host (cairn/references/clamav-docs.md); the job then scans nothing. The `ls`
+      # fails the step when the main or daily signatures are missing, so a partial download scans
+      # nothing either.
+      - id: clamav
+        if: steps.scan-day.outputs.scan == 'true'
+        continue-on-error: true
+        timeout-minutes: 4
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clamav
+          sudo systemctl stop clamav-freshclam || true
+          sudo freshclam
+          ls /var/lib/clamav/main.c[vl]d /var/lib/clamav/daily.c[vl]d
+      - if: steps.scan-day.outputs.scan == 'true' && steps.clamav.outcome == 'success'
+        run: pnpm malware-scan --data dist/v1/plugins.json --out "$RUNNER_TEMP/scan/scan-results.json" --scan
+      - if: steps.scan-day.outputs.scan != 'true' || steps.clamav.outcome != 'success'
+        run: pnpm malware-scan --data dist/v1/plugins.json --out "$RUNNER_TEMP/scan/scan-results.json"
+      - id: scan-sha256
+        run: echo "sha256=$(sha256sum "$RUNNER_TEMP/scan/scan-results.json" | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
+      # Plugin code in a start-test job, which runs at the same time, can upload an artifact named
+      # `scan-results` first, so this upload replaces any artifact of that name. Code that
+      # replaces it again after this upload only withholds this run's results, since the site job
+      # adds none whose SHA-256 is not this job's output.
+      - uses: actions/upload-artifact@v7
+        with:
+          name: scan-results
+          path: ${{ runner.temp }}/scan/scan-results.json
+          if-no-files-found: error
+          overwrite: true
+
+  # Adds the start and scan results to the data and builds the site. It runs once the build job
+  # succeeded, whatever the start-test and malware-scan jobs' results, so a failed start test or
+  # scan still deploys.
   site:
-    needs: [build, start-test]
+    needs: [build, start-test, malware-scan]
     if: ${{ !cancelled() && needs.build.result == 'success' }}
     runs-on: ubuntu-latest
     # The job took 20 seconds in run 40777702698 (2026-10-28). A job that GitHub stops at
@@ -230,6 +322,21 @@ jobs:
       - run: >-
           pnpm add-start-results --data dist/v1/plugins.json --plan "$RUNNER_TEMP/plan/start-plan.json"
           --results "$RUNNER_TEMP/results" --tested 7.0.32,8.0.4,9.0.6,10.0.6
+      # A failed malware-scan job leaves no results, and the site deploys with the results that
+      # the build job carried.
+      - uses: actions/download-artifact@v8
+        continue-on-error: true
+        with:
+          name: scan-results
+          path: ${{ runner.temp }}/scan
+      # Plugin code in a start-test job can upload an artifact under any name, so results whose
+      # SHA-256 is not the malware-scan job's output add nothing. It prints a warning line for
+      # each plugin whose file ClamAV flagged.
+      - env:
+          SCAN_SHA256: ${{ needs.malware-scan.outputs.scan-sha256 }}
+        run: >-
+          pnpm add-scan-results --data dist/v1/plugins.json --results "$RUNNER_TEMP/scan/scan-results.json"
+          --expect "$SCAN_SHA256"
       # Writes the site pages into dist/ beside the data. A failed site build deploys
       # nothing.
       - run: pnpm site

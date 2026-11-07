@@ -1269,3 +1269,52 @@ says.
 
 This choice is wrong if owners do not use the form while their READMEs hold
 screenshots, or if the committed images grow the repo enough to slow clones.
+
+### D-082: Plugin pages show a weekly ClamAV malware scan of each plugin file, annotating D-010, D-023, D-024, D-051, D-062, and D-076
+
+2026-11-07, M115 plan. The user asked whether Zotdex could assess each
+plugin's safety, as skills.sh does. skills.sh shows ratings from three
+security companies. Zotero plugins have no permission model, so every
+plugin has full access, and a risk rating would flag almost all of them. At
+the plan question set the user chose a malware scan shown as a fact with no
+verdict. The first plan used VirusTotal. The only terms it publishes for its
+free service bar showing its results in public, and an upload gives
+VirusTotal a licence on content that Zotdex does not own
+(`cairn/references/virustotal-terms.md`). So the plan was re-cut for
+ClamAV, which runs in CI with no account, upload, or secret. The user
+rejected facts about what plugin code can reach, such as running programs,
+since bundled plugins make them noisy and they come close to a review.
+
+The scan runs once a week, on a scheduled run on a Monday (UTC) and on a run
+that a maintainer starts with the `malware-scan` input. Each such run scans
+the files it downloads in 20 minutes, those with no result first and then
+the oldest results. ClamAV asks its users not to download its full signature set
+often, and D-010 bars a cache in the deploy build, since a job that a
+crafted file took over can save any key. A poisoned signature cache could
+add an allow-list that hides one plugin's malware. The user rejected a daily
+scan of new versions only, since the signature download is the cost
+whatever the number of files and older files would never meet newer
+signatures. The user also rejected a signature cache with file checks.
+Between scans the build job keeps the published result for an unchanged
+file, so a failed scan loses no result, though a failed read of the
+published data loses every result until the next scan. A new release reads
+"Not scanned yet" until the next scan. A find hides nothing: the page shows
+it, the build log warns the maintainer, and a removal still follows D-062.
+
+A signature match by a third-party engine is not a review of plugin code,
+so D-051 stands: the index cannot vet plugins. D-076's footer sentence gains
+"beyond a malware scan by ClamAV". ClamAV parses untrusted plugin files, so
+the malware-scan job holds no token permission, secret, git credentials, or
+cache, as D-023 and D-024 ask of the start-test job. The data digest check
+and the job's `scan-sha256` output keep plugin code in a start-test job from
+changing the data that the scan reads or the results that the site job
+adds. A file that takes over ClamAV can still forge the scan results of
+that run. Plugin code in a start-test job, which runs at the same time, can
+also replace the `scan-results` artifact after the scan job uploads it.
+The site job then adds no result that run, and the earlier results stay.
+GitHub's runners sit on a cloud that ClamAV's freshclam FAQ calls likely to
+be rate limited, and a refused freshclam skips that week's scan.
+
+This choice is wrong if freshclam is refused from GitHub's runners in most
+weeks, if ClamAV flags many listed plugins falsely, or if readers take a
+clean scan to mean that a plugin is safe.
