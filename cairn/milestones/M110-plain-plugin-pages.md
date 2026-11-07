@@ -89,7 +89,7 @@ text, which M109 set.
   and the kept-record build.
 - [x] T5: Search the AC4 strings, update `docs/site.md` and DESIGN.md where
   they quote them, and add the CHANGELOG entry.
-- [ ] T6: Build the site from the deployed data, check AC5 in the browser
+- [x] T6: Build the site from the deployed data, check AC5 in the browser
   pane, and run `pnpm test`.
 
 ## Work log
@@ -106,5 +106,6 @@ text, which M109 set.
 - 2026-11-07: T1 to T4 landed in one commit, since the new words fail the old expectations until the tests change; `keptTitle` in `site/src/data.ts` gives both Older data titles; the unused `day()` helper is gone; `longDay` on a paid fact's `read` relies on the schema's YYYY-MM-DD pattern; new tests cover the version table's headers, the Corrections text and headers, the badge card text, the "Supported versions:" line, and About's three label quotes; `pnpm test` 2515 passed, `pnpm check` 741 entries, 0 problems.
 - 2026-11-07: the M109 lesson on `&#39;` holds for inserted text but not for an attribute: a `title={…}` value keeps a raw apostrophe in the built page.
 - 2026-11-07: T5: updated `docs/site.md` (languages, categories, links, install note, version card, Details, Corrections, source label) and DESIGN.md's plugin page and About lines; added the CHANGELOG entry; the AC4 joined-text search over 4 files hits only DESIGN's "named … before M109" note; `pnpm test` 2515 passed.
+- 2026-11-07: T6: built 743 pages from the deployed `v1/plugins.json`; in the browser pane, `filetrans@euclpts.com` at 375 px and 1280 px shows "Zotero versions", "Details", and "Corrections by Zotdex" with `documentElement.scrollWidth` equal to `clientWidth` (375, 1280); a planted 900 px div made it 900, so the check can fail.
 
 ## Decisions
