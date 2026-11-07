@@ -200,8 +200,8 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     # `pnpm malware-scan` starts no download 20 minutes after it begins, a download that starts
-    # by then takes at most 3 minutes, `clamscan --version` takes at most 1 minute, and `clamscan`
-    # is stopped after 10 minutes: 34 minutes. The install and `freshclam` step stops at 4
+    # by then takes at most 3 minutes, `clamscan --version` takes at most 1 minute, and the
+    # `clamscan` batches, which run at the same time, are each stopped after 10 minutes: 34 minutes. The install and `freshclam` step stops at 4
     # minutes, which leaves 2 minutes for the other steps.
     timeout-minutes: 40
     permissions: {}
