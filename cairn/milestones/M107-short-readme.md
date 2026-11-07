@@ -98,7 +98,7 @@ of the About change waits for a `Build data` run (offered after the merge).
   `#license` → `license.md#license`, and the like), make each quoted heading
   and `above`/`below` reference that points to another file name it, and make
   License's own "this section" and "this README" statements name the files.
-- [ ] T3: Write the new `README.md` per AC1, from same-session reads of the
+- [x] T3: Write the new `README.md` per AC1, from same-session reads of the
   old opening, the issue forms, and `docs/license.md`.
 - [ ] T4: Update outside text that cites a moved section: `cairn/DESIGN.md`
   (the two README "Building the data" mentions), `.github/workflows/build.yml`
@@ -135,6 +135,7 @@ of the About change waits for a `Build data` run (offered after the merge).
 - 2026-11-06: T1 done: a scratchpad script cut `git show main:README.md` at its 21 headings into the five docs files (2,063 lines); site.md and license.md take their raised heading as title, data.md is "Data", requests.md "Requests", maintaining.md "Maintaining the index", and "Proposing a plugin with an issue" rose to `##`.
 - 2026-11-06: T2 done: 23 paragraphs changed, each a link-target change (`../LICENSE`, `../schemas/…`, `license.md#license`) or a reference that now names its file; a scratchpad check (`check_move.py`) reports 0 structural problems, and planted defects (a dropped word, a bad anchor, a duplicated section) each showed. Same-file above/below references stay.
 - 2026-11-06: the simple-english style hook flags long sentences and modals in moved text; left as is, since the plan moves that text word for word (question set answer).
+- 2026-11-06: T3 done: new README of 55 lines with sections The site, The data, Asking for a change (the five forms as `issues/new?template=<file>`, as `site/src/data.ts` builds them, plus Discussions), Documentation, and License (6 lines); its links pass the check.
 
 ## Decisions
 
