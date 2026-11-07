@@ -1105,3 +1105,28 @@ data" note. The site shows the snippet as text and loads nothing from
 shields.io. The user rejected a page on About alone. This choice is wrong if
 readers take the badge as a works claim, or if a kept record's badge misleads a
 user.
+
+### D-072: The site's mark is a dex-style handheld with a Z on its lens, and the 16 px mark is that lens alone
+
+2026-11-06, M106 plan. The name Zotdex echoes the Pokedex, so the user chose a
+mark that hints at one: a blue handheld with a ringed lens holding a Z, three
+small lights, and a stepped lid line. It replaces M099's puzzle piece, a stock
+icon that said nothing about the site. The hint stops short of a copy: the body
+is blue, not red, and the layout is the project's own, since the original's look
+is protected. Drawn at 16 px the lights and lid line blur, so the tab and the top
+bar show the lens alone, cut from the full mark and scaled, with nothing redrawn.
+A later change to the full mark's lens carries to the small mark. The full mark
+appears where the icon is drawn large: the phone home-screen icon and the link
+preview picture. The user picked both marks from drawn options. This choice is
+wrong if readers do not read the small mark as a Z, or if a rights holder
+objects to the hint.
+
+### D-073: The site build uses sharp to draw its PNG icons, annotating D-004
+
+2026-11-06, M106 plan. D-004 asks that each further package take its own
+approval. The user approved `sharp`, pinned at an exact version, so that each
+build draws `favicon.png`, `apple-touch-icon.png`, and `preview.png` from the
+same shapes as `favicon.svg`. Astro already installs it as an optional
+dependency. The user rejected PNG files made once by hand, which a later logo
+change would leave stale. This choice is wrong if `sharp` fails to install or to
+draw SVG on the build runner.
