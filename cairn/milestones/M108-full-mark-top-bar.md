@@ -106,6 +106,7 @@ the icon" keeps its forced-colors and icon-pick items.
 - 2026-11-06: verify clean: `pnpm test` 37 files passed, 1 skipped, 2509 tests passed, 6 skipped; `pnpm check` 741 entries, 0 problems; T1 to T5 ticked; claim audit running.
 - 2026-11-06: claim audit: 19 claims read, 0 corrected — src/site/logo.ts, site/src/layouts/Base.astro, docs/site.md, CHANGELOG.md, test/site.test.ts
 - 2026-11-06: status review; handed to /milestone-review.
+- 2026-11-06: step-7 approval: m108-full-mark-top-bar approved for merge
 
 ## Decisions
 
