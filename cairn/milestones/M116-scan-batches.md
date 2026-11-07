@@ -135,3 +135,29 @@ Evidence gathered 2026-11-07 on `m116-scan-batches` at `d16349fc`; `origin/main`
 - AC4: joined-text searches: `docs/data.md` holds "splits the files into batches, at most 4", "A batch that is stopped keeps the result of each file whose line it printed", and the stop case "Its batch's `clamscan` is stopped"; `docs/maintaining.md` holds the batches, "A stopped batch keeps the result of each file", and the batch line example; `scan.ts`'s comments on `CLAMSCAN_LIMIT_MS`, the `clamscan` wrapper, and `scan()` state the batch rule; DESIGN's Function Families entry names `batchesOf` (M116), and its Known issues entry now reads "gives no result to the files whose lines it had not printed", with the old rule only in its "corrected M116" note; one `### D-083`; the Unreleased CHANGELOG entry names "up to 4 `clamscan` batches".
 - AC5: `pnpm test` 2713 passed, 6 skipped, exit 0; `pnpm check` 745 entries, 0 problems.
 - Consistency gate: `cairn_validate.py` exit 0, all checks passed, `coverage complete` PASS, no advisory. No principle changed; the `generic` profile names no toolchain checks.
+- spawned: diff-bug, blame-history, prior-review, ripple
+- diff-bug #1: one batch whose run rejects makes `Promise.all` fail, losing every batch's results and deleting the temp folder under the others — a throwing run now counts as a stopped batch with no output, with a test, fixed 255c2d22
+- diff-bug #2: whether `clamscan` flushes each line is unverified, and an ERROR line holding "FOUND" cut just after it could read as a find — in a stopped batch the last line now counts only when it ends with a line break, with the cut-after-verdict test now expecting no result; docs/data.md and D-083 say so, fixed 255c2d22
+- diff-bug #3: a spawn error counts as stopped with a misleading message — the message now names a run that never started, fixed 255c2d22
+- diff-bug #4: results now come in batch order, not selection order — reject (style): `pnpm add-scan-results` matches by id, and only log order changes
+- diff-bug #5: older tests ran 1 or 2 batches by the host's core count — `scanOf` now sets one core unless a test sets another, fixed 255c2d22
+- diff-bug #6: a failed `--version` running no batch had no test — the test now checks the calls and the empty batch list, fixed 255c2d22
+- diff-bug #7: the order of files within a batch was not tested — the dealing test now checks each batch's files ascend, fixed 255c2d22
+- diff-bug #8: test overlaps and restating comments — the two restating comments removed and the stand-in's timer cleared, fixed 255c2d22; the 1-file and 3-file cases, the per-batch options and limit check, and the two cut cases are tests AC1 and AC2 name, reject (planned change)
+- diff-bug #9: a NaN `cores` throws in `batchesOf` — a core count that is not a number of at least 1 now counts as 1, fixed 255c2d22
+- diff-bug #10: the batch line prints "1 files" — reject (style)
+- diff-bug #11: a double blank line where the M115 test was removed — fixed 255c2d22
+- diff-bug #12: memory and CPU for four signature loads — no finding
+- blame-history #1: the stop rule is reversed and D-083 annotates rather than supersedes — reject (false): D-082 never stated the stop rule, and D-083 names M115's rule ("M115's rule gave no file of a stopped run a result")
+- blame-history #2: a NaN `cores` throws — same as diff-bug #9, fixed 255c2d22
+- blame-history #3: the `--version` check moved before the batches, unrecorded — reject (false): each file's outcome is the same, and docs/data.md states that a failed version gives no file a result; the work log names the choice
+- blame-history #4: a double blank line — same as diff-bug #11, fixed 255c2d22
+- blame-history #5: the output-limit stop's cut is untested — reject (edge): a batch's output is about 100 bytes a file, far from 64 MiB, and the last-line rule (diff-bug #2) now covers any cut
+- prior-review #1 and #2: the stop rule and the weaker two-lines guard reverse M115's lesson — reject (planned change): the user chose it at the plan question set, and D-083 records the weaker guard
+- prior-review #3: four 64 MiB buffers and four signature loads — reject (false): a buffer grows only with output, about 20 KB a batch, and the branch run's four batches ended in 191 to 235 s
+- prior-review #4: the stand-in's 200 ms fallback is wall-clock — reject (false): it only ends a wait that a broken implementation would leave hanging, which the start-order check then fails; its timer is now cleared (diff-bug #8)
+- prior-review #5: a rejecting batch lets `finally` delete the folder under the others — same as diff-bug #1, fixed 255c2d22
+- prior-review #6: a failed `--version` runs no batch — reject (planned change): logged at T1, now tested (diff-bug #6)
+- ripple #1: the job's time budget comment named one `clamscan` — now names the batches running at once, fixed 255c2d22
+- ripple #2: DESIGN no longer says the full scan is untimed — reject (false): T4 timed it, and the Known issues entry gives the times
+- After the fixes: `pnpm test` 2714 passed, 6 skipped; `pnpm check` 0 problems. snapshot: no changed snapshot files.

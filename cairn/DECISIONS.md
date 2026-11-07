@@ -1329,8 +1329,9 @@ read "Not scanned yet". The scan now deals the files into batches, at most
 the plan question set the user chose that a stopped batch keeps the result
 of each file whose line it printed, over keeping only finished batches. The
 last line of a stopped batch's output counts only when it ends with a line
-break, since the stop may have cut it. One check is weaker in a stopped batch: a file with one printed line
-cannot be told from one whose second line never printed, which matters
+break, since the stop may have cut it. One check is weaker in a stopped
+batch: a file with one printed line cannot be told from one whose second
+line never printed, which matters
 little, since ClamAV prints one line per file without `--allmatch`. The plan
 rejected clamd, a daemon that loads the signatures once, as a second package
 and service, and many small batches in a pool, since each `clamscan` loads
