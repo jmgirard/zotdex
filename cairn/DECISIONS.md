@@ -1154,3 +1154,16 @@ does, so the "not affiliated with or endorsed by Zotero" and "cannot vet"
 wording stays on the home page. About keeps Zotero's full-access warning that
 D-064 added. This choice is wrong if a reader takes the home intro to mean
 that the index checks plugins.
+
+### D-076: The footer says Zotdex does not test plugins' safety or features, and the home title becomes a field guide, annotating D-051, D-069, and D-075
+
+2026-11-07, M109 plan. The user widened M109 to the whole home page's text and
+the footer on every page. The shared disclaimer sentence of D-051 now reads
+"Zotdex is an independent project, not part of Zotero, and it doesn't test the
+safety or features of the plugins it lists.", so D-075's note that the footer
+keeps "not affiliated with or endorsed by Zotero" and "cannot vet" no longer
+holds; "not part of Zotero" and "doesn't test the safety or features" carry the
+same two points in plainer words, and the startup check is named as a basic
+check in the legend. D-069's home title becomes "Zotdex: your field guide to
+Zotero plugins"; the site name stays Zotdex. This choice is wrong if a reader
+takes the startup check or the footer to mean that the index checks plugins.
