@@ -142,6 +142,7 @@ check text requests at once" holds the same idea for text; icons → M113.
 - 2026-11-07: review pass 3 fixed its fix-now findings on the branch (e02d6c08) and fixed its own two candidate rows that broke the ROADMAP line cap by merging them; no return.
 - 2026-11-07: step-7 approval: m114-owner-screenshot approved for merge
 - 2026-11-07: red CI on PR #863: the pull_request run of `check` failed with an unhandled `write EPIPE` from propose's kept-screenshot read (`git.bytes` wrote an empty stdin to `git cat-file blob`, which reads none); the push run passed. Fixed by calling it with no input; approval marker removed; the fix goes back to the user before any push.
+- 2026-11-07: step-7 approval: m114-owner-screenshot approved for merge with the EPIPE fix
 
 ## Review
 
