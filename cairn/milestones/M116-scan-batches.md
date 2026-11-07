@@ -4,14 +4,14 @@
      cairn_validate's <150 over the plan-owned body. -->
 # M116: Make the weekly malware scan finish
 
-- **Status:** planned
+- **Status:** in-progress
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — the daily build's scan results reach every plugin page's "Malware scan" row
-- **Branch/PR:** —
+- **Branch/PR:** m116-scan-batches
 
 ## Goal
 
