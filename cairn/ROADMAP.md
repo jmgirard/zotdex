@@ -7,7 +7,7 @@ _Last hygiene check: 2026-11-07 (M114 review: owner screenshots shipped; 2 rows 
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M115 | Show a malware scan on plugin pages | planned | — | normal | milestones/M115-malware-scan.md |
+| M115 | Show a malware scan on plugin pages | in-progress | — | normal | milestones/M115-malware-scan.md |
 | M114 | Let a plugin's owner add a screenshot | done | M113 | normal | milestones/archive/M114-owner-screenshot.md |
 | M113 | Show each plugin's own icon on its page | done | — | normal | milestones/archive/M113-plugin-icons.md |
 | M112 | Remove the README badge | done | — | normal | milestones/archive/M112-remove-readme-badge.md |
