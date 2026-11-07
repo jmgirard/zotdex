@@ -33,14 +33,6 @@
   and `docs/license.md`. The move changed only links and two sentences in
   `docs/license.md` that named the README or its License section. The About
   page's License link now goes to `docs/license.md`.
-- Each plugin now has a README badge, labeled Zotdex, that names the Zotero
-  versions it started in during the index's start tests, such as "started in
-  Zotero 7 · 8 · 9", or says why it names none. The
-  site build writes one shields.io endpoint file per plugin at
-  `https://zotdex.jmgirard.com/badges/<id>.json`. Each plugin page ends with a
-  "Badge for your README" card that holds the Markdown to copy.
-  `docs/site.md` and About say what each badge message means and how long a
-  change takes to show.
 - The site is now named Zotdex, and the site, the data file, and the schemas
   moved to `https://zotdex.jmgirard.com/`. The data file is now at
   `https://zotdex.jmgirard.com/v1/plugins.json`, and each published

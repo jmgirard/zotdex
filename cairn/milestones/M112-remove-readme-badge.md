@@ -73,7 +73,7 @@ chose removal).
       file test (:148-151) into the no-`badges` check, drop `badge` from the
       section order test (:636-643), and replace the snippet tests
       (:2166-2192) with the no-`img.shields.io` check over `htmlFiles(out)`.
-- [ ] T2: Remove About's section (`site/src/pages/about.astro:150-156`) and
+- [x] T2: Remove About's section (`site/src/pages/about.astro:150-156`) and
       its entry in the About test (`test/site.test.ts:946-951`); remove the
       badge text from `docs/site.md` (:282, :380-403), `docs/maintaining.md`
       (:932-933), `cairn/DESIGN.md` (:163-164, :172, :252-258, :580,
@@ -97,6 +97,7 @@ chose removal).
 - 2026-11-07: question set: remove the README badge in full, deleting the approved card and About section lines — yes (remove it all).
 - 2026-11-07: question set: start `build.yml` on main by hand after the merge — yes.
 - 2026-11-07: T1 done: removed the badge files, `badgeSnippet` (and the now unused `ORIGIN` import in `site/src/data.ts`), the card, and `.badge-snippet`; `test/site.test.ts` now checks that the output has no `badges` entry and that no HTML page has a badge section or `img.shields.io`, both of which a main build fails; `pnpm test` 2494 passed.
+- 2026-11-07: T2 done: removed About's section and its test entry, the badge text in `docs/site.md`, `docs/maintaining.md`, `cairn/DESIGN.md`, and `cairn/references/plain-words-copy.md`, and the CHANGELOG entry; the AC4 sweep prints nothing; `pnpm test` 2493 passed. The simple-english lint hook flagged older sentences in those files that this task did not write, so they stay.
 
 ## Decisions
 

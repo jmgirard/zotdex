@@ -940,13 +940,6 @@ describe("the About page", () => {
         "mainly to keep out entries that mislead people about what a plugin is or who makes it.",
     ],
     [
-      "badge",
-      "README badge",
-      "Plugin authors can add a Zotdex badge to their README. " +
-        'It names the Zotero versions where the plugin passed the startup check, such as "started in Zotero 7 · 8 · 9". ' +
-        "The Markdown is at the bottom of each plugin page, and a change can take a few hours to show.",
-    ],
-    [
       "not-vetted",
       "What Zotdex doesn't do",
       "Zotdex is independent and unofficial, and it's not part of Zotero. " +
