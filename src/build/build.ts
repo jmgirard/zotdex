@@ -11,7 +11,7 @@ import { redrawIcon } from "../upstream/icon.ts";
 import { duration, READ_LIMIT_MS, withinLimit } from "../upstream/time-limit.ts";
 import { LAST_RELEASES } from "../site/version.ts";
 import { type Kept, keptFacts } from "./keep.ts";
-import { PREVIOUS_LIMIT_MS, readPrevious } from "./previous.ts";
+import { PREVIOUS_LIMIT_MS, readPrevious, readPreviousIcons } from "./previous.ts";
 import { readSourceFacts, SOURCE_READ_LIMIT_MS } from "./source.ts";
 import type { ReadTiming } from "./timing.ts";
 import { readChangelogRelease, readZoteroRelease, releaseListWarnings, ZOTERO_RELEASE_LIMIT_MS } from "./zotero-release.ts";
@@ -187,7 +187,9 @@ export interface TimeLimits {
 // failed read of the release leaves zoteroRelease out, and no read of these stops the build.
 // Between the source read and the report count, a record whose read failed for a build-level
 // reason keeps the deployed record's facts by `keptFacts`, and stays build-level; a failed read
-// of the deployed data keeps nothing and sets previousProblem.
+// of the deployed data keeps nothing and sets previousProblem. A kept record keeps its icon only
+// when `readPreviousIcons` reads the deployed file back within `previousMs`. A record's read
+// icon is drawn by `redrawIcon`, and an entry with `iconHidden` gets none, kept or read.
 export async function buildData(
   root: string,
   fetch: Fetch,
@@ -340,6 +342,12 @@ export async function buildData(
         if (!validateRecord(JSON.parse(JSON.stringify({ ...record, reports: [] })))) continue;
         records[i] = record;
         keptAt.add(i);
+      }
+      // A kept record keeps its icon only when the deployed file reads back with the SHA-256 in
+      // its name; the assembly below drops any other.
+      const keptIcons = [...keptAt].flatMap((i) => (records[i].upstream?.icon ? [records[i].upstream!.icon!] : []));
+      if (keptIcons.length > 0) {
+        for (const [icon, bytes] of await readPreviousIcons(previous, keptIcons, fetch, previousMs)) drawn.set(icon, bytes);
       }
     }
   }

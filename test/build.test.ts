@@ -1770,6 +1770,61 @@ describe("buildData with the deployed data", () => {
     expect(record(output, SECOND)?.failure).toEqual(SECOND_FAILURE);
     expect(result.kept).toEqual([]);
   });
+
+  describe("and icons", () => {
+    const ICON_BYTES = strToU8("deployed icon file");
+    const ICON = `icons/${createHash("sha256").update(ICON_BYTES).digest("hex")}.png`;
+    const ICON_URL = `https://example.org/v1/${ICON}`;
+    // The deployed data in which SECOND names ICON.
+    const withIcon = () => {
+      const data = deployed();
+      (deployedRecord(data, SECOND).upstream as Record<string, unknown>).icon = ICON;
+      return data;
+    };
+    // The kept record of SECOND with no icon.
+    const keptWithout = (data: Deployed) => {
+      const kept = keptSecond(data, READ_AT, SECOND_FAILURE);
+      const { icon: _icon, ...upstream } = kept.upstream as Record<string, unknown>;
+      return { ...kept, upstream };
+    };
+
+    test("keeps the icon of a kept record when the deployed file reads back with the SHA-256 in its name", async () => {
+      const data = withIcon();
+      const { result, output } = await rebuild({ ...failing(), [ICON_URL]: { base64: Buffer.from(ICON_BYTES).toString("base64") } }, { json: data });
+      expect(record(output, SECOND)).toEqual(keptSecond(data, READ_AT, SECOND_FAILURE));
+      expect(record(output, SECOND)?.upstream?.icon).toBe(ICON);
+      expect(result.icons.get(ICON)).toEqual(ICON_BYTES);
+      expect(checkOutput(output)).toEqual([]);
+    });
+
+    test.each<[string, Recorded]>([
+      ["an answer other than 200", { status: 404, text: "Not Found" }],
+      ["a fetch that rejects", { error: "connection reset" }],
+      ["a read past its time limit", { stall: "headers" }],
+      ["a body over 64 KiB", { chunks: { size: 1024, count: 65 } }],
+      ["bytes whose SHA-256 is not in the name", { text: "another file" }],
+    ])("drops the kept icon and keeps the rest after %s", async (_case, answer) => {
+      const data = withIcon();
+      const { result, output } = await rebuild({ ...failing(), [ICON_URL]: answer }, { json: data }, NOW, { previousMs: 200 });
+      expect(record(output, SECOND)).toEqual(keptWithout(data));
+      expect(result.kept).toEqual([SECOND]);
+      expect(result.icons.size).toBe(0);
+      expect(record(output, BETTER_NOTES)).not.toHaveProperty("failure");
+    });
+
+    test("drops the kept icon of a record whose index.json hides it, with no read of the file", async () => {
+      const tree = tempDir();
+      cpSync(TREE, tree, { recursive: true });
+      const index = join(tree, SECOND, "index.json");
+      writeFileSync(index, JSON.stringify({ ...JSON.parse(readFileSync(index, "utf8")), iconHidden: { reason: "Another product's logo." } }));
+      const data = withIcon();
+      const { fetch, requests } = fixtureFetch({ ...failing(), [PREVIOUS]: { json: data }, [ICON_URL]: { base64: Buffer.from(ICON_BYTES).toString("base64") } });
+      const result = await buildData(tree, fetch, NOW, undefined, { previous: PREVIOUS });
+      if (!result.ok) throw new Error(result.problems.join("\n"));
+      expect(record(JSON.parse(result.text), SECOND)?.upstream).not.toHaveProperty("icon");
+      expect(requests.some(({ url }) => url === ICON_URL)).toBe(false);
+    });
+  });
 });
 
 describe("checkOutput", () => {

@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import type { Fetch } from "../upstream/reader.ts";
 import { withinLimit } from "../upstream/time-limit.ts";
 
@@ -44,6 +45,43 @@ export async function readPrevious(
     const { plugins, generatedAt } = (value ?? {}) as { plugins?: unknown; generatedAt?: unknown };
     return Array.isArray(plugins) ? { plugins, generatedAt } : { problem: `${url} has no plugins list` };
   });
+}
+
+// The largest icon file read from the deployed site. An icon that the build draws is a 96 by 96
+// PNG, which holds at most 36,864 bytes of pixels before compression.
+export const PREVIOUS_ICON_MAX_BYTES = 64 * 1024;
+
+// The icon reads from the deployed site that may be open at once.
+const ICON_READS_AT_ONCE = 8;
+
+// The bytes of each deployed icon file in `icons`, paths such as `icons/<sha>.png` resolved
+// against `url`, the address of the deployed data. All the reads together stop at `limitMs`. A
+// path of another shape, an answer other than 200, a body over PREVIOUS_ICON_MAX_BYTES, a failed
+// or late read, and bytes whose SHA-256 is not the one in the file name each leave that icon out.
+export async function readPreviousIcons(url: string, icons: string[], fetch: Fetch, limitMs: number): Promise<Map<string, Uint8Array>> {
+  const found = new Map<string, Uint8Array>();
+  const queue = [...new Set(icons)];
+  await withinLimit(limitMs, async (signal) => {
+    const next = async () => {
+      for (let icon = queue.shift(); icon !== undefined && !signal.aborted; icon = queue.shift()) {
+        const sha256 = /^icons\/([0-9a-f]{64})\.png$/.exec(icon)?.[1];
+        if (!sha256) continue;
+        try {
+          const response = await fetch(new URL(icon, url).href, { signal });
+          if (response.status !== 200) {
+            await response.body?.cancel().catch(() => {});
+            continue;
+          }
+          const bytes = await readCapped(response, PREVIOUS_ICON_MAX_BYTES);
+          if (bytes && createHash("sha256").update(bytes).digest("hex") === sha256) found.set(icon, bytes);
+        } catch {
+          // A failed or late read leaves this icon out.
+        }
+      }
+    };
+    await Promise.all(Array.from({ length: ICON_READS_AT_ONCE }, next));
+  });
+  return found;
 }
 
 // The body's bytes, or undefined once more than `max` have arrived.
