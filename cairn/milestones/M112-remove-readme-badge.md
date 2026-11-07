@@ -114,3 +114,24 @@ Evidence (2026-11-07, branch `m112-remove-readme-badge`, level with `origin/main
 - AC4: the named `git grep` prints no line (exit 1).
 - AC5: `cairn/DECISIONS.md:1204` D-079 supersedes D-071; it names the removed files, card, and About section, withdraws the stable-address promise, says an embedding README shows a shields.io error image, and gives the user's reason.
 - AC6: `pnpm test` exit 0, 36 files passed, 2493 tests passed, 6 skipped; `pnpm check` 745 entries, 0 problems.
+
+Consistency gate: `cairn_validate.py` all checks passed; no principle changed, so no `cairn_impact`; the generic profile names no toolchain checks.
+
+spawned: diff-bug, blame-history, prior-review, ripple
+
+- diff-bug #1: the `data-section="badge"` line in "offers no badge on any page" repeats what the exact section-list test already checks — fix now, fixed fbb5bcb3.
+- diff-bug #2: ragged wrap in `docs/site.md:281-283` and `cairn/DESIGN.md:170-171` — fix now, fixed fbb5bcb3.
+- diff-bug #3: `majorStart` stays split into `src/site/version.ts` though its badge reason is gone — reject, planned change (Scope Out keeps it).
+- diff-bug #4: the CHANGELOG entry is deleted though the badge path was live for about a day — reject, planned change (D-079 records the withdrawal).
+- blame-history #1: removed approved lines in `plain-words-copy.md` need the user's yes — reject, false (the question set records it).
+- blame-history #2: the fixed `ids.length + 3` count can drift — reject, false (the file's way to show a non-empty domain, also at :170 and :2122).
+- blame-history #3: the old src/srcset/url scan is gone — reject, planned change (the stricter absence check replaces it).
+- prior-review #1: ragged rewrap in `docs/site.md:280-282` — fix now, fixed fbb5bcb3 (same as diff-bug #2).
+- prior-review #2: 100-character line at `cairn/DESIGN.md:162`, untouched by the diff — reject, style.
+- prior-review #3: the `ids.length + 3` count — reject, false (as blame-history #2).
+- prior-review #4: long lines in DECISIONS and ROADMAP — reject, style (one-line rows and long D headings are the convention).
+- prior-review #5: approved wording removed — reject, false (as blame-history #1).
+- ripple #1: `docs/site.md:280` "comes next" no longer tells the reader the Details card ends the page — fix now, fixed fbb5bcb3 ("comes last").
+- ripple #2: the `(M105)` citation on `majorStart` in DESIGN — reject, false (M105 did move it).
+
+After the fixes: `pnpm test` exit 0, 2493 passed; the AC4 sweep prints nothing.
