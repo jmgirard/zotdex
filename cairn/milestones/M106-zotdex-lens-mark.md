@@ -59,7 +59,7 @@ Replace the puzzle-piece logo with Zotdex's own mark, the lens alone at 16 px an
 - [x] T4: Pin `sharp` 0.35.5; endpoints for `favicon.png`, `apple-touch-icon.png`, and `preview.png` (light fills, flattened on white); PNG header and pixel tests.
 - [x] T5: The head tags in `Base.astro`; tests over every built page.
 - [x] T6: README, About, DESIGN, and CHANGELOG; the puzzle search over `site/`, `src/`, and the test build.
-- [ ] T7: Look at the built site in the browser pane: the tab icon and top bar in light, dark, and forced colors, and the three PNG files.
+- [x] T7: Look at the built site in the browser pane: the tab icon and top bar in light, dark, and forced colors, and the three PNG files.
 
 ## Work log
 <!-- owner: any skill · append-only; one line per entry, absolute dates (YYYY-MM-DD) -->
@@ -85,3 +85,4 @@ Replace the puzzle-piece logo with Zotdex's own mark, the lens alone at 16 px an
 - 2026-11-06: substantive amendment: AC6's search of `site/` also read the ignored `site/node_modules/.astro` cache, where Astro's dev toolbar says "puzzle", so it could never pass; it now names `git grep` over tracked files plus the test build's output; wording only, what users see is unchanged, so no stop.
 - 2026-11-06: re-audit: AC6 (full) — nothing blocking; one optional note (the `-i` also covers `M15.39 4.39`, and without `-F` the dot matches any character, both stricter); not applied, so the audited wording stands.
 - 2026-11-06: T6 done: README (favicon paragraph with the three PNG files as a list, `pnpm site` output, the third-party list now three files plus a logo line), CHANGELOG (the preview entry names `preview.png`, the puzzle entry replaced), About's License (the logo is the index's own, other icons from Lucide and Feather) and its test, DESIGN (site build files, `logo.ts`, `logo-png.ts`, head links, top-bar tokens); a test sweeps every built file for `puzzle` and `M15.39 4.39`, and "Puzzle" in the alt text fails it; `git grep` over tracked `site/` and `src/` finds nothing; no new prose-lint hits; verify green (2507 passed, check 0 problems).
+- 2026-11-06: T7 done: built the site from the deployed `plugins.json` (738 pages) and served it in the browser pane; the top-bar logo is 16 by 16 and computes rim, disc, and Z as `#7fb0ff`, `#1d5fb8`, `#ffffff` in dark and `#1d5fb8`, `#a9cbff`, `#0e2f5c` in light; the page links the three icons in order; `preview.png` and `apple-touch-icon.png` read as the full mark on white. Forced colors were not emulated; the CSS rule order has a test.
