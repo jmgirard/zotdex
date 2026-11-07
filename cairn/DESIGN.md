@@ -509,7 +509,7 @@ user reports. The exception is a report that is abuse.
   `dist/v1/plugins.json`, one record per entry, with a failed upstream read
   kept in that entry's record, and copies the two schemas to `dist/schemas/`.
   It exits 1 when more than half of the records carry a build-level failure,
-  as README "Building the data" defines it, and also when every record carries a
+  as "Building the data" in `docs/maintaining.md` defines it, and also when every record carries a
   failure, whatever its name, and, after writing the data, when it cannot
   write the `--plan` file (M047). It prints a summary of failure
   names and a `::warning::` line for build-level failures, and a `::warning::`
@@ -1012,7 +1012,8 @@ reused._
   (M003); since M047 a later site job runs `pnpm site`. The build also
   copies both schemas to `dist/schemas/`, and it exits 1 after it writes
   the file when more than half of the records carry a build-level
-  failure, as README "Building the data" defines it (M017), or when every
+  failure, as "Building the data" in `docs/maintaining.md` defines it (M017;
+  moved from README by M107), or when every
   record carries a failure of any name (M018, D-012). A failed read of the
   `report` label or the report issues, or a listed issue with no
   `closed_by` key, stops the build before any plugin read and writes no file

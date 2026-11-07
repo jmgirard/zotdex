@@ -178,8 +178,8 @@ export const DISCLAIMER = "This index is unofficial and not affiliated with or e
 // The About page's section on installing a plugin.
 export const INSTALL_HREF = `${BASE}about/#installing`;
 
-// The License section of the index repo's README.
-export const LICENSE_HREF = "https://github.com/jmgirard/zotdex#license";
+// The license page of the index repo, docs/license.md.
+export const LICENSE_HREF = "https://github.com/jmgirard/zotdex/blob/main/docs/license.md";
 
 // The index repo's page for a new issue, where the report forms live.
 const NEW_ISSUE = "https://github.com/jmgirard/zotdex/issues/new";

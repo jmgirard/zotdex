@@ -2,13 +2,19 @@
 
 ## Unreleased
 
+- The README now holds a short overview. Its other text moved to
+  `docs/site.md`, `docs/data.md`, `docs/requests.md`, `docs/maintaining.md`,
+  and `docs/license.md`. The move changed only links and two sentences in
+  `docs/license.md` that named the README or its License section. The About
+  page's License link now goes to `docs/license.md`.
 - Each plugin now has a README badge, labeled Zotdex, that names the Zotero
   versions it started in during the index's start tests, such as "started in
   Zotero 7 · 8 · 9", or says why it names none. The
   site build writes one shields.io endpoint file per plugin at
   `https://zotdex.jmgirard.com/badges/<id>.json`. Each plugin page ends with a
-  "Badge for your README" card that holds the Markdown to copy. README and
-  About say what each badge message means and how long a change takes to show.
+  "Badge for your README" card that holds the Markdown to copy.
+  `docs/site.md` and About say what each badge message means and how long a
+  change takes to show.
 - The site is now named Zotdex, and the site, the data file, and the schemas
   moved to `https://zotdex.jmgirard.com/`. The data file is now at
   `https://zotdex.jmgirard.com/v1/plugins.json`, and each published
@@ -61,7 +67,7 @@
   and links to that section. The details of how the build reads plugins stay
   on the About page.
 - The repository now states its terms. The code is under the MIT License, except
-  the third-party parts of the files that README's License section names. The
+  the third-party parts of the files that `docs/license.md` names. The
   facts that the index gathers, its categories, and text that a maintainer wrote
   are under CC0 1.0. All other text keeps its author's terms: plugin names and
   descriptions, GitHub About text, and text that an owner asked for. The About
@@ -206,8 +212,9 @@
   With `--apply` it writes them to the bodies. It changes no Hold line and
   no label.
 - `pnpm discover` also runs five GitHub code searches for the
-  `manifest.json` and `package.json` files of Zotero plugins, as the README
-  lists, so a plugin that no topic and no catalog names can reach the index.
+  `manifest.json` and `package.json` files of Zotero plugins, as
+  `docs/maintaining.md` lists, so a plugin that no topic and no catalog names
+  can reach the index.
   If `CODE_SEARCH_TOKEN` is set, the code search sends it, and otherwise
   `GITHUB_TOKEN`. `Discover plugins` passes it from a repository secret of
   that name, since the built-in token gets HTTP 429 from code search. The
@@ -236,8 +243,8 @@
   state file still keeps its record until 30 days after the refusal.
 - If the data that the daily build's site job downloads differs from the
   data that the build job wrote, the daily build deploys nothing. The site
-  job compares the two with the new `pnpm data-digest` command, as the
-  README says.
+  job compares the two with the new `pnpm data-digest` command, as
+  `docs/maintaining.md` says.
 - Each plugin entry is a directory `plugins/<id>/` with a registry `meta.json`
   and an `index.json` for index-only data, such as overrides with reasons.
 - `pnpm check` checks every entry. It makes sure that both files exist, that
@@ -380,8 +387,9 @@
   cannot restore a cache that such a job saved.
 - `pnpm build` counts only build-level failures toward its more-than-half
   exit-1 rule.
-  "Building the data" in the README lists them. A 404, a fork, or a release
-  with no `.xpi` file no longer counts. Before, a build where most records
+  "Building the data" in `docs/maintaining.md` lists them. A 404, a fork, or
+  a release with no `.xpi` file no longer counts. Before, a build where most
+  records
   failed for such reasons deployed nothing. The command also prints the
   number of records for each failure name and the number with a
   build-level failure. If a record carries a build-level failure, it prints
@@ -403,8 +411,8 @@
   "broken" reports for each Zotero major with a counted report. Only
   reports on the plugin version that the index read count. For each plugin
   and Zotero major, only the newest report of each GitHub account counts.
-  README "Using the data" gives the whole rule. The page of each plugin
-  that the index read shows the counts, a "Works" link, and a "Broken"
+  "Using the data" in `docs/data.md` gives the whole rule. The page of each
+  plugin that the index read shows the counts, a "Works" link, and a "Broken"
   link. The links open the forms with the plugin id and the version filled
   in. If the build cannot read the report issues, it writes
   no data file, and the daily build deploys nothing. The schema now defines
@@ -682,12 +690,12 @@
   trimmed. A `description` override that applies to the version the index
   read still comes first. With no such override, the site checks the
   manifest description. If the site keeps it and less than half of it is
-  Chinese, Japanese, or Korean, the site shows it. The README says how
+  Chinese, Japanese, or Korean, the site shows it. `docs/site.md` says how
   that share is counted. In other
-  cases the site can show the GitHub description, by the rule in the
-  README. Each plugin page's Details card shows both descriptions. A
+  cases the site can show the GitHub description, by the rule in
+  `docs/site.md`. Each plugin page's Details card shows both descriptions. A
   `description` override can now give English text for a plugin with no
-  English description upstream, as the README defines it. Eight plugins
+  English description upstream, as `docs/data.md` defines it. Eight plugins
   have one. If you validate against a saved copy of
   `schemas/plugins.v1.schema.json`, fetch the schema again, since it
   rejects fields that it does not define.
@@ -695,16 +703,16 @@
   Japanese, or Korean and the description has a Latin-script part, the
   site now shows that part. The site cuts the text at each ` / ` and after
   each `。`. The part is the pieces whose letters are all Latin and that
-  hold at least three words, unless they only repeat the name. The README
-  gives the whole rule. A `description` override can now also replace an
-  English description of fewer than six words. `pnpm description-gaps
+  hold at least three words, unless they only repeat the name.
+  `docs/site.md` gives the whole rule. A `description` override can now also
+  replace an English description of fewer than six words. `pnpm description-gaps
   <data file>` lists the plugins with a description gap, after the
   checkout's overrides. A gap is a description that is missing, half or
   more Chinese, Japanese, or Korean, or under six words.
 - The bot now merges its own pull requests. Each new bot pull request body
   has a Hold line, which names the entry's hold reasons or says
-  `Hold: none`. The README lists the reasons. A held pull request gets
-  the `hold` label.
+  `Hold: none`. `docs/maintaining.md` lists the reasons. A held pull request
+  gets the `hold` label.
   The new `Merge bot pull requests` workflow runs `pnpm merge-discover`
   daily. The command merges a bot pull request that says `Hold: none`, has
   no `hold` label, and opened at least 48 hours before the run. A run
@@ -715,7 +723,7 @@
   input, 48 unless you change it, and `pnpm merge-discover` takes
   `--wait-hours <n>`. Scheduled runs still wait 48 hours. With
   `wait_hours` 0, rounds of discovery and merging add every clean plugin
-  without the wait, as the README's backfill steps say.
+  without the wait, as the backfill steps in `docs/maintaining.md` say.
 - The home table shows 50 of the plugins that its filters pass at a time.
   If more than 50 pass, a pager below it reads "Page p of P" between
   Previous and Next. A page number after 1 goes in the `page` query
@@ -731,8 +739,8 @@
   a plugin again for a new XPI file, a tested release with no earlier
   result, and a result other than `started`. It also starts each plugin
   again on one day of each week. The new `pnpm carry-start-results`
-  command writes the reused results into the start plan, as the README
-  says.
+  command writes the reused results into the start plan, as
+  `docs/maintaining.md` says.
 - In a browser that runs module scripts, the home table no longer shows
   rows that its filters or page leave out while the page loads. An
   address with `language`, `zotero`, or `page` shows only the rows of
