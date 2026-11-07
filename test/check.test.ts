@@ -358,13 +358,13 @@ describe("checkTree", () => {
   });
 
   test("reason-not-blank: a screenshot description of only a format character", async () => {
-    expect(await screenshotFindings({ ...SCREENSHOT, description: "​" }, await webp(10, 10))).toEqual([
+    expect(await screenshotFindings({ ...SCREENSHOT, description: "\u200B" }, await webp(10, 10))).toEqual([
       { entry: ENTRY, rule: "reason-not-blank", message: "screenshot.description holds only whitespace or format characters" },
     ]);
   });
 
   test("reason-not-blank: a screenshot reason of only a format character", async () => {
-    expect(await screenshotFindings({ ...SCREENSHOT, reason: "​" }, await webp(10, 10))).toEqual([
+    expect(await screenshotFindings({ ...SCREENSHOT, reason: "\u200B" }, await webp(10, 10))).toEqual([
       { entry: ENTRY, rule: "reason-not-blank", message: "screenshot.reason holds only whitespace or format characters" },
     ]);
   });

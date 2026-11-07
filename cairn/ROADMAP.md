@@ -7,7 +7,7 @@ _Last hygiene check: 2026-11-07 (M113 review: plugin icons shipped; no rows grad
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M114 | Let a plugin's owner add a screenshot | review | M113 | normal | milestones/M114-owner-screenshot.md |
+| M114 | Let a plugin's owner add a screenshot | in-progress | M113 | normal | milestones/M114-owner-screenshot.md |
 | M113 | Show each plugin's own icon on its page | done | — | normal | milestones/archive/M113-plugin-icons.md |
 | M112 | Remove the README badge | done | — | normal | milestones/archive/M112-remove-readme-badge.md |
 | M111 | Shorten About in the home page's words | done | M110 | normal | milestones/archive/M111-short-about.md |
@@ -56,4 +56,5 @@ _Last hygiene check: 2026-11-07 (M113 review: plugin icons shipped; no rows grad
 - [parked] Tighten link previews and the icon: no mark at a cut; a cut can keep stray spaces or leave a short or U+200B-only text; over 200 opening spaces drops the text; `ORIGIN` repeats the address; About gives no source for stars and other facts (M094 review); no one looked at the logo in forced colors or at which icon Chrome picks under the PNG's `sizes`, and no `/favicon.ico` serves tools that skip link tags (M106 review); the disc is 1.6:1 on the light top bar and 2.7:1 on the dark ring, and the top bar's full mark was not looked at in forced colors (M108 review); promote when a user reports it — added 2026-11-04 — M094, M108
 - [parked] Print each entry id on one log line: Print entry ids on one line in the build log: `pnpm build` prints each failed record's entry id as it is, and no schema limits an id, so an id holding a line break can start a workflow command line; the timing lines already write one as a space (M101 review); promote when a user reports it — added 2026-11-05 — M101
 - [parked] Say that an override value needs text: `pnpm check` refuses an override whose `value` is empty (`test/check.test.ts`), but `docs/data.md` states only the field and reason limits (M107 claim audit); promote when a user reports it — added 2026-11-06 — M107
+- [parked] Tighten screenshot request report lines: `pnpm screenshot-request` prints `replaces-screenshot` or `removes-screenshot` from index.json as read before the download, so an edit made during the download makes that line stale, though apply re-reads the file (M114 review); promote when a user reports it — added 2026-11-07 — M114, D-081
 <!-- one line per idea, high → normal → low → parked: `- [token] short title: detail — added YYYY-MM-DD — links`; tracking-rules "Candidate priority token" and "Candidate short title" have the rules -->

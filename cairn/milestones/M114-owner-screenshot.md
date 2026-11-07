@@ -1,6 +1,6 @@
 # M114: Let a plugin's owner add a screenshot
 
-- **Status:** review
+- **Status:** in-progress
 - **Priority:** normal
 - **Depends on:** M113
 - **Driving RR:** —
@@ -131,6 +131,7 @@ check text requests at once" holds the same idea for text; icons → M113.
 - 2026-11-07: T8: `downloader` runs `check` on the first URL and each redirect target before its own scheme check, so any non-https link or redirect is host-not-allowed (exit 1), shown failing with that line removed; `--file` checks the link's own host and the 10 MiB limit; the report makes the copy, so a cut image is `unreadable-image` and an over-1 MiB copy is `copy-too-large` before `--apply`, and prints the image's SHA-256; apply re-reads index.json before writing, writes the image through a temporary file after index.json names it, and a removal changes index.json first; `readOwnerRequest` reads index.json before the owner; `imageLinks` decodes character references; check stats before reading and refuses a format-only description; propose copies a kept screenshot into its check and names it; docs, README, DESIGN, D-081, and CHANGELOG fixed; full `pnpm test` 2638 passed, 6 skipped, `pnpm check` clean.
 - 2026-11-07: claim audit: 64 claims read, 6 corrected — docs/requests.md, src/screenshot-request/request.ts, src/screenshot-request/parse.ts, src/upstream/reader.ts, src/text-request/owner.ts (fresh Opus reader over 2977dfcc..908a8753); it also named two stale lines outside the added ones, fixed: propose's `keptLines` comment and docs/data.md's description rule; left as is: a rename or delete that fails after index.json is written can still leave the two out of step, which the corrected docs now say.
 - 2026-11-07: implement done after review return 1; status review.
+- 2026-11-07: review return 2: the image the command applies can differ from the one the issue page shows — `imageLinks` takes a ` src=` inside another attribute's value and counts images in HTML comments and code spans, and the report gives the maintainer no copy to look at, so D-081's look can be bypassed; the pass-2 fix-now findings (Review section, pass 2) ride on the same return.
 
 ## Review
 
@@ -192,3 +193,30 @@ Pass 2, after review return 1, evidence at 84adfc1e, 2026-11-07. Default branch 
 - AC7 (pass 2): About-page copy test and owner-line test pass; the three M114 lines read word for word on the built site (pass 1 read; no site change since); docs/requests.md "Adding a screenshot", docs/data.md record block and entry field, docs/license.md screenshot terms present.
 - AC8 (pass 2): `pnpm test` exit 0 (2638 passed, 6 skipped) and `pnpm check` exit 0 on the 84adfc1e tree.
 - gate (pass 2): `cairn_validate.py` all checks pass, 1 advisory (sizing, as pass 1); no IP/GP changed; generic profile names no toolchain checks.
+- spawned: diff-bug, blame-history, prior-review, ripple (pass 2)
+- diff-bug #1 (pass 2): `HTML_IMAGE` takes the first ` src=` in the tag, also inside another attribute's quoted value, so `<img alt="x src='…EVIL'" src="…GOOD">` fetches EVIL while the issue page shows GOOD; the report and apply agree, so the maintainer looks at one image and applies another — floor return (load-bearing: it defeats the look that D-081 rests on)
+- diff-bug #2 (pass 2): an image in an HTML comment or a code span counts as the field's one image though the page shows none — floor return (with #1)
+- diff-bug #3 (pass 2): the maintainer has no SHA-256 of the image looked at, since the report saves nothing to open — floor return (with #1: the report writes the copy where the maintainer opens it, and apply's SHA-256 is compared with the report run's)
+- diff-bug #4 (pass 2): a new GitHub file host would read as host-not-allowed, blaming the owner — fix now (docs say to check the host and use `--file`, which checks only the link's own host)
+- diff-bug #5 (pass 2): a removal with `--file` ignores the file — fix now (named failure)
+- diff-bug #6 (pass 2): a killed apply leaves `screenshot.webp.tmp`, which `pnpm check` does not flag — fix now (`screenshot-file` flags the leftover)
+- diff-bug #7 (pass 2): `downloader` runs `check` twice on each URL — fix now
+- diff-bug #8 (pass 2): unreachable branches (check's `format !== "webp"` after the magic bytes, "sharp reads no width or height") — fix now (removed)
+- diff-bug #9 (pass 2): a Markdown link's backslash escapes are not undone — reject (edge: GitHub writes `<img>` for attachments, so only a hand-written escaped link reaches it, and it exits 2 `download-failed`)
+- diff-bug #10 (pass 2): `screenshot.description` has no 200-character limit in the schema or check — reject (planned change: D-049's rules bind requests only, and D-081 follows it)
+- diff-bug (a)1 (pass 2): the issue can change between the report and apply runs — floor return (with #1, by the copy and SHA-256 compare)
+- diff-bug (a)2 (pass 2): the `replaces-`/`removes-screenshot` line comes from index.json as read before the download — follow-up: candidate row "Tighten screenshot request report lines", parked, promote when a user reports it
+- diff-bug (a)3 (pass 2): removal's stat, then index.json write, then `rm` — reject (false: one CLI process, as pass 1)
+- diff-bug (c)1 (pass 2): the write-failure test fails at the temp file and never reaches the index.json write — fix now (a test where index.json cannot be written)
+- diff-bug (c)2 (pass 2): untested `metadata()` failure, first-URL `check`, and `else throw` — fix now (tests for the first two; the `else throw` rethrows an unexpected error and needs no case)
+- diff-bug (c)3 (pass 2): repeated inputs — http, ftp, and data each a documented case, and "" and `_No response_` each named by AC2: reject (planned change); unknown-plugin and not-an-image via `--file` repeat shared paths: fix now (removed)
+- diff-bug (c)4 (pass 2): site test re-checks href and alt — reject (false: it also asserts no `data-screenshot` on other pages and home, which the head test does not); build's no-screenshot test asserts only an absence — fix now (removed: the fixed-output build tests pass unchanged)
+- diff-bug (c)5 (pass 2): site fixture-fact assertions — reject (false: they show the test's two cases are the ones it names); check "no reason" uses `objectContaining` — fix now (exact message)
+- blame-history #1 (pass 2): sharp loads in the bot's merge check for an entry with a screenshot, against D-080 — reject (false: sharp still loads only for an entry with screenshot.webp, and D-081, which annotates D-080, records the bot path)
+- blame-history #3 (pass 2): an ftp redirect now fails as host-not-allowed rather than the reader's scheme message — reject (false: only the screenshot download passes a `check`; other callers are unchanged)
+- blame-history #2, #4–#9 (pass 2): checked, no conflict — reject (false)
+- prior-review #1 (pass 2): lazy sharp — reject (as blame-history #1)
+- prior-review #2 (pass 2): two new check tests hold a raw U+200B, which M032 ruled out — fix now (escaped)
+- ripple #1 (pass 2): docs/maintaining.md:349-352 says the replaces-entry body names overrides and the paid-service mark "or says that it holds neither" — fix now
+- ripple #2 (pass 2): propose's fallback line omits the screenshot — fix now
+- ripple #3 (pass 2): docs/license.md:4-8 lists what CC0 covers in the data file — reject (false: it lists the index's own work, and its screenshot paragraph covers the rest)
