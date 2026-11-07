@@ -79,16 +79,16 @@ run's results) stay as they are.
 
 ## Tasks
 
-- [ ] T1: Add `SCAN_BATCHES_MAX`, the `cores` option, and the round-robin
+- [x] T1: Add `SCAN_BATCHES_MAX`, the `cores` option, and the round-robin
       batches to `scan()`, one `clamscan` per batch run at the same time
       (`Promise.all`), with the batch-count tests and a stand-in runner that
       holds each run open until every batch has started.
-- [ ] T2: Read each batch's lines on its own, keep the lines of a stopped
+- [x] T2: Read each batch's lines on its own, keep the lines of a stopped
       batch, and give `clamscan-stopped` only to its files with no line, with
       a message that covers an outside stop too. Give the stand-in runner a
       `stopped` value and an output per call, rewrite the M115 test that
       asserts no result for a stopped run, and add the AC2 tests.
-- [ ] T3: Return each batch's number, files, results, seconds, and stopped
+- [x] T3: Return each batch's number, files, results, seconds, and stopped
       flag in `ScanOutcome`, with an injectable clock, and print one line per
       batch from the CLI through a function the test calls.
 - [ ] T4: Dispatch `Build data` on the milestone branch with `malware-scan`
@@ -116,3 +116,9 @@ run's results) stay as they are.
 - 2026-11-07: plan chose parallel `clamscan` batches over clamd with `clamdscan --multiscan`, because clamd adds a second package, a service, and its config; falsified by a measured batch run in which signature loading takes most of the 10 minutes.
 - 2026-11-07: plan chose one batch per core, at most 4, over many small batches in a pool, because each `clamscan` loads the full signature set; falsified by a measured run in which one batch is stopped while others end early.
 - 2026-11-07: criteria audit (full mode, fresh Opus reader) returned 11 findings; 10 taken: (1) a `cores` option and a 2-core test; (2) "exactly one line, that line an OK or FOUND line"; (3) tests vary which batch is stopped, a FOUND kept from a stopped batch, and where the cut falls, with a per-call stand-in (T2); (4) a cut line can match only with its verdict word whole, and the weaker two-lines guard in a stopped batch goes to D-083; (5) the stopped message covers an outside stop (T2); (6) a set run time in the line test; (7) AC4 names the code comments and docs/data.md's case, and the Known issues entry drops "gives no file a result"; (10) D-083 annotates D-082; (11) four signature loads fit a 16 GB runner, and T4 records the load time. Declined (9): an AC binding T4's work-log record, since a criterion on a record binds an instrument, not the scan; T4 stays a task.
+- 2026-11-07: implement started on branch `m116-scan-batches` (cut from `598a1d7d`); `.claude/` is an unrelated untracked folder, left unstaged. The plan's rewrite after the criteria audit had dropped the empty `## Decisions` and `## Review` sections; they are restored here.
+- 2026-11-07: T1–T3 done in one commit (`13b4a901`), since the batch run, the per-batch line reading, and the batch report share one loop: `SCAN_BATCHES_MAX` (4), `batchesOf`, the `cores` and `now` options, `Promise.all` over the batches, `resultOf` per file from its own batch's lines (a stopped batch keeps them; `clamscan-stopped` only for its files with no line, with a message naming an outside stop), `Batch` and `batchLine`, and the CLI's batch lines. Choices: a failed `--version` runs no batch; batch numbers count from 1; the clock option times each batch. Tests: the M115 stopped-run test is removed, 10 batch tests added (counts for 1/3/9 files at 8 cores and 9 at 2, start order, options and limit per batch, a stopped last batch with a FOUND beside a finished first, a stopped batch with no line, three cut points, the batch lines). Planted defects (batches one after another, the old stop rule) each turned 4 tests red. `pnpm test` 2713 passed, `pnpm check` 0 problems. That commit went in without these ticks and this line, by a failed script; this commit adds them.
+
+## Decisions
+
+## Review
