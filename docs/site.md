@@ -307,17 +307,19 @@ for the override that applies to the plugin version that the index read, and
 "no" for the others. An override for that version wins over one for every
 version.
 
-The About page says how the index shows the declared range and how the
-start test runs. It says which user reports count. It also says how
-overrides and the "In use" column of the "Corrections by Zotdex" table work.
-Each page's footer
+The About page says in short form what the facts on a plugin page mean. Its
+intro links to this file for the full rules. It names the marks of the
+declared range and says that a range is not a test result. It says how the
+start test runs and that a pass does not mean that the plugin works. It says
+that the report counts keep each person's latest report for each Zotero
+version. It says which facts a correction can change and where a plugin page
+lists its corrections. Each page's footer
 says: "Zotdex is an independent project, not part of Zotero, and it doesn't
 test the safety or features of the plugins it lists." The home page's intro
 says that Zotdex is independent and unofficial and doesn't review anyone's
 code. The About page says that the index cannot vet the plugins it lists,
-gives the reason, and says that the start test is not a review of
-plugin code. It also states the terms in "License" in
-[license.md](license.md), and it links there.
+and it gives the reason. It also states the terms of "License" in
+[license.md](license.md) in short form, and it links there.
 Its "Older data" section says when a row shows the facts of an earlier
 build. Each page's footer also names the day of the build that the data
 comes from, such as "Updated November 7, 2026.", and links to the data file
@@ -325,7 +327,8 @@ as "Get all the data as JSON" and to the repository as "Zotdex on GitHub".
 The home page's intro also says what the site shows, and it links to the About
 page's "Installing a plugin" section (`#installing`). That section gives
 Zotero's install steps, the step for Firefox, and Zotero's warning. It also
-says how a bot and a maintainer add plugins.
+says that a bot adds most plugins. If the bot flags a plugin, a maintainer
+steps in.
 
 The index lists a plugin whose GitHub repository is archived. Its row on the
 home page and the name on its page show "Archived". The Details card of its
