@@ -1,7 +1,8 @@
 # Plain words for plugin pages and About
 
-**Provenance.** Ingested 2026-11-07 by the M110 plan, as a first-hand record
-of page wording in the tone of the M109 home page. It covers plugin pages
+**Provenance.** Ingested 2026-11-07 by the M110 plan from the current
+`site/src/pages/` text. It records new page wording in the tone of the M109
+home page. It covers plugin pages
 (M110) and the About and 404 pages (M111).
 Pagination: none.
 Extraction: first-hand, so it has nothing to re-verify against. Status: a
