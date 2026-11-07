@@ -163,13 +163,14 @@ an h3, "Corrections by Zotdex" (M007, M015, M054, M110), and a
 text-change form and the remove-plugin form (M079, M093). A "Badge for your
 README" card (`data-section="badge"`) comes last, with `badgeSnippet`'s
 Markdown in one `<code>` element (M105). The About page
-(`site/src/pages/about.astro`) holds the method notes: the declared range
-and its marks, the start test, which reports count, and how overrides and
-the "In use" column work (M054, M110), the categories, each with its `about`
-text (M066), what the source fact means (M081), what the paid service
-mark means (M082), the grounds for removing a plugin (M093), how to install
-a plugin (M096), what the README badge says (M105), and the license terms
-(M095, D-063). The home table marks an archived plugin with
+(`site/src/pages/about.astro`) holds the method notes in short form, and
+its intro links `docs/site.md` for the full rules (M111, D-078): the
+supported range and its marks, the startup check, which reports count, and
+what corrections change (M054, M110), the categories, each with its `about`
+text (M066), what the lock means (M081), what the paid service mark means
+(M082), the grounds for removing a plugin (M093), how to install a plugin
+(M096), what the README badge says (M105), and the license terms in short
+form (M095, D-063). The home table marks an archived plugin with
 "Archived" after its name (M053), and the data carries the same `archived`
 fact (M013). A home row and a plugin page show a lock for a record with
 `sourceInRepo: false`, the fact that the top level of the repo's default branch
@@ -1271,9 +1272,11 @@ reused._
   table's Plugin's value cell shows a bare `Plugin file:` (corrected M110).
   None of the 1,282 upstream texts read on
   2026-11-03 has no letter or digit. Accepted at the M088 gate
-- Built pages carry Lucide and Feather icon paths with a one-line credit on the
-  About page, and the full notices are only in the source of
-  `site/src/components/Icon.astro`. Accepted at the M095 gate
+- Built pages carry Lucide and Feather icon paths. The credit is in
+  `docs/license.md`, which About's License section links, and the full
+  notices are only in the source of `site/src/components/Icon.astro`
+  (corrected M111: About no longer names the icon sources). Accepted at the
+  M095 gate
 - In the data, an override drawn from an author's text has no field that marks
   the maintainer's part, so a data user cannot apply the CC0 boundary by script;
   the override's `reason` says where the text came from. Accepted at the M095 gate

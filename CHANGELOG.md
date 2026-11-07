@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- The About page is now "How Zotdex works": a short page in the home page's
+  plain words, with sections such as "Supported Zotero versions" and
+  "Startup check". Its intro links to the site docs on GitHub, which hold
+  the full rules. The 404 page now says Zotdex in place of "the index".
 - Plugin pages now use the home page's plain words. The version card is
   "Zotero versions", with "Supports" and "Startup check" columns and a
   "Supported versions:" line. The Details card has labels such as

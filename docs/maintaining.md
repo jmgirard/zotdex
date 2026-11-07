@@ -322,7 +322,8 @@ reasons, in this order:
   a newer release stays. Otherwise the maintainer merges the pull request.
 
 A held pull request also gets the label `hold`, and the maintainer merges or
-closes it. If the label request fails, `pnpm propose` names the pull request
+closes it. The maintainer mainly checks whether the entry misleads people about
+what the plugin is, who makes it, or who controls its updates. If the label request fails, `pnpm propose` names the pull request
 as a failed entry and exits with status 1. The pull request stays open, and
 its Hold line still keeps the bot from merging it. In an issue run, the
 issue still gets the comment that names the pull request.

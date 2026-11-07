@@ -5,7 +5,8 @@
 home page. It covers plugin pages (M110) and the About and 404 pages (M111).
 Pagination: none.
 Extraction: first-hand, so it has nothing to re-verify against. Status: the
-user approved it at the plan question set — observed 2026-11-07. `<v>` is the release version. `<date>` is a day in UTC written as
+user approved it at the plan question set — observed 2026-11-07. The user approved "of the
+plugin" in About's reports line after the M111 claim audit (2026-11-07). `<v>` is the release version. `<date>` is a day in UTC written as
 "November 7, 2026". `{…}` is a value that the page fills in.
 
 ## Plugin page (M110)
@@ -103,7 +104,8 @@ reason, such as a deleted repository, shows "Not read".
 **User reports** (`#reports`). Anyone with a GitHub account can report that a
 plugin works or is broken, with the buttons on its page. A bot checks each
 report, and Zotdex counts the ones that pass, keeping each person's latest
-for each Zotero version. The counts start over with each new release, and
+for each Zotero version. The counts start over with each new release of the
+plugin, and
 they show what people found, not what Zotdex tested.
 
 **Descriptions** (`#descriptions`). A plugin's description comes from its own

@@ -27,12 +27,15 @@ the release that the index read, as the year and month in UTC, such as
 with a lock, and to the `.xpi` file.
 
 A version cell shows how much of that version the plugin's declared range
-covers. A check mark (✓) means all of it, a half circle (◐) means part of
+covers. The declared range comes from the `strict_min_version`
+and `strict_max_version` fields of the plugin's manifest. A check mark (✓) means all of it, a half circle (◐) means part of
 it, and a dash means none of it. Hold the pointer over a mark to read
 its meaning and, for a half circle, the declared range. On a touch screen,
 open the plugin's page to read its declared range. A mark counts Zotero N
 as the versions from N.0 to the newest release of N. A check mark thus
-means every release of that version up to its newest release. For the
+means every release of that version up to its newest release. So a maximum
+such as `10.0.*` covers all of Zotero 10 while 10.0 is its newest release
+line. It covers part of Zotero 10 once Zotero 10.1 is out. For the
 current Zotero version, the newest release is the `zoteroRelease` that the
 build read. For an earlier version, it is the last release, which the
 index keeps in its code. The About page names each one. For a version
@@ -132,7 +135,7 @@ one plugin has, with the number of those plugins in parentheses after its
 name. Apart from Other tools, the categories with the most plugins come
 first. Categories with the same number of plugins come in the order of the
 About page's list. The menu lists Other tools last, whatever its number.
-A plugin that fits no other category is under Other tools. A plugin that the
+A plugin can have several categories. A plugin that fits no other category is under Other tools. A plugin that the
 latest build did not read, and that keeps no earlier facts, has only the
 categories added by hand, so it often shows none. If you pick a category, the table shows only the plugins in it.
 "All categories" passes every plugin. The page keeps your choice in the
@@ -299,19 +302,28 @@ GitHub". In the table
 below, a description override's upstream texts read "Plugin file:" and
 "GitHub:". If
 the index has overrides for the plugin, a "Corrections by Zotdex" table
-under its own heading in the card lists them.
+under its own heading in the card lists them. Its "In use" column says "yes"
+for the override that applies to the plugin version that the index read, and
+"no" for the others. An override for that version wins over one for every
+version.
 
-The About page says how the index shows the declared range and how the
-start test runs. It says which user reports count. It also says how
-overrides and the "In use" column of the "Corrections by Zotdex" table work.
-Each page's footer
+The About page says in short form what the facts on a plugin page mean. Its
+intro links to this file for the full rules. Other files hold some of those
+rules. "Using the data" in [data.md](data.md#using-the-data) gives the
+schedule of the start tests and the rules for counting reports. "Plugin entries" in
+[data.md](data.md#plugin-entries) covers overrides, and
+[requests.md](requests.md) covers text requests and removals. It names the marks of the
+declared range and says that a range is not a test result. It says how the
+start test runs and that a pass does not mean that the plugin works. It says
+that the report counts keep each person's latest report for each Zotero
+version. It says which facts a correction can change and where a plugin page
+lists its corrections. Each page's footer
 says: "Zotdex is an independent project, not part of Zotero, and it doesn't
 test the safety or features of the plugins it lists." The home page's intro
 says that Zotdex is independent and unofficial and doesn't review anyone's
 code. The About page says that the index cannot vet the plugins it lists,
-gives the reason, and says that the start test is not a review of
-plugin code. It also states the terms in "License" in
-[license.md](license.md), and it links there.
+and it gives the reason. It also states the terms of "License" in
+[license.md](license.md) in short form, and it links there.
 Its "Older data" section says when a row shows the facts of an earlier
 build. Each page's footer also names the day of the build that the data
 comes from, such as "Updated November 7, 2026.", and links to the data file
@@ -319,7 +331,8 @@ as "Get all the data as JSON" and to the repository as "Zotdex on GitHub".
 The home page's intro also says what the site shows, and it links to the About
 page's "Installing a plugin" section (`#installing`). That section gives
 Zotero's install steps, the step for Firefox, and Zotero's warning. It also
-says how a bot and a maintainer add plugins.
+says that a bot adds most plugins. If the bot flags a plugin, a maintainer
+steps in.
 
 The index lists a plugin whose GitHub repository is archived. Its row on the
 home page and the name on its page show "Archived". The Details card of its
@@ -342,13 +355,19 @@ show a lock, and the link to the repository reads "Repository" in place of
 shows "Source code in the repository's top folder" with "Yes" or "No". "Yes"
 does not mean an open-source license or an XPI built from that code. "Yes" can be
 wrong, because a name such as `LICENSE-MIT` counts. "No" can be wrong, because the
-index does not look inside folders.
+index does not look inside folders. A plugin with the lock stays listed,
+because the index states this as a fact and does not judge plugins by it.
 
-The card icon comes from a read by hand, not from the build. A maintainer sets
-it when the plugin's main use stops without paying its maker, or stops after a
-trial. The name on the home page and on the plugin page shows the icon. The
-Details card shows "Requires paying its maker" with a note, a link to
-the source, and the date of the read. A plugin with no mark can still cost money.
+The card icon comes from a read by hand, not from the build. A maintainer reads
+the plugin's own text. The maintainer sets the icon when the plugin's main
+use stops without paying its maker, or stops after a trial. The payment can be for
+credits, a membership, an activation code, or a paid plan. The name on the
+home page and on the plugin page shows the icon. The Details card shows
+"Requires paying its maker" with a note, a link to the source, and the date of
+the read. A plugin with no mark can still cost money. The maintainer reads
+new plugins later and does not read every page about a plugin. A marked
+plugin stays listed, because the index states this as a fact and does not
+judge plugins by it. An author can open an issue to correct the mark.
 
 An address on the site that has no page shows a "Page not found" page, with
 links to the home page and the About page. It asks search engines not to

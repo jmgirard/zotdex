@@ -190,6 +190,9 @@ export const INSTALL_HREF = `${BASE}about/#installing`;
 // The license page of the index repo, docs/license.md.
 export const LICENSE_HREF = "https://github.com/jmgirard/zotdex/blob/main/docs/license.md";
 
+// The site docs of the index repo, docs/site.md, which hold the full rules that the About page shortens.
+export const SITE_DOCS_HREF = "https://github.com/jmgirard/zotdex/blob/main/docs/site.md";
+
 // The index repo's page for a new issue, where the report forms live.
 const NEW_ISSUE = "https://github.com/jmgirard/zotdex/issues/new";
 
