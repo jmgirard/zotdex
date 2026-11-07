@@ -93,7 +93,7 @@ of the About change waits for a `Build data` run (offered after the merge).
 - [x] T1: Write a split script in the session scratchpad (not committed) that
   cuts `git show main:README.md` at its headings into the five `docs/` files,
   each with its `#` title (`docs/license.md` raises `## License`), and run it.
-- [ ] T2: In the moved text, change link targets so they resolve from
+- [x] T2: In the moved text, change link targets so they resolve from
   `docs/` (`LICENSE` → `../LICENSE`, `schemas/…` → `../schemas/…`,
   `#license` → `license.md#license`, and the like), make each quoted heading
   and `above`/`below` reference that points to another file name it, and make
@@ -133,6 +133,8 @@ of the About change waits for a `Build data` run (offered after the merge).
 - 2026-11-06: criteria audit (full mode, revised draft): 8 findings, taken — AC2 limited to `##`/`###` sections; a `#` title may be the raised old heading; link-target changes allowed; AC4 names the file or files; `schemas/` added to AC4's search; AC3 names the file in place of above/below; AC5 says "license page"; AC5's test sentence is test scope. No finding on AC1, AC6, or decisions.
 - 2026-11-06: implement started on m107-short-readme; `.claude/` is untracked and stays unstaged.
 - 2026-11-06: T1 done: a scratchpad script cut `git show main:README.md` at its 21 headings into the five docs files (2,063 lines); site.md and license.md take their raised heading as title, data.md is "Data", requests.md "Requests", maintaining.md "Maintaining the index", and "Proposing a plugin with an issue" rose to `##`.
+- 2026-11-06: T2 done: 23 paragraphs changed, each a link-target change (`../LICENSE`, `../schemas/…`, `license.md#license`) or a reference that now names its file; a scratchpad check (`check_move.py`) reports 0 structural problems, and planted defects (a dropped word, a bad anchor, a duplicated section) each showed. Same-file above/below references stay.
+- 2026-11-06: the simple-english style hook flags long sentences and modals in moved text; left as is, since the plan moves that text word for word (question set answer).
 
 ## Decisions
 

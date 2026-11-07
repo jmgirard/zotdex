@@ -115,8 +115,9 @@ source names counts once, by its lowercase owner/repo name after the
 lookup. The report names its source as the first of the topic search, the
 catalog, and the code search that names it.
 The command leaves out each repository that an entry already names or that
-`delisted.json` names (see "Removing a plugin"). It reads the other repositories in the same way as `pnpm add-plugin`, the
-newest pushed first. It writes the entries of at most 5 repositories that
+`delisted.json` names (see "Removing a plugin" in
+[requests.md](requests.md#removing-a-plugin)). It reads the other
+repositories in the same way as `pnpm add-plugin`, the newest pushed first. It writes the entries of at most 5 repositories that
 pass the inclusion bar under `plugins/`, and it reads at most 100
 repositories. To
 change these numbers, add `--limit <n>` or `--budget <n>`. To write the
@@ -420,7 +421,8 @@ command also checks each branch name in the handoff with git again, with the
 or git can fail to start or end with any result other than exit status 1.
 Then the command pushes nothing, prints the error, and exits with
 status 1. In an issue run, the command first comments the error on the
-issue, as "Proposing a plugin with an issue" says.
+issue, as "Proposing a plugin with an issue" in
+[requests.md](requests.md#proposing-a-plugin-with-an-issue) says.
 
 Both commands read the name of the index repository from the
 `GITHUB_REPOSITORY` environment variable, which GitHub Actions sets. The
@@ -554,7 +556,8 @@ without the mark. Besides `index-schema`, two rules check the overrides in
   the repeat.
 
 Three rules read `delisted.json` at the top of the repo, whatever directory
-the command checks (see "Removing a plugin"):
+the command checks (see "Removing a plugin" in
+[requests.md](requests.md#removing-a-plugin)):
 
 - `delisted-id`: an entry's directory name or `meta.json` id must not be on the
   list, in any letter case.
@@ -588,7 +591,7 @@ one record for each entry. Each record keeps the upstream facts in an
 `upstream` block and the overrides of the entry, with their reasons, in an
 `overrides` block. Beside them it holds any `paidService` of the entry. The
 schema for the file is
-[`schemas/plugins.v1.schema.json`](schemas/plugins.v1.schema.json). If the
+[`schemas/plugins.v1.schema.json`](../schemas/plugins.v1.schema.json). If the
 GitHub response for the repository says whether it is archived, the
 `upstream` block has an `archived` field, `true` or `false`. If the build read
 the repository's top-level names, the block has a `sourceInRepo` field, `true`
@@ -598,11 +601,11 @@ record has the same field, whether or not the read succeeds. If you validate
 against a saved copy of the schema, fetch the schema again. The `upstream`
 block also has a `prerelease` field, `true` or `false`. It says whether
 GitHub marks the release that the reader read as a prerelease. It also has
-a `languages` list and an `xpiUrl` field, which "Using the data"
-describes. Each record
-with an `upstream` block has a `reports` list, which "Using the data"
-describes. The command writes no `startTests` list, except on a record
-that keeps earlier facts. The daily build adds it with
+a `languages` list and an `xpiUrl` field, which "Using the data" in
+[data.md](data.md#using-the-data) describes. Each record
+with an `upstream` block has a `reports` list, which "Using the data" in
+[data.md](data.md#using-the-data) describes. The command writes no
+`startTests` list, except on a record that keeps earlier facts. The daily build adds it with
 `pnpm add-start-results`, as "Starting plugins in Zotero" says.
 
 If the read of a plugin fails, its record has no `upstream` block, unless
@@ -813,8 +816,8 @@ It makes a new Zotero profile with a reporter plugin of the index. It
 starts Zotero with `MOZ_HEADLESS=1`. On Linux, Zotero also needs a display,
 such as the one `xvfb-run` gives. Once Zotero is ready, the reporter
 installs the XPI and waits 3 seconds. Then it reports one of the four
-results that "Using the data" lists. The command writes the result as JSON,
-such as
+results that "Using the data" in [data.md](data.md#using-the-data) lists.
+The command writes the result as JSON, such as
 `{ "id": "<plugin id>", "version": "1.0.0", "zotero": "10.0.6", "result": "started" }`,
 and exits with status 0. A start gets 90 seconds. To give it another limit
 from 1 to 3600 seconds, add `--limit <seconds>`. If the command cannot run

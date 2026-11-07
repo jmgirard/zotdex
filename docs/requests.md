@@ -40,18 +40,21 @@ gives.
 
 The bot itself can fail. Its read of the issue can fail, for example with
 an HTTP 503 or 404 answer. Its read of the repository can stop with a
-build-level failure, as "Building the data" defines it. Examples are a rate
-limit, an outage, a read stopped at 3 minutes, and an error that the reader
+build-level failure, as "Building the data" in
+[maintaining.md](maintaining.md#building-the-data) defines it. Examples are
+a rate limit, an outage, a read stopped at 3 minutes, and an error that the reader
 does not name. The bot can fail to write the entry: its directory can
 already be in the output directory (`entry-exists`), or the write can fail
 (`write-failed`). The check of the written entry can also stop with an
 error, `unexpected-error`. Examples are a git that cannot start and a
-branch-name check stopped at 30 seconds. "Finding new plugins" gives both
+branch-name check stopped at 30 seconds. "Finding new plugins" in
+[maintaining.md](maintaining.md#finding-new-plugins) gives both
 time limits. The bot can fail to read `plugins/` in its checkout, its own
 pull requests, or the default branch. It can fail to fetch the default
 branch, or the fetched commit can have no `plugins/` folder. The push or the
 pull request can also fail. The git and `pnpm check` limits of "Pull
-requests from the bot" also apply. The read
+requests from the bot" in
+[maintaining.md](maintaining.md#pull-requests-from-the-bot) also apply. The read
 job can also fail and leave no handoff. In the write job, `pnpm propose`
 checks the branch name again, and that check can also stop with an error,
 `unexpected-error`: git cannot start, git ends with any result other than
@@ -132,8 +135,8 @@ If the bot takes the report, it comments the plugin id, the plugin version,
 the Zotero major, and the verdict. The comment also states how the index
 counts the report. It counts a report only while it reads that plugin
 version, and once per GitHub account for each plugin and Zotero major.
-"Using the data" above gives the whole rule. Then the bot closes the issue
-as completed. Otherwise, the bot
+"Using the data" in [data.md](data.md#using-the-data) gives the whole rule.
+Then the bot closes the issue as completed. Otherwise, the bot
 comments the name and the message of the first problem it found, and
 closes the issue as not planned. The comment puts each value from the issue
 in a code span, so the value cannot link to a page or mention a user.

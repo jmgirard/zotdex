@@ -44,7 +44,8 @@ uses the overrides that apply to the plugin version that the index read.
 The marks show what each plugin declares, not a test result.
 
 Under the declared mark, a version cell shows the result of the start
-tests on that major, which "Using the data" describes. If more than
+tests on that major, which "Using the data" in
+[data.md](data.md#using-the-data) describes. If more than
 one release of that major has a result, the cell shows the result of the
 newest release. A dot (●) means that the plugin started. A cross (✕) means
 that it failed at startup, did not install, or gave no answer in time. A
@@ -57,7 +58,8 @@ version cells. There is one exception: a read that failed for a
 build-level reason. If an earlier build read the plugin at most 7 days
 before, the row then shows the facts of that build. It has an "Older data"
 badge after the name, and the plugin's page names the day of the read and
-the failure. "Building the data" says which failures are
+the failure. "Building the data" in
+[maintaining.md](maintaining.md#building-the-data) says which failures are
 build-level.
 
 The "Menus and settings" cell shows the language codes of the plugin's
@@ -206,7 +208,9 @@ Discussions. Posting there needs a GitHub account. A post there is not a
 compatibility report, and the report counts do not read it.
 
 The "Add a plugin" link in the top bar opens the issue form that
-"Proposing a plugin with an issue" describes. The form needs a GitHub
+"Proposing a plugin with an issue" in
+[requests.md](requests.md#proposing-a-plugin-with-an-issue) describes. The
+form needs a GitHub
 account.
 
 Each plugin has its own page. It opens with an "All plugins" link back to
@@ -252,7 +256,8 @@ row has three cells:
   marks a start, and a cross (✕) marks a failure. If no release of that
   major has a result, the cell shows "Not tested".
 - User reports: the number of "works" reports and of "broken" reports on
-  that major, as "Using the data" counts them. If no report counts, the
+  that major, as "Using the data" in [data.md](data.md#using-the-data)
+  counts them. If no report counts, the
   cell shows "None yet".
 
 Under the table, the card shows a link to the About page. If the plugin
@@ -272,7 +277,8 @@ the card icon, it then gives the paid service fact, whether or not the build
 read the plugin. If the build
 read the plugin, it also lists facts about the repository and the release
 that the index read. Its last fact is "Menus and settings in". That fact names the
-languages of the `languages` list that "Using the data" describes, which
+languages of the `languages` list that "Using the data" in
+[data.md](data.md#using-the-data) describes, which
 come from the plugin's locale folders. If a `languages` override applies to
 the plugin version that the index read, the override replaces that list.
 The fact does not say how complete each language is. If no language is
@@ -290,7 +296,8 @@ overrides and the Used column of the Overrides table work. Each page's footer
 and the home page's intro say: "This index is unofficial and not affiliated
 with or endorsed by Zotero, and it cannot vet the plugins it lists." The About
 page gives the reason, and it says that the start test is not a review of
-plugin code. It also states the terms in "License" below, and it links there.
+plugin code. It also states the terms in "License" in
+[license.md](license.md), and it links there.
 Its "Older data" section says when a row shows the facts of an earlier
 build. Each page's footer also names the day of the build that the data
 comes from.

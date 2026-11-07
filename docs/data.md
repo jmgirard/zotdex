@@ -10,11 +10,12 @@ The index publishes its data file on GitHub Pages:
 - Schema for `index.json`:
   <https://zotdex.jmgirard.com/schemas/index.v1.schema.json>
 
-[License](#license) gives the terms for reusing the data.
+[License](license.md#license) gives the terms for reusing the data.
 
 A daily build updates the data. If more than half of the records carry a
 build-level failure, such as a rate limit or a network error, the build
-deploys nothing. "Building the data" below says which failures are
+deploys nothing. "Building the data" in
+[maintaining.md](maintaining.md#building-the-data) says which failures are
 build-level. A record that keeps earlier facts, as the `kept` paragraph
 below says, counts here as a record with that failure. If every record
 carries a failure, whatever its name, the build
@@ -22,19 +23,21 @@ also deploys nothing. The build also deploys nothing in these cases: it
 cannot read the report issues, it cannot write the start plan,
 `pnpm add-start-results` fails, or the site build fails. If the data or
 the start plan that the site job downloads fails its check, the build
-deploys nothing too. "The daily build"
-below names the commands. A failed start test does not stop the deploy.
-The data from the last good build then stays in place. "Building the data"
-below describes the file. A breaking change to the file gets a new schema
-version under a new path, such as `v2/`. By this project's rule, a new
+deploys nothing too. "The daily build" in
+[maintaining.md](maintaining.md#the-daily-build) names the commands. A
+failed start test does not stop the deploy. The data from the last good
+build then stays in place. "Building the data" in
+[maintaining.md](maintaining.md#building-the-data) describes the file. A
+breaking change to the file gets a new schema version under a new path, such as `v2/`. By this project's rule, a new
 optional field does not get a new schema version. The schema rejects fields
 that it does not define. If you validate
 against a saved copy of the schema, fetch it again after such a change.
 
 The data file can have a top-level `zoteroRelease` field, such as
 `"10.0.7"`. It is the current Zotero release that the build read from
-zotero.org, as "Building the data" says. The site's declared marks use it
-as the newest release of its Zotero version. If the build did not read
+zotero.org, as "Building the data" in
+[maintaining.md](maintaining.md#building-the-data) says. The site's
+declared marks use it as the newest release of its Zotero version. If the build did not read
 it, the field is absent. Data written before the build wrote this field has
 none. The field is new in schema v1. If you validate against a saved copy
 of the schema, fetch the schema again.
@@ -59,7 +62,7 @@ An `upstream` block can have a `repoDescription` field. It is the About
 text of the plugin's GitHub repository, with the spaces before and after
 it removed. If GitHub gives no such text, or the text is blank, the field
 is absent. Data written before the build wrote this field has none. The
-site uses the field by the description rule above.
+site uses the field by the description rule in [site.md](site.md).
 
 An `upstream` block can have a `stars` field. It is the star count that
 the build read for the plugin's GitHub repository. If GitHub gives no
@@ -115,7 +118,8 @@ these cases:
   bot closes issues as. A report that someone reopens and closes again is
   dropped.
 - It has the label `not-counted`.
-- It fails the bot's checks, as "Reporting whether a plugin works" lists
+- It fails the bot's checks, as "Reporting whether a plugin works" in
+  [requests.md](requests.md#reporting-whether-a-plugin-works) lists
   them.
 - Its plugin version is not the version in the record's `upstream.version`.
 
@@ -134,7 +138,8 @@ start time of the build that read those facts, as that build's
 `generatedAt` gives it. `failure` has this build's failure name and
 message. The record's `reports` list counts the reports that this build
 read, for the version in `upstream`. The build keeps earlier facts for at
-most 7 days after `readAt`, as "Building the data" says. A deploy can fail
+most 7 days after `readAt`, as "Building the data" in
+[maintaining.md](maintaining.md#building-the-data) says. A deploy can fail
 for some days, so facts on the published site can be older than 7 days.
 Data written before the build kept facts has no `kept` block. The field is
 new in schema v1. If you validate against a saved copy of the schema,
@@ -201,7 +206,9 @@ build keeps a forged `started` result to the entry's next re-test day. If
 the build on that day deploys nothing, the forged result stays longer.
 Plugin code that forges the result again on each re-test day keeps it in
 place.
-"Starting plugins in Zotero" below says which results the build keeps.
+"Starting plugins in Zotero" in
+[maintaining.md](maintaining.md#starting-plugins-in-zotero) says which
+results the build keeps.
 
 ## Plugin entries
 
@@ -242,7 +249,9 @@ only registry fields. Its `id` must equal the directory name.
   categories read the shown description, so a `description` override can
   change them. After you write one, check the plugin's categories. A
   repository's owner can also ask for a `name` or `description` override, as
-  "Changing a plugin's name or description" says. Each item has these fields:
+  "Changing a plugin's name or description" in
+  [requests.md](requests.md#changing-a-plugins-name-or-description) says.
+  Each item has these fields:
   - `field`: the fact to correct, fill in, or replace. The value is one of
     `name`, `description`, `homepage`, `strict_min_version`,
     `strict_max_version`, or `languages`.
@@ -265,4 +274,4 @@ only registry fields. Its `id` must equal the directory name.
 Two overrides must not have the same `field` and `version`.
 
 The schema for `index.json` is
-[`schemas/index.v1.schema.json`](schemas/index.v1.schema.json).
+[`schemas/index.v1.schema.json`](../schemas/index.v1.schema.json).

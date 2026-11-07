@@ -1,7 +1,7 @@
 # License
 
-The code in this repository is under the [MIT License](LICENSE), except the
-third-party parts of the files that this section names. A code comment counts
+The code in this repository is under the [MIT License](../LICENSE), except the
+third-party parts of the files that this page names. A code comment counts
 as code.
 
 The facts that the index gathers are under
@@ -20,8 +20,8 @@ All other text keeps its author's terms. That text is plugin names and
 descriptions, GitHub About text, and text that an owner asked for. The index
 gives no license for it. In the data file, this text is in `upstream.name`,
 `upstream.description`, and `upstream.repoDescription`, and an override's
-`value` and `reason` can hold it. The entries, the test files, and this README can also hold
-or quote it.
+`value` and `reason` can hold it. The entries, the test files, the README,
+and the files under `docs/` can also hold or quote it.
 
 These files hold parts from a third party. Those parts keep their source's
 terms, and the rest of each file follows the terms above:
