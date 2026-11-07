@@ -128,13 +128,24 @@ export function faviconSvg(): string {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><style>${dark}</style>${lensShapes(LIGHT)}</svg>\n`;
 }
 
-// A mark in the light fills on a white square, `margin` grid units wider than the 16 by 16 grid
-// on each side, for the PNG files.
-export function pictureSvg(mark: "full" | "lens", margin: number): string {
+// The PNG files: each draws a mark in the light fills on a white square `size` pixels wide,
+// `margin` grid units wider than the 16 by 16 grid on each side.
+export const PICTURES = {
+  "favicon.png": { mark: "lens", margin: 0, size: 32 },
+  "apple-touch-icon.png": { mark: "full", margin: 2, size: 180 },
+  "preview.png": { mark: "full", margin: 4, size: 1200 },
+} as const;
+export type PictureName = keyof typeof PICTURES;
+
+export function pictureSvg(name: PictureName): string {
+  const { mark, margin, size } = PICTURES[name];
   const side = 16 + 2 * margin;
   const box = `${num(-margin)} ${num(-margin)} ${num(side)} ${num(side)}`;
   const shapes = mark === "lens" ? lensShapes(LIGHT) : fullShapes();
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${box}"><rect x="${num(-margin)}" y="${num(-margin)}" width="${num(side)}" height="${num(side)}" fill="#ffffff"/>${shapes}</svg>`;
+  return (
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="${box}">` +
+    `<rect x="${num(-margin)}" y="${num(-margin)}" width="${num(side)}" height="${num(side)}" fill="#ffffff"/>${shapes}</svg>`
+  );
 }
 
 function fullShapes(full: FullMark = FULL_MARK): string {

@@ -1,24 +1,8 @@
 import { describe, expect, test } from "vitest";
-import { FULL_MARK, LIGHT, type Circle, type Point } from "../src/site/logo.ts";
+import { FULL_MARK, LIGHT, type Point } from "../src/site/logo.ts";
+import { inCircle, inPolygon, inRoundedRect } from "./support/logo-geometry.ts";
 
-const inCircle = ([x, y]: Point, { cx, cy, r }: Circle) => (x - cx) ** 2 + (y - cy) ** 2 <= r * r;
-
-function inPolygon([x, y]: Point, points: readonly Point[]): boolean {
-  let inside = false;
-  for (let i = 0, j = points.length - 1; i < points.length; j = i++) {
-    const [xi, yi] = points[i]!;
-    const [xj, yj] = points[j]!;
-    if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) inside = !inside;
-  }
-  return inside;
-}
-
-function inBody([x, y]: Point): boolean {
-  const { x: left, y: top, width, height, radius } = FULL_MARK.body;
-  const nearX = Math.min(Math.max(x, left + radius), left + width - radius);
-  const nearY = Math.min(Math.max(y, top + radius), top + height - radius);
-  return x >= left && x <= left + width && y >= top && y <= top + height && (x - nearX) ** 2 + (y - nearY) ** 2 <= radius * radius;
-}
+const inBody = (point: Point) => inRoundedRect(point, FULL_MARK.body);
 
 // Every point of a 0.05 grid over the 16 by 16 square.
 const grid: Point[] = [];

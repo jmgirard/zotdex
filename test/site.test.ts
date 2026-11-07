@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { runInNewContext } from "node:vm";
 import { Ajv } from "ajv";
+import sharp from "sharp";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import pluginsSchema from "../schemas/plugins.v1.schema.json" with { type: "json" };
 import {
@@ -24,10 +25,11 @@ import { CATEGORIES, categories } from "../src/site/categories.ts";
 import { cutDescription, shownDescription } from "../src/site/description.ts";
 import { PAGE_SIZE, prePaintStyle } from "../src/site/home-filter.ts";
 import { appliedLanguages, languageName } from "../src/site/languages.ts";
-import { FULL_MARK } from "../src/site/logo.ts";
+import { FULL_MARK, PICTURES } from "../src/site/logo.ts";
 import { START_LIMIT_MS } from "../src/start-test/start-test.ts";
 import { DESCRIPTION_MAX, DESCRIPTION_MIN_WORDS, NAME_MAX, NAME_MIN } from "../src/text-request/rules.ts";
 import { compareVersions, declaredRange, majorSupport, ZOTERO_MAJORS } from "../src/site/version.ts";
+import { partAt, type Part } from "./support/logo-geometry.ts";
 import { PRE_PAINT_CASES } from "./support/pre-paint.ts";
 import { themePage } from "./support/theme-page.ts";
 
@@ -2792,6 +2794,50 @@ describe("the site colors", () => {
         const [ex, ey] = at(...z[i]!);
         expect(Math.abs(x - ex) + Math.abs(y - ey), `Z corner ${i}`).toBeLessThan(0.001);
       });
+    });
+  });
+
+  describe("the PNG icons", () => {
+    const pictures = Object.entries(PICTURES);
+    // Bytes 16 to 25 of a PNG hold its IHDR chunk's width, height, bit depth, and color type.
+    const header = (png: Buffer) => ({ width: png.readUInt32BE(16), height: png.readUInt32BE(20), depth: png[24], type: png[25] });
+    function chunks(png: Buffer): string[] {
+      const names: string[] = [];
+      for (let at = 8; at < png.length; at += 12 + png.readUInt32BE(at)) names.push(png.toString("latin1", at + 4, at + 8));
+      return names;
+    }
+    const COLORS: [Part, number[]][] = [
+      ["body", [0x1d, 0x5f, 0xb8]],
+      ["disc", [0xa9, 0xcb, 0xff]],
+      ["z", [0x0e, 0x2f, 0x5c]],
+      ["ring", [255, 255, 255]],
+    ];
+
+    test.each(pictures)("writes %s at its size as 8-bit RGB with no transparency", (name, { size }) => {
+      const png = readFileSync(join(out, name));
+      expect(header(png)).toEqual({ width: size, height: size, depth: 8, type: 2 });
+      expect(chunks(png).at(-1)).toBe("IEND");
+      expect(chunks(png)).not.toContain("tRNS");
+    });
+
+    test.each(pictures)("draws %s's mark in the light fills on white", async (name, { mark, margin, size }) => {
+      const { data, info } = await sharp(readFileSync(join(out, name))).raw().toBuffer({ resolveWithObject: true });
+      const pixel = (x: number, y: number) => [...data.subarray((y * size + x) * info.channels, (y * size + x) * info.channels + 3)];
+      expect(pixel(0, 0)).toEqual([255, 255, 255]);
+      const unit = (16 + 2 * margin) / size;
+      // The part that holds a pixel's whole square, read at 5 by 5 points over it, corners included.
+      const partOf = (x: number, y: number) => {
+        const parts = new Set<Part>();
+        for (let i = 0; i <= 4; i++) for (let j = 0; j <= 4; j++) parts.add(partAt(mark, [(x + i / 4) * unit - margin, (y + j / 4) * unit - margin]));
+        return parts.size === 1 ? [...parts][0] : undefined;
+      };
+      const step = Math.max(1, Math.floor(size / 64));
+      for (const [part, color] of COLORS) {
+        let probe: [number, number] | undefined;
+        for (let y = 0; y < size && !probe; y += step) for (let x = 0; x < size && !probe; x += step) if (partOf(x, y) === part) probe = [x, y];
+        expect(probe, `${name} ${part}`).toBeDefined();
+        pixel(...probe!).forEach((value, i) => expect(Math.abs(value - color[i]!), `${name} ${part} at ${probe}`).toBeLessThanOrEqual(8));
+      }
     });
   });
 
