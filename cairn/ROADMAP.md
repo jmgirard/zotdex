@@ -1,21 +1,20 @@
 # Roadmap
 
 _The only authority on milestone status. Grouped by status, not ID._
-_Last hygiene check: 2026-11-07 (M109 review: field guide home copy; 1 row extended, 1 parked row added; 7 lessons marked used, 1 captured, 1 evicted; M106 row pruned; caps and validate green)_
+_Last hygiene check: 2026-11-07 (M110 review: plain plugin page words; 1 row narrowed, 1 parked row graduated; 10 lessons marked used, 1 corrected, none captured; M107 row pruned; caps and validate green)_
 
 ## Milestones
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M110 | Use plain words on plugin pages | review | — | normal | milestones/M110-plain-plugin-pages.md |
 | M111 | Shorten About in the home page's words | planned | M110 | normal | milestones/M111-short-about.md |
+| M110 | Use plain words on plugin pages | done | — | normal | milestones/archive/M110-plain-plugin-pages.md |
 | M109 | Make the home page a field guide | done | — | high | milestones/archive/M109-field-guide-home.md |
 | M108 | Show the full Zotdex mark in the top bar | done | — | high | milestones/archive/M108-full-mark-top-bar.md |
-| M107 | Shorten the README and move its detail to docs/ | done | — | normal | milestones/archive/M107-short-readme.md |
 <!-- rows grouped by status, not by ID; keep the 3 most recent done/dropped rows; older ones: milestones/archive/ + git -->
 
 ## Candidates
-- Use plain words on plugin pages and About: M109 rewrote the home page; plugin pages and About keep older wording, such as "Start test" and "Declared range" (M109 plan), as does the home Older data badge's tooltip (M109 review) — added 2026-11-07 — M109, D-075, D-076, D-077 — started M110
+- Use plain words on plugin pages and About: M109 rewrote the home page and M110 the plugin pages; About keeps older wording, such as "Start test" and "Declared range" (M109 plan); narrowed 2026-11-07 by M110 — added 2026-11-07 — M109, M110, D-075, D-076, D-077, D-078 — started M111
 - [low] Let a run by hand start every plugin: after a change to the start-test code, the reporter, or a Zotero pin, carried results stay up to 7 days, and nothing lets a maintainer skip the carry for one run (M059 review) — added 2026-10-30 — M059, D-035
 - [low] Read new plugins for paid services: M082 to M084 read the entries through `1b2cebf`, and the bot adds up to 5 a run, so later plugins carry no mark; repeat the word list and record in `cairn/references/paid-service-sweep.md`; a listing command waits for marks falling far behind the new plugins (M082 plan); also read the GitHub text of `zotero@wilddata.cn`, which names a free allowance for new users, and the maker's site of `zotbox@scigreat.com` (M089 review) — added 2026-11-02 — M082, M083, M084, M089, D-054
 - [low] Fill description gaps on new plugins: M089 and M090 fill the gaps in the two data files of 2026-11-03, and the bot adds up to 5 plugins a run, so later plugins need `pnpm description-gaps` and overrides; the command skips a plugin that the data's build did not read (M090), and it does not see other languages, and a word scan of that data found French (`hypothesis-import@zotero-plugin`, `readeck-import@zotero-plugin`), Spanish (`author-harvester@migueldelm`), and Turkish (`zotero-latin@mirket`) shown texts; `readeck-import` has an English GitHub text, so it needs a pick rule or a new override case (M088 plan) — added 2026-11-03 — M067, M089, M090, D-030, D-038
@@ -53,7 +52,6 @@ _Last hygiene check: 2026-11-07 (M109 review: field guide home copy; 1 row exten
 - [parked] Check the top bar and controls at mid widths: M109 added a top bar item and longer sort options, checked only at 375 and 1280 px, so the wrap points of "Tighten the home controls at larger text" may move (M109 review); promote when a user reports it — added 2026-11-07 — M109
 - [parked] Tighten the home controls at larger text: the pager and sort menu wrap unevenly at 20 to 24 px text at 320 px; the version group and sort menu pass the card at 32 px text under 457 px; pressing a version button moves the row 1 px; a longer option can cut a menu at 761 or 1001 px; the table's px steps do not follow text size; `--faint` on `--hover` is 2.96:1 in dark on inner dividers; the card's corners and focus corners show slivers; `homeScript` stand-ins do not share a wrapper; Chromium only (M098 review); the top bar's 2rem logo and `--text-xl` name were not looked at above 16 px text, and the bar wraps from about 494 px down (M108 review); promote when a user reports it — added 2026-11-05 — M098, M108
 - [parked] Tighten link previews and the icon: no mark at a cut; a cut can keep stray spaces or leave a short or U+200B-only text; over 200 opening spaces drops the text; `ORIGIN` repeats the address; About gives no source for stars and other facts (M094 review); no one looked at the logo in forced colors or at which icon Chrome picks under the PNG's `sizes`, and no `/favicon.ico` serves tools that skip link tags (M106 review); the disc is 1.6:1 on the light top bar and 2.7:1 on the dark ring, and the top bar's full mark was not looked at in forced colors (M108 review); promote when a user reports it — added 2026-11-04 — M094, M108
-- [parked] Name the build on the failure page: an unread plugin's page says "The last build could not read this plugin", which is false after a build that deploys nothing, since the page then comes from an earlier build; M100 gave the kept note "The build that wrote this page, on <day>, …" (M100 review); promote when a user reports it — added 2026-11-05 — M100 — started M110
 - [parked] Print each entry id on one log line: Print entry ids on one line in the build log: `pnpm build` prints each failed record's entry id as it is, and no schema limits an id, so an id holding a line break can start a workflow command line; the timing lines already write one as a space (M101 review); promote when a user reports it — added 2026-11-05 — M101
 - [parked] Say that an override value needs text: `pnpm check` refuses an override whose `value` is empty (`test/check.test.ts`), but `docs/data.md` states only the field and reason limits (M107 claim audit); promote when a user reports it — added 2026-11-06 — M107
 <!-- one line per idea, high → normal → low → parked: `- [token] short title: detail — added YYYY-MM-DD — links`; tracking-rules "Candidate priority token" and "Candidate short title" have the rules -->
