@@ -1267,8 +1267,9 @@ reused._
   upstream texts read on 2026-11-03 holds such a form beside CJK text. Accepted
   at the M088 gate
 - A manifest description of only format characters, such as U+200B, is not
-  blank to `trim`, so Details shows a row that looks empty and the Overrides
-  cell shows a bare `Manifest:`. None of the 1,282 upstream texts read on
+  blank to `trim`, so Details shows a row that looks empty and the Corrections
+  table's Plugin's value cell shows a bare `Plugin file:` (corrected M110).
+  None of the 1,282 upstream texts read on
   2026-11-03 has no letter or digit. Accepted at the M088 gate
 - Built pages carry Lucide and Feather icon paths with a one-line credit on the
   About page, and the full notices are only in the source of

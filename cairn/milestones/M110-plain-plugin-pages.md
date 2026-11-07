@@ -120,3 +120,15 @@ text, which M109 set.
 - AC5: site rebuilt at 14444191 from the deployed `v1/plugins.json` (743 pages); in the browser pane, `filetrans@euclpts.com` in 375 px and 1280 px iframes shows the version card, Details card, and Corrections table, with `documentElement.scrollWidth` 375 and 1280 equal to `clientWidth` (T6's planted 900 px div showed the check can fail); `pnpm test` 2515 passed (AC1 run); `CHANGELOG.md` Unreleased has one entry for the change, its first bullet.
 - Consistency gate: `cairn_validate.py` all checks passed (after rewording one Review line that quoted a long-form date); no principle changed, so no `cairn_impact`; the generic profile names no toolchain checks.
 - spawned: diff-bug, blame-history, prior-review, ripple
+- blame-history #1: "Languages" drops M033's "Menus and settings in" purpose and leaves the home menu on the old name — reject (planned change and false: the approved copy names "Languages", and M109 renamed the home menu "Language")
+- blame-history #2: "Supports" and "Supported versions" drop the plugin page's "declared, not a test result" framing — reject (planned change: approved copy; D-077 moved that point to About, which keeps it)
+- blame-history #3: "Language not listed" drops M036's "no translations found" meaning — reject (planned change: approved copy)
+- blame-history #4: About still says "install only plugins from developers you trust" while the plugin page uses the new sentence — follow-up: M111, whose approved About install section uses the new sentence
+- blame-history #5: the Older data note no longer says "earlier build" — reject (planned change: approved copy; the badge and the two dates still mark the facts as older)
+- prior-review #1: About's install section still says the index does not review a plugin's code, which D-078 retires — follow-up: M111 (D-078 states the end state after M111)
+- prior-review #2: the plugin page and About disagree on "doesn't test plugins' safety or features" against "does not review their code" — follow-up: M111
+- prior-review #3: About and `docs/site.md` say "top level" while the label says "top folder" — reject (false: both state the same fact, and neither line quotes the label; About's wording is M111's)
+- prior-review #4: About's headings "Overrides" and "Start test" differ from the plugin page — follow-up: M111
+- prior-review #5: DESIGN's Known issues entry names the "Overrides cell" and a bare `Manifest:` — fix now
+- prior-review #6: the Older data badge's new `title` repeats visible text — reject (false: the title adds the reason and the date, not the badge's words, and the home badge carried a title before M110)
+- prior-review #7: "Language not listed" replaces M036's wording — reject (planned change: approved copy)
