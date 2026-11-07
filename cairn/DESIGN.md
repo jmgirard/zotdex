@@ -577,7 +577,8 @@ user reports. The exception is a report that is abuse.
   and `lensMark`, which cuts the full mark's lens out and scales it, so the
   two marks share one lens. It also builds the text of `favicon.svg`, the top
   bar's shapes, and each PNG file's SVG, whose mark, margin, and size
-  `PICTURES` sets. The endpoints in `site/src/pages/` write the files. `src/site/logo-png.ts` draws those SVGs with `sharp` (D-073).
+  `PICTURES` sets. The endpoints in `site/src/pages/` write the files.
+  `src/site/logo-png.ts` draws those SVGs with `sharp` (D-073).
   `src/site/version.ts` holds the version and range functions
   that the templates use, `majorSupport` and `ZOTERO_MAJORS` among them, and
   `src/site/description.ts` holds `shownDescription`, `cjkShare`, and `cutDescription`.
