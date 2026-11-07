@@ -4,7 +4,7 @@
      cairn_validate's <150 over the plan-owned body. -->
 # M116: Make the weekly malware scan finish
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
@@ -120,6 +120,8 @@ run's results) stay as they are.
 - 2026-11-07: T1–T3 done in one commit (`13b4a901`), since the batch run, the per-batch line reading, and the batch report share one loop: `SCAN_BATCHES_MAX` (4), `batchesOf`, the `cores` and `now` options, `Promise.all` over the batches, `resultOf` per file from its own batch's lines (a stopped batch keeps them; `clamscan-stopped` only for its files with no line, with a message naming an outside stop), `Batch` and `batchLine`, and the CLI's batch lines. Choices: a failed `--version` runs no batch; batch numbers count from 1; the clock option times each batch. Tests: the M115 stopped-run test is removed, 10 batch tests added (counts for 1/3/9 files at 8 cores and 9 at 2, start order, options and limit per batch, a stopped last batch with a FOUND beside a finished first, a stopped batch with no line, three cut points, the batch lines). Planted defects (batches one after another, the old stop rule) each turned 4 tests red. `pnpm test` 2713 passed, `pnpm check` 0 problems. That commit went in without these ticks and this line, by a failed script; this commit adds them.
 - 2026-11-07: T4 done: `Build data` run 42417346897 on `m116-scan-batches` at `b2aa965c`, `malware-scan` true; every job passed and the deploy was skipped, as for any branch. freshclam updated `daily.cvd` 28176 and `main.cvd` 63 with no refusal. Batch lines: "batch 1: 186 files, 186 results, 191.1 s", "batch 2: 186 files, 185 results, 219.8 s", "batch 3: 186 files, 185 results, 234.9 s", "batch 4: 185 files, 185 results, 233.0 s". 741 results, 2 with none (`partial-scan`: ztransplit@zotero.org `Heuristics.Limits.Exceeded.MaxFiles`, chatpdf@zotero-plugin `Heuristics.Limits.Exceeded.MaxFileSize`); no find. The scan step took 5 min 54 s from its start to the batch lines, so the downloads took about 2 minutes; the batch times include the signature load, which no line times on its own. No batch was stopped, so no clamd row is filed. The site job added 741 results.
 - 2026-11-07: T5 done: the code comments (in `13b4a901`), docs/data.md and docs/maintaining.md, DESIGN's Function Families entry, D-083, and the CHANGELOG entry (in `1328cc32`), and DESIGN's Known issues entry rewritten with T4's times and marked corrected M116. Choice: the CHANGELOG adds to M115's unreleased entry rather than a second entry, since both are unreleased. `pnpm test` 2713 passed.
+- 2026-11-07: claim audit: 41 claims read, 6 corrected — docs/data.md (the stop cases, the batch count, a cut line), docs/maintaining.md (the batch count, the order of the batch lines and the warning), src/malware-scan/scan.ts (the stopped-run comments and message). `pnpm test` 2713 passed, `pnpm check` 0 problems.
+- 2026-11-07: implement done: all 5 tasks checked, verify slot clean; status set to review.
 
 ## Decisions
 

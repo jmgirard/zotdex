@@ -278,16 +278,16 @@ file gets no new result:
 - ClamAV prints no line for it, or more than one line.
 - ClamAV prints its line in another form, such as text before `OK`, or a
   version line too long for the `clamav` field.
-- Its batch's `clamscan` is stopped, at its limit of 10 minutes or from
-  outside, before it prints the file's line.
+- Its batch's `clamscan` is stopped, at its limit of 10 minutes, at its
+  output limit, or from outside, before it prints the file's line.
 - `clamscan --version` gives no version. Then no file of the run gets a
   result.
 
-The scan splits the files into batches, at most 4, one for each core of the
-machine. It runs one `clamscan` for each batch at the same time. A batch
-that is stopped keeps the result of each file whose line it printed before
-the stop. A line that the stop cut short has no verdict at its end, so it
-gives no result.
+The scan splits the files into batches, at most 4, and no more than the
+machine's cores or the files. It runs one `clamscan` for each batch at the
+same time. A batch that is stopped keeps the result of each file whose line
+it printed before the stop. A line that the stop cut before the end of its
+verdict word gives no result.
 
 A scan run that fails adds no result at all. Examples are a refused
 `freshclam`, a failed or stopped job, and a results file of the wrong

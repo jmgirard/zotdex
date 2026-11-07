@@ -970,17 +970,18 @@ pnpm malware-scan --data <file> --out <file> [--scan]
 
 Without `--scan`, it downloads nothing and writes an empty list. With
 `--scan`, it downloads each plugin file and checks its SHA-256 against the
-data. It splits the files into batches, at most 4, one for each core. It
+data. It splits the files into batches, at most 4, and no more than the
+machine's cores or the files. It
 runs one `clamscan` for each batch at the same time, with
 `--alert-exceeds-max=yes` and `--alert-encrypted=yes`. Files with no kept
 result go first, then the files with the oldest results. The command starts
 no download 20 minutes after it begins, and it stops each batch's
 `clamscan` after 10 minutes. A stopped batch keeps the result of each file
 whose line it printed. The command prints one line for each file with no
-new result, with the reason. It prints one warning line with the number of
-files it did not reach. It then prints one line for each batch, such as
-`batch 2: 186 files, 186 results, 241.3 s`, which ends in `, stopped` for a
-stopped batch. For
+new result, with the reason. It then prints one line for each batch, such
+as `batch 2: 186 files, 186 results, 241.3 s`, which ends in `, stopped` for
+a stopped batch. When the downloads limit left files undownloaded, it then
+prints one warning line with their number. For
 a usage error, data it cannot read, or a file it cannot write, it exits with
 status 1.
 `cairn/references/clamav-docs.md` records the `clamscan` options and
