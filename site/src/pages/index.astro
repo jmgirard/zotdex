@@ -8,7 +8,7 @@ import Base from "../layouts/Base.astro";
 import {
   BASE,
   categoryOptions,
-  day,
+  keptTitle,
   INSTALL_HREF,
   PAID_SERVICE_TEXT,
   displayName,
@@ -170,7 +170,7 @@ const prePaint = `if ("noModule" in HTMLScriptElement.prototype) {
                 <th scope="row" class="name">
                   <a href={pluginHref(record.id)} data-name>{name}</a>
                   {upstream?.archived === true && <span class="badge" data-archived>Archived</span>}
-                  {record.kept && <span class="badge" data-kept title={`Facts from an earlier build, on ${day(record.kept.readAt)}`}>Older data</span>}
+                  {record.kept && <span class="badge" data-kept title={keptTitle(record.kept.readAt)}>Older data</span>}
                   {
                     upstream?.sourceInRepo === false && (
                       <>

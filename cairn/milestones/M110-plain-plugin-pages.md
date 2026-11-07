@@ -1,13 +1,13 @@
 # M110: Use plain words on plugin pages
 
-- **Status:** planned
+- **Status:** in-progress
 - **Priority:** normal
 - **Depends on:** —
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — the text of every plugin page and the home row's Older data tooltip
-- **Branch/PR:** —
+- **Branch/PR:** m110-plain-plugin-pages
 
 ## Goal
 
@@ -76,16 +76,16 @@ text, which M109 set.
 
 ## Tasks
 
-- [ ] T1: In `site/src/data.ts`, set `languagesText`'s fallback to "Language
+- [x] T1: In `site/src/data.ts`, set `languagesText`'s fallback to "Language
   not listed" and `upstreamLines`' manifest label to "Plugin file:", add an
   Older data title helper that uses `longDay`, and use `longDay` for the
   plugin page's dates.
-- [ ] T2: In `site/src/pages/plugins/[id]/index.astro`, set every line of
+- [x] T2: In `site/src/pages/plugins/[id]/index.astro`, set every line of
   the copy section that AC1 names.
-- [ ] T3: In `site/src/pages/index.astro`, set the home row's Older data
+- [x] T3: In `site/src/pages/index.astro`, set the home row's Older data
   title from the T1 helper; in `site/src/pages/about.astro`, update the two
   quotes of renamed labels (near lines 169 and 209).
-- [ ] T4: Update `test/site.test.ts` per AC1 to AC3, on the shared fixtures
+- [x] T4: Update `test/site.test.ts` per AC1 to AC3, on the shared fixtures
   and the kept-record build.
 - [ ] T5: Search the AC4 strings, update `docs/site.md` and DESIGN.md where
   they quote them, and add the CHANGELOG entry.
@@ -102,5 +102,8 @@ text, which M109 set.
 - 2026-11-07: question set: wording — the user approved the copy file's Plugin page and About sections on 2026-11-07, after asking for before-and-after views, the footer's safety-or-features sentence in place of "doesn't review anyone's code", and a shorter About.
 - 2026-11-07: criteria audit (full mode, fresh Opus) returned 15 findings, all taken: AC1 names the kept-record build and one fixture per line with values filled; AC4 searches DESIGN's quoted labels only, exempts earlier-wording notes, and skips code comments; AC5 measures the page, on a deployed record with corrections and a paid fact; the copy's range line says "Supported versions:", the reports rule names the major version, "a 10.0 release", "no known release", and the badge title says "in its latest update"; M111's empty docs criterion was dropped.
 - 2026-11-07: plan gate chose two milestones (plugin pages, then About) over one because the two pages ship apart and one would pass the criteria tripwire; falsified by M111 needing to undo M110 text.
+- 2026-11-07: implement started on m110-plain-plugin-pages; the untracked `.claude/` folder is unrelated and stays unstaged.
+- 2026-11-07: T1 to T4 landed in one commit, since the new words fail the old expectations until the tests change; `keptTitle` in `site/src/data.ts` gives both Older data titles; the unused `day()` helper is gone; `longDay` on a paid fact's `read` relies on the schema's YYYY-MM-DD pattern; new tests cover the version table's headers, the Corrections text and headers, the badge card text, the "Supported versions:" line, and About's three label quotes; `pnpm test` 2515 passed, `pnpm check` 741 entries, 0 problems.
+- 2026-11-07: the M109 lesson on `&#39;` holds for inserted text but not for an attribute: a `title={…}` value keeps a raw apostrophe in the built page.
 
 ## Decisions
