@@ -1,13 +1,13 @@
 # M111: Shorten About in the home page's words
 
-- **Status:** planned
+- **Status:** in-progress
 - **Priority:** normal
 - **Depends on:** M110
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — the About and 404 pages' text and the maintainer docs that hold About's full rules
-- **Branch/PR:** —
+- **Branch/PR:** m111-short-about
 
 ## Goal
 
@@ -71,16 +71,16 @@ the docs moved from README" holds.
 
 ## Tasks
 
-- [ ] T1: Rewrite `site/src/pages/about.astro` to the copy: title,
+- [x] T1: Rewrite `site/src/pages/about.astro` to the copy: title,
   description, h1, the intro with the docs link, and the 14 sections, with
   their ids, the category list, and the newest-releases list kept.
-- [ ] T2: Set `site/src/pages/404.astro`'s text to the copy.
+- [x] T2: Set `site/src/pages/404.astro`'s text to the copy.
 - [ ] T3: Read `about.astro` at the branch's cut commit sentence by
   sentence; for each sentence the new About drops, find the `docs/` text
   that states its rule (the audit found many in `docs/data.md` and
   `docs/requests.md`; bot flagging and maintainer adds were not found) or
   add it to `docs/site.md`; record the result in one work-log line.
-- [ ] T4: Update the About and 404 tests in `test/site.test.ts` per AC1 to
+- [x] T4: Update the About and 404 tests in `test/site.test.ts` per AC1 to
   AC3.
 - [ ] T5: Update DESIGN.md's and docs/site.md's descriptions of About, and
   add the CHANGELOG entry.
@@ -99,5 +99,8 @@ the docs moved from README" holds.
 - 2026-11-07: criteria audit (full mode, fresh Opus) of the first draft found the docs criterion empty, so it was dropped; the criteria changed by the question set's answers (AC1, AC2, AC4) went back to a fresh Opus reader, whose findings a follow-up plan commit takes.
 - 2026-11-07: criteria re-audit (full mode, fresh Opus) returned 13 findings: AC1 separates the copy's directions from page text and names the two link targets; AC2 checks the 404 links; AC3 reads the built pages, so imported text counts; AC4 pins the cut commit and accepts any file under `docs/`; new AC5 keeps docs/site.md's and DESIGN's descriptions of About true; the copy now says "new Zotero profile" and "the tested release of each Zotero version that the plugin's own range covers", "most often up to a week old", reports "that pass the bot's checks", English read first only when the file gives several languages, "half or more", "when it has both", "a removed plugin's repository", the full License split, and no "updates this site"; the badge line had no finding; D-075's "install only plugins from developers you trust" became "look into a plugin before you trust it with your library", at the user's choice of the footer sentence.
 - 2026-11-07: question set: re-audit wording — the user found the re-audit's fixes hurt the tone ("review has a tendency to ruin copywriting quality") and approved lighter lines: "clean Zotero setup, once for each Zotero version the plugin says it supports", "usually less than a week old", the two-sentence reports text, "If a plugin comes in several languages, Zotdex uses its English text", "mostly Chinese, Japanese, or Korean", "A removed plugin stays off Zotdex", and the shorter License text; the dropped detail stays in `docs/` (AC4).
+- 2026-11-07: started on branch m111-short-about, cut from 65c81d34; the untracked `.claude/` folder stays unstaged.
+- 2026-11-07: implementation choices: the intro link reads its address from a new `SITE_DOCS_HREF` in `site/src/data.ts`; the declared and startup marks sit in the prose as styled spans that screen readers read, and the old mark lists are gone; `[data-about] .start` replaces `.about-list .start` so a startup mark stays inline in a paragraph; Installing keeps two paragraphs; the 404 title and description stay, since the copy names neither; the newest-release item for a major with no known release reads "no known release", as the copy lists.
+- 2026-11-07: T1, T2, T4 done: About and 404 follow the copy; the old wording tests in `test/site.test.ts` gave way to one test per copy section (text compared whole), the head and intro link, the two links, the 3 and 90 seconds against the code, and the AC3 phrase check on both pages; the section tests first failed on Astro joining an h2 to its paragraph, fixed in the test with `blockText`; `pnpm test` 2503 passed, `pnpm check` 0 problems.
 
 ## Decisions

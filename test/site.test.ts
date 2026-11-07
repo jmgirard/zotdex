@@ -11,13 +11,16 @@ import {
   displayName,
   githubRepo,
   homeOrder,
+  LICENSE_HREF,
   longDay,
   majorReport,
   pluginHref,
   rangeText,
+  REMOVE_PLUGIN_HREF,
   reportHref,
   safeHref,
   starsText,
+  SUPPORT_MARKS as MARKS,
   type PluginRecord,
 } from "../site/src/data.ts";
 import type { PluginsFile } from "../src/build/build.ts";
@@ -28,7 +31,6 @@ import { PAGE_SIZE, prePaintStyle } from "../src/site/home-filter.ts";
 import { appliedLanguages, languageName } from "../src/site/languages.ts";
 import { FULL_MARK, PICTURES, pictureSvg } from "../src/site/logo.ts";
 import { START_LIMIT_MS } from "../src/start-test/start-test.ts";
-import { DESCRIPTION_MAX, DESCRIPTION_MIN_WORDS, NAME_MAX, NAME_MIN } from "../src/text-request/rules.ts";
 import { compareVersions, declaredRange, majorSupport, ZOTERO_MAJORS } from "../src/site/version.ts";
 import { partAt, type Part } from "./support/logo-geometry.ts";
 import { PRE_PAINT_CASES } from "./support/pre-paint.ts";
@@ -114,7 +116,10 @@ describe("pnpm site", () => {
     const html = readFileSync(join(out, "404.html"), "utf8");
     const main = /<main>(.*?)<\/main>/s.exec(html)![1]!;
     expect(main).toContain("<h1>Page not found</h1>");
-    expect(main).toContain("No page is at this address.");
+    expect(blockText(html)).toBe(
+      "Page not found No page is at this address. A plugin's page goes away when Zotdex no longer lists the plugin. " +
+        "See all plugins or read the About page.",
+    );
     expect(main).toContain('<a href="/">See all plugins</a>');
     expect(main).toContain('<a href="/about/">About page</a>');
     expect(html).toContain('<meta name="robots" content="noindex">');
@@ -207,22 +212,6 @@ describe("how to install a plugin", () => {
       .map((file) => readFileSync(join(out, "plugins", file), "utf8"))
       .find((page) => page.includes('data-link="download"'))!;
     expect(textOf(noteOf(html)[0]!)).toBe(INSTALL_NOTE);
-  });
-
-  test.each([
-    "To install a plugin, save its .xpi file to your computer. Then, in Zotero, go to Tools → Plugins and drag the file onto the Plugins window.",
-    "In Firefox, right-click the download link and choose Save Link As.",
-    "A plugin has full access to your Zotero and your computer, so install only plugins from developers you trust.",
-    "A bot adds most new plugins on its own.",
-    "If one of the bot's checks flags a plugin, the bot waits, and a maintainer decides whether to list it.",
-    "A maintainer can also add a plugin by hand or keep one out.",
-    "When deciding, a maintainer mainly checks whether the entry would mislead people about what the plugin is, who makes it, or who controls its updates.",
-    "A maintainer can compare files to spot a copy, but does not review the code.",
-    "The index does not review a plugin's code before listing it.",
-  ])("the About section says: %s", (sentence) => {
-    const about = readFileSync(join(out, "about/index.html"), "utf8");
-    const section = /<section class="card" id="installing" data-about="installing">(.*?)<\/section>/s.exec(about)![1]!;
-    expect(textOf(section)).toContain(sentence);
   });
 });
 
@@ -860,85 +849,172 @@ function mainText(html: string): string {
   return unescaped(main.replace(/<[^>]+>/g, "")).replace(/\s+/g, " ").trim();
 }
 
+// mainText with a space at the end of each heading and paragraph, since Astro writes no space
+// between blocks.
+function blockText(html: string): string {
+  return mainText(html.replace(/<\/(?:h1|h2|p)>/g, " $&"));
+}
+
 describe("the About page", () => {
   const about = () => readFileSync(join(out, "about/index.html"), "utf8");
 
-  test.each([
-    ["where the fact comes from", "the build reads the top-level file and folder names of the repository's default branch"],
-    ["that it reads no code", "The index reads no code to decide this"],
-    ["what yes does not mean", '"Yes" does not mean an open-source license, and it does not mean that the XPI was built from that code'],
-    ["that no can be wrong", '"No" can be wrong, because the index does not look inside folders'],
-    ["what does not count", "README, LICENSE, LICENCE, COPYING, NOTICE, CHANGELOG, or CHANGES"],
-    ["that yes can be wrong", '"Yes" can be wrong'],
-    ["that the plugin stays listed", "the lock stays listed"],
-  ])("says %s", (_, claim) => {
-    const section = /<section class="card" id="source"[\s\S]*?<\/section>/.exec(about())![0];
-    expect(unescaped(section).replace(/\s+/g, " ")).toContain(claim);
+  // The "About page (M111)" section of cairn/references/plain-words-copy.md, as page text: each
+  // section's id, its h2, and its prose with the lists left out. The marks come from the code.
+  const COPY: [id: string, h2: string, prose: string][] = [
+    [
+      "declared",
+      "Supported Zotero versions",
+      "Each plugin says which Zotero versions it supports, and Zotdex shows that range, with any corrections. " +
+        `${MARKS.all} means it supports every release of that version, ${MARKS.some} some releases, and ${MARKS.none} none. ` +
+        "A plugin that doesn't say shows no mark. The range is what the author says, not a test result. " +
+        "This update counted these as the newest releases:",
+    ],
+    [
+      "start-test",
+      "Startup check",
+      "Zotdex installs each plugin in a clean Zotero setup, once for each Zotero version the plugin says it supports, and waits 3 seconds. " +
+        "● means Zotero lists it as active and it logged no startup error. " +
+        "✕ means it failed to load, didn't install, or didn't finish loading within 90 seconds. " +
+        "Passing doesn't mean the plugin works, because the check doesn't use any of its features, and the plugin's own code can change its result. " +
+        "Zotdex checks a plugin again when its file changes, after a failed check, and once a week, so a result is usually less than a week old.",
+    ],
+    [
+      "older-data",
+      "Older data",
+      "When Zotdex can't reach a plugin because of a time limit or a server problem, it keeps what it found in the past 7 days " +
+        'and marks the plugin "Older data". A plugin it can\'t read for another reason, such as a deleted repository, shows "Not read".',
+    ],
+    [
+      "reports",
+      "User reports",
+      "Anyone with a GitHub account can report that a plugin works or is broken, with the buttons on its page. " +
+        "A bot checks each report, and Zotdex counts the ones that pass, keeping each person's latest for each Zotero version. " +
+        "The counts start over with each new release, and they show what people found, not what Zotdex tested.",
+    ],
+    [
+      "descriptions",
+      "Descriptions",
+      "A plugin's description comes from its own file or its GitHub page. If a plugin comes in several languages, Zotdex uses its English text. " +
+        "For a description that's mostly Chinese, Japanese, or Korean, Zotdex shows just the part in Latin letters, if there is one. " +
+        "The Details card shows both descriptions when a plugin has both.",
+    ],
+    [
+      "overrides",
+      "Corrections",
+      "When a fact from a plugin is wrong and its author can't or won't fix it, Zotdex can correct it, such as its name, description, or supported versions. " +
+        "A plugin's owner can also ask for a new name or description with the link on its page, and a maintainer reads each request. " +
+        'Each plugin page lists its corrections in the "Corrections by Zotdex" table, beside the plugin\'s own values.',
+    ],
+    [
+      "categories",
+      "Categories",
+      "Zotdex sorts plugins into its own categories, from words in their names and descriptions plus some fixes by hand, so you can find plugins of one kind. " +
+        "A category can be wrong or missing, and plugin authors don't choose them.",
+    ],
+    [
+      "source",
+      "Source code",
+      "A lock means Zotdex found no obvious source code in the top folder of the plugin's repository. " +
+        "It only looks at file and folder names, not at the code, so it can be wrong either way, and a plugin without the lock isn't always open source. " +
+        "A plugin with the lock stays listed.",
+    ],
+    [
+      "paid-service",
+      "Paid service",
+      "A card icon means the plugin's main use stops unless you pay its maker, or stops after a trial. A maintainer checks this by hand. " +
+        "A free plan with paid extras, a plugin that also works with another service's key, or a donation gets no mark. " +
+        "A plugin with no mark can still cost money, because new plugins get checked later.",
+    ],
+    [
+      "removing",
+      "Removing a plugin",
+      "A maintainer removes a plugin when its owner asks, when it's spam, when its entry misleads people about what it is or who makes it, " +
+        "or when someone shows evidence that it causes harm. " +
+        "To ask, use the form for removing a plugin or reporting harm, or the link on the plugin's page. A removed plugin stays off Zotdex.",
+    ],
+    [
+      "installing",
+      "Installing a plugin",
+      "Save the plugin's .xpi file, then in Zotero go to Tools → Plugins and drag the file onto the Plugins window. " +
+        "In Firefox, right-click the download link and choose Save Link As. " +
+        "A plugin has full access to Zotero and your computer, and Zotdex doesn't test plugins' safety or features, " +
+        "so look into a plugin before you trust it with your library. " +
+        "A bot adds most new plugins, and a maintainer steps in when the bot flags one, " +
+        "mainly to keep out entries that mislead people about what a plugin is or who makes it.",
+    ],
+    [
+      "badge",
+      "README badge",
+      "Plugin authors can add a Zotdex badge to their README. " +
+        'It names the Zotero versions where the plugin passed the startup check, such as "started in Zotero 7 · 8 · 9". ' +
+        "The Markdown is at the bottom of each plugin page, and a change can take a few hours to show.",
+    ],
+    [
+      "not-vetted",
+      "What Zotdex doesn't do",
+      "Zotdex is independent and unofficial, and it's not part of Zotero. " +
+        "It can't vet the plugins it lists, because one person runs it and any plugin can change with each release. " +
+        "It doesn't host plugin files: download links go to each author's own file.",
+    ],
+    [
+      "license",
+      "License",
+      "Zotdex's code is under the MIT License, and its data, categories, and own text are under CC0 1.0. " +
+        "Names, descriptions, and other text from plugin authors keep their authors' terms. " +
+        "The license page gives the details, including the exceptions.",
+    ],
+  ];
+  // One section's markup, found by its id.
+  const sectionOf = (id: string) => new RegExp(`<section class="card" id="${id}" data-about="${id}">(.*?)</section>`, "s").exec(about())?.[1] ?? "";
+  // A section's h2 and prose as text, with its lists left out.
+  const proseOf = (id: string) => blockText(`<main>${sectionOf(id).replace(/<ul[^>]*>.*?<\/ul>/gs, "")}</main>`);
+
+  test("has the copy's sections in its order, each under its h2 and with its id", () => {
+    expect([...about().matchAll(/<section class="card" id="([^"]+)" data-about="\1">\s*<h2>([^<]*)<\/h2>/g)].map(([, id, h2]) => [id, unescaped(h2!)])).toEqual(
+      COPY.map(([id, h2]) => [id, h2]),
+    );
   });
 
-  test.each([
-    ["what the mark means", "the plugin's main use stops without paying its maker, or stops after a trial, whether the payment is for credits, a membership, an activation code, or a paid plan"],
-    ["that a free plan gets no mark", "A lasting free plan with a paid upgrade gets no mark"],
-    ["that a third party's key gets no mark", "A plugin that also works with a third party's key gets no mark"],
-    ["that a donation gets no mark", "A donation gets no mark"],
-    ["that a maintainer reads it by hand", "A maintainer reads this by hand"],
-    ["that no mark can still cost money", "A plugin with no mark can still cost money"],
-    ["that the plugin stays listed", "A marked plugin stays listed"],
-    ["that an author can correct it", "An author can open an issue to correct it"],
-  ])("says %s", (_, claim) => {
-    const section = /<section class="card" id="paid-service"[\s\S]*?<\/section>/.exec(about())![0];
-    expect(unescaped(section).replace(/\s+/g, " ")).toContain(claim);
+  test.each(COPY)("the %s section reads as the copy", (id, h2, prose) => {
+    expect(proseOf(id)).toBe(`${h2} ${prose}`);
   });
 
-  test("the About intro says who reads the paid service fact, and the Start test section says when a plugin starts again", () => {
-    const intro = /<p class="intro">([\s\S]*?)<\/p>/.exec(about())![1]!;
-    expect(unescaped(intro).replace(/\s+/g, " ")).toContain("A maintainer reads the paid service fact by hand, and the build reads the others");
-    expect(unescaped(intro).replace(/\s+/g, " ")).toContain("It also says how to install a plugin, and it ends with the license terms.");
-    const start = /<section class="card" id="start-test"[\s\S]*?<\/section>/.exec(about())![0];
-    expect(unescaped(start).replace(/\s+/g, " ")).toContain("It also starts each plugin again on one day of each week");
-  });
-
-  test("has one section for each part of the method, each under its h2", () => {
-    expect([...about().matchAll(/<section class="card" id="([^"]+)" data-about="\1">\s*<h2>([^<]*)<\/h2>/g)].map(([, id, h2]) => [id, h2])).toEqual([
-      ["declared", "Declared range"],
-      ["start-test", "Start test"],
-      ["older-data", "Older data"],
-      ["reports", "User reports"],
-      ["descriptions", "Descriptions"],
-      ["overrides", "Overrides"],
-      ["categories", "Categories"],
-      ["source", "Source code"],
-      ["paid-service", "Paid service"],
-      ["removing", "Removing a plugin"],
-      ["installing", "Installing a plugin"],
-      ["badge", "README badge"],
-      ["not-vetted", "What the index does not do"],
-      ["license", "License"],
+  test("the title, the meta description, the h1, and the intro read as the copy, and the intro links the site docs", () => {
+    const html = about();
+    expect(/<title>([^<]*)<\/title>/.exec(html)?.[1]).toBe("About: Zotdex");
+    expect(unescaped(/<meta name="description" content="([^"]*)">/.exec(html)?.[1] ?? "")).toBe(
+      "How Zotdex works: what the facts on a plugin page mean and what they don't tell you.",
+    );
+    const hero = /<div class="hero">(.*?)<\/div>/s.exec(html)![1]!;
+    expect(blockText(`<main>${hero}</main>`)).toBe(
+      "How Zotdex works Every day, Zotdex reads each listed plugin's GitHub repository and releases. " +
+        "Here's what the facts on a plugin page mean, and what they don't tell you. The site docs on GitHub have the full rules.",
+    );
+    expect(hero).toContain("<h1>How Zotdex works</h1>");
+    expect([...hero.matchAll(/<a href="([^"]*)"[^>]*>([^<]*)<\/a>/g)].map(([, href, text]) => [href, text])).toEqual([
+      ["https://github.com/jmgirard/zotdex/blob/main/docs/site.md", "site docs"],
     ]);
   });
 
-  test("names the badge file's address and each of the badge's four messages", () => {
-    const section = /<section class="card" id="badge" data-about="badge">(.*?)<\/section>/s.exec(about())![1]!;
-    const text = unescaped(section.replace(/<[^>]+>/g, "")).replace(/\s+/g, " ");
-    expect(text).toContain("https://zotdex.jmgirard.com/badges/<id>.json");
-    for (const message of ["started in Zotero 7 · 8 · 9", "no start in tests", "not start-tested", "no data"]) expect(text).toContain(`"${message}"`);
-    expect(text).toContain("A start does not show that a plugin works.");
+  test("links the removal form and the license page from their phrases, and nothing else from those sections", () => {
+    const links = (id: string) => [...sectionOf(id).matchAll(/<a href="([^"]*)"[^>]*>([^<]*)<\/a>/g)].map(([, href, text]) => [unescaped(href!), text]);
+    expect(links("removing")).toEqual([[REMOVE_PLUGIN_HREF, "form for removing a plugin or reporting harm"]]);
+    expect(links("license")).toEqual([[LICENSE_HREF, "license page"]]);
   });
 
-  test("states the license terms and the icons' sources, and links to the license page", () => {
-    const section = /<section class="card" id="license" data-about="license">(.*?)<\/section>/s.exec(about())![1]!;
-    const link = /<a href="([^"]*)" data-license-link>([^<]*)<\/a>/.exec(section);
-    expect(link?.[1]).toBe("https://github.com/jmgirard/zotdex/blob/main/docs/license.md");
-    expect(link?.[2]).toBe("license page");
-    const text = unescaped(section.replace(/<[^>]+>/g, "")).replace(/\s+/g, " ");
-    expect(text).toContain("The index's code is under the MIT License, except the third-party parts of the files that the license page names.");
-    expect(text).toContain("The Zotdex logo is the index's own drawing, under the same terms as its code.");
-    expect(text).toContain("The other icons on these pages come from Lucide, under the ISC License, and from Feather, under the MIT License.");
-    expect(text).toContain("The facts that the index gathers, its categories, and text that a maintainer wrote are under CC0 1.0.");
-    expect(text).toContain("All other text keeps its author's terms: plugin names and descriptions, GitHub About text, and text that an owner asked for.");
+  test("says 3 seconds and 90 seconds, the reporter's wait after the install and the start's time limit", () => {
+    const reporter = readFileSync(resolve(ROOT, "src/start-test/reporter/bootstrap.js"), "utf8");
+    expect(/^const SETTLE_MS = (\d+);$/m.exec(reporter)?.[1]).toBe("3000");
+    expect(START_LIMIT_MS).toBe(90 * 1000);
   });
 
-  test("lists every category, links each that the home menu offers to the home page filtered by it, and says where categories come from", () => {
+  test.each(["about/index.html", "404.html"])("%s says none of the index's old names", (file) => {
+    const text = unescaped(readFileSync(join(out, file), "utf8").replace(/<[^>]+>/g, " ")).replace(/\s+/g, " ").toLowerCase();
+    expect(text).toContain("zotdex");
+    for (const words of ["the index", "start test", "declared range"]) expect(text, words).not.toContain(words);
+  });
+
+  test("lists every category, and links each that the home menu offers to the home page filtered by it", () => {
     const section = /<section class="card" id="categories" data-about="categories">(.*?)<\/section>/s.exec(about());
     expect(section).not.toBeNull();
     expect(section![1]).toContain('<ul class="about-list" role="list" data-category-list>');
@@ -953,90 +1029,6 @@ describe("the About page", () => {
     expect(items).toEqual(
       CATEGORIES.map(({ slug, name, about }) => [offered.has(slug) ? `/?category=${slug}` : undefined, name, about]),
     );
-    const text = mainText(about());
-    expect(text).toContain("It assigns them from words in a plugin's name and descriptions, and it adds or removes some by hand.");
-    expect(text).toContain("A plugin that fits no other category is under Other tools.");
-    expect(text).toContain(
-      "A plugin that the latest build did not read, and that keeps no older data, has only the categories added by hand, so it often shows none.",
-    );
-    expect(text).toContain("A category can be wrong or missing. Plugin authors do not choose them, but a requested name or description can change the words they read.");
-  });
-
-  test("names each declared mark and says that a range is not a test result", () => {
-    const text = mainText(about());
-    for (const line of [
-      "✓ The range covers every release of that Zotero version, up to its newest release.",
-      "◐ The range covers part of it.",
-      "– The range covers none of it.",
-      "The index counts Zotero N as the versions from N.0 to the newest release of N.",
-      "so a minimum such as 8.999, which authors write to mean Zotero 9 and newer, covers none of Zotero 8.",
-      "Each day the build reads the current Zotero release from zotero.org, and the index keeps the last release of each earlier Zotero version.",
-      "For a Zotero version with no known release, the index counts N.0 to N.9,",
-      "A plugin that declares no range shows no mark. The range is what the author declares, not a test result.",
-    ]) {
-      expect(text).toContain(line);
-    }
-  });
-
-  test("says that a repository's owner can ask for a name or description override, with the limits of the rules", () => {
-    const text = mainText(about());
-    expect(text).toContain("A repository's owner can also ask for a name or description override");
-    expect(text).toContain(`A name has ${NAME_MIN} to ${NAME_MAX} characters`);
-    expect(text).toContain(`at least ${DESCRIPTION_MIN_WORDS} words and at most ${DESCRIPTION_MAX} characters`);
-  });
-
-  test("describes the start test on Linux in a new profile with a 3-second wait, and says that a start is not a report that it works", () => {
-    const text = mainText(about());
-    expect(text).toContain("installs the plugin version that the index read in a new Zotero profile on Linux");
-    expect(text).toContain("It waits 3 seconds after the install");
-    expect(text).toContain("✕ Didn't finish loading: no result came within 90 seconds.");
-    expect(text).toContain("A start is not a report that the plugin works.");
-    // The 3 seconds is the reporter's wait after the install, and the 90 the start's time limit.
-    const reporter = readFileSync(resolve(ROOT, "src/start-test/reporter/bootstrap.js"), "utf8");
-    expect(/^const SETTLE_MS = (\d+);$/m.exec(reporter)?.[1]).toBe("3000");
-    expect(START_LIMIT_MS).toBe(90 * 1000);
-  });
-
-  test("says where the description comes from and when an override gives English text", () => {
-    const text = mainText(about());
-    for (const line of [
-      "the index reads the plugin's English locale file first, if it has one.",
-      "A description override that applies to the version the index read comes first.",
-      "Without one, the site takes the Latin-script part of each description of which half or more is Chinese, Japanese, or Korean.",
-      "It keeps the pieces whose letters are all Latin and that hold at least three words, and it joins them with one space.",
-      "The site then drops a description that is missing, blank, or only repeats the plugin's name.",
-      "Last, if less than half of the manifest description is Chinese, Japanese, or Korean, the site shows it.",
-      "the manifest description was dropped, or the GitHub description has less of that text.",
-      "A description override can also give English text for a plugin with no English description upstream.",
-      "That covers a description that is not in English, that only repeats the name, or that is half or more Chinese, Japanese, or Korean.",
-      "It can also replace an English description of fewer than six words.",
-    ]) {
-      expect(text).toContain(line);
-    }
-  });
-
-  test("says which user reports count, how overrides and the In use column work, and that the index cannot vet plugins", () => {
-    const text = mainText(about());
-    for (const line of [
-      "The index counts a report only when the bot closed it as completed and the report names the plugin version that the index read.",
-      "A report with the label not-counted does not count.",
-      "Of one GitHub account's reports on one plugin and Zotero major, only the newest counts.",
-      `The "Corrections by Zotdex" table in a plugin's Details lists each override beside the upstream value.`,
-      'Its "In use" column says "yes" for the override that applies to the plugin version that the index read.',
-      `The plugin page shows the result as "Source code in the repository's top folder".`,
-      'The declared range uses the strict_min_version and strict_max_version overrides marked "yes".',
-    ]) {
-      expect(text).toContain(line);
-    }
-    const section = /<section class="card" id="not-vetted" data-about="not-vetted">(.*?)<\/section>/s.exec(about());
-    const said = mainText(`<main>${section?.[1] ?? ""}</main>`);
-    for (const line of [
-      "The index is unofficial: it is not affiliated with or endorsed by Zotero.",
-      "It cannot vet the plugins it lists, because one person maintains it and each plugin can change with any release.",
-      "The start test is not a review of plugin code: it shows only whether a plugin starts.",
-    ]) {
-      expect(said).toContain(line);
-    }
   });
 
   // Each sentence that moved to the About page, as it read on a plugin page before.
@@ -2208,29 +2200,6 @@ describe("the built site", () => {
     }
   });
 
-  test("states the grounds for removing a plugin on the About page, with a link to the form", () => {
-    const html = readFileSync(join(out, "about/index.html"), "utf8");
-    const start = html.indexOf('data-about="removing"');
-    const section = html.slice(start, html.indexOf("</section>", start));
-    expect(section).toMatch(/<a href="https:\/\/github\.com\/jmgirard\/zotdex\/issues\/new\?template=remove-plugin\.yml"/);
-    const text = unescaped(section.replace(/<[^>]+>/g, "")).replace(/\s+/g, " ");
-    for (const words of [
-      "Removing a plugin",
-      "its repository's owner asks",
-      "it is spam",
-      "its entry misleads people about what the plugin is or who makes it",
-      "a report shows harm with evidence that a reader can check",
-      "A claim with no evidence removes nothing.",
-      "To ask, use the form for removing a plugin or reporting harm",
-      "The form opens a public GitHub issue",
-      "A removed plugin stays off the index",
-      "so a copy under a new name is covered only if it keeps a listed id",
-      "The index still cannot vet plugins, and it does not review their code.",
-    ]) {
-      expect(text).toContain(words);
-    }
-  });
-
   test("runs the built theme scripts", () => {
     const html = home();
     const scripts = {
@@ -2474,14 +2443,11 @@ describe("a kept record", () => {
     expect(page(KEPT)).toContain('data-fact="read-version">For version 1.2.0, the release this page shows</p>');
   });
 
-  test("says on About when the index keeps facts and for how long", () => {
+  test("says on About when Zotdex keeps facts and for how long", () => {
     const about = readFileSync(join(dir, "about/index.html"), "utf8");
     const text = /<section class="card" id="older-data" data-about="older-data">(.*?)<\/section>/s.exec(about)?.[1].replace(/\s+/g, " ");
     expect(text).toContain("<h2>Older data</h2>");
-    expect(text).toContain("a problem with the build or a host");
-    expect(text).toContain("If the published data holds facts about the plugin that a build read at most 7 days before, the site keeps them.");
-    expect(text).toContain("A plugin with older data gets no start test, and it keeps the start results published with its facts.");
-    expect(text).toContain('A plugin that the build cannot read for another reason, such as a deleted repository, shows "Not read".');
+    expect(unescaped(text ?? "")).toContain("it keeps what it found in the past 7 days and marks the plugin \"Older data\".");
   });
 
   test("writes the footer's day in UTC, so a build just after midnight UTC names that day in any time zone", () => {
@@ -2643,7 +2609,7 @@ describe("the newest Zotero release", () => {
   });
 
   test("the About page says that no release of 10 is known when the data has no zoteroRelease", () => {
-    expect(releases("unknown").at(-1)).toEqual(["10", "Zotero 10: no release known, so the index counts 10.0 to 10.9"]);
+    expect(releases("unknown").at(-1)).toEqual(["10", "Zotero 10: no known release"]);
   });
 });
 

@@ -1,8 +1,16 @@
 ---
 import { knownRelease, ZOTERO_MAJORS } from "../../../src/site/version.ts";
-import { DESCRIPTION_MAX, DESCRIPTION_MIN_WORDS, NAME_MAX, NAME_MIN } from "../../../src/text-request/rules.ts";
 import Base from "../layouts/Base.astro";
-import { BASE, CATEGORIES, categoryOptions, LICENSE_HREF, loadData, REMOVE_PLUGIN_HREF, SUPPORT_MARKS as MARKS } from "../data.ts";
+import {
+  BASE,
+  CATEGORIES,
+  categoryOptions,
+  LICENSE_HREF,
+  loadData,
+  REMOVE_PLUGIN_HREF,
+  SITE_DOCS_HREF,
+  SUPPORT_MARKS as MARKS,
+} from "../data.ts";
 
 const { plugins, zoteroRelease } = loadData();
 // The categories that the home page's menu offers, the only ones a link can filter by.
@@ -11,176 +19,85 @@ const offered = new Set(categoryOptions(plugins).map(({ value }) => value));
 
 <Base
   title="About: Zotdex"
-  description="How Zotdex reads plugins: where the main facts on a plugin page come from and what they do not show."
+  description="How Zotdex works: what the facts on a plugin page mean and what they don't tell you."
   path={`${BASE}about/`}
 >
   <div class="hero">
-    <h1>How the index reads plugins</h1>
+    <h1>How Zotdex works</h1>
     <p class="intro">
-      Each day, a build reads every listed plugin's GitHub repository and releases. A plugin page shows the facts that
-      a build found for one release, the release the index read. A maintainer reads the paid service fact by hand, and
-      the build reads the others. This page says where the main facts come from and what they
-      do not show. It also says how to install a plugin, and it ends with the license
-      terms.
+      Every day, Zotdex reads each listed plugin's GitHub repository and releases. Here's what the facts on a plugin
+      page mean, and what they don't tell you. The <a href={SITE_DOCS_HREF} data-site-docs>site docs</a> on GitHub have
+      the full rules.
     </p>
   </div>
   <section class="card" id="declared" data-about="declared">
-    <h2>Declared range</h2>
+    <h2>Supported Zotero versions</h2>
     <p>
-      A plugin's manifest declares the Zotero versions that it supports, in its <code>strict_min_version</code> and{" "}
-      <code>strict_max_version</code> fields. The index shows that range for the release it read, after its overrides.
+      Each plugin says which Zotero versions it supports, and Zotdex shows that range, with any corrections.{" "}
+      <span class="mark" data-support="all">{MARKS.all}</span> means it supports every release of that version,{" "}
+      <span class="mark" data-support="some">{MARKS.some}</span> some releases, and{" "}
+      <span class="mark" data-support="none">{MARKS.none}</span> none. A plugin that doesn't say shows no mark. The range
+      is what the author says, not a test result.
     </p>
-    <ul class="about-list" role="list">
-      <li>
-        <span class="mark" data-support="all" aria-hidden="true">{MARKS.all}</span> The range covers every release of that
-        Zotero version, up to its newest release.
-      </li>
-      <li><span class="mark" data-support="some" aria-hidden="true">{MARKS.some}</span> The range covers part of it.</li>
-      <li><span class="mark" data-support="none" aria-hidden="true">{MARKS.none}</span> The range covers none of it.</li>
-    </ul>
-    <p>
-      The index counts Zotero N as the versions from N.0 to the newest release of N. So a maximum such as 10.0.* covers all
-      of Zotero 10 while 10.0 is its newest release line, and part of it once Zotero 10.1 is out. A range that ends
-      before N.0 or starts after the newest release covers none of it, so a minimum such as 8.999, which authors write
-      to mean Zotero 9 and newer, covers none of Zotero 8. Each day the build reads the current Zotero
-      release from zotero.org, and the index keeps the last release of each earlier Zotero version. For a Zotero version
-      with no known release, the index counts N.0 to N.9, because authors often write a maximum such as 10.99.99 to mean
-      every Zotero 10 release. A plugin that declares no range shows no mark. The range is what the author declares, not
-      a test result.
-    </p>
-    <p>This build used these newest releases:</p>
+    <p>This update counted these as the newest releases:</p>
     <ul class="about-list" role="list" data-newest-releases>
       {
         ZOTERO_MAJORS.map((major) => {
           const release = knownRelease(major, zoteroRelease);
-          return (
-            <li data-major={major}>
-              {release ? `Zotero ${major}: ${release}` : `Zotero ${major}: no release known, so the index counts ${major}.0 to ${major}.9`}
-            </li>
-          );
+          return <li data-major={major}>{release ? `Zotero ${major}: ${release}` : `Zotero ${major}: no known release`}</li>;
         })
       }
     </ul>
   </section>
   <section class="card" id="start-test" data-about="start-test">
-    <h2>Start test</h2>
+    <h2>Startup check</h2>
     <p>
-      The build installs the plugin version that the index read in a new Zotero profile on Linux. It does this for each
-      tested Zotero release that the manifest's range covers. It waits 3 seconds after the install, and then it reads one
-      of four results.
-    </p>
-    <p data-fact="start-when">
-      The build does not start every plugin each day. It starts a plugin in a tested release when the plugin file differs
-      from the one last tested, when that release has no earlier result, or when the last result was not a start. It
-      also starts each plugin again on one day of each week, and every plugin on a day when it cannot read the last
-      published data. On the other days it keeps the last start result, so a
-      result is most often up to a week old. A plugin with <a href={`${BASE}about/#older-data`}>older data</a> gets no start test until
-      a build reads it again. If the build on the weekly day deploys nothing, the result stays another
-      week.
-    </p>
-    <ul class="about-list" role="list">
-      <li>
-        <span class="start" data-start="started" aria-hidden="true">●</span> Loaded: Zotero lists the plugin as active, and
-        the plugin logged no startup error.
-      </li>
-      <li>
-        <span class="start" data-start="start-error" aria-hidden="true">✕</span> Failed to load: the plugin's startup
-        threw an error, or an async startup rejected, in those 3 seconds.
-      </li>
-      <li>
-        <span class="start" data-start="not-installed" aria-hidden="true">✕</span> Didn't install: Zotero does not list
-        the plugin, or lists it as inactive.
-      </li>
-      <li>
-        <span class="start" data-start="timed-out" aria-hidden="true">✕</span> Didn't finish loading: no result came
-        within 90 seconds.
-      </li>
-    </ul>
-    <p data-fact="start-not-works">
-      A start is not a report that the plugin works. The test does not use the plugin, and an error after the 3 seconds
-      still counts as a start. The plugin's own code runs during its test, so a plugin can change its own result.
+      Zotdex installs each plugin in a clean Zotero setup, once for each Zotero version the plugin says it supports, and
+      waits 3 seconds. <span class="start" data-start="started">●</span> means Zotero lists it as active and it logged no
+      startup error. <span class="start" data-start="start-error">✕</span> means it failed to load, didn't install, or
+      didn't finish loading within 90 seconds. Passing doesn't mean the plugin works, because the check doesn't use any
+      of its features, and the plugin's own code can change its result. Zotdex checks a plugin again when its file
+      changes, after a failed check, and once a week, so a result is usually less than a week old.
     </p>
   </section>
   <section class="card" id="older-data" data-about="older-data">
     <h2>Older data</h2>
-    <p data-fact="older-data">
-      Sometimes the build cannot read a plugin because of a problem with the build or a host, such as its time limit, a
-      read that takes too long, or a server error. If the published data holds facts about the plugin that a build read
-      at most 7 days before, the site keeps them. The plugin's row has an "Older data" badge, and its page names the day
-      of that read and the problem. A plugin that the build cannot read for another reason, such as a deleted
-      repository, shows "Not read". The 7 days count back from each build, and a build can fail to update the site, so
-      kept facts on the site can be older. A plugin with older data gets no start test, and it keeps the start results
-      published with its facts.
+    <p>
+      When Zotdex can't reach a plugin because of a time limit or a server problem, it keeps what it found in the past 7
+      days and marks the plugin "Older data". A plugin it can't read for another reason, such as a deleted repository,
+      shows "Not read".
     </p>
   </section>
   <section class="card" id="reports" data-about="reports">
     <h2>User reports</h2>
     <p>
-      Anyone with a GitHub account can report that a plugin version works or is broken on a Zotero version. The Works
-      and Broken buttons on a plugin page open the report forms on GitHub. A bot checks each report and closes it.
-    </p>
-    <p>
-      The index counts a report only when the bot closed it as completed and the report names the plugin version that
-      the index read. A report with the label <code>not-counted</code> does not count. Of one GitHub account's reports
-      on one plugin and Zotero major, only the newest counts. When the index reads a new release of a plugin, its counts
-      start over. The counts say what reporters found, not what the index tested.
+      Anyone with a GitHub account can report that a plugin works or is broken, with the buttons on its page. A bot
+      checks each report, and Zotdex counts the ones that pass, keeping each person's latest for each Zotero version. The
+      counts start over with each new release, and they show what people found, not what Zotdex tested.
     </p>
   </section>
   <section class="card" id="descriptions" data-about="descriptions">
     <h2>Descriptions</h2>
     <p>
-      A plugin's description comes from its manifest or from the About text of its GitHub repository. For the manifest
-      name and description that name a locale message, the index reads the plugin's English locale file first, if it
-      has one.
-    </p>
-    <p>
-      A description override that applies to the version the index read comes first. Without one, the site takes the
-      Latin-script part of each description of which half or more is Chinese, Japanese, or Korean. It cuts the text at
-      each <code>/</code> with a space on each side and after each <code>。</code>. It keeps the pieces whose letters
-      are all Latin and that hold at least three words, and it joins them with one space. If that part exists and does
-      not only repeat the plugin's name, the site uses it in place of the whole text. A piece in another language that uses
-      Latin letters, such as Portuguese, shows as it is.
-    </p>
-    <p>
-      The site then drops a description that is missing, blank, or only repeats the plugin's name. Last, if less than
-      half of the manifest description is Chinese, Japanese, or Korean, the site shows it. If not, the site shows a GitHub
-      description that it kept in two cases: the manifest description was dropped, or the GitHub description has less
-      of that text.
-      The Details card of a plugin page shows both descriptions, unless one is missing or blank.
+      A plugin's description comes from its own file or its GitHub page. If a plugin comes in several languages, Zotdex
+      uses its English text. For a description that's mostly Chinese, Japanese, or Korean, Zotdex shows just the part in
+      Latin letters, if there is one. The Details card shows both descriptions when a plugin has both.
     </p>
   </section>
   <section class="card" id="overrides" data-about="overrides">
-    <h2>Overrides</h2>
+    <h2>Corrections</h2>
     <p>
-      When an upstream fact is wrong and the author cannot or will not fix it, the index can correct it with an
-      override. An override corrects one field: the name, the description, the homepage,{" "}
-      <code>strict_min_version</code>, <code>strict_max_version</code>, or the languages list. It applies to one plugin
-      version or to every version. A description override can also give English text for a plugin with no English
-      description upstream. That covers a description that is not in English, that only repeats the name, or that is
-      half or more Chinese, Japanese, or Korean. It can also replace an English description of fewer than six words.
-    </p>
-    <p data-owner-text>
-      A repository's owner can also ask for a name or description override, through the link in the plugin's Details,
-      after trying an upstream edit first. The text is in English. A name has {NAME_MIN} to {NAME_MAX} characters, and a
-      description has at least {DESCRIPTION_MIN_WORDS} words and at most {DESCRIPTION_MAX} characters. A maintainer reads
-      each request. The text stays through new releases until the owner asks to remove it.
-    </p>
-    <p>
-      The "Corrections by Zotdex" table in a plugin's Details lists each override beside the upstream value. Its "In
-      use" column says "yes" for the override that applies to the plugin version that the index read. An override for that version wins
-      over one for every version. The declared range uses the <code>strict_min_version</code> and{" "}
-      <code>strict_max_version</code> overrides marked "yes". A description override lists both upstream texts, the
-      manifest description and the GitHub description, when the plugin has them.
+      When a fact from a plugin is wrong and its author can't or won't fix it, Zotdex can correct it, such as its name,
+      description, or supported versions. A plugin's owner can also ask for a new name or description with the link on
+      its page, and a maintainer reads each request. Each plugin page lists its corrections in the "Corrections by
+      Zotdex" table, beside the plugin's own values.
     </p>
   </section>
   <section class="card" id="categories" data-about="categories">
     <h2>Categories</h2>
     <p>
-      The index sorts plugins into categories of its own, so that you can find plugins of one kind. It assigns them from
-      words in a plugin's name and descriptions, and it adds or removes some by hand. A plugin can have several
-      categories. A plugin that fits no other category is under Other tools. A plugin that the latest build did not read,
-      and that keeps no older data, has only the categories added by hand, so it often shows none. A category can be wrong or missing. Plugin authors
-      do not choose them, but a requested name or description can change the words they read.
+      Zotdex sorts plugins into its own categories, from words in their names and descriptions plus some fixes by hand,
+      so you can find plugins of one kind. A category can be wrong or missing, and plugin authors don't choose them.
     </p>
     <ul class="about-list" role="list" data-category-list>
       {
@@ -196,110 +113,62 @@ const offered = new Set(categoryOptions(plugins).map(({ value }) => value));
   <section class="card" id="source" data-about="source">
     <h2>Source code</h2>
     <p>
-      A lock beside a plugin's name means that the index found no source code at the top level of its repository. Each
-      day the build reads the top-level file and folder names of the repository's default branch, for each plugin that it
-      could read. The index reads no code to decide this. These names do not count as source code, in any letter case: a
-      name that starts with a dot; README, LICENSE, LICENCE, COPYING, NOTICE, CHANGELOG, or CHANGES, with or without one
-      extension; a name that ends in <code>.xpi</code>, <code>.md</code>, <code>.txt</code>, <code>.rdf</code>,
-      <code>.png</code>, <code>.jpg</code>, <code>.jpeg</code>, <code>.gif</code>, <code>.svg</code>, or <code>.webp</code>;
-      <code>update*.json</code>; and docs, doc, images, image, img, assets, screenshots, dist, build, releases, update, and
-      updates. Any other name does.
-    </p>
-    <p>
-      The plugin page shows the result as "Source code in the repository's top folder". "Yes" does not mean an open-source
-      license, and it does not mean that the XPI was built from that code. "Yes" can be wrong, because a name such as
-      <code>LICENSE-MIT</code> counts. "No" can be wrong, because the index does not look inside folders. A plugin with
-      the lock stays listed, because the index states this as a fact and does not judge plugins by it.
+      A lock means Zotdex found no obvious source code in the top folder of the plugin's repository. It only looks at
+      file and folder names, not at the code, so it can be wrong either way, and a plugin without the lock isn't always
+      open source. A plugin with the lock stays listed.
     </p>
   </section>
   <section class="card" id="paid-service" data-about="paid-service">
     <h2>Paid service</h2>
     <p>
-      A card icon beside a plugin's name means that the plugin's main use stops without paying its maker, or stops after a
-      trial, whether the payment is for credits, a membership, an activation code, or a paid plan. A maintainer reads this
-      by hand from the plugin's own text. The plugin page's Details card gives a note on what is paid for, a link to the
-      source, and the date of the read.
-    </p>
-    <p>
-      A lasting free plan with a paid upgrade gets no mark. A plugin that also works with a third party's key gets no mark.
-      A donation gets no mark. A plugin with no mark can still cost money, because the maintainer reads new plugins later
-      and does not read every page about a plugin. A marked plugin stays listed, because the index states this as a fact
-      and does not judge plugins by it. An author can open an issue to correct it.
+      A card icon means the plugin's main use stops unless you pay its maker, or stops after a trial. A maintainer checks
+      this by hand. A free plan with paid extras, a plugin that also works with another service's key, or a donation gets
+      no mark. A plugin with no mark can still cost money, because new plugins get checked later.
     </p>
   </section>
   <section class="card" id="removing" data-about="removing">
     <h2>Removing a plugin</h2>
     <p>
-      A maintainer removes a plugin from the index for any of four reasons: its repository's owner asks, it is spam, its
-      entry misleads people about what the plugin is or who makes it, or a report shows harm with evidence that a reader
-      can check. A claim with no evidence removes nothing. To ask, use the{" "}
+      A maintainer removes a plugin when its owner asks, when it's spam, when its entry misleads people about what it is
+      or who makes it, or when someone shows evidence that it causes harm. To ask, use the{" "}
       <a href={REMOVE_PLUGIN_HREF} data-remove-form>form for removing a plugin or reporting harm</a>, or the link on the
-      plugin's page. The form opens a public GitHub issue, and a maintainer answers there.
-    </p>
-    <p>
-      A removed plugin stays off the index, and the bot does not propose it again. A list names its repository and, when
-      a maintainer judges it unique, its plugin id, so a copy under a new name is covered only if it keeps a listed id. The
-      index still cannot vet plugins, and it does not review their code.
+      plugin's page. A removed plugin stays off Zotdex.
     </p>
   </section>
   <section class="card" id="installing" data-about="installing">
     <h2>Installing a plugin</h2>
     <p>
-      To install a plugin, save its .xpi file to your computer. Then, in Zotero, go to Tools → Plugins and drag the file
-      onto the Plugins window. In Firefox, right-click the download link and choose Save Link As.
+      Save the plugin's .xpi file, then in Zotero go to Tools → Plugins and drag the file onto the Plugins window. In
+      Firefox, right-click the download link and choose Save Link As.
     </p>
     <p>
-      A plugin has full access to your Zotero and your computer, so install only plugins from developers you trust.
-    </p>
-    <p>
-      A bot adds most new plugins on its own. If one of the bot's checks flags a plugin, the bot waits, and a maintainer
-      decides whether to list it. A maintainer can also add a plugin by hand or keep one out. When deciding, a maintainer
-      mainly checks whether the entry would mislead people about what the plugin is, who makes it, or who controls its
-      updates. A maintainer can compare files to spot a copy, but does not review the code. The index does not review a
-      plugin's code before listing it.
+      A plugin has full access to Zotero and your computer, and Zotdex doesn't test plugins' safety or features, so look
+      into a plugin before you trust it with your library. A bot adds most new plugins, and a maintainer steps in when
+      the bot flags one, mainly to keep out entries that mislead people about what a plugin is or who makes it.
     </p>
   </section>
   <section class="card" id="badge" data-about="badge">
     <h2>README badge</h2>
     <p>
-      Each plugin has a badge file at <code>https://zotdex.jmgirard.com/badges/&lt;id&gt;.json</code>, with the
-      plugin's id percent-encoded. The badge service shields.io draws a badge from it, labeled Zotdex. Each plugin page
-      ends with the Markdown that shows the badge in a README and links it to that page.
-    </p>
-    <p>
-      The badge says "started in Zotero" and each Zotero version whose start result for its newest tested release is
-      "started", such as "started in
-      Zotero 7 · 8 · 9". If no version started, it says "no start in tests". If the plugin has no start results, it says
-      "not start-tested". If the last build failed to read the plugin and kept no earlier facts, it says "no data". A
-      plugin that keeps earlier facts gets the badge of those facts. A start does not show that a plugin works.
-    </p>
-    <p>
-      Only a build that deploys changes a badge. Start results come from each day's build. After a day whose start tests
-      fail, a badge can name fewer versions or say "not start-tested" until a later build has results. GitHub Pages keeps
-      the badge file for up to 10 minutes, and shields.io and GitHub each keep a copy of the image for up to an hour. So a
-      change can take a few hours to show. When the index
-      removes a plugin, its badge shows an error badge from shields.io.
+      Plugin authors can add a Zotdex badge to their README. It names the Zotero versions where the plugin passed the
+      startup check, such as "started in Zotero 7 · 8 · 9". The Markdown is at the bottom of each plugin page, and a
+      change can take a few hours to show.
     </p>
   </section>
   <section class="card" id="not-vetted" data-about="not-vetted">
-    <h2>What the index does not do</h2>
+    <h2>What Zotdex doesn't do</h2>
     <p>
-      The index is unofficial: it is not affiliated with or endorsed by Zotero. It cannot vet the plugins it lists,
-      because one person maintains it and each plugin can change with any release. The start test is not a review of
-      plugin code: it shows only whether a plugin starts. The index does not endorse plugins. It does not host plugin
-      files: the download link on a plugin page goes to the author's own file, which the index does
-      not copy.
+      Zotdex is independent and unofficial, and it's not part of Zotero. It can't vet the plugins it lists, because one
+      person runs it and any plugin can change with each release. It doesn't host plugin files: download links go to each
+      author's own file.
     </p>
   </section>
   <section class="card" id="license" data-about="license">
     <h2>License</h2>
     <p>
-      The index's code is under the MIT License, except the third-party parts of the files that the license page names. The
-      Zotdex logo is the index's own drawing, under the same terms as its code. The other icons on these pages come from
-      Lucide, under the ISC License, and from Feather, under the MIT License. The facts
-      that the index gathers, its categories, and text that a maintainer wrote are under CC0 1.0. All other text keeps its
-      author's terms: plugin names and descriptions, GitHub About text, and text that an owner asked for. The{" "}
-      <a href={LICENSE_HREF} data-license-link>license page</a> gives the details.
+      Zotdex's code is under the MIT License, and its data, categories, and own text are under CC0 1.0. Names,
+      descriptions, and other text from plugin authors keep their authors' terms. The{" "}
+      <a href={LICENSE_HREF} data-license-link>license page</a> gives the details, including the exceptions.
     </p>
   </section>
 </Base>
