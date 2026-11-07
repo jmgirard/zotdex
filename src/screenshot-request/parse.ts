@@ -25,13 +25,14 @@ const HTML_IMAGE = new RegExp(String.raw`<img((?:${ATTRIBUTE})*)\s*\/?>`, "gi");
 const EACH_ATTRIBUTE = /\s+([^\s"'>\/=]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+)))?/g;
 
 // The field's text without what the issue page shows as no image: HTML comments, which run to
-// the end when one is not closed, code fences, code spans, and lines indented as code.
+// the end when one is not closed, code fences, and code spans. An indented code block stays,
+// since telling it from an indented list item needs a full Markdown parse; the preview copy is
+// what the maintainer looks at either way.
 function shownText(text: string): string {
   return text
     .replace(/<!--[\s\S]*?(?:-->|$)/g, " ")
     .replace(/^ {0,3}(`{3,}|~{3,})[^\n]*\n[\s\S]*?(?:^ {0,3}\1[`~]* *$|(?![\s\S]))/gm, " ")
-    .replace(/(`+)[\s\S]*?\1/g, " ")
-    .replace(/^(?: {4,}|\t).*$/gm, " ");
+    .replace(/(`+)[\s\S]*?\1/g, " ");
 }
 
 // The value of an <img> tag's first src attribute, as a browser takes it.

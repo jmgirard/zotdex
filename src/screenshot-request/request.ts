@@ -37,7 +37,8 @@ export interface ScreenshotOptions extends IssueOptions {
   previewDir?: string;
 }
 
-// The preview file of one issue's copy, which each run replaces or, with no copy, removes.
+// The preview file of one issue's copy. A run on an add or replace request that gets past the
+// download replaces it, or removes it when there is no copy. A removal and a failure leave it.
 export const previewPath = (dir: string, issue: number) => join(dir, `zotdex-screenshot-${issue}.webp`);
 
 // A rule that the request breaks, found while checking the link or reading the image.

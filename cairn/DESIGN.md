@@ -683,7 +683,7 @@ user reports. The exception is a report that is abuse.
   redirects), makes the WebP copy in the report and writes it to
   `zotdex-screenshot-<issue>.webp` in the system temporary folder for the
   maintainer to look at, since the issue page can show another image than the
-  link `imageLinks` reads (it skips comments, code, and a `src` inside another
+  link `imageLinks` reads (it skips comments, code fences and spans, and a `src` inside another
   attribute), and with `--apply` writes the
   copy and `index.json`'s `screenshot`, or removes both, re-reading
   `index.json` just before it writes. The exit statuses are `pnpm

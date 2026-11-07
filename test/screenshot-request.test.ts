@@ -76,9 +76,12 @@ describe("parseScreenshotRequest and imageLinks", () => {
     ["a code span", `\`![a](${S3})\``],
     ["a backtick fence", `\`\`\`\n<img src="${S3}">\n\`\`\``],
     ["a tilde fence", `~~~html\n<img src="${S3}">\n~~~`],
-    ["an indented code line", `text\n\n    <img src="${S3}">`],
   ])("counts no image in %s, which the page does not show as one", (_name, hidden) => {
     expect(imageLinks(`${attached()}\n${hidden}`)).toEqual([LINK]);
+  });
+
+  test("counts an image in an indented list item, which the page shows", () => {
+    expect(imageLinks(`- item\n\n    ${attached()}`)).toEqual([LINK]);
   });
 
   test("finds no image in a plain link or in text", () => {

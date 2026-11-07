@@ -1,6 +1,6 @@
 # M114: Let a plugin's owner add a screenshot
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** normal
 - **Depends on:** M113
 - **Driving RR:** —
@@ -137,6 +137,8 @@ check text requests at once" holds the same idea for text; icons → M113.
 - 2026-11-07: review return 2: the image the command applies can differ from the one the issue page shows — `imageLinks` takes a ` src=` inside another attribute's value and counts images in HTML comments and code spans, and the report gives the maintainer no copy to look at, so D-081's look can be bypassed; the pass-2 fix-now findings (Review section, pass 2) ride on the same return.
 - 2026-11-07: added T9 for review return 2 (minor amendment; Coverage AC2, AC3, AC8 → T9).
 - 2026-11-07: T9: `imageLinks` reads only an `<img>` tag's own `src` attribute (attributes parsed one by one) and skips HTML comments (to the end when open), code fences, code spans, and indented code lines; the report writes the copy to `zotdex-screenshot-<issue>.webp` in the system temporary folder (`previewDir` option) and prints `preview:`, removing an earlier preview when there is no copy; docs tell the maintainer to look at the preview, not the issue page, and to match the apply run's SHA-256; a removal with `--file` is failure `file-with-removal`; `downloader` checks each URL once; check flags a leftover `screenshot.webp.tmp` and drops the unreachable format branch; request reads a missing size as 0; tests for smuggled and hidden links, the preview, metadata failure, index.json write failure, the first-URL check, and the leftover; repeated and absence-only tests removed; propose's fallback names the screenshot; docs/maintaining.md replace lines fixed; full `pnpm test` 2649 passed, 6 skipped, `pnpm check` clean.
+- 2026-11-07: claim audit: 24 claims read, 2 corrected — src/screenshot-request/parse.ts, src/screenshot-request/request.ts (fresh Opus reader over ae24e9e5..fdb67577); it showed that dropping every line indented four spaces also dropped images the page shows in list items, so `shownText` no longer drops indented lines (the preview covers indented code), with a list-item test and the docs and DESIGN wording narrowed to comments, code fences, and code spans; full `pnpm test` 2649 passed, 6 skipped, `pnpm check` clean.
+- 2026-11-07: implement done after review return 2; status review.
 
 ## Review
 

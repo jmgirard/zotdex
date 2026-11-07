@@ -249,7 +249,8 @@ hosts and limits:
 
 - The Screenshot field holds one image link. An image link is a Markdown
   image or the `src` attribute of an `<img>` element, which GitHub writes for
-  an attached image. An image in an HTML comment or in code does not count.
+  an attached image. An image in an HTML comment, a code span, or a fenced
+  code block does not count.
 - The link and each redirect use HTTPS and stay on the hosts in
   `SCREENSHOT_HOSTS`. GitHub's attachment links are on `github.com` and
   redirect to its file host. A link of any other scheme, such as `data:` or
