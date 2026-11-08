@@ -1,0 +1,8 @@
+{
+  "id": "zotero-centers@mapengsen.github.io",
+  "name": "zotero-centers",
+  "description": "全局搜索、短标题/其他/笔记行内编辑、同标题批量合并、文库与目录计数和首列 Index，一次安装全部使用。",
+  "homepage": "https://github.com/mapengsen/zotero-centers",
+  "repoUrl": "https://github.com/mapengsen/zotero-centers",
+  "updateUrl": "https://github.com/mapengsen/zotero-centers/releases/latest/download/updates.json"
+}
