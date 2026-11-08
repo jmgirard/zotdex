@@ -121,3 +121,8 @@ question set; the first real check is a run on main after the merge.
 - 2026-11-07: plan chose a separate `scan-issues` job over `issues: write` on the site job, because the site job writes what deploys and should hold no write to GitHub; falsified by a run where the extra job's start time delays the deploy.
 - 2026-11-07: plan chose reporting every unreported find each run over only the run's new results, because a find past the cap or after a failed create would never get an issue; falsified by a run that opens issues for finds the maintainer meant to ignore without closing them.
 - 2026-11-07: criteria audit (full mode, fresh Opus reader) returned 12 findings, all taken: (1) every value from the results in a code span and the signature hashed in the marker, with `-->` and `@name` tests; (2) finds follow `addScanResults`, two results for one id tested; (3) the cap counts only new issues and names the ids left, which the every-run reading then reports later; (4) marker tests for another file, another signature, mid-body, and a null body; (5) a label read answering 500 tested; (6) a failed read opens nothing; (7) `--expect` as 64 hex digits, AC1 mapped to T1 and T2; (8) `issues: write` only, the digest check before the command; (10) version and signature text tests; (11) no request with no find, and the branch run dropped; (12) D-084 annotates D-062 and D-082. The answers then added the assignee and the every-run reading.
+- 2026-11-07: checkpoint (`59f235d5`): plan drafted after the first audit and the answers; the changed criteria's re-audit is still running, so the plan commit comes after it. That checkpoint lacked the empty `## Decisions` and `## Review` sections; this restores them.
+
+## Decisions
+
+## Review
