@@ -1,0 +1,8 @@
+{
+  "id": "menuhider@jikuixie.local",
+  "name": "Hide Manage",
+  "description": "Take back control of Zotero's menus: keep native items, manage everything third-party plugins inject.",
+  "homepage": "https://github.com/ActiveSky/zotero-hide-manage",
+  "repoUrl": "https://github.com/ActiveSky/zotero-hide-manage",
+  "updateUrl": "https://raw.githubusercontent.com/ActiveSky/zotero-hide-manage/main/update.json"
+}
