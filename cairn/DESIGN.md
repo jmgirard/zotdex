@@ -759,7 +759,10 @@ user reports. The exception is a report that is abuse.
   whose marker line (hashes of the id and the signature, and the file's
   SHA-256) no such issue holds, at most `SCAN_ISSUES_MAX` (5) a run, with
   every value in a code span; it sends no request with no find, skips a
-  find whose create answers 422, and exits 0 on any GitHub failure.
+  find whose create answers 422, stops at a created issue that lacks the
+  label, and exits 0 on any GitHub failure. A deleted issue, a removed
+  label, or an edited marker lets a later run open the issue again. The
+  `scan-issues` job holds one concurrency group for every branch.
 
 ## Conventions
 
@@ -1414,8 +1417,9 @@ reused._
   replace its `scan-results` artifact after the upload. The site job then
   adds no new result that run, and the scan-issues job opens no issue for
   it, so a plugin can keep its own new find off its page and out of the
-  issues (M117). Running the scan job after the start tests would close this at the
-  cost of a later Monday deploy (M115, D-082). Accepted at the M115 gate
+  issues until the next scan run (M117). Running the scan job after the start
+  tests would close this at the cost of a later Monday deploy (M115, D-082,
+  D-084). Accepted at the M115 gate, the issues clause at the M117 gate
 - A `clamscan` batch stopped at its 10-minute limit gives no result to the
   files whose lines it had not printed (corrected M116: before M116 one
   stopped run gave no file a result). On 2026-11-07 four batches of 185 or

@@ -280,7 +280,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     # One group for every branch, so two runs never list the issues at the same time and both open
-    # one for the same find. A waiting run starts after the running one ends.
+    # one for the same find. A newer waiting job replaces an older one, which loses nothing, since
+    # each run reports every find the published data holds. Unlike the workflow's own group, this
+    # one makes a run on another branch wait for main's job, for at most its 10 minutes.
     concurrency:
       group: scan-issues
       cancel-in-progress: false

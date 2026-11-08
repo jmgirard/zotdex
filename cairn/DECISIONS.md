@@ -1352,7 +1352,10 @@ of the plugin id, the file's SHA-256, and a hash of the signature name, and
 the job matches it as a whole line in every `malware-scan` issue, open or
 closed. The job reports every find in the published data each run, so a
 find whose issue failed to open gets another try the next day. It opens at
-most 5 issues a run and names the rest in a warning.
+most 5 issues a run and names the rest in a warning. The job takes one
+concurrency group for every branch, so two runs cannot both open an issue
+for the same find, and a run on another branch can wait up to the job's 10
+minutes for main's.
 
 The job holds only `issues: write`, and no other job waits on it, so a
 GitHub failure warns and never stops the deploy (D-024). The plan rejected
@@ -1360,8 +1363,9 @@ giving the site job `issues: write`, since that job also holds the deploy
 artifact, and opening issues only for results new in that run, since a
 failed run would then lose the find. A forged find, from a file that takes
 over ClamAV, can still reach an issue. Plugin code in a start-test job can
-only withhold a run's results, as under D-082, which delays an issue by a
-day. Every value from the data goes into the body inside a code span, so
+only withhold a run's results, as under D-082, which delays the find's
+issue until the next scan run, about a week. Every value from the data
+goes into the body inside a code span, so
 a forged value cannot add links, mentions, or a marker. A maintainer still
 handles a find as a report of harm under D-062.
 

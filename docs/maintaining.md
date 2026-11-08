@@ -1032,10 +1032,11 @@ find. A later run also tries again a find whose issue GitHub refused, and a
 find that a failed request kept the run from trying. If GitHub opens an
 issue without the label, the command warns and opens no more that run. The
 job runs in one concurrency group for every branch, so two runs never open
-the same issue. With no find, the
+the same issue. A newer waiting job replaces an older one, and it reports
+the same finds. With no find, the
 command sends no request to GitHub. A failed GitHub read or write prints one
 warning line, and the command exits 0. It exits with status 1 for a usage
-error, an unset `GITHUB_REPOSITORY`, or a data file that it cannot read. It
+error, an unset or empty `GITHUB_REPOSITORY`, or a data file that it cannot read. It
 opens issues in the repository that `GITHUB_REPOSITORY`
 names, with `GITHUB_TOKEN`.
 
