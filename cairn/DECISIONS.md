@@ -1338,3 +1338,38 @@ and service, and many small batches in a pool, since each `clamscan` loads
 the whole signature set. This choice is wrong if a measured run shows the
 signature load taking most of a batch's 10 minutes, or one batch stopped
 while the others end early.
+
+### D-084: The daily build opens a GitHub issue for each malware scan find, annotating D-062 and D-082
+
+2026-11-07, M117 plan. Under D-082 a find showed only on the page and as a
+warning in the build log, which no one reads on a good day. A new
+`scan-issues` job in the daily build now opens one GitHub issue labeled
+`malware-scan` for each find, assigned to the repository's owner. At the
+plan question set the user chose one issue per file and signature, never
+opened again for that pair even after the issue is closed, over one per
+version or one per run. A hidden marker line in the issue body holds a hash
+of the plugin id, the file's SHA-256, and a hash of the signature name, and
+the job matches it as a whole line in every `malware-scan` issue, open or
+closed. The job reports every find in the published data each run, so a
+find whose issue failed to open gets another try the next day. It opens at
+most 5 issues a run and names the rest in a warning. The job takes one
+concurrency group for every branch, so two runs cannot both open an issue
+for the same find, and a run on another branch can wait up to the job's 10
+minutes for main's.
+
+The job holds only `issues: write`, and no other job waits on it, so a
+GitHub failure warns and never stops the deploy (D-024). The plan rejected
+giving the site job `issues: write`, since that job also holds the deploy
+artifact, and opening issues only for results new in that run, since a
+failed run would then lose the find. A forged find, from a file that takes
+over ClamAV, can still reach an issue. Plugin code in a start-test job can
+only withhold a run's results, as under D-082, which delays the find's
+issue until the next scan run, about a week. Every value from the data
+goes into the body inside a code span, so
+a forged value cannot add links, mentions, or a marker. A maintainer still
+handles a find as a report of harm under D-062.
+
+The user expects finds to be rare: "if we start getting a lot of false
+positives, will need to adjust the plan". This choice is wrong if
+false-positive issues come often, or if the cap of 5 leaves real finds
+waiting for days.

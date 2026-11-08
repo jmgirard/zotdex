@@ -194,8 +194,8 @@ jobs:
   # signature set often and this run keeps no cache (D-010). On other runs it downloads
   # nothing, and the results that the build job carried stay. ClamAV reads plugin files, which
   # are untrusted bytes, so this job holds no token permission, reads no secret, keeps no git
-  # credentials, and uses no cache, and the site job reads its results only when they match the
-  # SHA-256 this job gives as an output.
+  # credentials, and uses no cache, and the site and scan-issues jobs read its results only when
+  # they match the SHA-256 this job gives as an output.
   malware-scan:
     needs: build
     runs-on: ubuntu-latest
@@ -259,14 +259,65 @@ jobs:
         run: echo "sha256=$(sha256sum "$RUNNER_TEMP/scan/scan-results.json" | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
       # Plugin code in a start-test job, which runs at the same time, can upload an artifact named
       # `scan-results` first, so this upload replaces any artifact of that name. Code that
-      # replaces it again after this upload only withholds this run's results, since the site job
-      # adds none whose SHA-256 is not this job's output.
+      # replaces it again after this upload only withholds this run's results, since the site and
+      # scan-issues jobs take none whose SHA-256 is not this job's output.
       - uses: actions/upload-artifact@v7
         with:
           name: scan-results
           path: ${{ runner.temp }}/scan/scan-results.json
           if-no-files-found: error
           overwrite: true
+
+  # Opens a GitHub issue, assigned to the repository's owner, for each malware scan find that no
+  # issue labeled malware-scan names yet, at most 5 a run (M117, D-084). It runs even when the
+  # scan job failed, so the published finds still count, and no job waits on it, so it never
+  # holds back a deploy. It runs no plugin code. Plugin code in a start-test job can replace
+  # the artifacts it reads, so it checks the data against the build job's digest and uses only
+  # scan results whose SHA-256 is the scan job's output.
+  scan-issues:
+    needs: [build, malware-scan]
+    if: ${{ !cancelled() && needs.build.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # One group for every branch, so two runs never list the issues at the same time and both open
+    # one for the same find. A newer waiting job replaces an older one, which loses nothing, since
+    # each run reports every find the published data holds. Unlike the workflow's own group, this
+    # one makes a run on another branch wait for main's job, for at most its 10 minutes.
+    concurrency:
+      group: scan-issues
+      cancel-in-progress: false
+    permissions:
+      issues: write
+    cache-mode: none
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@v8
+        with:
+          name: plugins-data
+          path: dist
+      - env:
+          DATA_SHA256: ${{ needs.build.outputs.data-sha256 }}
+        run: pnpm --silent data-digest --dir dist --expect "$DATA_SHA256"
+      - uses: actions/download-artifact@v8
+        continue-on-error: true
+        with:
+          name: scan-results
+          path: ${{ runner.temp }}/scan
+      # GitHub sets GITHUB_REPOSITORY in every step, and pnpm scan-issues opens the issues there.
+      - env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SCAN_SHA256: ${{ needs.malware-scan.outputs.scan-sha256 }}
+          ASSIGNEE: ${{ github.repository_owner }}
+        run: >-
+          pnpm scan-issues --data dist/v1/plugins.json --results "$RUNNER_TEMP/scan/scan-results.json"
+          --expect "$SCAN_SHA256" --assignee "$ASSIGNEE"
 
   # Adds the start and scan results to the data and builds the site. It runs once the build job
   # succeeded, whatever the start-test and malware-scan jobs' results, so a failed start test or

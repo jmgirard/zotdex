@@ -10,7 +10,9 @@
   in up to 4 `clamscan` batches at the same time. A batch stopped at its
   10-minute limit keeps the results it printed. Between scans it keeps the
   published result for an unchanged file. A find hides
-  nothing, and it shows as a warning on the workflow run. The data's
+  nothing. It shows as a warning on the workflow run. The build also
+  opens a GitHub issue for it, labeled `malware-scan` and assigned to
+  the repository's owner. It opens at most 5 such issues a run. The data's
   records gain an optional `malwareScan` field, so the v1 schema changed.
   Fetch any saved copy of it again. The footer, the install note, and About
   now name the scan, and About says that a clean scan doesn't mean a plugin

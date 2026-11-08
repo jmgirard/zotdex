@@ -753,7 +753,16 @@ user reports. The exception is a report that is abuse.
   `pnpm add-scan-results --data --results
   --expect` (`addScanResults`, `findLines` in `add-results.ts`) adds results
   only from a file whose SHA-256 equals `--expect`, and prints a
-  `::warning::` line for each find.
+  `::warning::` line for each find. `pnpm scan-issues --data --results
+  --expect [--assignee]` (`findsOf`, `reportFinds` in `scan-issues.ts`,
+  M117, D-084) opens a GitHub issue labeled `malware-scan` for each find
+  whose marker line (hashes of the id and the signature, and the file's
+  SHA-256) no such issue holds, at most `SCAN_ISSUES_MAX` (5) a run, with
+  every value in a code span; it sends no request with no find, skips a
+  find whose create answers 422, stops at a created issue that lacks the
+  label, and exits 0 on any GitHub failure. A deleted issue, a removed
+  label, or an edited marker lets a later run open the issue again. The
+  `scan-issues` job holds one concurrency group for every branch.
 
 ## Conventions
 
@@ -1109,8 +1118,10 @@ reused._
   for that read, and `test/workflows.test.ts` checks both (M021). The reader
   marks a failure build-level beside its name, and `buildData` returns the
   marked ids outside the data, so the published file keeps its shape
-  (D-011); since M100 a kept record holds its failure in `kept` (D-066). Since M047 the workflow has had four jobs, and since M115 it has
-  five, with the `malware-scan` job. The build job runs
+  (D-011); since M100 a kept record holds its failure in `kept` (D-066). Since M047 the workflow has had four jobs, since M115
+  five, with the `malware-scan` job, and since M117 six, with the
+  `scan-issues` job, which holds only `issues: write`, runs whatever the
+  scan job's result, and is in no job's `needs`. The build job runs
   `pnpm build --plan start-plan.json`, with `--previous` since M100, then since M059 `pnpm
   carry-start-results` on the plan, then since M115 `pnpm carry-scan-results`
   on the data, gives the plan's SHA-256 as the job
@@ -1147,14 +1158,15 @@ reused._
   with a failed earlier job is skipped by default, so a failed start test
   or scan still deploys. A failed build deploys nothing, and the
   `github-pages` environment takes deploys from `main` only (M006).
-  The build, start-test, and site jobs of `build.yml` restore no Actions
-  cache (M047). The build job's rule came first: the job sets
+  The build, start-test, malware-scan, scan-issues, and site jobs of
+  `build.yml` restore no Actions cache (M047, M115, M117). The build job's rule came first: the job sets
   `cache-mode: none`, which GitHub enforces with the job's cache token, and no
   step sets a `cache` input (D-010). Scheduled and dispatched runs of the
   discover read job can save caches in the default branch's scope, while
   `issues` runs get read-only cache access. `test/workflows.test.ts` fails on a
   `cache` key or an `actions/cache` step in `build.yml`, or on a build,
-  start-test, or site job without `cache-mode: none` (M047); `ci.yml` keeps
+  start-test, malware-scan, scan-issues, or site job without
+  `cache-mode: none` (M047); `ci.yml` keeps
   `cache: pnpm` (M016). It also checks `report-issue.yml`: its triggers,
   job condition, permissions,
   `cache-mode: none`, no cache line, its concurrency groups, the issue number
@@ -1403,9 +1415,11 @@ reused._
   next scan run (M115, D-082). Accepted at the M115 gate
 - Plugin code in a start-test job runs beside the malware-scan job and can
   replace its `scan-results` artifact after the upload. The site job then
-  adds no new result that run, so a plugin can keep its own new find off its
-  page. Running the scan job after the start tests would close this at the
-  cost of a later Monday deploy (M115, D-082). Accepted at the M115 gate
+  adds no new result that run, and the scan-issues job opens no issue for
+  it, so a plugin can keep its own new find off its page and out of the
+  issues until the next scan run (M117). Running the scan job after the start
+  tests would close this at the cost of a later Monday deploy (M115, D-082,
+  D-084). Accepted at the M115 gate, the issues clause at the M117 gate
 - A `clamscan` batch stopped at its 10-minute limit gives no result to the
   files whose lines it had not printed (corrected M116: before M116 one
   stopped run gave no file a result). On 2026-11-07 four batches of 185 or

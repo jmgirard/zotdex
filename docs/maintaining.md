@@ -950,7 +950,7 @@ day, start the workflow on `main` with the `malware-scan` input:
 gh workflow run build.yml --ref main -f malware-scan=true
 ```
 
-Three commands do the work. In the build job, this command keeps the
+Four commands do the work. In the build job, this command keeps the
 published result of each record whose file's SHA-256 is unchanged:
 
 ```bash
@@ -1008,6 +1008,39 @@ A flagged file stays listed, and its page shows the find. Handle a find as
 a report of harm, as "Removing a plugin" in [requests.md](requests.md)
 says: look at the signature and the plugin's source before you decide. A
 flag on a large JavaScript bundle can be a false alarm.
+
+Each find also opens a GitHub issue, so you hear of it without reading the
+run's warnings. In the `scan-issues` job of the daily build, this command
+opens them:
+
+```bash
+pnpm scan-issues --data <file> --results <file> --expect <sha256> [--assignee <login>]
+```
+
+It takes the finds of the data after it adds the results file, as
+`pnpm add-scan-results` does. For each find, it opens one issue, with the
+label `malware-scan` and assigned to the `--assignee` login. The
+`scan-issues` job sets that login to the repository's owner. A hidden marker
+line at the end of the issue names the plugin, the file's SHA-256, and the
+signature, each as a SHA-256 or hex. A find whose marker line any issue
+with that label holds, open or closed, gets no new issue. So closing an
+issue as a false alarm keeps it closed, and a new release or a new signature
+opens a new issue. If you delete the issue, remove its label, or edit its
+marker line, the next run opens the issue again. A run opens at most 5 issues. A find past that limit
+gets its issue on a later run, while the published data still holds that
+find. A later run also tries again a find whose issue GitHub refused, and a
+find that a failed request kept the run from trying. If GitHub opens an
+issue without the label, the command warns and opens no more that run. The
+next run cannot see that issue, so it opens another one each day until you
+fix the label. The
+job runs in one concurrency group for every branch, so two runs never open
+the same issue. A newer waiting job replaces an older one, and it reports
+the same finds. With no find, the
+command sends no request to GitHub. A failed GitHub read or write prints one
+warning line, and the command exits 0. It exits with status 1 for a usage
+error, an unset or empty `GITHUB_REPOSITORY`, or a data file that it cannot read. It
+opens issues in the repository that `GITHUB_REPOSITORY`
+names, with `GITHUB_TOKEN`.
 
 ClamAV's `freshclam` can refuse a download from a cloud host such as a
 GitHub runner. The job then scans nothing that week, and the kept results
@@ -1082,7 +1115,7 @@ of descriptions.
 ## The daily build
 
 The `Build data` workflow runs once a day, and you can also start it by
-hand. It has five jobs:
+hand. It has six jobs:
 
 1. The build job runs `pnpm check` and `pnpm build --plan start-plan.json`.
    It gives `pnpm build` the published data's address as `--previous`, so a
@@ -1106,7 +1139,12 @@ hand. It has five jobs:
    as an artifact named `scan-results`, and gives their SHA-256 as a job
    output. The job has no token permission, reads no secret, keeps no git
    credentials, and uses no cache, since ClamAV reads plugin files in it.
-4. The site job checks the downloaded data with
+4. The scan-issues job checks the downloaded data the same way and runs
+   `pnpm scan-issues` with the scan results, as "Scanning plugins with
+   ClamAV" says. It holds only the `issues: write` permission. It runs when
+   the build job succeeded, whatever the malware-scan job's result, and no
+   job waits on it.
+5. The site job checks the downloaded data with
    `pnpm data-digest --dir dist --expect`, and the start plan against its
    SHA-256, each against the value that the build job gives as a job
    output. Plugin code in a start-test job can upload artifacts. If that
@@ -1115,12 +1153,14 @@ hand. It has five jobs:
    `pnpm add-start-results`, `pnpm add-scan-results`, and `pnpm site`. It
    runs when the build job succeeded, whatever the start-test and
    malware-scan jobs' results.
-5. If the site job succeeded, the deploy job deploys `dist/` to GitHub
-   Pages, whatever the start-test and malware-scan jobs' results.
+6. If the site job succeeded, the deploy job deploys `dist/` to GitHub
+   Pages, whatever the start-test, malware-scan, and scan-issues jobs'
+   results.
 
 If `pnpm build`, `pnpm add-start-results`, `pnpm add-scan-results`, or
 `pnpm site` exits with status 1, the workflow deploys nothing. If the
-downloaded data or the start plan fails its check, the workflow also deploys nothing. So does an
+site job's downloaded data or start plan fails its check, the workflow
+also deploys nothing. So does an
 exit status of 1 from `pnpm carry-start-results`, which it gives only for
 a usage error. The site and data from the last good build then stay
 published.

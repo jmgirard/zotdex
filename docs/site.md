@@ -294,7 +294,8 @@ result, which "Using the data" in [data.md](data.md#using-the-data)
 describes. It shows it only when the result names the file of the release
 on the page.
 A new release reads "Not scanned yet" until the next scan run. A find hides
-nothing on the page. Its last
+nothing on the page, and it opens a GitHub issue for the maintainer. Its
+last
 fact is "Languages". That fact names the
 languages of the `languages` list that "Using the data" in
 [data.md](data.md#using-the-data) describes, which
