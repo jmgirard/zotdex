@@ -122,6 +122,10 @@ describe("the issue text", () => {
     expect(lines.filter((line) => line.includes("<!--"))).toHaveLength(1);
   });
 
+  test("names an empty version as unknown", () => {
+    expect(bodyOf(find("a", SIG, ""))).toContain("- Version: ` unknown `");
+  });
+
   test("cuts a value to 200 characters", () => {
     expect(codeSpan("v".repeat(300))).toBe(`\` ${"v".repeat(200)} \``);
   });
