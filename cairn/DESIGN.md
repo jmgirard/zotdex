@@ -753,7 +753,13 @@ user reports. The exception is a report that is abuse.
   `pnpm add-scan-results --data --results
   --expect` (`addScanResults`, `findLines` in `add-results.ts`) adds results
   only from a file whose SHA-256 equals `--expect`, and prints a
-  `::warning::` line for each find.
+  `::warning::` line for each find. `pnpm scan-issues --data --results
+  --expect [--assignee]` (`findsOf`, `reportFinds` in `scan-issues.ts`,
+  M117, D-084) opens a GitHub issue labeled `malware-scan` for each find
+  whose marker line (hashes of the id and the signature, and the file's
+  SHA-256) no such issue holds, at most `SCAN_ISSUES_MAX` (5) a run, with
+  every value in a code span; it sends no request with no find, skips a
+  find whose create answers 422, and exits 0 on any GitHub failure.
 
 ## Conventions
 
@@ -1109,8 +1115,10 @@ reused._
   for that read, and `test/workflows.test.ts` checks both (M021). The reader
   marks a failure build-level beside its name, and `buildData` returns the
   marked ids outside the data, so the published file keeps its shape
-  (D-011); since M100 a kept record holds its failure in `kept` (D-066). Since M047 the workflow has had four jobs, and since M115 it has
-  five, with the `malware-scan` job. The build job runs
+  (D-011); since M100 a kept record holds its failure in `kept` (D-066). Since M047 the workflow has had four jobs, since M115
+  five, with the `malware-scan` job, and since M117 six, with the
+  `scan-issues` job, which holds only `issues: write`, runs whatever the
+  scan job's result, and is in no job's `needs`. The build job runs
   `pnpm build --plan start-plan.json`, with `--previous` since M100, then since M059 `pnpm
   carry-start-results` on the plan, then since M115 `pnpm carry-scan-results`
   on the data, gives the plan's SHA-256 as the job

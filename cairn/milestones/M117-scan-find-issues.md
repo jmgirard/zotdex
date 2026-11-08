@@ -113,7 +113,7 @@ question set; the first real check is a run on main after the merge.
 - [x] T3: Add the `scan-issues` job to `build.yml`, with
       `GITHUB_REPOSITORY_OWNER` as the assignee, and its tests in
       `test/workflows.test.ts`, the job in the cache-mode list.
-- [ ] T4: Update `docs/maintaining.md`, `docs/data.md`, `docs/site.md`,
+- [x] T4: Update `docs/maintaining.md`, `docs/data.md`, `docs/site.md`,
       DESIGN's Function Families entry, D-084, and CHANGELOG.
 
 ## Work log
@@ -134,6 +134,7 @@ question set; the first real check is a run on main after the merge.
 - 2026-11-07: implement started on branch `m117-scan-find-issues` (cut from `eb605d70`); `.claude/` is an unrelated untracked folder, left unstaged.
 - 2026-11-07: T1–T2 done in one commit, since the finds, the text, and the GitHub calls share one module: `src/malware-scan/scan-issues.ts` (`findsOf`, `markerOf`, `holdsMarker`, `codeSpan`, `titleOf`, `bodyOf`, `reportFinds`, `SCAN_ISSUES_MAX`, `SCAN_ISSUE_LABEL`), `scan-issues-cli.ts` (`pnpm scan-issues`, the repo from `GITHUB_REPOSITORY`), and `test/scan-issues.test.ts`, 37 tests. A shared change: `githubClient`'s writes now throw a `ReadFailure` carrying the HTTP status, as its reads already did, so a 422 can be told apart. Choices: the page link uses `ORIGIN` and `BASE` from `site/src/base.ts`; the label's color and description are fixed; the body ends with a note that ClamAV can flag in error and points to "Removing a plugin"; the CLI exits 1 only for a usage error, a missing `GITHUB_REPOSITORY`, or unreadable data. Planted defects (a substring marker match, no 422 skip, no cap, a one-backtick fence) turned 1, 1, 1, and 3 tests red. `pnpm test` 2751 passed, `pnpm check` 0 problems.
 - 2026-11-07: T3 done: the `scan-issues` job in `build.yml` (8 steps; the token, the scan job's SHA-256, and `github.repository_owner` passed through `env`), and 3 more tests in `test/workflows.test.ts` with the job in the cache-mode list. Choice: the assignee goes through an `ASSIGNEE` variable rather than an expression in the run line. Planted defects (no `if:`, the site job waiting on `scan-issues`) turned 3 tests red; the file parses with `yaml` 2.9.1.
+- 2026-11-07: T4 done: `docs/maintaining.md` (the command, label, assignee, marker, cap, later runs, and the job as item 4 of six), one sentence each in `docs/data.md` and `docs/site.md`, DESIGN's Function Families entry and daily-build text, D-084, and a CHANGELOG line. `pnpm test` 2755 passed, `pnpm check` 0 problems.
 
 ## Decisions
 

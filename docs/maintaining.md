@@ -1009,6 +1009,28 @@ a report of harm, as "Removing a plugin" in [requests.md](requests.md)
 says: look at the signature and the plugin's source before you decide. A
 flag on a large JavaScript bundle can be a false alarm.
 
+Each find also opens a GitHub issue, so you hear of it without reading the
+run's warnings. In the `scan-issues` job of the daily build, this command
+opens them:
+
+```bash
+pnpm scan-issues --data <file> --results <file> --expect <sha256> [--assignee <login>]
+```
+
+It takes the finds of the data after it adds the results file, as
+`pnpm add-scan-results` does. For each find, it opens one issue, with the
+label `malware-scan` and assigned to the repository's owner. A hidden marker
+line at the end of the issue names the plugin, the file's SHA-256, and the
+signature, each as a SHA-256 or hex. A find whose marker line any issue
+with that label holds, open or closed, gets no new issue. So closing an
+issue as a false alarm keeps it closed, and a new release or a new signature
+opens a new issue. A run opens at most 5 issues. A find past that limit
+gets its issue on a later run, while the published data still holds that
+find. So does a find whose issue GitHub refused. With no find, the command sends no
+request to GitHub. A failed read or write prints one warning line, and the
+command exits 0. It opens issues in the repository that `GITHUB_REPOSITORY`
+names, with `GITHUB_TOKEN`.
+
 ClamAV's `freshclam` can refuse a download from a cloud host such as a
 GitHub runner. The job then scans nothing that week, and the kept results
 stay.
@@ -1082,7 +1104,7 @@ of descriptions.
 ## The daily build
 
 The `Build data` workflow runs once a day, and you can also start it by
-hand. It has five jobs:
+hand. It has six jobs:
 
 1. The build job runs `pnpm check` and `pnpm build --plan start-plan.json`.
    It gives `pnpm build` the published data's address as `--previous`, so a
@@ -1106,7 +1128,12 @@ hand. It has five jobs:
    as an artifact named `scan-results`, and gives their SHA-256 as a job
    output. The job has no token permission, reads no secret, keeps no git
    credentials, and uses no cache, since ClamAV reads plugin files in it.
-4. The site job checks the downloaded data with
+4. The scan-issues job checks the downloaded data the same way and runs
+   `pnpm scan-issues` with the scan results, as "Scanning plugins with
+   ClamAV" says. It holds only the `issues: write` permission. It runs when
+   the build job succeeded, whatever the malware-scan job's result, and no
+   job waits on it.
+5. The site job checks the downloaded data with
    `pnpm data-digest --dir dist --expect`, and the start plan against its
    SHA-256, each against the value that the build job gives as a job
    output. Plugin code in a start-test job can upload artifacts. If that
@@ -1115,8 +1142,9 @@ hand. It has five jobs:
    `pnpm add-start-results`, `pnpm add-scan-results`, and `pnpm site`. It
    runs when the build job succeeded, whatever the start-test and
    malware-scan jobs' results.
-5. If the site job succeeded, the deploy job deploys `dist/` to GitHub
-   Pages, whatever the start-test and malware-scan jobs' results.
+6. If the site job succeeded, the deploy job deploys `dist/` to GitHub
+   Pages, whatever the start-test, malware-scan, and scan-issues jobs'
+   results.
 
 If `pnpm build`, `pnpm add-start-results`, `pnpm add-scan-results`, or
 `pnpm site` exits with status 1, the workflow deploys nothing. If the
