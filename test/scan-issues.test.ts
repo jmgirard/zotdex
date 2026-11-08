@@ -122,6 +122,39 @@ describe("the issue text", () => {
     expect(lines.filter((line) => line.includes("<!--"))).toHaveLength(1);
   });
 
+  // Each value the body shows, set on a find.
+  const VALUES: [string, (item: Find, value: string) => void][] = [
+    ["id", (item, value) => (item.id = value)],
+    ["version", (item, value) => (item.upstream!.version = value)],
+    ["signature", (item, value) => (item.malwareScan.found = value)],
+    ["scan date", (item, value) => (item.malwareScan.scannedAt = value)],
+    ["clamav line", (item, value) => (item.malwareScan.clamav = value)],
+    ["file SHA-256", (item, value) => (item.malwareScan.xpiSha256 = value)],
+  ];
+  const HOSTILE = ["a\r\nb", "a\rb", "a\n\n# x", "`lead", "trail`", "x --> y", "@name"];
+
+  test.each(VALUES.flatMap(([name, set]) => HOSTILE.map((value) => [name, value, set] as const)))(
+    "keeps the body's lines fixed when the %s holds %j",
+    (_name, value, set) => {
+      const item = find("a");
+      set(item, value);
+      const body = bodyOf(item);
+      // The text before the marker line, which the marker's own values do not reach.
+      const text = body.slice(0, body.lastIndexOf("\n<!-- malware-scan "));
+      const lines = text.split("\n");
+      expect(lines).toHaveLength(bodyOf(find("a")).split("\n").length - 1);
+      expect(lines.filter((line) => line.includes("<!--") || line.startsWith("#"))).toEqual([]);
+      const valueLines = lines.filter((line) => line.startsWith("- "));
+      expect(valueLines).toHaveLength(6);
+      for (const line of valueLines) {
+        const span = line.slice(line.indexOf(": ") + 2).replace(/ <[^>]*>$/, "");
+        const fence = /^`+/.exec(span)![0];
+        expect(span.endsWith(` ${fence}`)).toBe(true);
+        expect(Math.max(0, ...Array.from(span.slice(fence.length, -fence.length).matchAll(/`+/g), ([run]) => run.length))).toBeLessThan(fence.length);
+      }
+    },
+  );
+
   test("names an empty version as unknown", () => {
     expect(bodyOf(find("a", SIG, ""))).toContain("- Version: ` unknown `");
   });

@@ -4,7 +4,7 @@
      cairn_validate's <150 over the plan-owned body. -->
 # M117: Open an issue for each malware scan find
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
@@ -95,7 +95,7 @@ question set; the first real check is a run on main after the merge.
 ## Coverage
 
 - AC1 → T1, T2
-- AC2 → T1, T2
+- AC2 → T1, T2, T5
 - AC3 → T2
 - AC4 → T3
 - AC5 → T4
@@ -117,6 +117,8 @@ question set; the first real check is a run on main after the merge.
       `test/workflows.test.ts`, the job in the cache-mode list.
 - [x] T4: Update `docs/maintaining.md`, `docs/data.md`, `docs/site.md`,
       DESIGN's Function Families entry, D-084, and CHANGELOG.
+- [x] T5: Test each of the six body values holding each hostile string
+      (review return 1).
 
 ## Work log
 
@@ -142,6 +144,8 @@ question set; the first real check is a run on main after the merge.
 - 2026-11-07: re-audit: AC4 (full) — the GitHub fact sat under "asserts each of these", and "it" in "No other job names it" could be misread; took the reader's wording verbatim (a reason in parentheses, `scan-issues` named). No third reader: the fix narrows and changes nothing users see.
 - 2026-11-07: claim audit (fresh Opus reader) over the non-cairn diff: 3 findings, all in the new `docs/maintaining.md` paragraph, all fixed: the assignee is the `--assignee` login, which the job sets to the owner; a refused or untried find is tried again rather than promised an issue; the exit-1 cases are named. Every other added claim held.
 - 2026-11-07: review return 1: AC2's tests set only the version and signature to the hostile strings in the body; each of the six values must be tested there (diff-bug #12).
+- 2026-11-07: T5 added for review return 1 (minor amendment).
+- 2026-11-07: T5 done: `keeps the body's lines fixed when the %s holds %j` sets each of the six values to each of 7 hostile strings (42 cases) and checks the line count, no `<!--` or `#` line before the marker, and one closed code span per value line. A raw ClamAV value turned 42 cases red. `pnpm test` 2806 passed, `pnpm check` 0 problems.
 
 ## Decisions
 
