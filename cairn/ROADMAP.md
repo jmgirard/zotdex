@@ -7,6 +7,7 @@ _Last hygiene check: 2026-11-07 (M116 review: the weekly ClamAV scan finishes in
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
+| M117 | Open an issue for each malware scan find | planned | — | high | milestones/M117-scan-find-issues.md |
 | M116 | Make the weekly malware scan finish | done | — | high | milestones/archive/M116-scan-batches.md |
 | M115 | Show a malware scan on plugin pages | done | — | normal | milestones/archive/M115-malware-scan.md |
 | M114 | Let a plugin's owner add a screenshot | done | M113 | normal | milestones/archive/M114-owner-screenshot.md |
