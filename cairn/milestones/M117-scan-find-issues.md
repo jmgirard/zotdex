@@ -41,7 +41,7 @@ question set; the first real check is a run on main after the merge.
       finds stand, with one warning line. Tests cover each such results
       file, two results for one id, a result for no record, a result for
       another `xpiSha256`, and a clean result over a carried find.
-- [ ] AC2: With no find it sends no request. Otherwise it lists the issues
+- [x] AC2: With no find it sends no request. Otherwise it lists the issues
       labeled `malware-scan` in all states and opens an issue for each find
       whose marker line `<!-- malware-scan <SHA-256 of the id> <xpiSha256>
       <SHA-256 of the signature> -->` no listed issue's body holds as a
@@ -182,3 +182,6 @@ question set; the first real check is a run on main after the merge.
 - ripple #4: DESIGN's cache-mode list named build, start-test, and site only — fix now (all five jobs), fixed 73f65bc9
 - ripple #5: `docs/maintaining.md`'s "If the downloaded data ... fails its check" named no job, and a failed check in `scan-issues` deploys anyway — fix now (the site job's), fixed 73f65bc9
 - ripple #6: the `ScanResults` comment in `scan.ts` named only `add-scan-results` as its reader — fix now, fixed 73f65bc9
+- Pass 2 (after return 1 and the fix-now commits): `pnpm test` 2806 passed, 6 skipped; `pnpm check` 0 problems; `cairn_validate.py` all checks passed; main has not moved.
+- AC2 (pass 2): `test/scan-issues.test.ts` `keeps the body's lines fixed when the %s holds %j`, 42 cases green: each of the id, version, signature, scan date, `clamav` line, and file SHA-256 holding `\r\n`, `\r`, a blank line and `#`, a leading and a trailing backtick, `-->`, and `@name` keeps the line count, adds no `<!--` or `#` line before the marker, and stays in one closed code span; the other AC2 cases stay green, the label fixtures now answering with the label.
+- AC1, AC3, AC4, AC5, AC6 (pass 2): their tests stay green in the run above; AC3's failures now include a created issue without the label, which stops the run with one warning (`stops when GitHub drops the label from a created issue`); AC4's test also asserts the job's `scan-issues` concurrency group.
