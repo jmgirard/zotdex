@@ -1428,3 +1428,7 @@ reused._
   own freshclam service also asks ClamAV's servers for signatures before the
   job stops it, a second request each scan run (M115). Accepted at the M115
   gate
+- If GitHub opens a `malware-scan` issue without its label, `pnpm scan-issues`
+  warns and stops that run, but the next run lists issues by label, finds no
+  marker, and opens another issue each day until a maintainer fixes the label
+  (M117, D-084). Accepted at the M117 gate

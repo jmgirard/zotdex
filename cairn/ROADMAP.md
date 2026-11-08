@@ -1,16 +1,15 @@
 # Roadmap
 
 _The only authority on milestone status. Grouped by status, not ID._
-_Last hygiene check: 2026-11-07 (M116 review: the weekly ClamAV scan finishes in parallel batches; 8 lessons marked used, 1 captured, M097's evicted; M113 row pruned; caps and validate green)_
+_Last hygiene check: 2026-11-07 (M117 review: the daily build opens an issue for each malware scan find; 4 lessons marked used, none captured; 1 Known issues entry added; M114 row pruned; caps and validate green)_
 
 ## Milestones
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M117 | Open an issue for each malware scan find | review | — | high | milestones/M117-scan-find-issues.md |
+| M117 | Open an issue for each malware scan find | done | — | high | milestones/archive/M117-scan-find-issues.md |
 | M116 | Make the weekly malware scan finish | done | — | high | milestones/archive/M116-scan-batches.md |
 | M115 | Show a malware scan on plugin pages | done | — | normal | milestones/archive/M115-malware-scan.md |
-| M114 | Let a plugin's owner add a screenshot | done | M113 | normal | milestones/archive/M114-owner-screenshot.md |
 <!-- rows grouped by status, not by ID; keep the 3 most recent done/dropped rows; older ones: milestones/archive/ + git -->
 
 ## Candidates
