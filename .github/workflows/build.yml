@@ -268,6 +268,50 @@ jobs:
           if-no-files-found: error
           overwrite: true
 
+  # Opens a GitHub issue, assigned to the repository's owner, for each malware scan find that no
+  # issue labeled malware-scan names yet, at most 5 a run (M117, D-084). It runs even when the
+  # scan job failed, so the published finds still count, and no job waits on it, so it never
+  # holds back a deploy. It runs no plugin code. Plugin code in a start-test job can replace
+  # the artifacts it reads, so it checks the data against the build job's digest and uses only
+  # scan results whose SHA-256 is the scan job's output.
+  scan-issues:
+    needs: [build, malware-scan]
+    if: ${{ !cancelled() && needs.build.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      issues: write
+    cache-mode: none
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@v8
+        with:
+          name: plugins-data
+          path: dist
+      - env:
+          DATA_SHA256: ${{ needs.build.outputs.data-sha256 }}
+        run: pnpm --silent data-digest --dir dist --expect "$DATA_SHA256"
+      - uses: actions/download-artifact@v8
+        continue-on-error: true
+        with:
+          name: scan-results
+          path: ${{ runner.temp }}/scan
+      # GitHub sets GITHUB_REPOSITORY in every step, and pnpm scan-issues opens the issues there.
+      - env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SCAN_SHA256: ${{ needs.malware-scan.outputs.scan-sha256 }}
+          ASSIGNEE: ${{ github.repository_owner }}
+        run: >-
+          pnpm scan-issues --data dist/v1/plugins.json --results "$RUNNER_TEMP/scan/scan-results.json"
+          --expect "$SCAN_SHA256" --assignee "$ASSIGNEE"
+
   # Adds the start and scan results to the data and builds the site. It runs once the build job
   # succeeded, whatever the start-test and malware-scan jobs' results, so a failed start test or
   # scan still deploys.

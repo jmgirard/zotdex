@@ -61,7 +61,7 @@ describe("build.yml", () => {
     expect(jobText(build, "build")).toMatch(/^ {4}permissions:\n {6}contents: read\n {6}issues: read\n {4}\S/m);
   });
 
-  test.each(["build", "start-test", "malware-scan", "site"])("sets cache-mode none on the %s job", (job) => {
+  test.each(["build", "start-test", "malware-scan", "scan-issues", "site"])("sets cache-mode none on the %s job", (job) => {
     expect(jobText(build, job)).toMatch(/^ {4}cache-mode: none$/m);
   });
 
@@ -248,6 +248,43 @@ describe("build.yml", () => {
     expect(download).toBeGreaterThan(site.indexOf("pnpm add-start-results"));
     expect(add).toBeGreaterThan(download);
     expect(site.indexOf("      - run: pnpm site\n")).toBeGreaterThan(add);
+  });
+
+  test("gives the scan-issues job issues write only, no stored git credentials, and at most 10 minutes, and runs it after a failed scan", () => {
+    const job = jobText(build, "scan-issues");
+    expect(job).toMatch(/^ {4}needs: \[build, malware-scan\]$/m);
+    expect(job).toMatch(/^ {4}if: \$\{\{ !cancelled\(\) && needs\.build\.result == 'success' \}\}$/m);
+    expect(job).toMatch(/^ {4}permissions:\n {6}issues: write\n {4}\S/m);
+    expect(job).toMatch(/- uses: actions\/checkout@v7\n {8}with:\n {10}persist-credentials: false\n/);
+    const [, minutes] = job.match(/^ {4}timeout-minutes: (\d+)$/m) ?? [];
+    expect(Number(minutes)).toBeGreaterThan(0);
+    expect(Number(minutes)).toBeLessThanOrEqual(10);
+  });
+
+  test("checks the scan-issues job's data, downloads the scan results without failing, and runs pnpm scan-issues with the scan job's SHA-256 and the owner", () => {
+    const job = jobText(build, "scan-issues");
+    const check = job.indexOf(
+      "      - env:\n          DATA_SHA256: ${{ needs.build.outputs.data-sha256 }}\n" +
+        '        run: pnpm --silent data-digest --dir dist --expect "$DATA_SHA256"\n',
+    );
+    expect(check).toBeGreaterThan(job.search(/^ {10}name: plugins-data$/m));
+    expect(job).toContain(
+      "      - uses: actions/download-artifact@v8\n        continue-on-error: true\n        with:\n          name: scan-results\n" +
+        "          path: ${{ runner.temp }}/scan\n",
+    );
+    const step =
+      "      - env:\n          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}\n          SCAN_SHA256: ${{ needs.malware-scan.outputs.scan-sha256 }}\n" +
+      "          ASSIGNEE: ${{ github.repository_owner }}\n        run: >-\n" +
+      '          pnpm scan-issues --data dist/v1/plugins.json --results "$RUNNER_TEMP/scan/scan-results.json"\n' +
+      '          --expect "$SCAN_SHA256" --assignee "$ASSIGNEE"\n';
+    expect(job.indexOf(step)).toBeGreaterThan(check);
+    expect(job.match(/^ {10}pnpm scan-issues /gm)).toHaveLength(1);
+  });
+
+  test("names the scan-issues job in no other job's needs", () => {
+    const jobs = [...build.matchAll(/^ {2}([\w-]+):\n/gm)].map(([, id]) => id).filter((id) => id !== "scan-issues");
+    expect(jobs.filter((id) => /^ {4}needs:.*scan-issues/m.test(jobText(build, id)))).toEqual([]);
+    expect(jobs).toContain("site");
   });
 
   // The github-pages environment refuses a deploy from any other branch, which failed the run.
