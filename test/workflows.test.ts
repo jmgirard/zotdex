@@ -255,6 +255,7 @@ describe("build.yml", () => {
     expect(job).toMatch(/^ {4}needs: \[build, malware-scan\]$/m);
     expect(job).toMatch(/^ {4}if: \$\{\{ !cancelled\(\) && needs\.build\.result == 'success' \}\}$/m);
     expect(job).toMatch(/^ {4}permissions:\n {6}issues: write\n {4}\S/m);
+    expect(job).toMatch(/^ {4}concurrency:\n {6}group: scan-issues\n {6}cancel-in-progress: false\n/m);
     expect(job).toMatch(/- uses: actions\/checkout@v7\n {8}with:\n {10}persist-credentials: false\n/);
     const [, minutes] = job.match(/^ {4}timeout-minutes: (\d+)$/m) ?? [];
     expect(Number(minutes)).toBeGreaterThan(0);
@@ -288,7 +289,8 @@ describe("build.yml", () => {
 
   test("names the scan-issues job in no other job's needs", () => {
     const jobs = [...build.matchAll(/^ {2}([\w-]+):\n/gm)].map(([, id]) => id).filter((id) => id !== "scan-issues");
-    expect(jobs.filter((id) => /^ {4}needs:.*scan-issues/m.test(jobText(build, id)))).toEqual([]);
+    // A flow list on the needs line, or a block list below it.
+    expect(jobs.filter((id) => /^ {4}needs:(.*\bscan-issues\b|\n(?: {6}- .*\n)*? {6}- scan-issues$)/m.test(jobText(build, id)))).toEqual([]);
     expect(jobs).toContain("site");
   });
 

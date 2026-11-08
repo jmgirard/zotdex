@@ -1155,14 +1155,15 @@ reused._
   with a failed earlier job is skipped by default, so a failed start test
   or scan still deploys. A failed build deploys nothing, and the
   `github-pages` environment takes deploys from `main` only (M006).
-  The build, start-test, and site jobs of `build.yml` restore no Actions
-  cache (M047). The build job's rule came first: the job sets
+  The build, start-test, malware-scan, scan-issues, and site jobs of
+  `build.yml` restore no Actions cache (M047, M115, M117). The build job's rule came first: the job sets
   `cache-mode: none`, which GitHub enforces with the job's cache token, and no
   step sets a `cache` input (D-010). Scheduled and dispatched runs of the
   discover read job can save caches in the default branch's scope, while
   `issues` runs get read-only cache access. `test/workflows.test.ts` fails on a
   `cache` key or an `actions/cache` step in `build.yml`, or on a build,
-  start-test, or site job without `cache-mode: none` (M047); `ci.yml` keeps
+  start-test, malware-scan, scan-issues, or site job without
+  `cache-mode: none` (M047); `ci.yml` keeps
   `cache: pnpm` (M016). It also checks `report-issue.yml`: its triggers,
   job condition, permissions,
   `cache-mode: none`, no cache line, its concurrency groups, the issue number
@@ -1411,8 +1412,9 @@ reused._
   next scan run (M115, D-082). Accepted at the M115 gate
 - Plugin code in a start-test job runs beside the malware-scan job and can
   replace its `scan-results` artifact after the upload. The site job then
-  adds no new result that run, so a plugin can keep its own new find off its
-  page. Running the scan job after the start tests would close this at the
+  adds no new result that run, and the scan-issues job opens no issue for
+  it, so a plugin can keep its own new find off its page and out of the
+  issues (M117). Running the scan job after the start tests would close this at the
   cost of a later Monday deploy (M115, D-082). Accepted at the M115 gate
 - A `clamscan` batch stopped at its 10-minute limit gives no result to the
   files whose lines it had not printed (corrected M116: before M116 one

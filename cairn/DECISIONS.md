@@ -1359,8 +1359,9 @@ GitHub failure warns and never stops the deploy (D-024). The plan rejected
 giving the site job `issues: write`, since that job also holds the deploy
 artifact, and opening issues only for results new in that run, since a
 failed run would then lose the find. A forged find, from a file that takes
-over ClamAV or from plugin code in a start-test job, can still reach an
-issue. Every value from the data goes into the body inside a code span, so
+over ClamAV, can still reach an issue. Plugin code in a start-test job can
+only withhold a run's results, as under D-082, which delays an issue by a
+day. Every value from the data goes into the body inside a code span, so
 a forged value cannot add links, mentions, or a marker. A maintainer still
 handles a find as a report of harm under D-062.
 

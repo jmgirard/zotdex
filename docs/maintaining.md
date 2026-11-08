@@ -950,7 +950,7 @@ day, start the workflow on `main` with the `malware-scan` input:
 gh workflow run build.yml --ref main -f malware-scan=true
 ```
 
-Three commands do the work. In the build job, this command keeps the
+Four commands do the work. In the build job, this command keeps the
 published result of each record whose file's SHA-256 is unchanged:
 
 ```bash
@@ -1025,10 +1025,14 @@ line at the end of the issue names the plugin, the file's SHA-256, and the
 signature, each as a SHA-256 or hex. A find whose marker line any issue
 with that label holds, open or closed, gets no new issue. So closing an
 issue as a false alarm keeps it closed, and a new release or a new signature
-opens a new issue. A run opens at most 5 issues. A find past that limit
+opens a new issue. If you delete the issue, remove its label, or edit its
+marker line, the next run opens the issue again. A run opens at most 5 issues. A find past that limit
 gets its issue on a later run, while the published data still holds that
 find. A later run also tries again a find whose issue GitHub refused, and a
-find that a failed request kept the run from trying. With no find, the
+find that a failed request kept the run from trying. If GitHub opens an
+issue without the label, the command warns and opens no more that run. The
+job runs in one concurrency group for every branch, so two runs never open
+the same issue. With no find, the
 command sends no request to GitHub. A failed GitHub read or write prints one
 warning line, and the command exits 0. It exits with status 1 for a usage
 error, an unset `GITHUB_REPOSITORY`, or a data file that it cannot read. It
@@ -1152,7 +1156,8 @@ hand. It has six jobs:
 
 If `pnpm build`, `pnpm add-start-results`, `pnpm add-scan-results`, or
 `pnpm site` exits with status 1, the workflow deploys nothing. If the
-downloaded data or the start plan fails its check, the workflow also deploys nothing. So does an
+site job's downloaded data or start plan fails its check, the workflow
+also deploys nothing. So does an
 exit status of 1 from `pnpm carry-start-results`, which it gives only for
 a usage error. The site and data from the last good build then stay
 published.

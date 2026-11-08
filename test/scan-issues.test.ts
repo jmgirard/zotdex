@@ -1,5 +1,11 @@
+import { execFile } from "node:child_process";
 import { createHash } from "node:crypto";
-import { describe, expect, test } from "vitest";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
+import process from "node:process";
+import { promisify } from "node:util";
+import { afterAll, describe, expect, test } from "vitest";
 import type { MalwareScan, PluginRecord, PluginsFile } from "../src/build/build.ts";
 import { bodyOf, codeSpan, type Find, findsOf, markerOf, reportFinds, SCAN_ISSUES_MAX, titleOf } from "../src/malware-scan/scan-issues.ts";
 import { fixtureFetch, type Recorded } from "./support/fixture-fetch.ts";
@@ -51,6 +57,9 @@ function find(id: string, signature = SIG, version = "1.0.0"): Find {
 }
 
 const resultsFile = (results: unknown[]) => `${JSON.stringify({ results })}\n`;
+
+// An issue-create answer, with the label GitHub kept.
+const created = (number: number) => ({ number, labels: [{ name: "malware-scan" }] });
 
 describe("findsOf", () => {
   const carried = data([record("a", scanOf("a", SIG)), record("b", scanOf("b"))]);
@@ -136,7 +145,7 @@ describe("reportFinds", () => {
 
   test("opens an issue for a new find, with the label, the assignee, the title, and the body", async () => {
     const item = find("a");
-    const { posts, payloads, outcome } = await run([item], { [LIST]: { json: [] }, [LABEL]: { json: {} }, [`POST ${API}/issues`]: { json: { number: 7 } } }, "owner");
+    const { posts, payloads, outcome } = await run([item], { [LIST]: { json: [] }, [LABEL]: { json: {} }, [`POST ${API}/issues`]: { json: created(7) } }, "owner");
     expect(posts.map((request) => request.url)).toEqual([`${API}/issues`]);
     expect(payloads[0]).toEqual({ title: titleOf(item), body: bodyOf(item), labels: ["malware-scan"], assignees: ["owner"] });
     expect(outcome.lines).toEqual(["opened issue #7 for a"]);
@@ -146,13 +155,14 @@ describe("reportFinds", () => {
     ["an open issue holds its marker", (marker) => ({ json: [{ state: "open", ...issueBody("Found.", marker) }] }), 0],
     ["a closed issue holds its marker", (marker) => ({ json: [{ state: "closed", ...issueBody(marker) }] }), 0],
     ["its marker sits as a whole line mid-body", (marker) => ({ json: [issueBody("a", marker, "b")] }), 0],
+    ["its marker sits between bare \\r line breaks", (marker) => ({ json: [{ body: `a\r${marker}\rb` }] }), 0],
     ["its marker sits inside a value's code span", (marker) => ({ json: [issueBody(`- Version: \` ${marker} \``)] }), 1],
     ["an issue's body is null", () => ({ json: [issueBody(null)] }), 1],
     ["the marker names the same id with another file", () => ({ json: [issueBody(markerOf(record("a", scanOf("a", SIG, "else")) as Find))] }), 1],
     ["the marker names the same id with another signature", () => ({ json: [issueBody(markerOf(find("a", "Other.Sig")))] }), 1],
   ])("opens the number of issues it should when %s", async (_name, list, count) => {
     const item = find("a");
-    const { posts } = await run([item], { [LIST]: list(markerOf(item)), [LABEL]: { json: {} }, [`POST ${API}/issues`]: { json: { number: 1 } } });
+    const { posts } = await run([item], { [LIST]: list(markerOf(item)), [LABEL]: { json: {} }, [`POST ${API}/issues`]: { json: created(1) } });
     expect(posts).toHaveLength(count);
   });
 
@@ -163,14 +173,14 @@ describe("reportFinds", () => {
   ])("opens at most 5 issues for %s and names each find left", async (_name, count, reported, left) => {
     const finds = Array.from({ length: count }, (_, i) => find(`p${i}`));
     const listed = finds.slice(0, reported).map((item) => issueBody(markerOf(item)));
-    const { posts, outcome } = await run(finds, { [LIST]: { json: listed }, [LABEL]: { json: {} }, [`POST ${API}/issues`]: { json: { number: 1 } } });
+    const { posts, outcome } = await run(finds, { [LIST]: { json: listed }, [LABEL]: { json: {} }, [`POST ${API}/issues`]: { json: created(1) } });
     expect(posts).toHaveLength(Math.min(SCAN_ISSUES_MAX, count - reported));
     const warnings = outcome.lines.filter((line) => line.startsWith("::warning::"));
     expect(warnings).toEqual(left.length ? [expect.stringMatching(new RegExp(`past the limit of 5: ${left.join(", ")}$`))] : []);
   });
 
   test("creates the label when its read answers 404, then opens the issue", async () => {
-    const { posts } = await run([find("a")], { [LIST]: { json: [] }, [LABEL]: { status: 404, json: { message: "Not Found" } }, [`POST ${API}/labels`]: { json: {} }, [`POST ${API}/issues`]: { json: { number: 1 } } });
+    const { posts } = await run([find("a")], { [LIST]: { json: [] }, [LABEL]: { status: 404, json: { message: "Not Found" } }, [`POST ${API}/labels`]: { json: {} }, [`POST ${API}/issues`]: { json: created(1) } });
     expect(posts.map((request) => request.url)).toEqual([`${API}/labels`, `${API}/issues`]);
   });
 
@@ -190,11 +200,29 @@ describe("reportFinds", () => {
       [LIST]: { json: [] },
       [LABEL]: { json: {} },
       [`POST ${API}/issues #1`]: { status: 422, json: { message: "Validation Failed" } },
-      [`POST ${API}/issues #2`]: { json: { number: 9 } },
+      [`POST ${API}/issues #2`]: { json: created(9) },
     });
     expect(posts).toHaveLength(2);
     expect(outcome.opened).toEqual(["b"]);
     expect(outcome.lines).toEqual([expect.stringMatching(/^::warning::opened no issue for a: .*HTTP 422/), "opened issue #9 for b"]);
+  });
+
+  test("stops when GitHub drops the label from a created issue", async () => {
+    const { posts, outcome } = await run([find("a"), find("b")], { [LIST]: { json: [] }, [LABEL]: { json: {} }, [`POST ${API}/issues`]: { json: { number: 4, labels: [] } } });
+    expect(posts).toHaveLength(1);
+    expect(outcome.lines).toEqual(["opened issue #4 for a", expect.stringMatching(/^::warning::stopped opening malware scan issues: issue #4 for a lacks the malware-scan label$/)]);
+  });
+
+  test("finds a marker on the second page of the issue list", async () => {
+    const item = find("a");
+    const second = `${API}/issues?labels=malware-scan&state=all&per_page=100&page=2`;
+    const { posts } = await run([item], {
+      [LIST]: { json: [issueBody("other")], headers: { link: `<${second}>; rel="next"` } },
+      [second]: { json: [issueBody(markerOf(item))] },
+      [LABEL]: { json: {} },
+      [`POST ${API}/issues`]: { json: created(1) },
+    });
+    expect(posts).toEqual([]);
   });
 
   test("stops at a create that answers 500", async () => {
@@ -202,5 +230,32 @@ describe("reportFinds", () => {
     expect(posts).toHaveLength(1);
     expect(outcome.opened).toEqual([]);
     expect(outcome.lines).toEqual([expect.stringMatching(/^::warning::stopped opening malware scan issues at a: .*HTTP 500/)]);
+  });
+});
+
+describe("pnpm scan-issues", () => {
+  const CLI = resolve(import.meta.dirname, "..", "src/malware-scan/scan-issues-cli.ts");
+  const dir = mkdtempSync(join(tmpdir(), "zpi-scan-issues-"));
+  afterAll(() => rmSync(dir, { recursive: true, force: true }));
+  const path = join(dir, "plugins.json");
+  writeFileSync(path, JSON.stringify(data([record("a", scanOf("a"))])));
+  const args = (dataPath: string) => [CLI, "--data", dataPath, "--results", join(dir, "missing.json"), "--expect", "0".repeat(64)];
+  // GITHUB_TOKEN is left out, so no run here can reach GitHub with a token.
+  const env = (repo?: string) => ({ PATH: process.env.PATH, ...(repo !== undefined && { GITHUB_REPOSITORY: repo }) });
+  const exitOf = (error: unknown) => (error as { code?: number }).code;
+
+  test("warns once for a missing results file and sends nothing with no find", async () => {
+    const { stdout } = await promisify(execFile)(process.execPath, args(path), { env: env("example/zotdex") });
+    expect(stdout.split("\n").filter((line) => line.startsWith("::warning::"))).toEqual([expect.stringMatching(/^::warning::added no new scan results, so only the published finds count: /)]);
+    expect(stdout).toContain("0 malware scan finds, 0 issues opened");
+  });
+
+  test.each<[string, string, string | undefined]>([
+    ["GITHUB_REPOSITORY is unset", path, undefined],
+    ["GITHUB_REPOSITORY is empty", path, ""],
+    ["the data cannot be read", join(dir, "none.json"), "example/zotdex"],
+  ])("exits with status 1 when %s", async (_name, dataPath, repo) => {
+    const error = await promisify(execFile)(process.execPath, args(dataPath), { env: env(repo) }).catch((reason: unknown) => reason);
+    expect(exitOf(error)).toBe(1);
   });
 });
