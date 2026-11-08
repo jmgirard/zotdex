@@ -1,0 +1,7 @@
+{
+  "id": "safe-edit@ipbes-data",
+  "name": "Zotero Safe Edit",
+  "description": "Lets local applications propose edits to Zotero items, which are applied only after approval in Zotero, with backups, a change log and undo.",
+  "repoUrl": "https://github.com/IPBES-Data/zotero-safe-edit",
+  "updateUrl": "https://ipbes-data.github.io/IPBES.LiteratureReport/plugins/zotero-safe-edit/updates.json"
+}
