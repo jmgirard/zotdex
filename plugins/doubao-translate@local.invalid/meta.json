@@ -1,0 +1,7 @@
+{
+  "id": "doubao-translate@local.invalid",
+  "name": "PDF 译文对照阅读",
+  "description": "手动导入译文 PDF，保留原文批注，支持对照阅读与滚动和缩放同步。",
+  "repoUrl": "https://github.com/Passionate0424/zotero-pdf-compare",
+  "updateUrl": "https://github.com/Passionate0424/zotero-pdf-compare/releases/latest/download/updates.json"
+}
