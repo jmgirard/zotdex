@@ -146,6 +146,7 @@ question set; the first real check is a run on main after the merge.
 - 2026-11-07: review return 1: AC2's tests set only the version and signature to the hostile strings in the body; each of the six values must be tested there (diff-bug #12).
 - 2026-11-07: T5 added for review return 1 (minor amendment).
 - 2026-11-07: T5 done: `keeps the body's lines fixed when the %s holds %j` sets each of the six values to each of 7 hostile strings (42 cases) and checks the line count, no `<!--` or `#` line before the marker, and one closed code span per value line. A raw ClamAV value turned 42 cases red. `pnpm test` 2806 passed, `pnpm check` 0 problems.
+- 2026-11-07: step-7 approval: m117-scan-find-issues approved for merge
 
 ## Decisions
 
