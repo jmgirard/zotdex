@@ -289,8 +289,9 @@ describe("build.yml", () => {
 
   test("names the scan-issues job in no other job's needs", () => {
     const jobs = [...build.matchAll(/^ {2}([\w-]+):\n/gm)].map(([, id]) => id).filter((id) => id !== "scan-issues");
-    // A flow list on the needs line, or a block list below it.
-    expect(jobs.filter((id) => /^ {4}needs:(.*\bscan-issues\b|\n(?: {6}- .*\n)*? {6}- scan-issues$)/m.test(jobText(build, id)))).toEqual([]);
+    // A flow list on the needs line, or a block list below it, an item quoted or with a comment.
+    const needsIt = /^ {4}needs:(.*\bscan-issues\b|\n(?: {4,}- .*\n)*? {4,}- ["']?scan-issues["']?\s*(?:#.*)?$)/m;
+    expect(jobs.filter((id) => needsIt.test(jobText(build, id)))).toEqual([]);
     expect(jobs).toContain("site");
   });
 

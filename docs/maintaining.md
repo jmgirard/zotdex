@@ -1031,6 +1031,8 @@ gets its issue on a later run, while the published data still holds that
 find. A later run also tries again a find whose issue GitHub refused, and a
 find that a failed request kept the run from trying. If GitHub opens an
 issue without the label, the command warns and opens no more that run. The
+next run cannot see that issue, so it opens another one each day until you
+fix the label. The
 job runs in one concurrency group for every branch, so two runs never open
 the same issue. A newer waiting job replaces an older one, and it reports
 the same finds. With no find, the

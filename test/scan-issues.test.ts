@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import process from "node:process";
 import { promisify } from "node:util";
-import { afterAll, describe, expect, test } from "vitest";
+import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import type { MalwareScan, PluginRecord, PluginsFile } from "../src/build/build.ts";
 import { bodyOf, codeSpan, type Find, findsOf, markerOf, reportFinds, SCAN_ISSUES_MAX, titleOf } from "../src/malware-scan/scan-issues.ts";
 import { fixtureFetch, type Recorded } from "./support/fixture-fetch.ts";
@@ -155,8 +155,8 @@ describe("the issue text", () => {
     },
   );
 
-  test("names an empty version as unknown", () => {
-    expect(bodyOf(find("a", SIG, ""))).toContain("- Version: ` unknown `");
+  test.each(["", "  "])("names the version %j as unknown", (version) => {
+    expect(bodyOf(find("a", SIG, version))).toContain("- Version: ` unknown `");
   });
 
   test("cuts a value to 200 characters", () => {
@@ -244,6 +244,12 @@ describe("reportFinds", () => {
     expect(outcome.lines).toEqual([expect.stringMatching(/^::warning::opened no issue for a: .*HTTP 422/), "opened issue #9 for b"]);
   });
 
+  test("counts the label in another case", async () => {
+    const { posts, outcome } = await run([find("a"), find("b")], { [LIST]: { json: [] }, [LABEL]: { json: {} }, [`POST ${API}/issues`]: { json: { number: 4, labels: [{ name: "Malware-Scan" }] } } });
+    expect(posts).toHaveLength(2);
+    expect(outcome.opened).toEqual(["a", "b"]);
+  });
+
   test("stops when GitHub drops the label from a created issue", async () => {
     const { posts, outcome } = await run([find("a"), find("b")], { [LIST]: { json: [] }, [LABEL]: { json: {} }, [`POST ${API}/issues`]: { json: { number: 4, labels: [] } } });
     expect(posts).toHaveLength(1);
@@ -272,10 +278,14 @@ describe("reportFinds", () => {
 
 describe("pnpm scan-issues", () => {
   const CLI = resolve(import.meta.dirname, "..", "src/malware-scan/scan-issues-cli.ts");
-  const dir = mkdtempSync(join(tmpdir(), "zpi-scan-issues-"));
+  let dir = "";
+  let path = "";
+  beforeAll(() => {
+    dir = mkdtempSync(join(tmpdir(), "zpi-scan-issues-"));
+    path = join(dir, "plugins.json");
+    writeFileSync(path, JSON.stringify(data([record("a", scanOf("a"))])));
+  });
   afterAll(() => rmSync(dir, { recursive: true, force: true }));
-  const path = join(dir, "plugins.json");
-  writeFileSync(path, JSON.stringify(data([record("a", scanOf("a"))])));
   const args = (dataPath: string) => [CLI, "--data", dataPath, "--results", join(dir, "missing.json"), "--expect", "0".repeat(64)];
   // GITHUB_TOKEN is left out, so no run here can reach GitHub with a token.
   const env = (repo?: string) => ({ PATH: process.env.PATH, ...(repo !== undefined && { GITHUB_REPOSITORY: repo }) });
@@ -287,12 +297,13 @@ describe("pnpm scan-issues", () => {
     expect(stdout).toContain("0 malware scan finds, 0 issues opened");
   });
 
-  test.each<[string, string, string | undefined]>([
-    ["GITHUB_REPOSITORY is unset", path, undefined],
-    ["GITHUB_REPOSITORY is empty", path, ""],
-    ["the data cannot be read", join(dir, "none.json"), "example/zotdex"],
-  ])("exits with status 1 when %s", async (_name, dataPath, repo) => {
-    const error = await promisify(execFile)(process.execPath, args(dataPath), { env: env(repo) }).catch((reason: unknown) => reason);
+  test.each<[string, string, string | undefined, RegExp]>([
+    ["GITHUB_REPOSITORY is unset", "plugins.json", undefined, /^GITHUB_REPOSITORY is not set\n/],
+    ["GITHUB_REPOSITORY is empty", "plugins.json", "", /^GITHUB_REPOSITORY is not set\n/],
+    ["the data cannot be read", "none.json", "example/zotdex", /^cannot read the data: /],
+  ])("exits with status 1 when %s", async (_name, file, repo, message) => {
+    const error = await promisify(execFile)(process.execPath, args(join(dir, file)), { env: env(repo) }).catch((reason: unknown) => reason);
     expect(exitOf(error)).toBe(1);
+    expect((error as { stderr?: string }).stderr).toMatch(message);
   });
 });
