@@ -4,14 +4,14 @@
      cairn_validate's <150 over the plan-owned body. -->
 # M117: Open an issue for each malware scan find
 
-- **Status:** planned
+- **Status:** in-progress
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — the build opens issues in the public repository
-- **Branch/PR:** —
+- **Branch/PR:** m117-scan-find-issues
 
 ## Goal
 
@@ -101,11 +101,11 @@ question set; the first real check is a run on main after the merge.
 
 ## Tasks
 
-- [ ] T1: Write `src/malware-scan/scan-issues.ts`: the finds from the
+- [x] T1: Write `src/malware-scan/scan-issues.ts`: the finds from the
       results (sharing `addScanResults`'s checks) and the data, the marker,
       the title, the page link, and the body with safe code spans, with the
       AC1 tests and the AC2 text tests.
-- [ ] T2: Add the GitHub calls through `githubClient`
+- [x] T2: Add the GitHub calls through `githubClient`
       (`src/upstream/reader.ts`): `pages` over the label's issues in all
       states, the label read and create, each issue create with its
       assignee, the cap, and the warning lines; add `pnpm scan-issues` and
@@ -131,6 +131,8 @@ question set; the first real check is a run on main after the merge.
 - 2026-11-07: criteria audit (full mode, fresh Opus reader) returned 12 findings, all taken: (1) every value from the results in a code span and the signature hashed in the marker, with `-->` and `@name` tests; (2) finds follow `addScanResults`, two results for one id tested; (3) the cap counts only new issues and names the ids left, which the every-run reading then reports later; (4) marker tests for another file, another signature, mid-body, and a null body; (5) a label read answering 500 tested; (6) a failed read opens nothing; (7) `--expect` as 64 hex digits, AC1 mapped to T1 and T2; (8) `issues: write` only, the digest check before the command; (10) version and signature text tests; (11) no request with no find, and the branch run dropped; (12) D-084 annotates D-062 and D-082. The answers then added the assignee and the every-run reading.
 - 2026-11-07: checkpoint (`59f235d5`): plan drafted after the first audit and the answers; the changed criteria's re-audit is still running, so the plan commit comes after it. That checkpoint lacked the empty `## Decisions` and `## Review` sections; this restores them.
 - 2026-11-07: re-audit of the changed AC1–AC5 (full mode, fresh Opus reader) returned 12 findings, the 9 asking for change taken: (1) the job runs after a failed scan job (`if: !cancelled() && build success`); (2) the marker counts only as a whole line, so a value cannot carry another plugin's marker; (3) a 422 create skips that find and goes on, and values are cut to 200 characters; (4) a find past the cap gets its issue later only while the published data holds it; (5) line breaks become spaces, fences outgrow backtick runs with padding, and every one of the six values is tested with `\r\n`, `\r`, a blank line and `#`, and edge backticks; (6) the marker holds the id's SHA-256, and the link sits in angle brackets; (7) finds are the records flagged after `addScanResults`, with tests for another file and a clean result over a carried find; (8) a no-find test; (9) the request's `assignees` and `github.repository_owner`, with `GITHUB_REPOSITORY` in the environment. Findings 10–12 found nothing. The fixes narrow promises, so no third reader ran.
+- 2026-11-07: implement started on branch `m117-scan-find-issues` (cut from `eb605d70`); `.claude/` is an unrelated untracked folder, left unstaged.
+- 2026-11-07: T1–T2 done in one commit, since the finds, the text, and the GitHub calls share one module: `src/malware-scan/scan-issues.ts` (`findsOf`, `markerOf`, `holdsMarker`, `codeSpan`, `titleOf`, `bodyOf`, `reportFinds`, `SCAN_ISSUES_MAX`, `SCAN_ISSUE_LABEL`), `scan-issues-cli.ts` (`pnpm scan-issues`, the repo from `GITHUB_REPOSITORY`), and `test/scan-issues.test.ts`, 37 tests. A shared change: `githubClient`'s writes now throw a `ReadFailure` carrying the HTTP status, as its reads already did, so a 422 can be told apart. Choices: the page link uses `ORIGIN` and `BASE` from `site/src/base.ts`; the label's color and description are fixed; the body ends with a note that ClamAV can flag in error and points to "Removing a plugin"; the CLI exits 1 only for a usage error, a missing `GITHUB_REPOSITORY`, or unreadable data. Planted defects (a substring marker match, no 422 skip, no cap, a one-backtick fence) turned 1, 1, 1, and 3 tests red. `pnpm test` 2751 passed, `pnpm check` 0 problems.
 
 ## Decisions
 

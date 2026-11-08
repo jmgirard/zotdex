@@ -128,7 +128,7 @@ export function rateLimitOf(headers: Headers): RateLimit {
 export class ReadFailure extends Error {
   readonly failure: Failure;
   readonly buildLevel: boolean;
-  // Set by `githubClient().get` for an HTTP error answer.
+  // Set by `githubClient()`'s `get` and its writes for an HTTP error answer.
   readonly status?: number;
   readonly rateLimit?: RateLimit;
   constructor(failure: Failure, message: string, buildLevel = false, answer?: { status: number; rateLimit: RateLimit }) {
@@ -471,7 +471,10 @@ export function githubClient(fetch: Fetch, token = process.env.GITHUB_TOKEN) {
     if (!response.ok) {
       const messages = [body?.message, ...(Array.isArray(body?.errors) ? body.errors.map((error) => error?.message) : [])];
       const said = messages.filter((message) => typeof message === "string").join("; ");
-      fail("github-http-error", `${method} ${url} returned HTTP ${response.status}${said ? `: ${said}` : ""}`);
+      throw new ReadFailure("github-http-error", `${method} ${url} returned HTTP ${response.status}${said ? `: ${said}` : ""}`, false, {
+        status: response.status,
+        rateLimit: rateLimitOf(response.headers),
+      });
     }
     if (body === undefined) fail("request-failed", `${method} ${url} returned a body that is not JSON`);
     return body;
