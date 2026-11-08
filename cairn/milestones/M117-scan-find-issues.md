@@ -4,7 +4,7 @@
      cairn_validate's <150 over the plan-owned body. -->
 # M117: Open an issue for each malware scan find
 
-- **Status:** review
+- **Status:** in-progress
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
@@ -41,7 +41,7 @@ question set; the first real check is a run on main after the merge.
       finds stand, with one warning line. Tests cover each such results
       file, two results for one id, a result for no record, a result for
       another `xpiSha256`, and a clean result over a carried find.
-- [x] AC2: With no find it sends no request. Otherwise it lists the issues
+- [ ] AC2: With no find it sends no request. Otherwise it lists the issues
       labeled `malware-scan` in all states and opens an issue for each find
       whose marker line `<!-- malware-scan <SHA-256 of the id> <xpiSha256>
       <SHA-256 of the signature> -->` no listed issue's body holds as a
@@ -141,6 +141,7 @@ question set; the first real check is a run on main after the merge.
 - 2026-11-07: re-audit: AC4 (full) — the clause "which no test asserts" was a fact, not a promise, and read two ways; GitHub's docs bear out that `GITHUB_*` defaults cannot be overwritten; reworded to a clause the test checks.
 - 2026-11-07: re-audit: AC4 (full) — the GitHub fact sat under "asserts each of these", and "it" in "No other job names it" could be misread; took the reader's wording verbatim (a reason in parentheses, `scan-issues` named). No third reader: the fix narrows and changes nothing users see.
 - 2026-11-07: claim audit (fresh Opus reader) over the non-cairn diff: 3 findings, all in the new `docs/maintaining.md` paragraph, all fixed: the assignee is the `--assignee` login, which the job sets to the owner; a refused or untried find is tried again rather than promised an issue; the exit-1 cases are named. Every other added claim held.
+- 2026-11-07: review return 1: AC2's tests set only the version and signature to the hostile strings in the body; each of the six values must be tested there (diff-bug #12).
 
 ## Decisions
 
@@ -153,3 +154,27 @@ question set; the first real check is a run on main after the merge.
 - AC5: `docs/maintaining.md:1013-1036` (command, job, label, `--assignee` set to the owner by the job, marker, cap of 5, later runs while the published data holds the find) and items 4-6 of the six jobs; `docs/data.md:304` and `docs/site.md:297` say a find opens an issue; DESIGN Function Families names `pnpm scan-issues` (`cairn/DESIGN.md:756`); D-084 annotates D-062 and D-082 and says a forged find can reach an issue; CHANGELOG Unreleased names the issue.
 - AC6: `pnpm test` 2756 passed, 6 skipped; `pnpm check` 0 problems in 745 entries.
 - Gate: `cairn_validate.py` all checks passed; profile `generic`, no toolchain checks.
+- spawned: diff-bug, blame-history, prior-review, ripple
+- diff-bug #1: GitHub can drop the label from a created issue with no error, so every run would open the issue again — fix now (stop with a warning when the created issue lacks the label), fixed 73f65bc9
+- diff-bug #2: the job has no default-branch guard, so a dispatched branch run opens real issues — reject (false): a dispatched run uses that branch's own `build.yml`, so a guard here cannot limit branch code, and a branch run's finds are real finds
+- diff-bug #3: two runs at once (a branch dispatch beside main's schedule) both list the issues and open the same one — fix now (one `scan-issues` concurrency group for every branch), fixed 73f65bc9
+- diff-bug #4: D-084 says start-test code can forge a find, but the digest checks let it only withhold results — fix now (D-084 reworded), fixed 73f65bc9
+- diff-bug #5: deleting the issue, removing its label, or editing its marker lets a later run open it again, which the docs do not say — fix now (`docs/maintaining.md` sentence), fixed 73f65bc9
+- diff-bug #6: an assignee GitHub always refuses (422) skips every find on every run — reject (edge): only an org-owned repository, whose owner login is not assignable, gives it, outside this user-owned repository's use, and its effect is a warning each run
+- diff-bug #7: `scan-issues.ts` imports `site/src/base.ts`, the reverse of the usual direction — reject (style): `base.ts` holds two plain constants and no Astro code, and one source keeps the issue link in step with the site
+- diff-bug #8: an empty version shows as an empty code span — fix now (`unknown`, with a test), fixed 05c131f1
+- diff-bug #9: `holdsMarker` splits only on `\n`, so a body with bare `\r` breaks hides a marker — fix now (splits on `\r\n`, `\r`, `\n`, with a test), fixed 73f65bc9
+- diff-bug #10: no test puts a marker on the second page of the issue list — fix now (test), fixed 73f65bc9
+- diff-bug #11: no test runs the CLI, though the repo's other CLIs have tests — fix now (warning line and the three exit-1 cases), fixed 73f65bc9
+- diff-bug #12: AC2 asks for tests of each of the six values holding the hostile strings in the body, but the body test sets only the version and signature — floor return: AC2 fails as written (review return 1)
+- diff-bug #13: the no-other-job-needs test misses a block-list `needs:` — fix now (regex takes both forms, planted block list turned it red), fixed 73f65bc9
+- diff-bug #14 (tests worth keeping): the `GITHUB_REPOSITORY` absence test, the exact run-step text, and the `titleOf` text restate the code — reject (planned change): AC4 and AC2 call for each
+- blame-history #1: the same missing default-branch guard as diff-bug #2 — reject (false), as there
+- blame-history #2: start-test code can delay an issue by a day by withholding results — noted: it agrees with D-041 and D-084, which now says so
+- prior-review: no prior-review evidence; the probe found no PR review comments
+- ripple #1: `docs/maintaining.md` said three commands do the scan work — fix now (four), fixed 73f65bc9
+- ripple #2: DESIGN's Known issues entry on a replaced `scan-results` artifact did not name the issues — fix now, fixed 73f65bc9
+- ripple #3: two `build.yml` comments named only the site job as reading the scan results by SHA-256 — fix now, fixed 73f65bc9
+- ripple #4: DESIGN's cache-mode list named build, start-test, and site only — fix now (all five jobs), fixed 73f65bc9
+- ripple #5: `docs/maintaining.md`'s "If the downloaded data ... fails its check" named no job, and a failed check in `scan-issues` deploys anyway — fix now (the site job's), fixed 73f65bc9
+- ripple #6: the `ScanResults` comment in `scan.ts` named only `add-scan-results` as its reader — fix now, fixed 73f65bc9
