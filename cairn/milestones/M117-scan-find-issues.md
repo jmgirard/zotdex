@@ -33,7 +33,7 @@ question set; the first real check is a run on main after the merge.
 
 ## Acceptance criteria
 
-- [ ] AC1: `pnpm scan-issues --data <file> --results <file> --expect
+- [x] AC1: `pnpm scan-issues --data <file> --results <file> --expect
       <sha256> [--assignee <login>]` takes as its finds the records whose
       `malwareScan`, after `addScanResults` adds the results file, has
       `found`. A missing, changed, or malformed results file, or an
@@ -41,7 +41,7 @@ question set; the first real check is a run on main after the merge.
       finds stand, with one warning line. Tests cover each such results
       file, two results for one id, a result for no record, a result for
       another `xpiSha256`, and a clean result over a carried find.
-- [ ] AC2: With no find it sends no request. Otherwise it lists the issues
+- [x] AC2: With no find it sends no request. Otherwise it lists the issues
       labeled `malware-scan` in all states and opens an issue for each find
       whose marker line `<!-- malware-scan <SHA-256 of the id> <xpiSha256>
       <SHA-256 of the signature> -->` no listed issue's body holds as a
@@ -62,13 +62,13 @@ question set; the first real check is a run on main after the merge.
       finds with 1 reported, the label found and created, the request's
       assignee, and each of the six values holding `\r\n`, `\r`, a blank
       line and `#`, a leading and a trailing backtick, `-->`, and `@name`.
-- [ ] AC3: A failed issue list or label read opens no issue; a failed label
+- [x] AC3: A failed issue list or label read opens no issue; a failed label
       create stops the run; an issue create that answers 422 skips that find
       and goes on, and any other failed issue create stops the run's other
       creates; each prints one warning line and exits 0. Tests cover a failed
       list, a label read that answers 500, a failed label create, a 422
       create followed by a good one, and a 500 create.
-- [ ] AC4: `.github/workflows/build.yml` has a `scan-issues` job with
+- [x] AC4: `.github/workflows/build.yml` has a `scan-issues` job with
       `needs: [build, malware-scan]`, `if: ${{ !cancelled() &&
       needs.build.result == 'success' }}`, `permissions` of `issues: write`
       only, `cache-mode: none`, a `timeout-minutes` of at most 10, and
@@ -82,7 +82,7 @@ question set; the first real check is a run on main after the merge.
       `GITHUB_REPOSITORY` (GitHub sets it in every step, and a job cannot
       replace it). No other job names `scan-issues` in `needs`.
       `test/workflows.test.ts` asserts each of these.
-- [ ] AC5: `docs/maintaining.md` states the command, the job, the label,
+- [x] AC5: `docs/maintaining.md` states the command, the job, the label,
       the assignee, the marker, the cap, and that a find past the cap or
       whose create failed gets its issue on a later run while the published
       data still holds that find; `docs/data.md` and `docs/site.md` say that
@@ -90,7 +90,7 @@ question set; the first real check is a run on main after the merge.
       `src/malware-scan/` names the command; D-084 records the choice,
       annotating D-062 and D-082, and that a forged find can reach an issue;
       `CHANGELOG.md`'s Unreleased section names it.
-- [ ] AC6: The verify slot (`pnpm test` and `pnpm check`) passes.
+- [x] AC6: The verify slot (`pnpm test` and `pnpm check`) passes.
 
 ## Coverage
 
@@ -145,3 +145,11 @@ question set; the first real check is a run on main after the merge.
 ## Decisions
 
 ## Review
+
+- AC1: `test/scan-issues.test.ts` `findsOf` block, green: missing, bad `--expect`, other SHA-256, and malformed results files each keep the carried find `a` and return a problem, which `scan-issues-cli.ts` prints as one `::warning::` line; a new find taken and a clean result clearing a carried find; two results for one id, a result for no record, and one for another file each leave the carried finds.
+- AC2: same file, `the issue text` and `reportFinds` blocks, green: no find sends no request; a new find posts title, body, label, and `assignees: ["owner"]`; the marker counts in an open and a closed issue and as a whole line mid-body, not inside a code span, in a null body, or for another file or signature; 5 new finds open 5, 6 leave `p5` named in a warning, 6 with 1 reported open 5; label 404 creates it; the six values with each hostile string stay in one code span, cut at 200. `holdsMarker` matches whole trimmed lines and the cap counts opened issues only (`scan-issues.ts:119`, `:137`).
+- AC3: same file, green: a failed list, a label read of 500, and a failed label create each open no issue and print one `::warning::` line; a 422 create warns and the next opens #9; a 500 create stops after one post. `main()` in `scan-issues-cli.ts` returns 0 after `reportFinds`, which catches every GitHub error.
+- AC4: `test/workflows.test.ts`, 73 green: the `scan-issues` job's `needs`, `if`, `issues: write` alone, `timeout-minutes: 10`, checkout without credentials, the cache-mode list, the digest check after the `plugins-data` download, `scan-results` with `continue-on-error: true`, the exact run step with `GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}`, `--expect`, `--assignee`, no `GITHUB_REPOSITORY:` key, and no other job's `needs`.
+- AC5: `docs/maintaining.md:1013-1036` (command, job, label, `--assignee` set to the owner by the job, marker, cap of 5, later runs while the published data holds the find) and items 4-6 of the six jobs; `docs/data.md:304` and `docs/site.md:297` say a find opens an issue; DESIGN Function Families names `pnpm scan-issues` (`cairn/DESIGN.md:756`); D-084 annotates D-062 and D-082 and says a forged find can reach an issue; CHANGELOG Unreleased names the issue.
+- AC6: `pnpm test` 2756 passed, 6 skipped; `pnpm check` 0 problems in 745 entries.
+- Gate: `cairn_validate.py` all checks passed; profile `generic`, no toolchain checks.

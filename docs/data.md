@@ -301,7 +301,8 @@ published records name.
 A clean scan does not show that a plugin is safe. ClamAV matches the file
 against signatures of known malware, and it finds nothing new. A find hides
 nothing: the plugin stays listed, and a maintainer handles it as a report of
-harm. The build opens a GitHub issue labeled `malware-scan` for each find. ClamAV reads the plugin files in its own job, which has no token
+harm. The build opens a GitHub issue labeled `malware-scan` for each find.
+ClamAV reads the plugin files in its own job, which has no token
 permission and no secret. A file that takes over ClamAV in that job can
 forge the scan results of that run. The `malwareScan` field is new in schema v1. If you
 validate against a saved copy of the schema, fetch the schema again.
