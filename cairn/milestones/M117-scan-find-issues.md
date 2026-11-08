@@ -4,7 +4,7 @@
      cairn_validate's <150 over the plan-owned body. -->
 # M117: Open an issue for each malware scan find
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
@@ -77,9 +77,11 @@ question set; the first real check is a run on main after the merge.
       `pnpm scan-issues`, downloads `scan-results` with `continue-on-error:
       true`, and runs `pnpm scan-issues` with `--expect` set to
       `needs.malware-scan.outputs.scan-sha256`, `--assignee` set to `${{
-      github.repository_owner }}`, and `GITHUB_TOKEN` and
-      `GITHUB_REPOSITORY` in its environment. No other job names it in
-      `needs`. `test/workflows.test.ts` asserts each of these.
+      github.repository_owner }}`, and `GITHUB_TOKEN` set to `${{
+      secrets.GITHUB_TOKEN }}` in the step's environment. The job sets no
+      `GITHUB_REPOSITORY` (GitHub sets it in every step, and a job cannot
+      replace it). No other job names `scan-issues` in `needs`.
+      `test/workflows.test.ts` asserts each of these.
 - [ ] AC5: `docs/maintaining.md` states the command, the job, the label,
       the assignee, the marker, the cap, and that a find past the cap or
       whose create failed gets its issue on a later run while the published
@@ -135,6 +137,10 @@ question set; the first real check is a run on main after the merge.
 - 2026-11-07: T1–T2 done in one commit, since the finds, the text, and the GitHub calls share one module: `src/malware-scan/scan-issues.ts` (`findsOf`, `markerOf`, `holdsMarker`, `codeSpan`, `titleOf`, `bodyOf`, `reportFinds`, `SCAN_ISSUES_MAX`, `SCAN_ISSUE_LABEL`), `scan-issues-cli.ts` (`pnpm scan-issues`, the repo from `GITHUB_REPOSITORY`), and `test/scan-issues.test.ts`, 37 tests. A shared change: `githubClient`'s writes now throw a `ReadFailure` carrying the HTTP status, as its reads already did, so a 422 can be told apart. Choices: the page link uses `ORIGIN` and `BASE` from `site/src/base.ts`; the label's color and description are fixed; the body ends with a note that ClamAV can flag in error and points to "Removing a plugin"; the CLI exits 1 only for a usage error, a missing `GITHUB_REPOSITORY`, or unreadable data. Planted defects (a substring marker match, no 422 skip, no cap, a one-backtick fence) turned 1, 1, 1, and 3 tests red. `pnpm test` 2751 passed, `pnpm check` 0 problems.
 - 2026-11-07: T3 done: the `scan-issues` job in `build.yml` (8 steps; the token, the scan job's SHA-256, and `github.repository_owner` passed through `env`), and 3 more tests in `test/workflows.test.ts` with the job in the cache-mode list. Choice: the assignee goes through an `ASSIGNEE` variable rather than an expression in the run line. Planted defects (no `if:`, the site job waiting on `scan-issues`) turned 3 tests red; the file parses with `yaml` 2.9.1.
 - 2026-11-07: T4 done: `docs/maintaining.md` (the command, label, assignee, marker, cap, later runs, and the job as item 4 of six), one sentence each in `docs/data.md` and `docs/site.md`, DESIGN's Function Families entry and daily-build text, D-084, and a CHANGELOG line. `pnpm test` 2755 passed, `pnpm check` 0 problems.
+- 2026-11-07: substantive amendment: AC4's environment clause, since GitHub sets `GITHUB_REPOSITORY` in every step and a workflow cannot replace it, so no test could assert it was set. Now: "`GITHUB_TOKEN` set to `${{ secrets.GITHUB_TOKEN }}` in the step's environment. The job sets no `GITHUB_REPOSITORY` (GitHub sets it in every step, and a job cannot replace it). No other job names `scan-issues` in `needs`." Added the test `sets no GITHUB_REPOSITORY in the scan-issues job`; a planted `GITHUB_REPOSITORY:` line turned it red. What users see is unchanged, so no stop.
+- 2026-11-07: re-audit: AC4 (full) — the clause "which no test asserts" was a fact, not a promise, and read two ways; GitHub's docs bear out that `GITHUB_*` defaults cannot be overwritten; reworded to a clause the test checks.
+- 2026-11-07: re-audit: AC4 (full) — the GitHub fact sat under "asserts each of these", and "it" in "No other job names it" could be misread; took the reader's wording verbatim (a reason in parentheses, `scan-issues` named). No third reader: the fix narrows and changes nothing users see.
+- 2026-11-07: claim audit (fresh Opus reader) over the non-cairn diff: 3 findings, all in the new `docs/maintaining.md` paragraph, all fixed: the assignee is the `--assignee` login, which the job sets to the owner; a refused or untried find is tried again rather than promised an issue; the exit-1 cases are named. Every other added claim held.
 
 ## Decisions
 

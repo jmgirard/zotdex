@@ -1019,16 +1019,20 @@ pnpm scan-issues --data <file> --results <file> --expect <sha256> [--assignee <l
 
 It takes the finds of the data after it adds the results file, as
 `pnpm add-scan-results` does. For each find, it opens one issue, with the
-label `malware-scan` and assigned to the repository's owner. A hidden marker
+label `malware-scan` and assigned to the `--assignee` login. The
+`scan-issues` job sets that login to the repository's owner. A hidden marker
 line at the end of the issue names the plugin, the file's SHA-256, and the
 signature, each as a SHA-256 or hex. A find whose marker line any issue
 with that label holds, open or closed, gets no new issue. So closing an
 issue as a false alarm keeps it closed, and a new release or a new signature
 opens a new issue. A run opens at most 5 issues. A find past that limit
 gets its issue on a later run, while the published data still holds that
-find. So does a find whose issue GitHub refused. With no find, the command sends no
-request to GitHub. A failed read or write prints one warning line, and the
-command exits 0. It opens issues in the repository that `GITHUB_REPOSITORY`
+find. A later run also tries again a find whose issue GitHub refused, and a
+find that a failed request kept the run from trying. With no find, the
+command sends no request to GitHub. A failed GitHub read or write prints one
+warning line, and the command exits 0. It exits with status 1 for a usage
+error, an unset `GITHUB_REPOSITORY`, or a data file that it cannot read. It
+opens issues in the repository that `GITHUB_REPOSITORY`
 names, with `GITHUB_TOKEN`.
 
 ClamAV's `freshclam` can refuse a download from a cloud host such as a

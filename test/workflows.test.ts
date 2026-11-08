@@ -281,6 +281,11 @@ describe("build.yml", () => {
     expect(job.match(/^ {10}pnpm scan-issues /gm)).toHaveLength(1);
   });
 
+  // GitHub sets GITHUB_REPOSITORY in every step, and a value under env would not replace it.
+  test("sets no GITHUB_REPOSITORY in the scan-issues job", () => {
+    expect(jobText(build, "scan-issues")).not.toMatch(/^ +GITHUB_REPOSITORY:/m);
+  });
+
   test("names the scan-issues job in no other job's needs", () => {
     const jobs = [...build.matchAll(/^ {2}([\w-]+):\n/gm)].map(([, id]) => id).filter((id) => id !== "scan-issues");
     expect(jobs.filter((id) => /^ {4}needs:.*scan-issues/m.test(jobText(build, id)))).toEqual([]);
