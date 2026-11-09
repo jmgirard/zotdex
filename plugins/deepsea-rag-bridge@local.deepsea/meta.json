@@ -1,0 +1,7 @@
+{
+  "id": "deepsea-rag-bridge@local.deepsea",
+  "name": "DeepSea RAG Bridge",
+  "description": "Securely sync selected DeepSea RAG literature to the local Zotero library.",
+  "repoUrl": "https://github.com/CODRbio/RAG",
+  "updateUrl": "https://github.com/CODRbio/RAG/releases/download/zotero-bridge-feed/updates.json"
+}
