@@ -1,0 +1,8 @@
+{
+  "id": "split-reader@naasi-lf.local",
+  "name": "Split Reader 分屏阅读",
+  "description": "在同一个阅读标签里同时打开多个不同的 PDF / EPUB / 网页快照，最多 4 列、每列 4 个。",
+  "homepage": "https://github.com/Naasi-LF/zotero-split-reader",
+  "repoUrl": "https://github.com/Naasi-LF/zotero-split-reader",
+  "updateUrl": "https://github.com/Naasi-LF/zotero-split-reader/releases/latest/download/updates.json"
+}
