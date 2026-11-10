@@ -203,6 +203,8 @@ precise text lives in `docs/`, and About gets one approved sentence
 - 2026-11-09: status review; handed back to /milestone-review for pass 3.
 - 2026-11-09: correction to the T9 line: the scan-issues body points to `docs/maintaining.md` only and names no second-source rule; `docs/maintaining.md`'s malware-find line and `docs/data.md` state that rule.
 - 2026-11-09: review pass 3 fix-now work committed on the branch before the merge question: the fifth ground's report path, the unmerged filter, the notice's ways out, lifting's owner and earlier-removal checks, the outline's scope, "removes a plugin only on the five grounds", one issue for a notice that leads to a removal, the CHANGELOG notice scope, `docs/data.md`'s second-source rule and "check data", and the wrap; `pnpm test` 2815 passed, `pnpm check` 0 problems.
+- 2026-11-09: step-7 approval: m118-removal-rules approved for merge, on the condition that private vulnerability reporting is on first.
+- 2026-11-09: stop before step 8: `gh api repos/jmgirard/zotdex/private-vulnerability-reporting` read `{"enabled":false}` twice after the user said it was on; nothing pushed, no PR opened.
 
 ## Decisions
 
