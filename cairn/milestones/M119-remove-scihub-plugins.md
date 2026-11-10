@@ -90,12 +90,12 @@ them, so no row.
       and topic fields in `HoldFacts` (`src/discover/holds.ts:97`), the
       match against the sites file, the pull request body's text, the
       handoff schema, and `refresh-holds`; tests per AC4.
-- [ ] T4: For each plugin marked yes, open one public issue on the index
+- [x] T4: For each plugin marked yes, open one public issue on the index
       repo to M118's outline, mentioning the owner (text written with the
       writing-for-people skill and shown in chat when posted); add its
       `delisted.json` record; delete its `plugins/` directory; update docs,
       DESIGN.md, CHANGELOG.
-- [ ] T5: Run `pnpm test` and `pnpm check`.
+- [x] T5: Run `pnpm test` and `pnpm check`.
 
 ## Work log
 
@@ -118,6 +118,9 @@ them, so no row.
 - 2026-11-09: T3 choice: `sites` is optional in the draft options, like `delisted`, and required in `refreshHolds`; each CLI passes it.
 - 2026-11-09: T4 part 1 (not done): the six `plugins/` directories deleted; docs/maintaining.md now puts the outline in the removal issue's body, so the owner can answer before the merge, and the step-7 close names the merged pull request; docs/requests.md links `sites.json`; DESIGN and CHANGELOG updated; no open bot pull request or earlier issue names the six repos.
 - 2026-11-09: T4: six issue bodies drafted by a fresh Opus drafter from a brief (writing-for-people), checked against the reads and links, one judgment ("That is fine") removed; posting waits for the user's yes on the text, since the text is drafted, not the user's, and names people's plugins next to court rulings; `delisted.json` records wait for the issue numbers.
+- 2026-11-09: user override: the user asked for the issues to be written for people, then much shorter: what Zotdex is, the removal and its reason, and how to appeal; the rulings list, the no-claim-of-law-breaking line, and the second-removal note were cut; the user kept the @mention; docs/maintaining.md's outline now matches (three items), so AC3's "M118's outline" reads against that shortened outline.
+- 2026-11-09: T4: issues #883 to #888 opened with the `remove-plugin` label, each @-mentioning the owner and linking the line read, posted bodies checked against the drafts; six `delisted.json` records, ground `copyright`, date 2026-11-09; `ids` left empty for `ethanwillis/zotero-scihub`, since `scihub@example.com` is a placeholder id its forks keep; after the merge each issue is renamed `Removed …` and closed with a comment naming the merged pull request (docs/maintaining.md step 7).
+- 2026-11-09: T5: `pnpm test` 2864 passed, 6 skipped; `pnpm check` 748 entries, 0 problems; a restored copy of two removed entries fails `pnpm check` as `delisted-repo` and `delisted-id`.
 
 ## Decisions
 

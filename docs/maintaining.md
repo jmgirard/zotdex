@@ -565,16 +565,15 @@ A removal with no request, as for a listed site built in, needs its own issue.
 Write its body to the outline below, so that the owner can answer before the
 removal merges. Open it with
 `gh issue create --label remove-plugin --title "Removing <owner>/<repo>" --body-file <file>`.
-Items 2 to 4 are for a listed site built in. For another ground, give the
-evidence the ground needs instead.
+Keep it short, in the first person, in this order:
 
-1. What the index does: it removes the plugin, and the ground.
-2. What you read: the README line or setting, quoted or linked.
-3. The rule, and for a listed site, the rulings.
-4. That the index makes no claim that the plugin or its users break the law,
-   and that the plugin stays on GitHub.
-5. That a reply saying the reading is wrong is enough to reopen the issue.
-6. How the plugin comes back, with a link to "Coming back" in requests.md.
+1. What Zotdex is, in one sentence.
+2. That you remove the plugin, and why in plain words, with a link to the
+   README line or setting that you read. For a ground other than a listed
+   site, link the evidence instead. Then give the rule in one sentence, with
+   a link to it in requests.md.
+3. How to appeal: if the reading is wrong, or a later release no longer meets
+   the ground, a reply on the issue is enough.
 
 Mention the repository's owner by their account name. Answer the owner. When
 other people bring new evidence, answer them too. Hide a comment that attacks
