@@ -192,3 +192,13 @@ Pass 3, 2026-11-09, at de7e8f9d, after return 1.
 - AC1, AC2, AC3: `sites.json`, `delisted.json`, `plugins/`, and `cairn/references/` are unchanged since pass 2 (`git diff --stat b371f54c HEAD` on them is empty); `sites.json` still gives Sci-Hub 3 countries and Anna's Archive 2; the sweep's match over the shelf data still gives the six ledger repos; `pnpm check` 748 entries, 0 problems. Pass.
 - AC4: the listed-site tests pass at this head: five fields (5 cases), each name in the file (2, built from `sites.json`), one case-and-punctuation variant (`SCI_HUB`), one unheld near-miss name (`SciHubble Notes`), a mixed-case repo name held through the handoff read step, and `refresh-holds` writing the reason's line (3 cases). Pass.
 - AC5: `pnpm test` 2857 passed, 6 skipped, 0 failed; `pnpm check` 0 problems (status-review run at this code). Pass.
+- spawned: diff-bug, blame-history, prior-review, ripple
+- prior-review #1: the outline drops RR01 R13's points — reject (planned change: the user's recorded choice).
+- prior-review #2: `listed-site` holds on a name alone, against D-045 — reject (planned change: D-087's tripwire on another ground).
+- prior-review #3: names glued to a digit or all-caps word, or with accented or look-alike letters, escape the match — follow-up: the known issue proposed in pass 2 (diff-bug #3).
+- prior-review #4: `refresh-holds`'s new repo read has no per-pull-request bound — reject (false: each GitHub request has its own 60-second limit, `src/upstream/reader.ts`).
+- prior-review #5: `cairn/references/category-ledger.md` still marks a removed id as excluded — reject (false: the ledger is a dated record of the 2026-10-31 read).
+- ripple #1: "Closing a held pull request" gives two close reasons, and the `replaces-entry` hold has its own close case — fix now (a third reason, D-056).
+- ripple #2: the appeal route is a reply on the removal issue, and step 7 closes it — fix now (the removal-issue section says a reply on the closed issue still notifies the maintainer and counts as a request).
+- ripple #3: two handoff test titles say "a sixth reason" — fix now ("an unknown reason").
+- ripple #4: DESIGN's `src/check/` architecture entry does not name `sites.ts` — fix now.

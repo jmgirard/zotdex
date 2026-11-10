@@ -584,7 +584,9 @@ Keep it short, in the first person, in this order:
 
 Mention the repository's owner by their account name. Answer the owner. When
 other people bring new evidence, answer them too. Hide a comment that attacks
-a person.
+a person. A reply on the issue after step 7 closes it still notifies you, since
+you opened it. Read such a reply as a request to come back, as "Lifting a
+removal" says.
 
 ### Sending the 14-day notice
 
@@ -637,10 +639,12 @@ second removal on that ground stays.
 
 This section is for a held bot pull request. Close one with
 `gh pr close <number> --comment "<reason>"`. The bot then does not propose
-that repo again. Close a held pull request for one of two reasons only:
+that repo again. Close a held pull request for one of these reasons only:
 
 - Its entry misleads people about what the plugin is, who makes it, or who
   controls its updates (D-053).
+- It has a `replaces-entry` hold, and the listed repo credits this repo and
+  has a newer release, as the hold's reason says (D-056).
 - Its plugin meets a removal ground, such as a listed site built in. Then
   remove the plugin with the steps of "Removing a plugin", but skip step 2,
   since a plugin that was never listed has no directory. Its removal issue is

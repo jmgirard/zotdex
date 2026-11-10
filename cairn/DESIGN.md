@@ -823,7 +823,9 @@ reused._
   `schemas/index.v1.schema.json` is the `index.json` schema.
 - `src/check/` holds the checker. It reads the registry schema from
   zotero-plugin-registry at a pinned commit, checks the file against a pinned
-  SHA-256, and caches it in the gitignored `.cache/`.
+  SHA-256, and caches it in the gitignored `.cache/`. `src/check/sites.ts`
+  reads and checks `sites.json` and holds the listed-site match that the
+  discovery bot uses (M119).
 - `src/upstream/` reads the GitHub API with plain fetch (its client's `post`
   also creates the bot's pull requests, M009, and comments on issues, and its
   `patch` closes issues, M010), unzips the release
