@@ -1,0 +1,7 @@
+{
+  "id": "reading-shelf@4season.github.io",
+  "name": "Reading Shelf",
+  "description": "A bookshelf and Eisenhower reading planner for Zotero collections, with reading status and PDF progress.",
+  "repoUrl": "https://github.com/4season/zotero-reading-shelf",
+  "updateUrl": "https://raw.githubusercontent.com/4season/zotero-reading-shelf/main/updates.json"
+}
