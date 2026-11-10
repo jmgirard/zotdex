@@ -49,7 +49,7 @@ precise text lives in `docs/`, and About gets one approved sentence
       ground without a report only to a plugin whose name, description,
       repository name, or topics name a listed site, reading its README
       and settings and not its code.
-- [ ] AC2: The same section states what a request to bring a removed
+- [x] AC2: The same section states what a request to bring a removed
       plugin back must show after harm (this file's Decisions, Return path:
       RR01 R5, R6) or a listed site built in (a release drops the site, and
       a second removal on that ground stays: R8), and that a plugin
@@ -211,26 +211,28 @@ precise text lives in `docs/`, and About gets one approved sentence
 - AC7 evidence (`1f029309`): `pnpm test` 2815 passed, 6 skipped; `pnpm check` 754 entries, 0 problems.
 - Consistency gate: `cairn_validate.py` all checks passed; profile `generic` names no toolchain checks; no DESIGN principle changed, so no impact report.
 - spawned: diff-bug, blame-history, prior-review, ripple
-- diff-bug #1: removal step 4 closes any bot pull request, against the held-PR rule's "Close no held pull request for another reason" — fix now
+- diff-bug #1: removal step 4 closes any bot pull request, against the held-PR rule's "Close no held pull request for another reason" — fix now, fixed cdd870d2
 - diff-bug #2: the private report link opens no form while private vulnerability reporting is off — fix now, by the user's setting before the merge (step 7 names it)
-- diff-bug #3: notice issues share the `remove-plugin` label, so the search for an earlier removal can find a notice or a declined request — fix now
-- diff-bug #4: a removal with no request needs its issue's number at step 2, but the issue is opened later — fix now
-- diff-bug #5: DESIGN.md and D-085 say "the sites file", which the docs and AC1 no longer use — fix now for DESIGN.md (architecture as it is); D-085 rejected (false: it records the decision, which M119's sites file carries out)
-- diff-bug #6: `gh pr list --state closed` also lists merged pull requests — fix now
-- diff-bug #7: the 14-day notice covers only library contents or account details, narrower than AC2's "sending data" — fix now, review return 2 (AC2 fails as written)
+- diff-bug #3: notice issues share the `remove-plugin` label, so the search for an earlier removal can find a notice or a declined request — fix now, fixed cdd870d2
+- diff-bug #4: a removal with no request needs its issue's number at step 2, but the issue is opened later — fix now, fixed cdd870d2
+- diff-bug #5: DESIGN.md and D-085 say "the sites file", which the docs and AC1 no longer use — fix now, fixed cdd870d2, for DESIGN.md (architecture as it is); D-085 rejected (false: it records the decision, which M119's sites file carries out)
+- diff-bug #6: `gh pr list --state closed` also lists merged pull requests — fix now, fixed cdd870d2
+- diff-bug #7: the 14-day notice covers only library contents or account details, narrower than AC2's "sending data" — fix now, review return 2 (AC2 fails as written), fixed cdd870d2
 - diff-bug #8: the permanent-harm examples omit "taking files" — reject (planned change: the Decisions entry, RR01 R5, governs and names passwords)
 - diff-bug #9: About says "ordered blocked", the rule "blocked or shut down" — fix now if the user approves the line at step 7 (approved wording)
-- diff-bug #10: lines past the wrap width in docs and the form — fix now
-- diff-bug #11: the About links test's name still says the section links only the form — fix now
+- diff-bug #10: lines past the wrap width in docs and the form — fix now, fixed cdd870d2
+- diff-bug #11: the About links test's name still says the section links only the form — fix now, fixed cdd870d2
 - diff-bug #12: screenshot takedowns go through a security-advisory form — reject (planned change: the user chose that private contact; it suits a takedown that holds personal data)
 - diff-bug #13: no test ties the schema's enum to the TypeScript union — reject (style; `tsc` and the schema agree today)
 - diff-bug #14: five value tests could be one `pnpm check` run — reject (style)
 - blame-history #1: "plainly what the plugin is for" counts as told, absent from D-085 — reject (planned change: RR01 R3, which the user accepted; D-085 points to the docs for the full text)
 - blame-history #2: a scan find needs a second source, against D-084 — reject (false: D-084 handles a find as a report of harm and says to look before acting; the docs ripple is ripple #3)
 - blame-history #3: run-time code and anonymous counts carve-outs are unrecorded — reject (false: recorded in this file's Decisions from RR01 R3)
-- blame-history #4: DESIGN.md says "the sites file" — fix now (same as diff-bug #5)
+- blame-history #4: DESIGN.md says "the sites file" — fix now (same as diff-bug #5), fixed cdd870d2
 - blame-history #5: About links the full rules to `docs/requests.md`, while D-078 names `docs/site.md` — reject (planned change: the user approved the line at T6; `docs/site.md` already points removals to requests.md)
-- prior-review #1: ragged wrap in the new prose — fix now (same as diff-bug #10)
-- ripple #1: the form and docs say "the contact on the About page", and About shows a private report form — fix now in `docs/requests.md`; the form's line rejected (planned change: the user approved it, and the About card's form is that contact)
-- ripple #2: `src/malware-scan/scan-issues.ts:74` points removals to `docs/requests.md`, whose steps moved to `docs/maintaining.md` — fix now
-- ripple #3: `docs/maintaining.md`'s malware-find line cites requests.md for looking at the signature and source, which requests.md no longer says — fix now
+- prior-review #1: ragged wrap in the new prose — fix now (same as diff-bug #10), fixed cdd870d2
+- ripple #1: the form and docs say "the contact on the About page", and About shows a private report form — fix now, fixed cdd870d2, in `docs/requests.md`; the form's line rejected (planned change: the user approved it, and the About card's form is that contact)
+- ripple #2: `src/malware-scan/scan-issues.ts:74` points removals to `docs/requests.md`, whose steps moved to `docs/maintaining.md` — fix now, fixed cdd870d2
+- ripple #3: `docs/maintaining.md`'s malware-find line cites requests.md for looking at the signature and source, which requests.md no longer says — fix now, fixed cdd870d2
+- AC2 evidence (pass 2, `cdd870d2`): the "Harm" subsection now gives the issue and 14 days to disclose for a plugin found sending data somewhere without saying so; the "Coming back" text is as in pass 1.
+- AC6 evidence (pass 2, `cdd870d2`): the removal steps now open or rename the issue first (step 1) and close a removed plugin's pull request on the removal's ground (step 5); the held-pull-request section covers plugins not removed; the notice and removal issues carry the `Notice for` and `Removed` titles that the earlier-removal search reads; each step that changes GitHub state names its `gh` command.
