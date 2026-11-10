@@ -53,7 +53,7 @@ them, so no row.
       name matches the pattern that the ledger states, whether the plugin
       has a listed site built in by M118's definition, and the README line
       or settings file where that was read.
-- [ ] AC3: Each plugin that the ledger marks yes has a `delisted.json`
+- [x] AC3: Each plugin that the ledger marks yes has a `delisted.json`
       record with ground `copyright` and the number of its own public
       issue on the index repo. That issue mentions the owner of the
       plugin's repository, and its body says what Zotdex is, that Zotdex
@@ -147,3 +147,7 @@ Pass 1, 2026-11-09, at 15d0d98e.
 - AC3: each of the six yes plugins has a `delisted.json` record with ground `copyright` and its own issue (#883 to #888, open, label `remove-plugin`, each body opening with `@<owner>`); the six `plugins/` directories are gone; `pnpm check` exits 0 (748 entries). Fails as written: the bodies follow the three-part outline that the user chose (what Zotdex is, the removal and reason with the line read, how to appeal), and they leave out two items of M118's outline (the rule's rulings, the no-claim-of-law-breaking line). Routed as an amendment return; box left unticked.
 - AC4: tests pass for a held case in each of the five fields (`test/holds.test.ts` "the listed-site hold", 5 cases), for each name of each site in the committed file (2 cases, built from `sites.json`), case and punctuation variants (4 cases), and unheld near misses in name, description, and topic (3 cases); `refresh-holds` gives the same reason (`test/refresh-holds.test.ts` "a listed-site hold", 3 cases). Pass.
 - AC5: `pnpm test` 2864 passed, 6 skipped, 0 failed; `pnpm check` 748 entries, 0 problems, exit 0. Pass.
+
+Pass 2, 2026-11-09, at 21013f15. No file outside `cairn/` changed since pass 1 (`git diff --stat 15d0d98e HEAD -- . ':!cairn/'` is empty), so AC1, AC2, AC4, and AC5 stand on pass 1's evidence.
+
+- AC3 (amended): the six records name #883 to #888, ground `copyright`; each issue body opens with `@<owner>` of the plugin's repository (ethanwillis, syt2, 0xc1c4da, chen7447, dnnunn, fdossi), says "a site I run that lists Zotero 7+ plugins", says "I'm removing" the plugin "because" of its site, links the line the ledger rests its verdict on (L1 `prefs.js#L1`, L2 `README.md#L25`, L3 `addon/prefs.js#L3`, L4 `README.md#L20`, L5 `addon/prefs.js#L3`, L6 `README.md#L91`, each at the ledger's commit), and says to reply here to appeal; the six directories are gone; `pnpm check` 748 entries, 0 problems. Pass.
