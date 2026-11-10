@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+- The removal rules have a fifth ground: a maintainer can remove a plugin
+  that has a site built in that courts in at least two countries ordered
+  blocked or shut down for copyright infringement. `docs/requests.md` now
+  defines spam, harm, and "built in". It also says how a removed plugin
+  comes back on each ground. A plugin found sending data without saying so
+  first gets 14 days to disclose it. The docs say where legal notices
+  and private reports go, and that no response time is promised. About's
+  "Removing a plugin" card and the remove form state the new ground and
+  the way back. The form gains the reason "It has a listed site built in".
+  Each `delisted.json` record now needs a `ground`, and `pnpm check`
+  refuses a record without one.
 - Plugin pages with a download link show a "Malware scan" fact: whether
   ClamAV found known malware in the plugin's file, with the scan's date, or
   "Not scanned yet". The daily build scans the plugin files with ClamAV on

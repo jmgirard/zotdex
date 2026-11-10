@@ -48,7 +48,7 @@ const LIST = JSON.stringify([{ repo: "example/removed", ids: ["removed@example.o
 describe("the remove-plugin form", () => {
   const form = readFileSync(resolve(ROOT, ".github/ISSUE_TEMPLATE/remove-plugin.yml"), "utf8");
 
-  test("has the label, the required inputs, the plugin id that a link fills in, and the four reasons", () => {
+  test("has the label, the required inputs, the plugin id that a link fills in, and the five reasons", () => {
     expect(form).toMatch(/^labels: \["remove-plugin"\]$/m);
     const inputs = form.split(/^ {2}- type: (?:input|dropdown|textarea)$/m).slice(1);
     expect(inputs.map((block) => block.match(/^ {4}id: (\w+)$/m)?.[1])).toEqual(["plugin", "reason", "evidence"]);
@@ -59,6 +59,7 @@ describe("the remove-plugin form", () => {
         "- It is spam",
         "- It misleads people about what it is or who makes it",
         "- It does harm, and I can show it",
+        "- It has a listed site built in",
       ].join("\n        "),
     );
   });

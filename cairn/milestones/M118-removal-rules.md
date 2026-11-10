@@ -120,13 +120,13 @@ precise text lives in `docs/`, and About gets one approved sentence
       `docs/maintaining.md`. Read how discovery and "Add a plugin" issues
       treat a repo whose bot pull request was closed (`src/discover/`), and
       name the step that lets a lifted plugin return.
-- [ ] T6: Stop once: ask the user for the private contact and show each
+- [x] T6: Stop once: ask the user for the private contact and show each
       changed line of About and the form, old and new, for a yes. Apply
       the approved lines, including About's "A removed plugin stays off
       Zotdex" (`site/src/pages/about.astro:143`) and the form's "A removed
       plugin stays off the index" (`remove-plugin.yml:17`); add the reason
       choice; update `cairn/references/plain-words-copy.md`.
-- [ ] T7: CHANGELOG entry; run `pnpm test` and `pnpm check`.
+- [x] T7: CHANGELOG entry; run `pnpm test` and `pnpm check`.
 
 ## Work log
 
@@ -164,6 +164,11 @@ precise text lives in `docs/`, and About gets one approved sentence
 - 2026-11-09: stop: second re-audit on AC1, AC2, AC4, AC6 goes to the user (repeated review-failure stop).
 - 2026-11-09: T1 written (D-085, DESIGN removal paragraphs); T3 drafted in `docs/requests.md`, plain-English lint fixed in the new text.
 - 2026-11-09: substantive amendment: at the stop the user chose the four narrower rewordings of AC1, AC2, AC4, AC6; AC1's D-entry clause left out, as a record clause binds an instrument and D-085 is written.
+- 2026-11-09: T4 and T5 done: legal notices, private reports, screenshot takedowns, and the three promises in `docs/requests.md`; removal, issue outline, 14-day notice, lift, and held-PR steps in `docs/maintaining.md`; the lift step adds the entry with `pnpm add-plugin` when a closed bot pull request blocks the repo.
+- 2026-11-09: question set (T6 stop): the user approved the five About lines and the form lines as shown, and chose GitHub's private report form (`security/advisories/new`) as the private contact; private vulnerability reporting is off on the repo (`gh api .../private-vulnerability-reporting` read `enabled: false`), and turning it on is the user's, per the option they chose.
+- 2026-11-09: T6 done: About card and form applied as approved, recorded in `plain-words-copy.md` (About under "Removal rules (M118)", the form in its own section); new link constants `REMOVAL_RULES_HREF` and `PRIVATE_REPORT_HREF` in `site/src/data.ts`; site and form tests updated; built site checked in the browser pane (card text and three links).
+- 2026-11-09: plain-English lint: older hits left in `plain-words-copy.md` (it quotes approved wording, which changes only on the user's yes) and in older CHANGELOG entries (outside this milestone); older hits fixed in `docs/maintaining.md`.
+- 2026-11-09: T7 done: CHANGELOG entry; `pnpm test` 2815 passed.
 
 ## Decisions
 

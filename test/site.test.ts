@@ -15,7 +15,9 @@ import {
   longDay,
   majorReport,
   pluginHref,
+  PRIVATE_REPORT_HREF,
   rangeText,
+  REMOVAL_RULES_HREF,
   REMOVE_PLUGIN_HREF,
   reportHref,
   safeHref,
@@ -952,9 +954,12 @@ describe("the About page", () => {
     [
       "removing",
       "Removing a plugin",
-      "A maintainer removes a plugin when its owner asks, when it's spam, when its entry misleads people about what it is or who makes it, " +
-        "or when someone shows evidence that it causes harm. " +
-        "To ask, use the form for removing a plugin or reporting harm, or the link on the plugin's page. A removed plugin stays off Zotdex.",
+      "A maintainer removes a plugin when its owner asks, when it's spam, or when its entry misleads people about what it is or who makes it. " +
+        "A plugin is also removed when someone shows evidence that it does something harmful its users weren't told about, " +
+        "or when it has a site built in that courts in two countries ordered blocked for copyright infringement. " +
+        "To ask, use the form for removing a plugin or reporting harm, or the link on the plugin's page. " +
+        "A removed plugin stays off Zotdex until a maintainer lifts the removal, and its owner can ask to bring it back. " +
+        "For a legal notice or a private report, use GitHub's private report form. The full rules are on GitHub.",
     ],
     [
       "installing",
@@ -1023,7 +1028,11 @@ describe("the About page", () => {
 
   test("links the removal form and the license page from their phrases, and nothing else from those sections", () => {
     const links = (id: string) => [...sectionOf(id).matchAll(/<a href="([^"]*)"[^>]*>([^<]*)<\/a>/g)].map(([, href, text]) => [unescaped(href!), text]);
-    expect(links("removing")).toEqual([[REMOVE_PLUGIN_HREF, "form for removing a plugin or reporting harm"]]);
+    expect(links("removing")).toEqual([
+      [REMOVE_PLUGIN_HREF, "form for removing a plugin or reporting harm"],
+      [PRIVATE_REPORT_HREF, "private report form"],
+      [REMOVAL_RULES_HREF, "full rules"],
+    ]);
     expect(links("license")).toEqual([[LICENSE_HREF, "license page"]]);
   });
 

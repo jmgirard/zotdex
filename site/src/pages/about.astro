@@ -7,6 +7,8 @@ import {
   categoryOptions,
   LICENSE_HREF,
   loadData,
+  PRIVATE_REPORT_HREF,
+  REMOVAL_RULES_HREF,
   REMOVE_PLUGIN_HREF,
   SITE_DOCS_HREF,
   SUPPORT_MARKS as MARKS,
@@ -137,10 +139,15 @@ const offered = new Set(categoryOptions(plugins).map(({ value }) => value));
   <section class="card" id="removing" data-about="removing">
     <h2>Removing a plugin</h2>
     <p>
-      A maintainer removes a plugin when its owner asks, when it's spam, when its entry misleads people about what it is
-      or who makes it, or when someone shows evidence that it causes harm. To ask, use the{" "}
+      A maintainer removes a plugin when its owner asks, when it's spam, or when its entry misleads people about what it
+      is or who makes it. A plugin is also removed when someone shows evidence that it does something harmful its users
+      weren't told about, or when it has a site built in that courts in two countries ordered blocked for copyright
+      infringement. To ask, use the{" "}
       <a href={REMOVE_PLUGIN_HREF} data-remove-form>form for removing a plugin or reporting harm</a>, or the link on the
-      plugin's page. A removed plugin stays off Zotdex.
+      plugin's page. A removed plugin stays off Zotdex until a maintainer lifts the removal, and its owner can ask to
+      bring it back. For a legal notice or a private report, use GitHub's{" "}
+      <a href={PRIVATE_REPORT_HREF} data-private-report>private report form</a>. The{" "}
+      <a href={REMOVAL_RULES_HREF} data-removal-rules>full rules</a> are on GitHub.
     </p>
   </section>
   <section class="card" id="installing" data-about="installing">

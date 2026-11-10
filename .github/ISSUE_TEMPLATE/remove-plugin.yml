@@ -1,5 +1,5 @@
 name: Remove a plugin or report harm
-description: Ask the index to stop listing a plugin. For its repository's owner, or for anyone who can show spam, a misleading entry, or harm.
+description: Ask the index to stop listing a plugin. For its repository's owner, or for anyone who can show spam, a misleading entry, harm, or a listed site built in.
 title: Remove a plugin
 labels: ["remove-plugin"]
 body:
@@ -9,12 +9,16 @@ body:
         This issue is public. A maintainer reads each request and answers here.
 
         The maintainer removes a plugin for its repository's owner, for spam, for an
-        entry that misleads people about what the plugin is or who makes it, and for
-        harm that the evidence shows. A claim with no evidence removes nothing.
+        entry that misleads people about what the plugin is or who makes it, for
+        harm that the evidence shows, and for a listed site built in. The full rules,
+        with what each ground means, are in
+        [docs/requests.md](https://github.com/jmgirard/zotdex/blob/main/docs/requests.md#removing-a-plugin).
+        To report harm in private, or to send a legal notice, use the contact on the
+        About page instead. A claim with no evidence removes nothing.
         The index cannot vet plugins and does not review their code, so give evidence
         that a reader can check, such as a link to the code or a page that shows it.
 
-        A removed plugin stays off the index. A list names its repository and, when a
+        A removed plugin stays off the index until a maintainer lifts the removal. A list names its repository and, when a
         maintainer judges it unique, its plugin id, so a copy under a new name is
         covered only if it keeps a listed id.
   - type: input
@@ -33,6 +37,7 @@ body:
         - It is spam
         - It misleads people about what it is or who makes it
         - It does harm, and I can show it
+        - It has a listed site built in
     validations:
       required: true
   - type: textarea

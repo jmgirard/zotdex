@@ -240,6 +240,12 @@ export function screenshotHref(record: PluginRecord): string {
 // The issue form that asks to remove a plugin or reports harm.
 export const REMOVE_PLUGIN_HREF = `${NEW_ISSUE}?template=remove-plugin.yml`;
 
+// The removal rules in full, in docs/requests.md, which the About card shortens.
+export const REMOVAL_RULES_HREF = "https://github.com/jmgirard/zotdex/blob/main/docs/requests.md#removing-a-plugin";
+
+// GitHub's private report form for the index repo, for legal notices and private reports of harm.
+export const PRIVATE_REPORT_HREF = "https://github.com/jmgirard/zotdex/security/advisories/new";
+
 // That form with the plugin filled in.
 export function removeHref(record: PluginRecord): string {
   return `${REMOVE_PLUGIN_HREF}&plugin=${encodeURIComponent(record.id)}`;
