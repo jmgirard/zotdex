@@ -513,6 +513,14 @@ describe("pnpm discover-issue --handoff then pnpm propose", () => {
     expect(JSON.parse(failed.stdout)).toMatchObject({ outcome: "failed", message: expect.stringContaining("delisted.json: cannot read the list") });
   });
 
+  test("the read step fails on a sites file it cannot read, so the issue stays open", () => {
+    const responses = { ...indexRepo, [ISSUE]: { json: { number: 7, body: rendered("https://github.com/example/alpha") } } };
+    const env = { GITHUB_REPOSITORY: "example/index", ISSUE_NUMBER: "7", ZPI_SITES: join(tempDir(), "missing.json") };
+    const failed = pnpm("discover-issue", ["--handoff", join(tempDir(), "handoff")], responses, tempDir(), env);
+    expect(failed.status).toBe(0);
+    expect(JSON.parse(failed.stdout)).toMatchObject({ outcome: "failed", message: expect.stringContaining("sites.json: cannot read the sites file") });
+  });
+
   test("the read step writes the entry's hold reasons in the plan, and no source", () => {
     const responses = {
       ...indexRepo,

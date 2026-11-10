@@ -200,6 +200,18 @@ describe("pnpm refresh-holds", () => {
       ]);
     });
 
+    test("reads the repo name in the case that the entry's repoUrl gives", async () => {
+      const { result } = await run(
+        {
+          [LIST]: { json: [held(1)] },
+          ...entry(1, { repoUrl: "https://github.com/bob/zotero-SciHubPlus" }),
+          [`${API}/bob/zotero-scihubplus`]: { json: { description: "A PDF fetcher", topics: [] } },
+        },
+        false,
+      );
+      expect(result.changed).toEqual([{ number: 1, lines: ["- Listed site: ` Sci-Hub `, named in the repo name", "- Owner's GitHub account created: 2026-10-20"] }]);
+    });
+
     test("says none now when no text names a listed site any more", async () => {
       const { result } = await run({ [LIST]: { json: [held(1)] }, ...entry(1), [`${API}/bob/p1`]: { json: { description: "A PDF fetcher", topics: [] } } }, false);
       expect(result.changed).toEqual([{ number: 1, lines: ["- Listed sites: none now", "- Owner's GitHub account created: 2026-10-20"] }]);
@@ -419,6 +431,12 @@ describe("pnpm refresh-holds on the command line", () => {
   test("a failed list read refreshes nothing, and the command exits 1", () => {
     const { result } = cli([], { [LIST]: { status: 500, json: {} } }, { GITHUB_REPOSITORY: "example/index" });
     expect(result.stderr).toMatch(/^refreshed nothing: .*HTTP 500/);
+    expect(result.status).toBe(1);
+  });
+
+  test("a sites file it cannot read refreshes nothing, and the command exits 1", () => {
+    const { result } = cli([], { [LIST]: { json: [] } }, { GITHUB_REPOSITORY: "example/index", ZPI_SITES: join(tmpdir(), "zpi-no-such-dir", "sites.json") });
+    expect(result.stderr).toMatch(/^refreshed nothing: cannot read the sites file/);
     expect(result.status).toBe(1);
   });
 

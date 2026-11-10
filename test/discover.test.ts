@@ -1272,6 +1272,19 @@ describe("pnpm discover", () => {
     }
   });
 
+  test("stops on a sites file it cannot read, and writes no entry", () => {
+    const saved = process.env.ZPI_SITES;
+    process.env.ZPI_SITES = join(tempDir(), "missing.json");
+    try {
+      const stopped = pnpmDiscover(["--out", "out", "--state", "state.json"], recorded(), tempDir());
+      expect(stopped.status).toBe(1);
+      expect(stopped.stderr).toMatch(/^sites\.json: cannot read the sites file: .*\nwrote no entry\n$/);
+    } finally {
+      if (saved === undefined) delete process.env.ZPI_SITES;
+      else process.env.ZPI_SITES = saved;
+    }
+  });
+
   test("writes entries and the state under the caller's directory and prints the report", () => {
     const cwd = tempDir();
     const result = pnpmDiscover(["--out", "out", "--state", "state.json", "--limit", "2"], recorded(), cwd);

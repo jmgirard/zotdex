@@ -1503,10 +1503,12 @@ maintainer stops reading them.
 
 ### D-088: In the listed-site match, a capital letter after a small letter or a digit starts a new run, and the hold is the seventh reason, correcting D-087
 
-2026-11-09, M119 claim audit and review. D-087 says that case and a change
-from lower to upper case do not count in the match. That is wrong in part.
-Letter case does not count within a run, but a capital letter after a small
-letter or a digit starts a new run. So `ScihubFetcher` names Sci-Hub, and
+2026-11-09, M119 claim audit and review. D-087 says that case, marks, and a
+change from lower to upper case do not count in the match. That is wrong in
+part. Letter case does not count within a run, but a capital letter after a
+small letter or a digit starts a new run. A mark is any character other than
+the letters a to z and digits after NFKC and lower case, so an accented
+letter ends a run too. So `ScihubFetcher` names Sci-Hub, and
 `Scihubfetcher` does not. The match reads the repository name in the case
 that GitHub gives, so the split applies there too. D-087 also calls
 `listed-site` a sixth hold reason. It is the seventh, after `name-match`,

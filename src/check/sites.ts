@@ -67,8 +67,9 @@ export function sitesNamedIn(text: string, sites: readonly Site[]): Site[] {
 }
 
 // The file's problems that its schema does not see: a site that an earlier record already
-// gives, a site with rulings from fewer than COUNTRIES_MIN countries, a name with no letter
-// or digit, and a name that matches the same texts as another name.
+// gives, a ruling dated on a day that its month does not have, a site with rulings from fewer
+// than COUNTRIES_MIN countries, a name with no letter or digit, and a name that matches the
+// same texts as another name.
 export function sitesProblems(sites: readonly Site[]): string[] {
   const problems: string[] = [];
   const keys = new Map<string, string>();
@@ -76,6 +77,12 @@ export function sitesProblems(sites: readonly Site[]): string[] {
   for (const [index, site] of sites.entries()) {
     if (seen.has(site.site)) problems.push(`/${index} ${JSON.stringify(site.site)} is the site of an earlier record`);
     seen.add(site.site);
+    for (const [at, { date }] of site.rulings.entries()) {
+      const day = new Date(`${date}T00:00:00Z`);
+      if (date.length === 10 && (Number.isNaN(day.getTime()) || day.toISOString().slice(0, 10) !== date)) {
+        problems.push(`/${index}/rulings/${at} ${JSON.stringify(site.site)} has the date ${date}, a day that its month does not have`);
+      }
+    }
     const countries = new Set(site.rulings.map(({ country }) => country));
     if (countries.size < COUNTRIES_MIN) problems.push(`/${index} ${JSON.stringify(site.site)} has rulings from ${countries.size} country, and needs ${COUNTRIES_MIN}`);
     for (const name of site.names) {

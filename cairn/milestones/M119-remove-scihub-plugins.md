@@ -207,3 +207,15 @@ Pass 3, 2026-11-09, at de7e8f9d, after return 1.
 - blame-history #3: requests.md and DESIGN add the GitHub description to the no-report read, widening D-085 — reject (false: D-085's "description" does not exclude the GitHub description, and D-087 names it among the texts).
 - blame-history #4: Library Genesis meets the count and is not in `sites.json` — follow-up: the DESIGN Known issues entry written in pass 1's claim audit.
 - blame-history #5: D-053's per-reason questions have none for `listed-site` — reject (false: D-087 and docs/maintaining.md give it, whether a listed site is built in).
+- diff-bug #1: the hold is decided when a pull request opens, so an open `Hold: none` pull request that names a site added to `sites.json` later, or open when this branch merges, still merges — known issue: The `listed-site` hold is decided when the bot drafts a pull request, as the other holds are, so a site added to `sites.json` later does not hold a bot pull request that is already open with `Hold: none`, and `pnpm check` does not match entries against the file. Of the 16 open bot pull requests on 2026-11-09, none names a listed site (observed 2026-11-09). A plugin that merges this way is listed, and the daily re-check of listed plugins (M120) is where it is found. Accepted at the M119 gate
+- diff-bug #2: "Closing a held pull request" gives two reasons, against the `replaces-entry` hold text — fix now (the same fix as ripple #1).
+- diff-bug #3: the two-country rule counts strings, so `GB` and `UK` pass as two countries — fix now (the schema refuses `UK`, `EL`, and `EU`, with a test).
+- diff-bug #4: the date pattern takes `2024-02-31` — fix now (`sitesProblems` refuses a day its month does not have, with a test).
+- diff-bug #5: D-087's "marks" reads as accents, while an accented letter ends a run — fix now (in D-088, unmerged).
+- diff-bug #6: a never-listed plugin closed under a ground counts as a first removal — reject (planned change: D-087 gives it a removal record so that it comes back the same way, and a second removal on the ground stays).
+- diff-bug #7: the new `repoTexts` await widens the window before the PATCH — reject (false: `--apply` reads the pull request again and skips it when its body changed).
+- diff-bug #8: no test for refresh's repo-name case or for the three CLIs' bad-`sites.json` branches — fix now (four tests; an issue run's hold goes through the same `draftEntry` path the handoff-run test covers, so no fifth).
+- diff-bug #9: tests that pass on main — reject (planned: the handoff cases pin the new `sites` constraints, the passing `pnpm check` case is the check's control, and AC4 asks for the near miss).
+- diff-bug #10: repeated inputs on one path — fix now in part (dropped `Anna’s Archive`, `AnnasArchive`, and `sci-hubs`); the three schema cases test three constraints, and AC4 asks for the per-name cases.
+- diff-bug #11: two test titles say "a sixth reason" — fix now (the same fix as ripple #3).
+- diff-bug #12: "every other character ends a run" ignores lower-casing such as `İ` — fix now (the docs say the text is folded by NFKC and lower-cased first).

@@ -17,7 +17,7 @@
           "additionalProperties": false,
           "required": ["country", "court", "date", "case", "kind", "url"],
           "properties": {
-            "country": { "type": "string", "pattern": "^[A-Z]{2}$" },
+            "country": { "description": "ISO 3166-1 alpha-2 code, so GB, not UK", "type": "string", "pattern": "^[A-Z]{2}$", "not": { "enum": ["UK", "EL", "EU"] } },
             "court": { "type": "string", "minLength": 1 },
             "date": { "type": "string", "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?$" },
             "case": { "type": "string", "minLength": 1 },

@@ -325,9 +325,9 @@ reasons, in this order:
   The file lists sites that courts in at least two countries ordered blocked
   or shut down for copyright infringement, with those rulings. If some runs
   of the letters a to z and digits in a row join to a site's name, the text
-  names that site. Full-width and other compatibility forms count as their
-  plain letters and digits. Every other character ends a run, and it does
-  not count. Letter case does not count either, except that a capital
+  names that site. The text is first folded by NFKC and put in lower case,
+  so a full-width letter counts as its plain letter. After that, every other
+  character ends a run, and it does not count. Letter case does not count either, except that a capital
   letter after a small letter or a digit starts a new run. So `Sci-Hub`,
   `sci hub`, `SciHub`, and `zotero-scihub` all name Sci-Hub, and
   `scihubble`, `sci-hubs`, and `Scihubfetcher` do not. The name alone
@@ -715,8 +715,9 @@ One rule reads `sites.json` at the top of the repo, or the file that
 `ZPI_SITES` names:
 
 - `sites-file`: the file must exist and match `schemas/sites.schema.json`.
-  Each site must appear once and have rulings from at least two countries,
-  and no two names can match the same texts.
+  Each site must appear once and have rulings from at least two countries.
+  A country is its ISO 3166-1 code (`GB`, not `UK`), and each ruling's date
+  must be a real day. No two names can match the same texts.
 
 The first run downloads the registry schema into `.cache/`, so that run needs
 a network connection. The command refuses a downloaded or cached schema whose
