@@ -1,0 +1,54 @@
+[
+  {
+    "site": "Sci-Hub",
+    "names": ["Sci-Hub"],
+    "rulings": [
+      {
+        "country": "US",
+        "court": "United States District Court for the Southern District of New York",
+        "date": "2017-06-21",
+        "case": "Elsevier Inc. v. Sci-Hub, No. 15-cv-4282 (RWS)",
+        "kind": "default judgment",
+        "url": "https://copyrightalliance.org/copyright-cases/elsevier-inc-v-sci-hub"
+      },
+      {
+        "country": "FR",
+        "court": "Tribunal de grande instance de Paris",
+        "date": "2019-03-07",
+        "case": "Elsevier and Springer Nature v. Bouygues Télécom, Free, Orange, and SFR",
+        "kind": "blocking order",
+        "url": "https://torrentfreak.com/court-orders-french-isps-to-block-sci-hub-and-libgen-190331/"
+      },
+      {
+        "country": "IN",
+        "court": "High Court of Delhi",
+        "date": "2025-08-19",
+        "case": "Elsevier Ltd. v. Alexandra Elbakyan, CS(COMM) 572/2020",
+        "kind": "blocking order",
+        "url": "https://ksandk.com/intellectual-property-rights/delhi-hc-orders-blocking-of-sci-hub-sci-net-for-piracy/"
+      }
+    ]
+  },
+  {
+    "site": "Anna's Archive",
+    "names": ["Anna's Archive"],
+    "rulings": [
+      {
+        "country": "NL",
+        "court": "Rechtbank Rotterdam",
+        "date": "2024-03",
+        "case": "Stichting BREIN v. M7/Online.nl",
+        "kind": "blocking order",
+        "url": "https://torrentfreak.com/dutch-court-orders-isp-to-block-annas-archive-and-libgen-240322/"
+      },
+      {
+        "country": "US",
+        "court": "United States District Court for the Southern District of New York",
+        "date": "2026-04-14",
+        "case": "Atlantic Recording Corp. v. Anna's Archive, No. 26-cv-00002 (JSR)",
+        "kind": "default judgment",
+        "url": "https://storage.courtlistener.com/recap/gov.uscourts.nysd.655608/gov.uscourts.nysd.655608.41.0.pdf"
+      }
+    ]
+  }
+]

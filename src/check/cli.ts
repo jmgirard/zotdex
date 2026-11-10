@@ -3,6 +3,7 @@ import process, { argv } from "node:process";
 import { checkTree, compileValidators, type Finding } from "./check.ts";
 import { type Delisted, readDelisted } from "./delisted.ts";
 import { loadRegistrySchema, RegistrySchemaUnavailable } from "./registry-schema.ts";
+import { readSites } from "./sites.ts";
 
 const CACHE_DIR = join(import.meta.dirname, "..", "..", ".cache");
 
@@ -30,6 +31,11 @@ async function main(): Promise<number> {
     delisted = await readDelisted();
   } catch (error) {
     listFindings.push({ entry: "delisted.json", rule: "delisted-file", message: (error as Error).message });
+  }
+  try {
+    await readSites();
+  } catch (error) {
+    listFindings.push({ entry: "sites.json", rule: "sites-file", message: (error as Error).message });
   }
 
   const { checked, findings: treeFindings } = await checkTree(root, compileValidators(registrySchema), delisted);

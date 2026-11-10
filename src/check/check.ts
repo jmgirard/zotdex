@@ -9,6 +9,7 @@ export type Rule =
   | "delisted-id"
   | "delisted-repo"
   | "delisted-file"
+  | "sites-file"
   | "files-present"
   | "registry-schema"
   | "index-schema"

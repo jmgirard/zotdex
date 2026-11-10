@@ -4,14 +4,14 @@
      cairn_validate's <150 over the plan-owned body. -->
 # M119: Remove plugins with Sci-Hub built in
 
-- **Status:** planned
+- **Status:** in-progress
 - **Priority:** high
 - **Depends on:** M118
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — plugins leave the site, owners get public issues, and the bot holds pull requests
-- **Branch/PR:** —
+- **Branch/PR:** m119-remove-scihub-plugins
 
 ## Goal
 
@@ -77,12 +77,12 @@ them, so no row.
 
 ## Tasks
 
-- [ ] T1: Find and read the court rulings for Sci-Hub and each site the
+- [x] T1: Find and read the court rulings for Sci-Hub and each site the
       matched plugins use (RR01 named cases from memory; confirm each);
       write a source note per ruling; write the sites file, its schema,
       and a check that refuses a site with rulings from fewer than two
       countries.
-- [ ] T2: Sweep the deployed data with the ledger's pattern; read each
+- [x] T2: Sweep the deployed data with the ledger's pattern; read each
       matched plugin's README and settings (no code, per M118's D-entry);
       record each verdict and where it was read.
 - [ ] T3: Write the D-entry for the hold and for closing a held pull
@@ -109,6 +109,11 @@ them, so no row.
 - 2026-11-09: roadmap cap: the M115 terminal row was pruned and one parked row shortened to fit the two new rows.
 - 2026-11-09: word search of the 2026-11-09 data found six candidates: ethanwillis/zotero-scihub, syt2/zotero-scipdf, 0xc1c4da/zotero7-scidb, chen7447/sci-download-for-zotero, dnnunn/zotero-scihub-fetcher, fdossi/zotfetch.
 - 2026-11-09: RR01 ingested: AC1 takes the ruling fields and the name rule (R12); AC2 follows M118's built-in definition; AC3 follows M118's issue outline (R13); AC4 adds topics (R12); T3 takes R9; RR01's cases are from memory, so T1 confirms each.
+- 2026-11-09: started on branch m119-remove-scihub-plugins; `.claude/` was untracked before the cut and stays unstaged.
+- 2026-11-09: T1 and T2 read together: the sweep's reads told which sites T1 had to count; the order of commits is kept.
+- 2026-11-09: T1: `sites.json` at the repo root with `schemas/sites.schema.json`; `src/check/sites.ts` reads it and `pnpm check` reports `sites-file`; Sci-Hub (US 2017, FR 2019, IN 2025) and Anna's Archive (NL 2024, US 2026) listed; Sci-Net left out on one country; RR01's Sci-Hub cases confirmed, from the US judgment's own text and reports; the Dutch day not found, so the schema takes YYYY-MM; five source notes.
+- 2026-11-09: T1 choice: a name matches when whole runs of a-z and 0-9 in a row join to it, a run also ending at a lower-to-upper case change, after NFKC; so `scihubfetcher` as one word does not match, a cost of keeping near misses out.
+- 2026-11-09: T2: `cairn/references/listed-site-sweep-2026-11-09.md`; the pattern is the sites file's names under the bot's own match, over name, both descriptions, repo name, and description overrides (the data holds no topics); six matches, all yes (five Sci-Hub, one Anna's Archive); zotfetch's README contradicts itself, so its issue names the conflict; one commit with T1, since INDEX.md lists both.
 
 ## Decisions
 
