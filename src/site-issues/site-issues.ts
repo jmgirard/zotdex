@@ -33,9 +33,12 @@ export interface Match {
   fields: { field: MatchField; text: string }[];
 }
 
-// The repository name in the record's repoUrl, in the letter case that the URL gives.
+// The repository name in the URL that GitHub gave the build (`upstream.repoUrl`), which follows a
+// rename and keeps GitHub's letter case, as the `listed-site` hold reads it. A record with no
+// upstream falls back to the entry's own repoUrl. The name is the URL's second path segment.
 function repoNameOf(record: PluginRecord): string {
-  return record.repoUrl.replace(/\/+$/, "").split("/").at(-1) ?? "";
+  const url = record.upstream?.repoUrl ?? record.repoUrl;
+  return url.replace(/^[a-z]+:\/\/[^/]+\//i, "").split("/")[1] ?? "";
 }
 
 function textsOf(record: PluginRecord): { field: MatchField; text: string }[] {

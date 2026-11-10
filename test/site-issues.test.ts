@@ -8,6 +8,7 @@ import { promisify } from "node:util";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import type { PluginRecord, PluginsFile } from "../src/build/build.ts";
 import type { Site } from "../src/check/sites.ts";
+import { codeSpan } from "../src/malware-scan/scan-issues.ts";
 import { bodyOf, type Match, markerOf, matchesOf, reportMatches, SITE_ISSUES_MAX, titleOf } from "../src/site-issues/site-issues.ts";
 import { fixtureFetch, type Recorded } from "./support/fixture-fetch.ts";
 
@@ -31,17 +32,17 @@ interface Texts {
   repoDescription?: string;
 }
 
-function record(id: string, texts: Texts = {}, repoName = id): PluginRecord {
-  const repoUrl = `https://github.com/example/${repoName}`;
+// `repoName` is the entry's own repo name, and `githubName` the name that GitHub gave the build.
+function record(id: string, texts: Texts = {}, repoName = id, githubName = repoName): PluginRecord {
   return {
     id,
-    repoUrl,
+    repoUrl: `https://github.com/example/${repoName}`,
     upstream: {
       id: `${id}@example.org`,
       version: "1.0.0",
       updateUrl: `https://example.org/${id}/update.json`,
       updateHost: "example.org",
-      repoUrl,
+      repoUrl: `https://github.com/example/${githubName}`,
       repoCreatedAt: "2026-01-01T00:00:00Z",
       openIssues: 0,
       releaseCount: 1,
@@ -81,8 +82,9 @@ describe("matchesOf", () => {
     expect(pairs([record("a", texts, repoName)])).toEqual([["a", "Sci-Hub", [field]]]);
   });
 
-  test("reads the repository name in the URL's letter case", () => {
-    expect(pairs([record("a", {}, "ScihubFetcher"), record("b", {}, "Scihubfetcher")])).toEqual([["a", "Sci-Hub", ["repoName"]]]);
+  test("reads the repository name that GitHub gives, in its letter case, after a rename", () => {
+    expect(pairs([record("a", {}, "pdf-helper", "zotero-scihub"), record("b", {}, "zotero-scihub", "pdf-helper")])).toEqual([["a", "Sci-Hub", ["repoName"]]]);
+    expect(pairs([record("a", {}, "scihubfetcher", "ScihubFetcher"), record("b", {}, "ScihubFetcher", "Scihubfetcher")])).toEqual([["a", "Sci-Hub", ["repoName"]]]);
   });
 
   test("gives one match for each site a record names, with every text that names it", () => {
@@ -92,8 +94,8 @@ describe("matchesOf", () => {
     ]);
   });
 
-  test("reads the repository name of a record with no upstream", () => {
-    const { upstream: _upstream, ...bare } = record("a", {}, "libgen-links");
+  test("reads the repository name of a record with no upstream from the entry's URL, past any further path", () => {
+    const { upstream: _upstream, ...bare } = record("a", {}, "libgen-links/tree/main");
     expect(pairs([bare])).toEqual([["a", "Library Genesis", ["repoName"]]]);
   });
 });
@@ -114,6 +116,7 @@ describe("the issue text", () => {
     const hostile = "Sci-Hub\n\n# y --> @name ``";
     const lines = bodyOf(matchesOf(data([record("a", { name: hostile })]), SITES)[0]).split("\n");
     expect(lines).toHaveLength(bodyOf(match("a")).split("\n").length);
+    expect(lines).toContain(`- Manifest name: ${codeSpan(hostile)}`);
     expect(lines.filter((line) => line.includes("<!--"))).toEqual([`<!-- listed-site ${sha("a")} ${sha("Sci-Hub")} -->`]);
     expect(lines.filter((line) => line.startsWith("#"))).toEqual([]);
   });
@@ -158,6 +161,7 @@ describe("reportMatches", () => {
     const matches = Array.from({ length: count }, (_, i) => match(`p${i}`));
     const { posts, outcome } = await run(matches, { [LIST]: { json: [] }, [LABEL]: { json: {} }, [`POST ${API}/issues`]: { json: created(1) } });
     expect(posts).toHaveLength(Math.min(SITE_ISSUES_MAX, count));
+    expect(outcome.opened).toEqual(["p0", "p1", "p2", "p3", "p4"]);
     const warnings = outcome.lines.filter((line) => line.startsWith("::warning::"));
     expect(warnings).toEqual(left.length ? [`::warning::left 1 listed-site matches for a later run, past the limit of 5: ${left.join(", ")}`] : []);
   });
@@ -183,11 +187,12 @@ describe("reportMatches", () => {
     expect(outcome.lines).toEqual([expect.stringMatching(message)]);
   });
 
-  test.each([422, 500])("stops at a create that answers %i and opens no other issue", async (status) => {
-    const { posts, outcome } = await run([match("a"), match("b")], { [LIST]: { json: [] }, [LABEL]: { json: {} }, [`POST ${API}/issues`]: { status, json: {} } });
+  // A 422, which the malware scan's issues skip, stops this run too.
+  test("stops at a create that answers 422 and opens no other issue", async () => {
+    const { posts, outcome } = await run([match("a"), match("b")], { [LIST]: { json: [] }, [LABEL]: { json: {} }, [`POST ${API}/issues`]: { status: 422, json: {} } });
     expect(posts).toHaveLength(1);
     expect(outcome.opened).toEqual([]);
-    expect(outcome.lines).toEqual([expect.stringMatching(new RegExp(`^::warning::stopped opening listed-site issues at a \\(Sci-Hub\\): .*HTTP ${status}`))]);
+    expect(outcome.lines).toEqual([expect.stringMatching(/^::warning::stopped opening listed-site issues at a \(Sci-Hub\): .*HTTP 422/)]);
   });
 
   test("stops when GitHub drops the label from a created issue", async () => {
@@ -207,6 +212,7 @@ describe("pnpm site-issues", () => {
     path = join(dir, "plugins.json");
     writeFileSync(path, JSON.stringify(data([record("a", { name: "Reader" })])));
     writeFileSync(join(dir, "bad-sites.json"), JSON.stringify([{ site: "Sci-Hub" }]));
+    writeFileSync(join(dir, "no-list.json"), JSON.stringify({ schemaVersion: 1 }));
   });
   afterAll(() => rmSync(dir, { recursive: true, force: true }));
   // GITHUB_TOKEN is left out, so no run here can reach GitHub with a token.
@@ -221,6 +227,7 @@ describe("pnpm site-issues", () => {
     ["GITHUB_REPOSITORY is unset", () => ["--data", path, "--sites", SITES_FILE], undefined, /^GITHUB_REPOSITORY is not set\n/],
     ["--sites is missing", () => ["--data", path], "example/zotdex", /^usage: pnpm site-issues /],
     ["the data cannot be read", () => ["--data", join(dir, "none.json"), "--sites", SITES_FILE], "example/zotdex", /^cannot read the data: /],
+    ["the data has no plugins list", () => ["--data", join(dir, "no-list.json"), "--sites", SITES_FILE], "example/zotdex", /no-list\.json has no plugins list\n$/],
     ["the sites file breaks its schema", () => ["--data", path, "--sites", join(dir, "bad-sites.json")], "example/zotdex", /^the sites file does not match schemas\/sites.schema.json: /],
   ])("exits with status 1 when %s", async (_name, argv, repo, message) => {
     const error = await promisify(execFile)(process.execPath, [CLI, ...argv()], { env: env(repo) }).catch((reason: unknown) => reason);

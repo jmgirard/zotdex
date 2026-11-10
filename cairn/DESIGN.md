@@ -784,7 +784,8 @@ user reports. The exception is a report that is abuse.
 - Listed-site issues (`src/site-issues/`, M120, D-089): `pnpm site-issues
   --data --sites [--assignee]` (`matchesOf`, `reportMatches` in
   `site-issues.ts`) matches each record's manifest name and description,
-  GitHub description, and the repository name of its `repoUrl` against the
+  GitHub description, and the repository name of `upstream.repoUrl` (GitHub's
+  `html_url`, which follows a rename), else of the entry's `repoUrl`, against the
   sites file with `sitesNamedIn`, and opens a GitHub issue labeled
   `listed-site` for each record and site whose marker line (hashes of the id
   and the site) no such issue holds, at most `SITE_ISSUES_MAX` (5) a run,
@@ -839,7 +840,7 @@ reused._
   zotero-plugin-registry at a pinned commit, checks the file against a pinned
   SHA-256, and caches it in the gitignored `.cache/`. `src/check/sites.ts`
   reads and checks `sites.json` and holds the listed-site match that the
-  discovery bot uses (M119).
+  discovery bot (M119) and `pnpm site-issues` (M120) use.
 - `src/upstream/` reads the GitHub API with plain fetch (its client's `post`
   also creates the bot's pull requests, M009, and comments on issues, and its
   `patch` closes issues, M010), unzips the release
@@ -1300,7 +1301,8 @@ reused._
   does not match entries against the file. Of the 16 open bot pull requests
   on 2026-11-09, none names a listed site (observed 2026-11-09). A plugin
   that merges this way is listed, and the daily re-check of listed plugins
-  (M120) is where it is found. Accepted at the M119 gate.
+  (M120) finds it, unless only its topics name the site (corrected M120).
+  Accepted at the M119 gate.
 - `pnpm site-issues` reads no topics, since the deployed data holds none, so
   a listed plugin that names a listed site only in its topics opens no
   `listed-site` issue and is found only on a report (M120 Out, D-089).

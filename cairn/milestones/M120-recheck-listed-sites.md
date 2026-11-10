@@ -54,9 +54,9 @@ and the bot's hold (M119) reads them at intake, so no row.
 
 ## Coverage
 
-- AC1 → T1
+- AC1 → T1, T4
 - AC2 → T1
-- AC3 → T2
+- AC3 → T2, T4
 - AC4 → T3
 
 ## Tasks
@@ -66,6 +66,8 @@ and the bot's hold (M119) reads them at intake, so no row.
 - [x] T2: Add the `site-issues` job to `.github/workflows/build.yml`;
       write the D-entry; update docs, DESIGN, CHANGELOG.
 - [x] T3: Run `pnpm test` and `pnpm check`.
+- [x] T4: Fix review return 1 and the other fix-now findings that the
+      Review section lists; rerun `pnpm test` and `pnpm check`.
 
 ## Work log
 
@@ -85,6 +87,8 @@ and the bot's hold (M119) reads them at intake, so no row.
 - 2026-11-10: claim audit: 78 claims read, 2 corrected — docs/maintaining.md, src/site-issues/cli.ts (the lift step assumed every listed-site removal has a `listed-site` issue; the exit-1 list left out data with no plugins list and a refused sites file); the re-read found both hold, and its wording note on the lift step was taken.
 - 2026-11-10: status review; verify green (2895 passed, 753 entries, 0 problems).
 - 2026-11-10: review return 1: diff-bug #1 — `repoNameOf` reads the entry's `repoUrl`, not GitHub's `upstream.repoUrl`, so a repo renamed on GitHub to name a listed site gets no issue and no warning; the fix pass also takes the Review section's other fix-now findings (diff-bug #2, #3, #5, #10, #12; blame-history #1 to #3; ripple #2 to #5; prior-review #1).
+- 2026-11-10: in-progress for review return 1; T4 added (minor amendment), Coverage AC1 and AC3 gain T4.
+- 2026-11-10: T4 done: `repoNameOf` reads `upstream.repoUrl`, else `repoUrl`, at the second path segment; the rename and no-upstream tests failed on the old rule (2 of 30) and pass now; one 422 create test in place of 422 and 500; ids, span, and the no-plugins-list exit asserted; lift step, cap-warning, label, and item-3 docs, CHANGELOG, and three DESIGN lines fixed; ripple #2 changed to reject; deployed data still gives the same 4 matches; verify green (2895 passed, 753 entries, 0 problems).
 
 ## Decisions
 
@@ -112,7 +116,7 @@ and the bot's hold (M119) reads them at intake, so no row.
 - blame-history #2: D-089 says the lifting maintainer deletes the marker, while the docs do so only if the search finds none — fix now (with #1)
 - blame-history #3: CHANGELOG says a closed issue is not opened again, which holds only while its marker stays — fix now
 - ripple #1: `docs/requests.md:409` "A plugin that stays listed has not been checked" names no daily issue — reject, false: the sentence still holds, since the job reads texts, not README or settings
-- ripple #2: DESIGN's list of commands that read `sites.json` lacks `site-issues` — fix now
+- ripple #2: DESIGN's list of commands that read `sites.json` lacks `site-issues` — reject, false: the sentence names the commands whose sites `listedSites` matches, and `site-issues` calls `sitesNamedIn`, not `listedSites` (settled fix now first, changed on reading the line in the T4 pass)
 - ripple #3: DESIGN says `src/check/sites.ts` holds the match the bot uses, without `site-issues` — fix now
 - ripple #4: DESIGN's M119 Known issue says the daily re-check finds a plugin, which misses a topics-only name — fix now
 - ripple #5: the lift step's "the plugin's texts" does not say which texts — fix now
