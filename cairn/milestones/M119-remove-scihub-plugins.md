@@ -4,7 +4,7 @@
      cairn_validate's <150 over the plan-owned body. -->
 # M119: Remove plugins with Sci-Hub built in
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** high
 - **Depends on:** M118
 - **Driving RR:** —
@@ -55,8 +55,11 @@ them, so no row.
       or settings file where that was read.
 - [ ] AC3: Each plugin that the ledger marks yes has a `delisted.json`
       record with ground `copyright` and the number of its own public
-      issue on the index repo, written to M118's outline and mentioning
-      the repo's owner. Its directory under `plugins/` is gone, and `pnpm
+      issue on the index repo. That issue mentions the owner of the
+      plugin's repository, and its body says what Zotdex is, that Zotdex
+      removes the plugin and why, with a link to the README line or
+      settings line on which the ledger rests its verdict, and how to
+      appeal. The plugin's directory under `plugins/` is gone, and `pnpm
       check` passes.
 - [x] AC4: The bot holds a new pull request for a GitHub repo whose
       manifest name, manifest description, GitHub description, repo name,
@@ -126,6 +129,7 @@ them, so no row.
 - 2026-11-09: amendment routed: AC3 — the issues follow the three-part outline the user chose (user override above), not M118's six-part outline that AC3 names, so AC3's outline clause is wrong as written; the deliverable is as the user asked.
 - 2026-11-09: re-audit: AC3 (full) — "Its directory" reads as the issue's; the link clause should name what the ledger names; both fixed toward the narrower wording.
 - 2026-11-09: re-audit: AC3 (full) — "the repo's owner" can read as the index repo's; "README line or settings file" admits a README line that is not the evidence; "is removed" vs issues opened before the merge; second re-audit on AC3, so the wording goes to the user (stop).
+- 2026-11-09: amendment return: AC3 — "That issue mentions the owner of the plugin's repository, and its body says what Zotdex is, that Zotdex removes the plugin and why, with a link to the README line or settings line on which the ledger rests its verdict, and how to appeal. The plugin's directory under `plugins/` is gone, and `pnpm check` passes." (the user chose this wording at the stop; it replaces "written to M118's outline and mentioning the repo's owner. Its directory under `plugins/` is gone, and `pnpm check` passes.")
 - 2026-11-09: T5: `pnpm test` 2864 passed, 6 skipped; `pnpm check` 748 entries, 0 problems; a restored copy of two removed entries fails `pnpm check` as `delisted-repo` and `delisted-id`.
 
 ## Decisions
