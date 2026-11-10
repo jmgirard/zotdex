@@ -527,16 +527,19 @@ To remove a plugin, do these steps on a branch:
 1. Delete the entry's directory under `plugins/`.
 2. Add a record to `delisted.json`, with the ground and the issue's number.
 3. Run `pnpm check`, then merge the change.
-4. Close any open bot pull request for the repo or the id.
-5. Run `Build data` by hand. Otherwise, the plugin stays on the site until the
-   next daily build.
-6. Answer the issue to the outline below, then close it.
+4. Close any open bot pull request for the repo or the id with
+   `gh pr close <number> --comment "<reason>"`.
+5. Run `Build data` by hand with `gh workflow run build.yml`. Otherwise, the
+   plugin stays on the site until the next daily build.
+6. Answer the issue to the outline below, and close it with
+   `gh issue close <number> --comment "<answer>"`.
 
 ### The removal issue
 
 Answer each removal in its issue. When you remove a plugin with no request, as
-for a listed site built in, open an issue labeled `remove-plugin`. Write the
-answer in this order:
+for a listed site built in, open an issue with
+`gh issue create --label remove-plugin --title "<title>" --body-file <file>`.
+Write the answer in this order:
 
 1. What the index did: it removed the plugin, and the ground.
 2. What you read: the README line or setting, quoted or linked.
@@ -555,13 +558,14 @@ a person.
 When a plugin sends library contents or account details somewhere without
 saying so, do these steps before a removal:
 
-1. Open an issue on the index labeled `remove-plugin`. Mention the owner, link
-   the code that sends the data, and say where it goes.
+1. Open an issue on the index with `gh issue create --label remove-plugin`.
+   Mention the owner, link the code that sends the data, and say where it
+   goes.
 2. Give the owner 14 days to say so in the README or the release notes. Say
    that the plugin then stays listed.
 3. After 14 days, read the plugin's README and newest release notes. If they
-   say so, close the issue. If not, remove the plugin on the harm ground with
-   the steps above.
+   say so, close the issue with `gh issue close <number>`. If not, remove the
+   plugin on the harm ground with the steps above.
 
 ### Lifting a removal
 
@@ -569,23 +573,27 @@ saying so, do these steps before a removal:
    that the reported evidence no longer holds.
 2. On a branch, delete the plugin's record from `delisted.json`, run `pnpm
    check`, and merge the change.
-3. Read the repo's bot pull requests. If one was closed without a merge, the
-   bot does not propose the repo again. Then run `pnpm add-plugin` with the
-   repo's URL, as "Adding a plugin" says, and merge the entry in a pull
-   request. Otherwise, the next discover run can propose the repo.
-4. Answer the request and close it.
+3. Read the repo's bot pull requests with
+   `gh pr list --state closed --search "<owner>/<repo>"`. If one was closed
+   without a merge, the bot does not propose the repo again. Then run
+   `pnpm add-plugin` with the repo's URL, as "Adding a plugin" says, and merge
+   the entry in a pull request. Otherwise, the next discover run can propose
+   the repo.
+4. Answer the request, and close it with
+   `gh issue close <number> --comment "<answer>"`.
 
 The closed removal issue keeps the record that a plugin was removed once.
-Before a removal for a listed site, search the closed issues labeled
-`remove-plugin` for the repo. A second removal on that ground stays.
+Before a removal for a listed site, search for it with
+`gh issue list --state closed --label remove-plugin --search "<owner>/<repo>"`.
+A second removal on that ground stays.
 
 ### Closing a held pull request
 
 If a held bot pull request's entry misleads people about what the plugin is,
 who makes it, or who controls its updates, close it (D-053). Close no held
-pull request for another reason. On GitHub, close it with a comment that names
-the reason. The bot then does not
-propose that repo again.
+pull request for another reason. Close it with
+`gh pr close <number> --comment "<reason>"`. The bot then does not propose
+that repo again.
 
 ## Checking entries
 

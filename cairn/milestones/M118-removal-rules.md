@@ -45,10 +45,10 @@ precise text lives in `docs/`, and About gets one approved sentence
       and states the fifth ground, in the words of this file's Decisions
       entries for spam, harm, and the fifth ground, which govern where they
       differ from RR01 (spam from RR01 §8 item 3, harm R3, built in R2,
-      fifth ground R1). It says that a maintainer applies the fifth ground without a report only to a
-      plugin whose name, description, repository name, or topics match a
-      name in the sites file, reading its README and settings and not its
-      code.
+      fifth ground R1). It says that a maintainer applies the fifth
+      ground without a report only to a plugin whose name, description,
+      repository name, or topics name a listed site, reading its README
+      and settings and not its code.
 - [ ] AC2: The same section states what a request to bring a removed
       plugin back must show after harm (this file's Decisions, Return path:
       RR01 R5, R6) or a listed site built in (a release drops the site, and
@@ -98,7 +98,7 @@ precise text lives in `docs/`, and About gets one approved sentence
 - AC3 → T4
 - AC4 → T6
 - AC5 → T2
-- AC6 → T5
+- AC6 → T5, T8
 - AC7 → T7
 
 ## Tasks
@@ -127,6 +127,9 @@ precise text lives in `docs/`, and About gets one approved sentence
       plugin stays off the index" (`remove-plugin.yml:17`); add the reason
       choice; update `cairn/references/plain-words-copy.md`.
 - [x] T7: CHANGELOG entry; run `pnpm test` and `pnpm check`.
+- [x] T8: Review return 1: name the `gh` command for each removal, notice,
+      and held-pull-request step that changes GitHub state in
+      `docs/maintaining.md`; rewrap the long line in `docs/requests.md`.
 
 ## Work log
 
@@ -171,6 +174,13 @@ precise text lives in `docs/`, and About gets one approved sentence
 - 2026-11-09: T7 done: CHANGELOG entry; `pnpm test` 2815 passed.
 - 2026-11-09: claim audit: 32 claims read, 1 corrected — `docs/requests.md` (the fifth ground's match now says "name a listed site", since no sites file exists until M119; AC1's "sites file" wording is met by M119's file). Not corrected: the private report link opens no form while private vulnerability reporting is off on the repo; turning it on is the user's, and review's merge question names it.
 - 2026-11-09: status review; handed to /milestone-review.
+- 2026-11-09: review: branch level with `origin/main`; Copilot round off (no header line); `pnpm test` 2815 passed, `pnpm check` 0 problems; the missing-ground test fails with the schema's `required` ground removed and passes with it restored.
+- 2026-11-09: review return 1: AC6 — removal steps 4 and 6, the notice's step 1, and closing a held pull request name no file or command; also `docs/requests.md` has one line past the wrap width.
+- 2026-11-09: amendment routed: AC1 — the docs say "name a listed site", and AC1 asks for "match a name in the sites file", which no file meets until M119; AC1 holds two `re-audit: AC1` lines, so the amendment goes to the user.
+- 2026-11-09: question set (review stop): the user chose to change AC1 to "name a listed site" over changing the docs back; status back to in-progress for review return 1 and the AC1 amendment.
+- 2026-11-09: amendment return: AC1 — "repository name, or topics name a listed site, reading its README and settings and not its code" (no reader spawned: AC1 holds two re-audit lines, and the user chose this wording at the stop).
+- 2026-11-09: T8 added for review return 1 (minor amendment) and done: `gh` commands named for each step that changes GitHub state in `docs/maintaining.md`; four lines of the new `docs/requests.md` text rewrapped.
+- 2026-11-09: status review; handed back to /milestone-review.
 
 ## Decisions
 

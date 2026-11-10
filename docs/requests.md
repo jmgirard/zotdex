@@ -381,11 +381,11 @@ not say so within 14 days, a maintainer removes it.
 
 A maintainer can remove a plugin that has a built-in way to get papers or
 books from a listed site. A listed site is one that courts in at least two
-countries ordered blocked or shut down for copyright infringement. A default judgment counts, and so
-does a court's order to internet providers to block the site. A block by a
-regulator or an industry body does not count, and neither does a ruling that
-was later overturned. A site means the service under any address or mirror. If a
-ruling names a site's new name, or its operator presents it as the same
+countries ordered blocked or shut down for copyright infringement. A default
+judgment counts, and so does a court's order to internet providers to block
+the site. A block by a regulator or an industry body does not count, and
+neither does a ruling that was later overturned. A site means the service
+under any address or mirror. If a ruling names a site's new name, or its operator presents it as the same
 service, the new name counts too.
 
 "Built in" means that the plugin's latest release ships the site: a default or
@@ -415,10 +415,10 @@ index that names the plugin and shows what the ground needs:
 - A listed site built in: a release drops the site. A plugin removed a second
   time on this ground stays off.
 - Harm: if the author built the hidden behavior in, and that behavior serves
-  no part of what the plugin says it does, the plugin stays off for good. Examples
-  are spreading malware, taking passwords, and attacking other computers. Other
-  harm can come back once a release stops the behavior or tells users about
-  it.
+  no part of what the plugin says it does, the plugin stays off for good.
+  Examples are spreading malware, taking passwords, and attacking other
+  computers. Other harm can come back once a release stops the behavior or
+  tells users about it.
 - Harm from someone else's change, such as a taken-over account or a poisoned
   dependency: the plugin comes back once a release removes it and the public
   record shows what happened. That record is the commit or release that added
@@ -445,8 +445,8 @@ Write `repo` in lowercase. `ground` names the ground the removal used: `owner`,
 `spam`, `misleading`, `harm`, or `copyright`, which is the ground for a listed
 site built in. `issue` is the number of the request, and `date` is the day of
 the removal. If you judged an id unique to that repo, put it in `ids`, and
-put no other id there. A fork can keep its source's id, and a listed id blocks every repo that
-carries it. `ids` can be empty.
+put no other id there. A fork can keep its source's id, and a listed id blocks
+every repo that carries it. `ids` can be empty.
 
 The list keeps a removed plugin off the index in three places:
 
@@ -467,7 +467,8 @@ The list names a repo and the ids in its record, and nothing else. If a repo
 moves to a new name, the bot can propose it again unless its id is listed. The
 same is true of a fork.
 
-To lift a removal, follow "Lifting a removal" in [maintaining.md](maintaining.md).
+To lift a removal, follow "Lifting a removal" in
+[maintaining.md](maintaining.md).
 
 ## Legal notices and private reports
 
