@@ -7,7 +7,7 @@ _Last hygiene check: 2026-11-07 (M117 review: the daily build opens an issue for
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M118 | Define the removal rules before launch | planned | — | high | milestones/M118-removal-rules.md |
+| M118 | Define the removal rules before launch | blocked | — | high | milestones/M118-removal-rules.md |
 | M119 | Remove plugins with Sci-Hub built in | planned | M118 | high | milestones/M119-remove-scihub-plugins.md |
 | M117 | Open an issue for each malware scan find | done | — | high | milestones/archive/M117-scan-find-issues.md |
 | M116 | Make the weekly malware scan finish | done | — | high | milestones/archive/M116-scan-batches.md |

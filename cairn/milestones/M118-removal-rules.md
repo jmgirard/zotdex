@@ -4,7 +4,7 @@
      cairn_validate's <150 over the plan-owned body. -->
 # M118: Define the removal rules before launch
 
-- **Status:** planned
+- **Status:** blocked
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
@@ -124,6 +124,7 @@ then discloses it, so no row.
 - 2026-11-09: plan gate chose harm defined by design and consent over harm defined by outcome because a bug that damages a library would otherwise remove a plugin; falsified by a plugin left listed after a bug that the author refuses to fix destroys users' libraries.
 - 2026-11-09: agent decision: permanent removal only for malware, taking passwords or files, and attacks; other harm, such as data sent without saying so, can come back once a release stops or discloses it.
 - 2026-11-09: the user asked for a Fable second opinion on the complete draft rules before implementation.
+- 2026-11-09: blocked on RB01 (`cairn/reviews/RB01-removal-rules.md`), which also covers M119's application.
 
 ## Decisions
 
