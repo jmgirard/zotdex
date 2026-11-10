@@ -1373,3 +1373,94 @@ The user expects finds to be rare: "if we start getting a lot of false
 positives, will need to adjust the plan". This choice is wrong if
 false-positive issues come often, or if the cap of 5 leaves real finds
 waiting for days.
+
+### D-085: A fifth removal ground covers a court-blocked site built in, and the rules define spam and harm and the way back, annotating D-006, D-051, and D-062
+
+2026-11-09, M118 plan and RR01. Before the index is advertised, a readiness
+check found a plugin that gets papers from Sci-Hub tenth on the home page,
+and D-062's four grounds did not cover it. D-062 also left spam and harm
+undefined, and a removal lasted forever. The user chose the rules below, and
+an independent review (`cairn/reviews/archive/RR01-removal-rules.md`)
+reworded them. `docs/requests.md` holds the full text of each definition.
+
+The fifth ground: a maintainer can remove a plugin that has a built-in way to
+get papers or books from a site that courts in at least two countries have
+ordered blocked or shut down for copyright infringement. A default judgment
+counts, and so does a court's order to internet providers to block the site.
+A block by a regulator or an industry body does not count, and neither does
+a ruling that was later overturned. Two countries guard against one outlier
+or captured court. A court order is a fact that a reader can look up, so the
+index forms no view of its own about the law. "Built in" means that the
+plugin's latest release ships the site, or that its README or settings tell
+the user to enter the site's address. The user chose "built in" over "main
+use", so a plugin that also offers lawful sources is covered. A
+`delisted.json` record names this ground as `copyright`.
+
+Spam is a repository that is not a working Zotero plugin, such as an
+unchanged template under a new name, a repository made to carry ads or
+links, or many near-identical copies from one account. Harm is a release
+that does something its users were not told about, to them or through their
+computer or accounts, or a plugin built to attack other people's computers.
+A bug is not harm.
+
+D-062 said that a plugin with no report stays listed. That now has one
+exception. A maintainer reads the README and settings of each plugin whose
+name, description, repository name, or topics match a name in the sites
+file, and removes it if a listed site is built in. The maintainer reads no
+other plugin for this ground and no plugin's code, and checks every match
+the same way. A plugin that stays listed has not been checked, and D-051
+stands. The user chose this over acting only on reports, since a ground
+that applies only when someone reports it would apply unevenly to the
+plugins already found. A site's terms of use, a licence dispute between
+authors, and other legal questions give no ground for removal. A new legal
+ground would need an outside fact as checkable as a court order.
+
+A removal lasts until a maintainer lifts it. Only the owner can undo a
+removal at the owner's request. A plugin removed as spam or for a misleading
+entry returns once it no longer meets that ground. A plugin removed for a
+listed site returns once a release drops the site, and a second removal on
+that ground stays. A plugin removed for harm stays off for good when its
+author built in hidden behavior that serves no part of what the plugin says
+it does. Other harm returns once a release stops the behavior or tells users
+about it. Harm from someone else's change, such as a taken-over account or a
+poisoned dependency, returns once a release removes it and the public record
+shows what happened. A maintainer checks only that the reported evidence no
+longer holds, which is no finding that the plugin is safe (D-051, D-082).
+Any removal is lifted when its evidence proves wrong or a maintainer misread
+the plugin. A plugin found sending data without saying so first gets an
+issue and 14 days to disclose it.
+
+D-006 stands: a listing is no judgment of quality, and the fifth ground
+rests on court orders about a site, not on the plugin's quality. This
+choice is wrong if a plugin stays listed that courts in two countries have
+ordered taken down, if a maintainer reads plugins that no match or report
+names, or if a site that passes the test turns out to serve only lawful
+copies.
+
+### D-086: A scan find needs a second source, the 14-day notice covers only stated-purpose data sending, and a removal closes a held pull request, annotating D-053, D-082, D-084, and D-085
+
+2026-11-09, M118 review. D-085 left four parts of the rules that the user
+accepted from RR01 to `docs/requests.md`, and the review found that each one
+changes an earlier decision. First, a malware scan find counts as evidence of
+harm only with a second source that supports it, such as the plugin's code.
+D-082 and D-084 stand: a find shows on the page, opens an issue, and is handled
+as a report of harm, and a find alone now removes nothing. Second, "built in"
+covers a default or preset address, a menu choice, a button, a list the plugin
+loads by itself, and README or settings text that tells the user to enter the
+site's address. A renamed site counts when a ruling names it or its operator
+presents it as the same service. Harm from someone else's change returns once
+the public record shows what happened: the commit or release that added it,
+an advisory or a statement on the repository, and nothing that contradicts
+the owner's account.
+
+Third, the 14-day notice covers only a plugin that does harm by sending data
+without saying so, where the sending serves what the plugin says it does. The
+user chose this at the review stop over a notice for any data sent without
+saying so, which would have given a plugin that takes passwords 14 days
+although it stays off for good. Fourth, a removal on any ground closes the
+removed plugin's bot pull request, held or not. D-053's rule that a held pull
+request closes only for a misleading entry now covers held pull requests of
+plugins that are not removed. This choice is wrong if a confirmed malware find
+with no second source leaves a harmful plugin listed, or if a plugin removed
+after a 14-day notice proves to have been taking data that serves no stated
+purpose.

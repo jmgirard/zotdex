@@ -116,7 +116,7 @@ async function run(responses: Responses, options: RunOptions = {}) {
 }
 
 describe("discover and the delisted list", () => {
-  const removed = delistedFrom([{ repo: "example/removed", ids: ["removed-id@example.org"], issue: 5, date: "2026-11-04" }]);
+  const removed = delistedFrom([{ repo: "example/removed", ids: ["removed-id@example.org"], ground: "owner", issue: 5, date: "2026-11-04" }]);
   const PUSHED = "2026-10-20T00:00:00Z";
 
   test("skips a listed repo with no read, also when the skip set names it", async () => {
@@ -168,7 +168,7 @@ describe("discover and the delisted list", () => {
   });
 
   test("reads an unlisted repo with an unlisted id when a listed record has no ids", async () => {
-    const noIds = delistedFrom([{ repo: "example/removed", ids: [], issue: 5, date: "2026-11-04" }]);
+    const noIds = delistedFrom([{ repo: "example/removed", ids: [], ground: "owner", issue: 5, date: "2026-11-04" }]);
     const responses = { ...searched([["example/fork", PUSHED]]), ...pluginRepo("example/fork", "removed-id@example.org") };
     const { report } = await run(responses, { delisted: noIds, outDir: tempDir() });
     expect(report.read).toEqual([expect.objectContaining({ repo: "example/fork", outcome: "written" })]);
@@ -593,7 +593,7 @@ describe("the catalog", () => {
     });
 
     test("is skipped as delisted, with no lookup, when delisted.json names it", async () => {
-      const delisted = delistedFrom([{ repo: "example/listed", ids: [], issue: 5, date: "2026-11-04" }]);
+      const delisted = delistedFrom([{ repo: "example/listed", ids: [], ground: "owner", issue: 5, date: "2026-11-04" }]);
       const { result, requests } = await runResult(responses(), { ...withCatalog, delisted, skip: new Set(["example/listed"]) });
       if (!result.ok) throw new Error(result.message);
       expect(lookups(requests)).toEqual([]);
@@ -1240,7 +1240,7 @@ function pnpmDiscover(args: string[], responses: Responses, cwd: string) {
 describe("pnpm discover", () => {
   test("passes the list that the variable names to the run, and stops on one it cannot read", () => {
     const list = join(tempDir(), "list.json");
-    writeFileSync(list, JSON.stringify([{ repo: "example/alpha", ids: [], issue: 5, date: "2026-11-04" }]));
+    writeFileSync(list, JSON.stringify([{ repo: "example/alpha", ids: [], ground: "owner", issue: 5, date: "2026-11-04" }]));
     const saved = process.env.ZPI_DELISTED;
     process.env.ZPI_DELISTED = list;
     try {

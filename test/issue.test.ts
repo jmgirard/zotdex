@@ -204,7 +204,7 @@ describe("an issue that names a plugin a maintainer removed", () => {
     ["names an old name of a listed repo", "https://github.com/example/old-name", "example/removed", oldName, "delisted", /the repo example\/removed/],
     ["names a repo that carries a listed id", "https://github.com/example/fork", "example/removed", pluginRepo("example/fork", "removed-id@example.org"), "delisted-id", /the plugin id removed-id@example\.org/],
   ] as [string, string, string, Responses, string, RegExp][])("comments the removal, closes it as not planned, and opens no pull request when it %s", async (_name, url, repo, responses, failure, named) => {
-    const delisted = delistedFrom([{ repo, ids: ["removed-id@example.org"], issue: 5, date: "2026-11-04" }]);
+    const delisted = delistedFrom([{ repo, ids: ["removed-id@example.org"], ground: "owner", issue: 5, date: "2026-11-04" }]);
     const { result, sent } = await runIssue(rendered(url), { ...indexRepo, ...responses }, { root: tempDir(), delisted });
     expect(result.status).toBe(0);
     expect(sent).toEqual([
@@ -502,7 +502,7 @@ describe("pnpm discover-issue --handoff then pnpm propose", () => {
 
   test("the read step refuses a repo on the list that the variable names, and fails on a list it cannot read", () => {
     const list = join(tempDir(), "list.json");
-    writeFileSync(list, JSON.stringify([{ repo: "example/alpha", ids: [], issue: 5, date: "2026-11-04" }]));
+    writeFileSync(list, JSON.stringify([{ repo: "example/alpha", ids: [], ground: "owner", issue: 5, date: "2026-11-04" }]));
     const responses = { ...indexRepo, [ISSUE]: { json: { number: 7, body: rendered("https://github.com/example/alpha") } } };
     const env = { GITHUB_REPOSITORY: "example/index", ISSUE_NUMBER: "7" };
     const refused = pnpm("discover-issue", ["--handoff", join(tempDir(), "handoff")], responses, tempDir(), { ...env, ZPI_DELISTED: list });

@@ -5,10 +5,11 @@ import { Ajv } from "ajv";
 import schema from "../../schemas/delisted.schema.json" with { type: "json" };
 
 // One plugin that a maintainer removed. `ids` holds only ids judged unique to the repo,
-// since a fork can keep its source's id.
+// since a fork can keep its source's id. `ground` names the rule the removal used.
 export interface DelistedRecord {
   repo: string;
   ids: string[];
+  ground: "owner" | "spam" | "misleading" | "harm" | "copyright";
   issue: number;
   date: string;
 }

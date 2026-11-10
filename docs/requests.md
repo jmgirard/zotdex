@@ -72,13 +72,14 @@ A maintainer can close a bot pull request without a merge. Then the
 `pnpm close-issue` with the pull request number in `PR_NUMBER`. The bot
 comments on the issue that the `Closes #<issue>` line of the pull request
 names, and closes that issue as not planned. The command acts only on a pull
-request from a `discover/` branch of the index repository whose body has
-exactly one `Closes #<issue>` line outside code blocks. The issue must be
-open, have the label `add-plugin`, and have a bot comment with the link to
-the pull request. If the bot already commented that the pull request was
-closed without a merge, the command does nothing. One run at a time handles
-each pull request. The workflow runs on `pull_request_target`, so it runs its
-file from the default branch and runs no code from the pull request. A pull
+request from a `discover/` branch of the index repository. The pull request's
+body must have exactly one `Closes #<issue>` line outside code blocks. The
+issue must be open, have the label `add-plugin`, and have a bot comment with
+the link to the pull request. If the bot already commented that the pull
+request was closed without a merge, the command does nothing. One run at a
+time handles each pull request. The workflow runs on `pull_request_target`,
+so it runs its file from the default branch and runs no code from the pull
+request. A pull
 request that the bot's own token closes starts no workflow run, so its issue
 stays open.
 
@@ -172,8 +173,8 @@ Chinese, Japanese, or Korean, an About edit changes the description. A
 someone removes it, and the plugin page's "Corrections by Zotdex" table
 lists it. A
 repository's owner can also ask the index for another name or description, or
-for the removal of its override, through the link in the plugin page's Details
-card. It opens the form
+for the removal of its override. The owner uses the link in the plugin page's
+Details card. It opens the form
 `.github/ISSUE_TEMPLATE/text-change.yml`, which adds the label `text-change`.
 
 The new text follows these rules, which `src/text-request/rules.ts` holds:
@@ -330,39 +331,126 @@ filled in, and the About page links to it too. The form adds the label
 `remove-plugin` and opens a public issue. No bot answers it. A maintainer
 reads each request.
 
-A maintainer removes a plugin for any of four reasons:
+A maintainer removes a plugin on any of five grounds:
 
 - Its repository's owner asks.
 - It is spam.
 - Its entry misleads people about what the plugin is or who makes it.
-- A report shows harm with evidence that a reader can check.
+- It does harm, and a report shows the harm with evidence that a reader can
+  check.
+- It has a listed site built in.
 
 A claim with no evidence removes nothing. The index still cannot vet plugins,
-it does not endorse them, and it does not review their code.
+it does not endorse them, and it does not review their code. The steps for
+each removal are in "Removing a plugin" in [maintaining.md](maintaining.md).
 
-Before you act on an owner's request, make sure that the issue's author owns
-the repository, or ask the owner to confirm from the repository itself.
+### Spam
 
-To remove a plugin, do these steps on a branch:
+Spam is a repository that is not a working Zotero plugin. One example is an
+unchanged template or sample under a new name. Others are a repository made to
+carry ads or links, and many near-identical copies from one account.
 
-1. Delete the entry's directory under `plugins/`.
-2. Add a record to `delisted.json` at the top of the repo.
-3. Run `pnpm check`, then merge the change.
-4. Close any open bot pull request for the repo or the id.
-5. Run `Build data` by hand. Otherwise, the plugin stays on the site until the
-   next daily build.
-6. Answer the issue, then close it.
+### Harm
 
-A record has four fields:
+Harm means that a release of the plugin does something to its users, or
+through their computer or accounts, that they were not told about. Examples
+are malware, taking passwords or files, and sending library contents or
+account details somewhere without saying so. Deleting or
+corrupting a Zotero library on purpose is harm. So is disabling or changing
+other plugins or settings to the user's cost, and using the computer to
+attack, spam, or mine for someone else. A plugin built to break into, flood,
+or infect other people's computers also does harm.
+
+When the README, the release notes, or text that the plugin shows before it
+acts says so, the users were told. When the behavior is plainly what the
+plugin is for, the users were told too.
+
+A bug is not harm. A plugin that damages a library by mistake stays listed,
+and a Broken report on its page warns others. When a check for updates or a
+count of installs carries no library contents and does not identify the
+person, it is not harm. Code that a plugin loads at run time is not harm by
+itself.
+
+The evidence must be something a reader can check. One example is a link to
+the code that does it. Others are a malware scan find that a second source
+supports, and steps that make it happen again.
+
+A plugin can do harm by sending data somewhere without saying so, where the
+sending serves what the plugin says it does. Such a plugin first gets an issue
+on the index. If its README or release notes do not say so within 14 days, a
+maintainer removes it. Hidden behavior that serves no part of what the plugin
+says it does gets no notice.
+
+### A listed site built in
+
+A maintainer can remove a plugin that has a built-in way to get papers or
+books from a listed site. A listed site is one that courts in at least two
+countries ordered blocked or shut down for copyright infringement. A default
+judgment counts, and so does a court's order to internet providers to block
+the site. A block by a regulator or an industry body does not count, and
+neither does a ruling that was later overturned. A site means the service
+under any address or mirror. If a ruling names a site's new name, or its
+operator presents it as the same service, the new name counts too.
+
+"Built in" means that the plugin's latest release ships the site: a default or
+preset address, a menu choice, a button, or a list that the plugin loads by
+itself. It also means that the plugin's README or settings text tells the user
+to enter the site's address. A plugin that takes any address the user types,
+and names no listed site, is not covered. A plugin's name alone does not make
+the site built in.
+
+A report can ask for this ground for any plugin. Without a report, a
+maintainer applies it only to a plugin whose name, description, repository
+name, or topics name a listed site. The maintainer reads that plugin's README
+and settings, not its code, and checks every match the same way. A plugin
+that stays listed has not been checked. The index forms no view of its own
+about whether a plugin or its users break the law. A site's terms of use, a
+licence dispute between authors, and other legal questions are not grounds
+for removal.
+
+### Coming back
+
+A removal lasts until a maintainer lifts it. To ask, open an issue on the
+index that names the plugin and shows what the ground needs:
+
+- The owner's request: only the owner can ask to undo it.
+- Spam or a misleading entry: the repository or entry no longer meets that
+  ground.
+- A listed site built in: a release drops the site. A plugin removed a second
+  time on this ground stays off.
+- Harm: if the author built the hidden behavior in, and that behavior serves
+  no part of what the plugin says it does, the plugin stays off for good.
+  Examples are spreading malware, taking passwords, and attacking other
+  computers. Other harm can come back once a release stops the behavior or
+  tells users about it.
+- Harm from someone else's change, such as a taken-over account or a poisoned
+  dependency: the plugin comes back once a release removes it and the public
+  record shows what happened. That record is the commit or release that added
+  it, an advisory or a statement on the repository, and nothing that
+  contradicts the owner's account.
+
+For harm, a maintainer checks only that the reported evidence no longer holds:
+the linked code is gone, or the steps no longer make it happen. This is not a
+finding that the plugin is safe. A removal covers the repository and its ids,
+not a person.
+
+If the evidence for a removal proves wrong, or a maintainer misread the
+plugin, a maintainer lifts the removal. The issue says why.
+
+### The list of removed plugins
+
+A record has five fields:
 
 ```json
-{ "repo": "owner/name", "ids": ["plugin@example.org"], "issue": 123, "date": "2026-11-04" }
+{ "repo": "owner/name", "ids": ["plugin@example.org"], "ground": "spam", "issue": 123, "date": "2026-11-04" }
 ```
 
-Write `repo` in lowercase. `issue` is the number of the request, and `date` is
-the day of the removal. Put an id in `ids` only if you judged it unique to that
-repo. A fork can keep its source's id, and a listed id blocks every repo that
-carries it. `ids` can be empty.
+Write `repo` in lowercase. `ground` names the ground the removal used: `owner`,
+`spam`, `misleading`, `harm`, or `copyright`, which is the ground for a listed
+site built in. `issue` is the number of the removal's issue, and `date` is the
+day of the removal. If you judged an id unique to that repo, put it in `ids`,
+and put no other id there. A fork can keep its source's id, and a listed id
+blocks every repo that carries it. `ids` can be empty.
 
 The list keeps a removed plugin off the index in three places:
 
@@ -383,6 +471,30 @@ The list names a repo and the ids in its record, and nothing else. If a repo
 moves to a new name, the bot can propose it again unless its id is listed. The
 same is true of a fork.
 
-To list a plugin again, remove its record. The bot can then propose it, unless
-a bot pull request for that repo was closed without a merge. In that case, add
-the entry by hand.
+To lift a removal, follow "Lifting a removal" in
+[maintaining.md](maintaining.md).
+
+## Legal notices and private reports
+
+The index hosts no plugin files. It links to each plugin's repository and
+releases on GitHub. It hosts only its own data, the icons it redraws, and the
+screenshots that owners send. A complaint about a plugin's own code, such as
+a claim that one plugin copied another, goes to GitHub, where the code is. The
+index removes a plugin only on the five grounds in "Removing a plugin".
+
+To send a legal notice, or to report harm in private, use GitHub's private
+report form, linked from the About page. Name the plugin and give the
+evidence.
+
+To take a screenshot down, the plugin's owner sends the screenshot form with a
+blank Screenshot field, as "Adding a screenshot" says. Anyone else uses the
+private report form and names the plugin and the reason.
+
+One person reads requests, so the index promises no response time. Reports of
+malware come first.
+
+The rules can change. A change applies to plugins that are already listed. The
+git history of this file holds each change with its date.
+
+If a request brings no new evidence after an earlier answer, a maintainer
+closes it.

@@ -31,7 +31,7 @@ build then stays in place. "Building the data" in
 [maintaining.md](maintaining.md#building-the-data) describes the file. A
 breaking change to the file gets a new schema version under a new path, such as `v2/`. By this project's rule, a new
 optional field does not get a new schema version. The schema rejects fields
-that it does not define. If you validate
+that it does not define. If you check data
 against a saved copy of the schema, fetch it again after such a change.
 
 The data file can have a top-level `zoteroRelease` field, such as
@@ -40,7 +40,7 @@ zotero.org, as "Building the data" in
 [maintaining.md](maintaining.md#building-the-data) says. The site's
 declared marks use it as the newest release of its Zotero version. If the build did not read
 it, the field is absent. Data written before the build wrote this field has
-none. The field is new in schema v1. If you validate against a saved copy
+none. The field is new in schema v1. If you check data against a saved copy
 of the schema, fetch the schema again.
 
 Each `upstream` block has an `xpiUrl` field. It is the download address
@@ -56,7 +56,7 @@ bytes that the build read from `xpiUrl`, in 64 lowercase hexadecimal
 characters. The start plan names the same value. If a file that you
 download from `xpiUrl` has another SHA-256, it is not the file that the
 build read and the start tests started. Data written before the build
-wrote this field has none. The field is new in schema v1. If you validate
+wrote this field has none. The field is new in schema v1. If you check data
 against a saved copy of the schema, fetch the schema again.
 
 An `upstream` block can have a `repoDescription` field. It is the About
@@ -81,7 +81,7 @@ by the SHA-256 of its bytes. In these cases the field is absent:
   icon file back.
 
 Data written before the build wrote this field has none. The
-field is new in schema v1. If you validate against a saved copy of the
+field is new in schema v1. If you check data against a saved copy of the
 schema, fetch the schema again. The icon keeps its author's terms, as
 [license.md](license.md) says.
 
@@ -94,7 +94,7 @@ file is at `v1/screenshots/<sha>.webp`. The build copies the entry's
 the owner's description of the image, for a reader who cannot see it. The
 image is a WebP file at most 1600 pixels wide, 2400 pixels tall, and
 1 MiB. Data written before the build wrote this field has none. The field
-is new in schema v1. If you validate against a saved copy of the schema,
+is new in schema v1. If you check data against a saved copy of the schema,
 fetch the schema again. The screenshot keeps its owner's terms, as
 [license.md](license.md) says.
 
@@ -102,7 +102,7 @@ An `upstream` block can have a `stars` field. It is the star count that
 the build read for the plugin's GitHub repository. If GitHub gives no
 whole number of 0 or more, the field is absent. Data written before the
 build wrote this field has none. The field is new in schema v1. If you
-validate against a saved copy of the schema, fetch the schema again.
+check data against a saved copy of the schema, fetch the schema again.
 
 Each `upstream` block has a `languages` list, such as `["en-US", "zh-CN"]`.
 It holds the language tags of the locale folders in the plugin's XPI, the
@@ -177,7 +177,7 @@ most 7 days after `readAt`, as "Building the data" in
 [maintaining.md](maintaining.md#building-the-data) says. A deploy can fail
 for some days, so facts on the published site can be older than 7 days.
 Data written before the build kept facts has no `kept` block. The field is
-new in schema v1. If you validate against a saved copy of the schema,
+new in schema v1. If you check data against a saved copy of the schema,
 fetch the schema again.
 
 A record with an `upstream` block can have a `startTests` list. It says
@@ -204,7 +204,7 @@ Zotero version. If no tested release gave a result, the record has no
 `startTests` field. Data written before the start tests has none. The
 tested releases are Zotero 7.0.32, 8.0.4, 9.0.6, and 10.0.6. When Zotero
 ships a release, a maintainer adds it to the workflow. The `startTests`
-field is new in schema v1. If you validate against a saved copy of the
+field is new in schema v1. If you check data against a saved copy of the
 schema, fetch the schema again.
 
 The build does not start every plugin each day. Once in each build,
@@ -264,9 +264,9 @@ ClamAV asks its users not to download the full signature set often, and the
 build keeps no cache. On every run, `pnpm carry-scan-results` keeps the
 published result of each record whose `xpiSha256` is unchanged. On other
 runs the build scans nothing. So a new release has no `malwareScan` until
-the next scan run. A published result is most often at most a week old. It
-is older when a scan run did not reach the file or failed. A scan run takes
-the files with no kept result first, then the files with the oldest
+the next scan run. A published result is most often at most a week old. When
+a scan run did not reach the file or failed, the result is older. A scan run
+takes the files with no kept result first, then the files with the oldest
 results. It starts no download 20 minutes after it begins. In these cases a
 file gets no new result:
 
@@ -301,11 +301,13 @@ published records name.
 A clean scan does not show that a plugin is safe. ClamAV matches the file
 against signatures of known malware, and it finds nothing new. A find hides
 nothing: the plugin stays listed, and a maintainer handles it as a report of
-harm. The build opens a GitHub issue labeled `malware-scan` for each find.
-ClamAV reads the plugin files in its own job, which has no token
-permission and no secret. A file that takes over ClamAV in that job can
-forge the scan results of that run. The `malwareScan` field is new in schema v1. If you
-validate against a saved copy of the schema, fetch the schema again.
+harm. A find alone removes nothing: it counts as evidence only with a second
+source that supports it. The build opens a GitHub issue labeled
+`malware-scan` for each find. ClamAV reads the plugin files in its own job,
+which has no token permission and no secret. A file that takes over ClamAV in
+that job can forge the scan results of that run. The `malwareScan` field is
+new in schema v1. If you check data against a saved copy of the schema, fetch
+the schema again.
 
 ## Plugin entries
 
