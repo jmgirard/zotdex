@@ -72,8 +72,8 @@ A maintainer can close a bot pull request without a merge. Then the
 `pnpm close-issue` with the pull request number in `PR_NUMBER`. The bot
 comments on the issue that the `Closes #<issue>` line of the pull request
 names, and closes that issue as not planned. The command acts only on a pull
-request from a `discover/` branch of the index repository whose body has
-exactly one `Closes #<issue>` line outside code blocks. The issue must be
+request from a `discover/` branch of the index repository. The pull request's
+body must have exactly one `Closes #<issue>` line outside code blocks. The issue must be
 open, have the label `add-plugin`, and have a bot comment with the link to
 the pull request. If the bot already commented that the pull request was
 closed without a merge, the command does nothing. One run at a time handles
@@ -172,8 +172,8 @@ Chinese, Japanese, or Korean, an About edit changes the description. A
 someone removes it, and the plugin page's "Corrections by Zotdex" table
 lists it. A
 repository's owner can also ask the index for another name or description, or
-for the removal of its override, through the link in the plugin page's Details
-card. It opens the form
+for the removal of its override. The owner uses the link in the plugin page's
+Details card. It opens the form
 `.github/ISSUE_TEMPLATE/text-change.yml`, which adds the label `text-change`.
 
 The new text follows these rules, which `src/text-request/rules.ts` holds:
@@ -341,7 +341,7 @@ A claim with no evidence removes nothing. The index still cannot vet plugins,
 it does not endorse them, and it does not review their code.
 
 Before you act on an owner's request, make sure that the issue's author owns
-the repository, or ask the owner to confirm from the repository itself.
+the repository. Otherwise, ask the owner to say so from the repository itself.
 
 To remove a plugin, do these steps on a branch:
 
@@ -353,15 +353,17 @@ To remove a plugin, do these steps on a branch:
    next daily build.
 6. Answer the issue, then close it.
 
-A record has four fields:
+A record has five fields:
 
 ```json
-{ "repo": "owner/name", "ids": ["plugin@example.org"], "issue": 123, "date": "2026-11-04" }
+{ "repo": "owner/name", "ids": ["plugin@example.org"], "ground": "spam", "issue": 123, "date": "2026-11-04" }
 ```
 
-Write `repo` in lowercase. `issue` is the number of the request, and `date` is
-the day of the removal. Put an id in `ids` only if you judged it unique to that
-repo. A fork can keep its source's id, and a listed id blocks every repo that
+Write `repo` in lowercase. `ground` names the ground the removal used: `owner`,
+`spam`, `misleading`, `harm`, or `copyright`, which is the ground for a listed
+site built in. `issue` is the number of the request, and `date` is the day of
+the removal. If you judged an id unique to that repo, put it in `ids`, and
+put no other id there. A fork can keep its source's id, and a listed id blocks every repo that
 carries it. `ids` can be empty.
 
 The list keeps a removed plugin off the index in three places:

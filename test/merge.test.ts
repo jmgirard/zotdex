@@ -214,7 +214,7 @@ describe("pnpm merge-discover's check and merge failures", () => {
 
   test("does not merge an entry on the delisted list, reports it as failed, and merges the next", async () => {
     const list = join(tempDir(), "list.json");
-    writeFileSync(list, JSON.stringify([{ repo: "example/p1", ids: [], issue: 5, date: "2026-11-04" }]));
+    writeFileSync(list, JSON.stringify([{ repo: "example/p1", ids: [], ground: "owner", issue: 5, date: "2026-11-04" }]));
     const saved = process.env.ZPI_DELISTED;
     process.env.ZPI_DELISTED = list;
     try {

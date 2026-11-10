@@ -40,10 +40,10 @@ function check(dir: string, list: string) {
   const { INIT_CWD: _outer, ...env } = process.env;
   const result = spawnSync(pnpm, ["--silent", "--dir", ROOT, "check", dir], { encoding: "utf8", env: { ...env, ZPI_DELISTED: list }, timeout: 50_000 });
   const lines = result.stdout.split("\n").filter((line) => line.includes(": ") && !line.startsWith("checked "));
-  return { status: result.status, findings: lines.map((line) => line.split(": ").slice(0, 2)) };
+  return { status: result.status, findings: lines.map((line) => line.split(": ").slice(0, 2)), stdout: result.stdout };
 }
 
-const LIST = JSON.stringify([{ repo: "example/removed", ids: ["removed@example.org"], issue: 5, date: "2026-11-04" }]);
+const LIST = JSON.stringify([{ repo: "example/removed", ids: ["removed@example.org"], ground: "owner", issue: 5, date: "2026-11-04" }]);
 
 describe("the remove-plugin form", () => {
   const form = readFileSync(resolve(ROOT, ".github/ISSUE_TEMPLATE/remove-plugin.yml"), "utf8");
@@ -88,14 +88,34 @@ describe("delisted.json in pnpm check", () => {
 
   test.each([
     ["is not JSON", "not json"],
-    ["has a repo in upper case, which no entry would match", JSON.stringify([{ repo: "Example/Removed", ids: [], issue: 5, date: "2026-11-04" }])],
-    ["has a repo that ends in .git, which no entry would match", JSON.stringify([{ repo: "example/removed.git", ids: [], issue: 5, date: "2026-11-04" }])],
+    ["has a repo in upper case, which no entry would match", JSON.stringify([{ repo: "Example/Removed", ids: [], ground: "owner", issue: 5, date: "2026-11-04" }])],
+    ["has a repo that ends in .git, which no entry would match", JSON.stringify([{ repo: "example/removed.git", ids: [], ground: "owner", issue: 5, date: "2026-11-04" }])],
   ])("names the file when it %s", (_name, text) => {
     const dir = tempDir();
     addEntry(dir, "kept@example.org", "https://github.com/example/kept");
     const { status, findings } = check(dir, listFile(text));
     expect(status).toBe(1);
     expect(findings).toEqual([["delisted.json", "delisted-file"]]);
+  });
+
+  test.each([
+    ["has no ground", { repo: "example/removed", ids: [], issue: 5, date: "2026-11-04" }, "must have required property 'ground'"],
+    ["has a ground outside the five", { repo: "example/removed", ids: [], ground: "legal", issue: 5, date: "2026-11-04" }, "/0/ground must be equal to one of the allowed values"],
+  ])("names the file when a record %s", (_name, record, message) => {
+    const dir = tempDir();
+    addEntry(dir, "kept@example.org", "https://github.com/example/kept");
+    const { status, findings, stdout } = check(dir, listFile(JSON.stringify([record])));
+    expect(status).toBe(1);
+    expect(findings).toEqual([["delisted.json", "delisted-file"]]);
+    expect(stdout).toContain(message);
+  });
+
+  test.each(["owner", "spam", "misleading", "harm", "copyright"])("passes a record whose ground is %s", (ground) => {
+    const dir = tempDir();
+    addEntry(dir, "kept@example.org", "https://github.com/example/kept");
+    const { status, findings } = check(dir, listFile(JSON.stringify([{ repo: "example/removed", ids: [], ground, issue: 5, date: "2026-11-04" }])));
+    expect(findings).toEqual([]);
+    expect(status).toBe(0);
   });
 
   test("names the file when it is missing", () => {

@@ -4,14 +4,14 @@
      cairn_validate's <150 over the plan-owned body. -->
 # M118: Define the removal rules before launch
 
-- **Status:** planned
+- **Status:** in-progress
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — About, the remove form, and the docs that visitors and plugin owners read
-- **Branch/PR:** —
+- **Branch/PR:** m118-removal-rules
 
 ## Goal
 
@@ -41,15 +41,19 @@ precise text lives in `docs/`, and About gets one approved sentence
 
 - [ ] AC1: The "Removing a plugin" section of `docs/requests.md` states
       five grounds: the owner's request, spam, a misleading entry, harm,
-      and a listed site built in. It defines spam, harm, and "built in" in
-      the words of RR01 R14, R3, and R2 as amended in this file's
-      Decisions, and the fifth ground in the words of RR01 R1. It says that
+      and a listed site built in. It defines spam, harm, and "built in",
+      and states the fifth ground, in the words of this file's Decisions
+      (spam from RR01 §8 item 3, harm R3, built in R2, fifth ground R1).
+      It says that
       a maintainer applies the fifth ground without a report only to a
       plugin whose name, description, repository name, or topics match a
       name in the sites file, reading its README and settings and not its
       code.
 - [ ] AC2: The same section states what a request to bring a removed
-      plugin back must show for each ground (RR01 R5, R6, R8), that only
+      plugin back must show after harm or a listed site built in (this
+      file's Decisions, Return path: RR01 R5, R6, R8), and that a plugin
+      removed as spam or for a misleading entry returns once its repository
+      or entry no longer meets that ground; that only
       the owner can undo an owner's request, that any removal is lifted
       when its evidence proves wrong or a maintainer misread the plugin
       (R7), and that a plugin found sending data without saying so first
@@ -65,8 +69,9 @@ precise text lives in `docs/`, and About gets one approved sentence
       that a removed plugin can ask to come back, and the private contact;
       the form names the five grounds and its reason menu has a choice that
       names the narrow fact (a listed site built in), not "copyright"; and
-      every changed line of About and the form is one that the user
-      approved (CLAUDE.md, Approved page wording).
+      every changed line of About and the form matches a line that
+      `cairn/references/plain-words-copy.md` records as approved (CLAUDE.md,
+      Approved page wording).
 - [ ] AC5: Each `delisted.json` record carries a `ground`, one of `owner`,
       `spam`, `misleading`, `harm`, or `copyright`. `pnpm check` fails on a list
       with a record that has no `ground` or a `ground` outside those five,
@@ -75,7 +80,7 @@ precise text lives in `docs/`, and About gets one approved sentence
       `ground` and its values.
 - [ ] AC6: `docs/maintaining.md` states the steps to remove a plugin, to
       send the 14-day notice, to lift a removal, and to close a held pull
-      request under a ground, naming each file or command each step changes
+      request for a misleading entry (D-053), naming each file or command each step changes
       or runs; it gives the removal issue's outline (RR01 R13); it says
       where the record that a plugin was removed once lives after a lift;
       and `docs/requests.md` links to these steps rather than repeating
@@ -99,7 +104,7 @@ precise text lives in `docs/`, and About gets one approved sentence
       (RR01 R4), the limit on new legal grounds (R10), the return path,
       and the notice period. Update DESIGN.md's removal paragraphs
       (`cairn/DESIGN.md:294`, `:445`).
-- [ ] T2: Add the required `ground` enum to `schemas/delisted.schema.json`
+- [x] T2: Add the required `ground` enum to `schemas/delisted.schema.json`
       and `DelistedRecord` (`src/check/delisted.ts:9`); tests in
       `test/delisted.test.ts`; update the record description and example
       in `docs/requests.md`.
@@ -138,6 +143,16 @@ precise text lives in `docs/`, and About gets one approved sentence
 - 2026-11-09: question set (ingestion): private contact — the user supplies it at T6; the 14-day notice length is the agent's choice (RR01 R17 named no length).
 - 2026-11-09: RR01 R16 (public list of removed plugins) recorded as a candidate row; R19 and R20 rejected, as RR01 did.
 - 2026-11-09: unblocked: status back to planned, since no branch was cut; the criteria amended at ingestion were not re-audited, so `/milestone-implement` step 6's re-audit applies to AC1 to AC6.
+- 2026-11-09: implement started on branch `m118-removal-rules`; `.claude/` is untracked and unrelated, left unstaged.
+- 2026-11-09: re-audit: AC1 (full) — "RR01 R14" holds no wording and the fifth ground had two texts; cite this file's Decisions with each source.
+- 2026-11-09: re-audit: AC2 (full) — return conditions for spam and a misleading entry had no source; state them as "returns once it no longer meets that ground".
+- 2026-11-09: re-audit: AC3 (full) — nothing.
+- 2026-11-09: re-audit: AC4 (full) — approval in conversation is an instrument; bind the lines to `plain-words-copy.md`'s approved record.
+- 2026-11-09: re-audit: AC5 (full) — nothing.
+- 2026-11-09: re-audit: AC6 (full) — closing a held pull request under any ground contradicts D-053 until M119's annotation; narrowed to a misleading entry.
+- 2026-11-09: substantive amendment: AC1, AC2, AC4, AC6 reworded per the re-audit, each narrower; the deliverable the user sees is unchanged.
+- 2026-11-09: T2 done: `ground` required in the schema and `DelistedRecord`; tests for a missing ground, an unknown ground, and each of the five values; existing fixtures carry `ground: "owner"`; the docs record description names the field; `pnpm test` 2815 passed, `pnpm check` 0 problems.
+- 2026-11-09: plain-English lint (simple-english hook) fixed four older sentences in `docs/requests.md` near the edit.
 
 ## Decisions
 
