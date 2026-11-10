@@ -202,3 +202,8 @@ Pass 3, 2026-11-09, at de7e8f9d, after return 1.
 - ripple #2: the appeal route is a reply on the removal issue, and step 7 closes it — fix now (the removal-issue section says a reply on the closed issue still notifies the maintainer and counts as a request).
 - ripple #3: two handoff test titles say "a sixth reason" — fix now ("an unknown reason").
 - ripple #4: DESIGN's `src/check/` architecture entry does not name `sites.ts` — fix now.
+- blame-history #1: the outline cut contradicts RR01 R13 with no D-entry — reject (planned change: the user's override, logged, and AC3 amended to it at the user's stop).
+- blame-history #2: the appeal is a reply on the removal issue, which step 7 closes — fix now (the same fix as ripple #2).
+- blame-history #3: requests.md and DESIGN add the GitHub description to the no-report read, widening D-085 — reject (false: D-085's "description" does not exclude the GitHub description, and D-087 names it among the texts).
+- blame-history #4: Library Genesis meets the count and is not in `sites.json` — follow-up: the DESIGN Known issues entry written in pass 1's claim audit.
+- blame-history #5: D-053's per-reason questions have none for `listed-site` — reject (false: D-087 and docs/maintaining.md give it, whether a listed site is built in).
