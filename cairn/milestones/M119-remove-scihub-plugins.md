@@ -139,6 +139,7 @@ them, so no row.
 - 2026-11-09: claim audit (after return 1, checkpoint): fresh Opus reader read 126 claims and flagged 3, fixed (docs/maintaining.md's listed-site bullet points to "Closing a held pull request" and says "the letters a to z"; one refresh test renamed); its one re-read is pending.
 - 2026-11-09: claim audit: 126 claims read, 3 corrected — docs/maintaining.md, test/refresh-holds.test.ts; the re-read found two hold and the case rule missing the NFKC fold, which now has its sentence (no second pass).
 - 2026-11-09: status review: `pnpm test` 2857 passed, 6 skipped; `pnpm check` 748 entries, 0 problems.
+- 2026-11-10: step-7 approval: m119-remove-scihub-plugins approved for merge (the approval also covers renaming and closing #883 to #888 and a by-hand data build after the merge).
 - 2026-11-09: T5: `pnpm test` 2864 passed, 6 skipped; `pnpm check` 748 entries, 0 problems; a restored copy of two removed entries fails `pnpm check` as `delisted-repo` and `delisted-id`.
 
 ## Decisions
