@@ -4,7 +4,7 @@
      cairn_validate's <150 over the plan-owned body. -->
 # M120: Re-check listed plugins for listed sites
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** high
 - **Depends on:** M119
 - **Driving RR:** —
@@ -89,6 +89,8 @@ and the bot's hold (M119) reads them at intake, so no row.
 - 2026-11-10: review return 1: diff-bug #1 — `repoNameOf` reads the entry's `repoUrl`, not GitHub's `upstream.repoUrl`, so a repo renamed on GitHub to name a listed site gets no issue and no warning; the fix pass also takes the Review section's other fix-now findings (diff-bug #2, #3, #5, #10, #12; blame-history #1 to #3; ripple #2 to #5; prior-review #1).
 - 2026-11-10: in-progress for review return 1; T4 added (minor amendment), Coverage AC1 and AC3 gain T4.
 - 2026-11-10: T4 done: `repoNameOf` reads `upstream.repoUrl`, else `repoUrl`, at the second path segment; the rename and no-upstream tests failed on the old rule (2 of 30) and pass now; one 422 create test in place of 422 and 500; ids, span, and the no-plugins-list exit asserted; lift step, cap-warning, label, and item-3 docs, CHANGELOG, and three DESIGN lines fixed; ripple #2 changed to reject; deployed data still gives the same 4 matches; verify green (2895 passed, 753 entries, 0 problems).
+- 2026-11-10: claim audit: 35 claims read, 4 corrected — CHANGELOG.md, docs/maintaining.md (a closed issue stays closed while a labeled issue holds the marker, not only until the marker goes; the label changes that reopen; the cap warning prints only past 5 matches; item 3 is written for a second removal, and a wrong reading still lifts it); the re-read found all hold and one "Otherwise" pointing the wrong way, fixed.
+- 2026-11-10: status review; verify green (2895 passed, 753 entries, 0 problems).
 
 ## Decisions
 

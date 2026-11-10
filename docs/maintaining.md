@@ -614,8 +614,9 @@ above.
    that the reported evidence no longer holds. To undo an owner's request,
    make sure that the person asking owns the repository. For a listed site,
    run the earlier-removal search below. If it finds a listed-site removal
-   other than the one that you lift, the plugin stays off. Otherwise, the
-   plugin can come back. If the plugin has a closed `listed-site` issue,
+   other than the one that you lift, the plugin stays off. The one exception
+   is a request that shows a wrong reading. If the search finds no other
+   listed-site removal, the plugin can come back. If the plugin has a closed `listed-site` issue,
    delete that issue's marker line. Then the daily build opens a new issue
    when the plugin's name, description, GitHub description, or repository
    name names the site, as "Listed-site issues" says.
@@ -675,11 +676,16 @@ the label `listed-site`, assigned to the `--assignee` login. The
 line at the end of the issue holds the SHA-256 of the plugin id and of the
 site. A match whose marker line an issue with that label holds, open or
 closed, gets no new issue. So a closed issue stays closed while the plugin
-and the site stay the same. Some changes make the next run open the issue
-again: you delete the issue, take the label off it, rename or delete the
-`listed-site` label, or edit its marker line. A run opens at most 5 issues.
-When it reaches that limit, it prints one warning line that names each match
-past it. A run that stops at a failure names none of them. A later run opens
+and the site stay the same. Each of these changes makes the next run open the
+issue again:
+
+- Delete the issue, or take the label off it.
+- Give the `listed-site` label another name, or delete the label.
+- Change the text of the marker line.
+
+A run opens at most 5 issues. When more than 5 matches have no issue yet, it
+prints one warning line that names each match past the limit. A run that
+stops at a failure names none of them. A later run opens
 those, since each run reads every listed plugin.
 
 With no match, the command sends no request to GitHub. If the issue list or
@@ -709,8 +715,8 @@ To handle a `listed-site` issue, do these steps:
 If the search finds an earlier removal for a listed site, the plugin came
 back once already. The second removal on that ground stays, as "Coming back"
 in requests.md says. A later release does not bring the plugin back. So for
-that second removal, item 3 of the outline offers an appeal for a wrong
-reading only, and leaves out the later release.
+that second removal, write item 3 of the outline without the later release.
+Offer an appeal for a wrong reading only.
 
 ## Checking entries
 
