@@ -3,6 +3,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "nod
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { afterAll, describe, expect, test } from "vitest";
+import type { Site } from "../src/check/sites.ts";
 import { type Written, body, DETAILS_HEADING } from "../src/discover/propose.ts";
 import { refreshHolds, withDetailLines } from "../src/discover/refresh-holds.ts";
 import { fixtureFetch, type Responses } from "./support/fixture-fetch.ts";
@@ -38,6 +39,9 @@ function pull(n: number, change: Record<string, unknown> = {}) {
   };
 }
 
+const ruling = (country: string) => ({ country, court: "A court", date: "2020-01-02", case: "A v. B", kind: "blocking order" as const, url: "https://example.org/ruling" });
+const SITES: Site[] = [{ site: "Sci-Hub", names: ["Sci-Hub"], rulings: [ruling("US"), ruling("FR")] }];
+
 const UPDATE = "https://updates.example.org:8443/update.json";
 const publicLookup = async () => ["140.82.112.3"];
 
@@ -62,7 +66,7 @@ function entry(n: number, meta: Record<string, unknown> = {}): Responses {
 
 async function run(responses: Responses, apply = true) {
   const { fetch, requests } = fixtureFetch(responses);
-  const result = await refreshHolds({ fetch, lookup: publicLookup, indexRepo: "example/index", root: PLUGINS, apply });
+  const result = await refreshHolds({ fetch, lookup: publicLookup, indexRepo: "example/index", root: PLUGINS, sites: SITES, apply });
   const patches = requests.filter(({ method }) => method === "PATCH").map(({ url, body: sent }) => ({ url, sent: JSON.parse(sent!) }));
   return { result, patches, requests };
 }
@@ -169,13 +173,43 @@ describe("pnpm refresh-holds", () => {
     mkdirSync(join(root, "a@x"));
     writeFileSync(join(root, "a@x", "meta.json"), JSON.stringify({ name: "Zotero Second", repoUrl: "https://gitlab.com/carol/second" }));
     const { fetch } = fixtureFetch({ [LIST]: { json: [pull(1, { body: source(1, ["name-match"]) })] }, ...entry(1, { name: "Zotero Second" }), ...evidence });
-    const result = await refreshHolds({ fetch, indexRepo: "example/index", root, apply: false });
+    const result = await refreshHolds({ fetch, indexRepo: "example/index", root, sites: SITES, apply: false });
     expect(result.changed[0].lines[0]).toBe("- This repo: created 2026-03-04, 2 stars");
   });
 
   test("a pull request held without name-match sends no request for these facts", async () => {
     const { requests } = await run({ [LIST]: { json: [pull(1)] }, ...entry(1, { name: "Zotero Second" }), ...evidence }, false);
     expect(requests.filter(({ url }) => url.startsWith(`${API}/bob/`) || url.startsWith(`${API}/example/second-plugin`))).toEqual([]);
+  });
+
+  describe("a listed-site hold", () => {
+    const held = (n: number) => pull(n, { body: source(n, ["listed-site"]) });
+
+    test("gives the same reason, from the manifest description and the GitHub description and topics read again", async () => {
+      const { result } = await run(
+        {
+          [LIST]: { json: [held(1)] },
+          ...entry(1, { description: "Gets PDFs from Sci-Hub" }),
+          [`${API}/bob/p1`]: { json: { description: "A sci-hub client", topics: ["zotero-plugin", "scihub"] } },
+        },
+        false,
+      );
+      expect(result.failed).toEqual([]);
+      expect(result.changed).toEqual([
+        { number: 1, lines: ["- Listed site: ` Sci-Hub `, named in the manifest description, the GitHub description, a topic", "- Owner's GitHub account created: 2026-10-20"] },
+      ]);
+    });
+
+    test("says none now when no text names a listed site any more", async () => {
+      const { result } = await run({ [LIST]: { json: [held(1)] }, ...entry(1), [`${API}/bob/p1`]: { json: { description: "A PDF fetcher", topics: [] } } }, false);
+      expect(result.changed).toEqual([{ number: 1, lines: ["- Listed sites: none now", "- Owner's GitHub account created: 2026-10-20"] }]);
+    });
+
+    test("a failed read of the repo leaves the body as it is and lists the pull request as failed", async () => {
+      const { result, patches } = await run({ [LIST]: { json: [held(1)] }, ...entry(1), [`${API}/bob/p1`]: { status: 500, json: {} } });
+      expect(result.failed).toEqual([{ number: 1, message: expect.stringContaining("500") }]);
+      expect(patches).toEqual([]);
+    });
   });
 
   test.each<[string, Record<string, unknown>, string]>([
@@ -327,7 +361,7 @@ describe("pnpm refresh-holds", () => {
 
   test("an update file read that stalls stops at its limit and lists the pull request as failed", async () => {
     const { fetch } = fixtureFetch({ [LIST]: { json: [pull(1)] }, ...entry(1), [UPDATE]: { stall: "headers" } });
-    const result = await refreshHolds({ fetch, lookup: publicLookup, updateReadMs: 20, indexRepo: "example/index", root: PLUGINS, apply: true });
+    const result = await refreshHolds({ fetch, lookup: publicLookup, updateReadMs: 20, indexRepo: "example/index", root: PLUGINS, sites: SITES, apply: true });
     expect(result.failed).toEqual([{ number: 1, message: expect.stringContaining("aborted due to timeout") }]);
   });
 

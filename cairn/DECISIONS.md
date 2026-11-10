@@ -1464,3 +1464,39 @@ plugins that are not removed. This choice is wrong if a confirmed malware find
 with no second source leaves a harmful plugin listed, or if a plugin removed
 after a 14-day notice proves to have been taking data that serves no stated
 purpose.
+
+### D-087: The bot holds a pull request that names a listed site, and a held pull request closes under a ground applied without a report, annotating D-033 and D-053
+
+2026-11-09, M119 and RR01 (R9, R12). D-085 applies the fifth ground without a
+report only to a plugin whose name, description, repository name, or topics
+name a listed site. The plugins already listed were read by hand, and new
+plugins come in through the bot. So the bot adds a sixth hold reason to
+D-033's list, `listed-site`. It holds a new pull request when the manifest
+name or description, the GitHub description, the repository name, or a topic
+names a site in `sites.json`. That file is checked in, and each site in it
+gives its names and its rulings with country, court, date, case, kind, and a
+link. `pnpm check` refuses a site with rulings from fewer than two countries,
+so the file cannot list a site that fails D-085's count.
+
+A text names a site when whole runs of its letters and digits, in a row, join
+to the site's name with its own runs joined. Case, marks, and a change from
+lower to upper case do not count, so `Sci-Hub`, `sci hub`, `SciHub`, and
+`zotero-scihub` match. Part of a run does not match, so `scihubble` does not,
+and neither does `scihubfetcher` written as one word. M119 chose whole runs
+over any substring, since a substring match would hold words that only
+contain a site's name.
+
+The hold is a tripwire, not a guard. A false match costs one look, since a
+hold closes nothing, and a plugin that names a site to warn against it is
+held, read, and merged. A plugin that names no site in those texts is not
+held, and the hold sees only new pull requests. M120 reads the listed
+plugins again each day.
+
+D-053 said that a held pull request closes only for a misleading entry. A
+held pull request also closes when its plugin meets a ground that a
+maintainer applies without a report. A plugin kept out this way gets a
+`delisted.json` record with its ground, and its `issue` is the removal issue
+opened for it, as for a listed plugin. So it can ask to come back in the same
+way. This choice is wrong if the hold misses a plugin whose texts name a
+listed site, or if it holds so many plugins with no site built in that the
+maintainer stops reading them.

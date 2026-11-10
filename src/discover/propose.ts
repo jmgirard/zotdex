@@ -10,7 +10,7 @@ import type { Lookup } from "../upstream/host-guard.ts";
 import { type Fetch, githubClient, ReadFailure } from "../upstream/reader.ts";
 import { duration } from "../upstream/time-limit.ts";
 import { type DiscoverResult, type DiscoveryState, discover, type indexed, type ReadItem, repoName } from "./discover.ts";
-import type { HoldDetails, HoldReason } from "./holds.ts";
+import type { HoldDetails, HoldReason, SiteField } from "./holds.ts";
 
 const API = "https://api.github.com";
 // The bot's branches are `discover/<owner>/<repo>`, lowercase.
@@ -520,6 +520,8 @@ export const HOLD_TEXT: Record<HoldReason, string> = {
   "issue-no-topic": "An issue proposed this repo, and the repo has neither the zotero-plugin nor the zotero-addon topic.",
   "replaces-entry":
     "The index lists this plugin's add-on id from another repo. This repo is older, has at least 20 stars, and has at least 10 times that repo's stars, so this pull request points the entry at this repo. It changes only the entry's `meta.json`, and the entry keeps its `index.json`. These numbers cannot show which repo is the original. If the listed repo credits this repo and has a newer release, close this pull request, and otherwise merge it.",
+  "listed-site":
+    "The plugin's manifest name or description, its GitHub description, its repo name, or a topic names a site in `sites.json`, which courts in at least two countries ordered blocked or shut down for copyright infringement. The name alone removes nothing. Read the README and settings as \"A listed site built in\" in `docs/requests.md` says. If the site is built in, remove the plugin as \"Removing a plugin\" in `docs/maintaining.md` says, and otherwise merge this pull request.",
 };
 
 // The line above a held body's facts, and the start of the sentence that ends a bot body.
@@ -601,6 +603,15 @@ export function keptLines(index: unknown): string[] {
   return lines.length > 0 ? lines : ["- Kept from `index.json`: no override, no paid-service mark, and no screenshot"];
 }
 
+// How a `listed-site` detail line names each text.
+const SITE_FIELD_TEXT: Record<SiteField, string> = {
+  name: "the manifest name",
+  description: "the manifest description",
+  repoDescription: "the GitHub description",
+  repoName: "the repo name",
+  topics: "a topic",
+};
+
 // The lines under DETAILS_HEADING. A name goes in a code span, so it cannot add a line or
 // a mention; the schema's repo pattern keeps a repo safe in a link.
 export function holdDetailLines(details: HoldDetails, kept: string[] = []): string[] {
@@ -625,6 +636,8 @@ export function holdDetailLines(details: HoldDetails, kept: string[] = []): stri
     ...(details.updateHost === undefined ? [] : [`- Update host: ${code(details.updateHost)}`]),
     ...(details.updateHosts ? [`- Update file redirects to: ${details.updateHosts.map(code).join(", ")}`] : []),
     ...(details.updateHttp ? ["- Update file read used http: yes"] : []),
+    ...(details.sites?.length === 0 ? ["- Listed sites: none now"] : []),
+    ...(details.sites ?? []).map(({ site, fields }) => `- Listed site: ${code(site)}, named in ${fields.map((field) => SITE_FIELD_TEXT[field]).join(", ")}`),
     `- Owner's GitHub account created: ${details.ownerCreatedOn ?? "the bot could not read the date"}`,
   ];
 }

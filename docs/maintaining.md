@@ -320,6 +320,18 @@ reasons, in this order:
   `index.json`. The numbers cannot show which repository is the original, so
   the maintainer decides. A listed repository that credits the new one and has
   a newer release stays. Otherwise the maintainer merges the pull request.
+- `listed-site`: the manifest's name or description, the repository's GitHub
+  description, its name, or one of its topics names a site in `sites.json`.
+  The file lists each site that courts in at least two countries ordered
+  blocked or shut down for copyright infringement, with those rulings. If
+  some runs of letters and digits in a row join to a site's name, the text
+  names that site. Letter case and the marks between runs do not count. So
+  `Sci-Hub`, `sci hub`, `SciHub`, and `zotero-scihub` all name Sci-Hub, and
+  `scihubble` and `sci-hubs` do not. The name alone removes
+  nothing. Read the README and settings as "A listed site built in" in
+  [requests.md](requests.md) says. If the site is built in, remove the
+  plugin as "Removing a plugin" below says. Otherwise merge the pull request.
+  A plugin that names a site to warn against it is held, read, and merged.
 
 A held pull request also gets the label `hold`, and the maintainer merges or
 closes it. The maintainer mainly checks whether the entry misleads people about
@@ -351,6 +363,9 @@ the maintainer". They give the facts behind the hold:
   paid-service mark, and the screenshot. If it holds none, one line says so. The
   listed repository's owner asked for that screenshot, so decide whether it
   stays.
+- For `listed-site`, one line for each site that a text names, at most 10.
+  It names the texts: the manifest name, the manifest description, the GitHub
+  description, the repo name, or a topic.
 - For every hold, the day that the owner's GitHub account was made, or a
   note that the bot did not get that day.
 
@@ -367,7 +382,11 @@ pull request and leaves its body as it is. An HTTP error, a refused host, a
 failed request, and a read past 60 seconds are each a failed read. For a
 `replaces-entry`, it also reads the two repositories and the kept `index.json`.
 A failed read of a repository says "not read" in the line. A failed read of
-`index.json` fails the pull request and leaves its body as it is. First
+`index.json` fails the pull request and leaves its body as it is. For a
+`listed-site`, it reads the name and description in the pull request's
+`meta.json`. It also reads the repository's GitHub description and topics
+again. A failed read of the repository fails the pull request and leaves its
+body as it is. If no text names a listed site now, the line says so. First
 update your
 checkout to the default branch, or the match
 lines can be wrong. The command acts on an open pull request that meets all
@@ -612,7 +631,13 @@ This section is for a held bot pull request of a plugin that is not removed.
 If its entry misleads people about what the plugin is, who makes it, or who
 controls its updates, close it (D-053). Close no such pull request for another
 reason. When you remove a plugin, step 5 of the removal closes its pull
-request instead. Close it with
+request instead.
+
+A plugin that was never listed can still meet a ground that you apply without
+a report, such as a listed site built in. Then remove it with the steps of
+"Removing a plugin", but skip step 2, since it has no directory. Its removal
+issue is the `issue` of its `delisted.json` record, so it can ask to come back
+like any other removed plugin. Step 5 closes its pull request. Close it with
 `gh pr close <number> --comment "<reason>"`. The bot then does not propose
 that repo again.
 

@@ -1,3 +1,4 @@
+import type { Site } from "../check/sites.ts";
 import type { Lookup } from "../upstream/host-guard.ts";
 import { type Fetch, githubClient, readUpdateRoute } from "../upstream/reader.ts";
 import { indexed, repoName } from "./discover.ts";
@@ -18,6 +19,8 @@ export interface RefreshOptions {
   // The index repo as owner/repo, and its plugins/ folder, whose entries a name can match.
   indexRepo: string;
   root: string;
+  // The listed sites of `sites.json`, for a `listed-site` hold.
+  sites: readonly Site[];
   // Whether to send the new bodies, or only to report them.
   apply: boolean;
 }
@@ -43,6 +46,14 @@ function heldReasons(body: unknown): { reasons: HoldReason[] } | { problem: stri
   return { reasons };
 }
 
+// A repo's GitHub description and its topics that are strings. It throws when the read fails.
+async function repoTexts(fetch: Fetch, repo: string): Promise<{ repoDescription?: string; topics: string[] }> {
+  const meta = (await githubClient(fetch).json(`${API}/repos/${repo.split("/").map(encodeURIComponent).join("/")}`)) as { description?: unknown; topics?: unknown } | null;
+  const repoDescription = typeof meta?.description === "string" && meta.description.trim() !== "" ? meta.description.trim() : undefined;
+  const topics = Array.isArray(meta?.topics) ? meta.topics.filter((topic): topic is string => typeof topic === "string") : [];
+  return { ...(repoDescription && { repoDescription }), topics };
+}
+
 // The body with `lines` as its detail lines, in place of any it had, or undefined when it
 // has no closing sentence after its Hold line. Only the text from the detail heading up to
 // the closing sentence changes. The check output, which anyone's manifest can shape, comes
@@ -59,10 +70,11 @@ export function withDetailLines(body: string, lines: string[]): string | undefin
 // Works out the details again for each open bot pull request that has the hold label and a
 // Hold line that names reasons, and writes them to its body. It never changes a Hold line
 // or a label. A failed read of a pull request, of an owner's account that its Hold line
-// does not call unread, or of the update.json of an `update-host` hold leaves that body as it
-// is, and the run goes on to the next. A failed read of a name match's evidence prints that
+// does not call unread, of the update.json of an `update-host` hold, or of the repo's
+// GitHub description and topics for a `listed-site` hold leaves that body as it is, and
+// the run goes on to the next. A failed read of a name match's evidence prints that
 // fact as not read. A failed read of the list of pull requests or of `root` throws.
-export async function refreshHolds({ fetch, lookup, updateReadMs = UPDATE_READ_LIMIT_MS, indexRepo, root, apply }: RefreshOptions): Promise<RefreshResult> {
+export async function refreshHolds({ fetch, lookup, updateReadMs = UPDATE_READ_LIMIT_MS, indexRepo, root, sites, apply }: RefreshOptions): Promise<RefreshResult> {
   const github = githubClient(fetch);
   const result: RefreshResult = { changed: [], unchanged: [], skipped: [], failed: [] };
   const pulls = (await github.pages(`${API}/repos/${indexRepo}/pulls?state=open&per_page=100`)) as PullJson[];
@@ -107,7 +119,13 @@ export async function refreshHolds({ fetch, lookup, updateReadMs = UPDATE_READ_L
       const name = typeof meta.name === "string" ? meta.name : undefined;
       const evidence = held.reasons.includes("name-match") ? await matchEvidence(fetch, { repo, name, indexed: names }) : undefined;
       const replaced = replacing ? await replacedEntry(fetch, { id, repo, indexed: names }) : undefined;
-      const details = holdDetails({ repo, name, updateHost: updateHost ?? "", updateRoute, ownerCreatedAt: createdAt, indexed: names, evidence, replaced }, held.reasons);
+      const description = typeof meta.description === "string" ? meta.description : undefined;
+      // The repo's GitHub description and topics are not in its entry, so a listed-site hold reads them again.
+      const texts = held.reasons.includes("listed-site") ? await repoTexts(fetch, repo) : { topics: [] };
+      const details = holdDetails(
+        { repo, name, description, ...texts, sites, updateHost: updateHost ?? "", updateRoute, ownerCreatedAt: createdAt, indexed: names, evidence, replaced },
+        held.reasons,
+      );
       const kept = replacing ? keptLines(JSON.parse(await contents(github, `${API}/repos/${indexRepo}/contents/plugins/${encodeURIComponent(id)}/index.json?ref=${sha}`))) : [];
       const lines = holdDetailLines(details ?? {}, kept);
       const next = withDetailLines(pull.body as string, lines);

@@ -85,7 +85,7 @@ them, so no row.
 - [x] T2: Sweep the deployed data with the ledger's pattern; read each
       matched plugin's README and settings (no code, per M118's D-entry);
       record each verdict and where it was read.
-- [ ] T3: Write the D-entry for the hold and for closing a held pull
+- [x] T3: Write the D-entry for the hold and for closing a held pull
       request under a ground (RR01 R9). Add the hold reason: description
       and topic fields in `HoldFacts` (`src/discover/holds.ts:97`), the
       match against the sites file, the pull request body's text, the
@@ -114,6 +114,8 @@ them, so no row.
 - 2026-11-09: T1: `sites.json` at the repo root with `schemas/sites.schema.json`; `src/check/sites.ts` reads it and `pnpm check` reports `sites-file`; Sci-Hub (US 2017, FR 2019, IN 2025) and Anna's Archive (NL 2024, US 2026) listed; Sci-Net left out on one country; RR01's Sci-Hub cases confirmed, from the US judgment's own text and reports; the Dutch day not found, so the schema takes YYYY-MM; five source notes.
 - 2026-11-09: T1 choice: a name matches when whole runs of a-z and 0-9 in a row join to it, a run also ending at a lower-to-upper case change, after NFKC; so `scihubfetcher` as one word does not match, a cost of keeping near misses out.
 - 2026-11-09: T2: `cairn/references/listed-site-sweep-2026-11-09.md`; the pattern is the sites file's names under the bot's own match, over name, both descriptions, repo name, and description overrides (the data holds no topics); six matches, all yes (five Sci-Hub, one Anna's Archive); zotfetch's README contradicts itself, so its issue names the conflict; one commit with T1, since INDEX.md lists both.
+- 2026-11-09: T3: D-087 (the hold, the match rule, a tripwire not a guard, and a held pull request closed under a ground with its own `delisted.json` record and removal issue); `listed-site` is the seventh hold reason, last in order so earlier lists keep their order; `HoldFacts` takes both descriptions and the sites; the details name each site and its texts (at most 10); `refresh-holds` reads the GitHub description and topics again and fails the pull request on a failed read; the discover, issue, and refresh CLIs read `sites.json` and stop on a bad file; docs/maintaining.md lists the hold, its details, and closing a never-listed plugin's pull request.
+- 2026-11-09: T3 choice: `sites` is optional in the draft options, like `delisted`, and required in `refreshHolds`; each CLI passes it.
 
 ## Decisions
 

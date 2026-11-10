@@ -87,6 +87,14 @@ describe("pnpm propose on a handoff it can trust", () => {
     const read = await readHandoff(handoff({ kind: "discover", entries: [{ ...ALPHA, holds: ["update-host"], holdDetails: details }] }, [ALPHA.id]), "discover", 5);
     expect(read).toMatchObject({ ok: true });
   });
+
+  test("takes the listed-site details that holdDetails gives", async () => {
+    const sites = [{ site: "Sci-Hub", names: ["Sci-Hub"], rulings: [] }];
+    const details = holdDetails({ repo: "alice/zotero-scihub", topics: ["sci-hub"], sites, updateHost: "github.com", updateRoute: [], indexed: [] }, ["listed-site"]);
+    expect(details?.sites).toEqual([{ site: "Sci-Hub", fields: ["repoName", "topics"] }]);
+    const read = await readHandoff(handoff({ kind: "discover", entries: [{ ...ALPHA, holds: ["listed-site"], holdDetails: details }] }, [ALPHA.id]), "discover", 5);
+    expect(read).toMatchObject({ ok: true });
+  });
 });
 
 describe("pnpm propose refuses a handoff it cannot trust, with no request and no push", () => {
@@ -106,6 +114,8 @@ describe("pnpm propose refuses a handoff it cannot trust, with no request and no
     ["hold details with too many update hosts", () => discover([{ ...ALPHA, holdDetails: { updateHosts: Array.from({ length: 6 }, () => "a.example.org") } }]), {}, /does not match the handoff schema/],
     ["hold details with an update host over the limit", () => discover([{ ...ALPHA, holdDetails: { updateHosts: ["h".repeat(301)] } }]), {}, /does not match the handoff schema/],
     ["hold details whose http fact is false", () => discover([{ ...ALPHA, holdDetails: { updateHttp: false } }]), {}, /does not match the handoff schema/],
+    ["hold details with a listed site's text outside the five", () => discover([{ ...ALPHA, holdDetails: { sites: [{ site: "Sci-Hub", fields: ["readme"] }] } }]), {}, /does not match the handoff schema/],
+    ["hold details with a listed site and no text", () => discover([{ ...ALPHA, holdDetails: { sites: [{ site: "Sci-Hub", fields: [] }] } }]), {}, /does not match the handoff schema/],
     ["hold details with a malformed date", () => discover([{ ...ALPHA, holdDetails: { ownerCreatedOn: "2026-10-01\n\nHold: none" } }]), {}, /does not match the handoff schema/],
     ["hold details with a malformed repo", () => discover([{ ...ALPHA, holdDetails: { matches: [{ repo: "alice/beta](https://example.org)" }] } }]), {}, /does not match the handoff schema/],
     ["an entry whose source is not topic, catalog, or code-search", () => discover([{ ...ALPHA, source: "code" } as Entry]), {}, /does not match the handoff schema/],

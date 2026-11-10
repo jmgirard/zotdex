@@ -5,7 +5,7 @@ import { promisify } from "node:util";
 import { Ajv } from "ajv";
 import { MAX_REDIRECTS } from "../upstream/reader.ts";
 import { duration } from "../upstream/time-limit.ts";
-import { DAY, HOLD_REASONS, type HoldDetails, type HoldReason, HOST_MAX, MATCHES_MAX, NAME_MAX, RELEASE_DAY, REPO, REPO_MAX, SOURCES, type Source } from "./holds.ts";
+import { DAY, HOLD_REASONS, type HoldDetails, type HoldReason, HOST_MAX, MATCHES_MAX, NAME_MAX, RELEASE_DAY, REPO, REPO_MAX, SITE_FIELDS, SITES_MAX, SOURCES, type Source } from "./holds.ts";
 
 // A handoff is what a read job leaves for the write job: `plan.json` and one directory
 // `entries/<id>/` for each drafted entry. The read job reads repos that anyone can name,
@@ -110,6 +110,16 @@ const entrySchema = {
         updateHost: text(HOST_MAX),
         updateHosts: { type: "array", minItems: 1, maxItems: MAX_REDIRECTS, items: text(HOST_MAX) },
         updateHttp: { const: true },
+        sites: {
+          type: "array",
+          maxItems: SITES_MAX,
+          items: {
+            type: "object",
+            additionalProperties: false,
+            required: ["site", "fields"],
+            properties: { site: text(NAME_MAX), fields: { type: "array", minItems: 1, uniqueItems: true, items: { enum: [...SITE_FIELDS] } } },
+          },
+        },
         ownerCreatedOn: { type: "string", pattern: DAY.source },
       },
     },

@@ -1,3 +1,4 @@
+import { type Site, sitesNamedIn } from "../check/sites.ts";
 import { boundFetch, type Fetch, githubClient, ReadFailure } from "../upstream/reader.ts";
 
 // The GitHub topics that discovery searches.
@@ -9,7 +10,7 @@ export type Source = (typeof SOURCES)[number];
 
 // Why the bot holds a pull request for the maintainer instead of letting
 // `pnpm merge-discover` merge it, in the order a `holds` list gives them.
-export const HOLD_REASONS = ["name-match", "owner-unread", "new-account", "update-host", "issue-no-topic", "replaces-entry"] as const;
+export const HOLD_REASONS = ["name-match", "owner-unread", "new-account", "update-host", "issue-no-topic", "replaces-entry", "listed-site"] as const;
 export type HoldReason = (typeof HOLD_REASONS)[number];
 
 // A lowercase owner/repo, as the bot keys repos.
@@ -24,6 +25,12 @@ export const MATCHES_MAX = 5;
 export const REPO_MAX = 200;
 export const NAME_MAX = 100;
 export const HOST_MAX = 300;
+// The most listed sites that a hold's details name.
+export const SITES_MAX = 10;
+
+// The texts of a new repo that a `listed-site` hold reads, in the order its details name them.
+export const SITE_FIELDS = ["name", "description", "repoDescription", "repoName", "topics"] as const;
+export type SiteField = (typeof SITE_FIELDS)[number];
 
 const API = "https://api.github.com";
 // An owner account younger than this holds the pull request.
@@ -97,8 +104,10 @@ export interface ReplacedEntry {
 export interface HoldFacts {
   // The new repo as lowercase owner/repo.
   repo: string;
-  // The manifest name, when the manifest has one.
+  // The manifest name and description, when the manifest has them, and the GitHub description.
   name?: string;
+  description?: string;
+  repoDescription?: string;
   updateHost: string;
   // Each URL that the update.json read requested, in order.
   updateRoute: string[];
@@ -113,6 +122,31 @@ export interface HoldFacts {
   evidence?: MatchEvidence;
   // The entry this new repo would replace, when it would replace one.
   replaced?: ReplacedEntry;
+  // The listed sites of `sites.json`. Without them, no text names a listed site.
+  sites?: readonly Site[];
+}
+
+// Each listed site that a text of the new repo names, with the texts that name it: the
+// manifest name and description, the GitHub description, the repo's name, and its topics.
+export function listedSites({
+  repo,
+  name,
+  description,
+  repoDescription,
+  topics = [],
+  sites = [],
+}: Pick<HoldFacts, "repo" | "name" | "description" | "repoDescription" | "sites"> & Partial<Pick<HoldFacts, "topics">>): { site: Site; fields: SiteField[] }[] {
+  const texts: Record<SiteField, string[]> = {
+    name: name === undefined ? [] : [name],
+    description: description === undefined ? [] : [description],
+    repoDescription: repoDescription === undefined ? [] : [repoDescription],
+    repoName: [repo.split("/")[1] ?? ""],
+    topics,
+  };
+  return sites.flatMap((site) => {
+    const fields = SITE_FIELDS.filter((field) => texts[field].some((text) => sitesNamedIn(text, [site]).length > 0));
+    return fields.length > 0 ? [{ site, fields }] : [];
+  });
 }
 
 // The index entries of other owners whose name or repo part matches the new repo's.
@@ -171,6 +205,7 @@ export function holdReasons(facts: HoldFacts): HoldReason[] {
     "update-host": route.some(({ protocol }) => protocol === "http:") || (!GITHUB_HOSTS.includes(facts.updateHost) && !onOwnerSite),
     "issue-no-topic": facts.issueRun && !facts.topics.some((topic) => TOPICS.includes(topic)),
     "replaces-entry": facts.replaced !== undefined,
+    "listed-site": listedSites(facts).length > 0,
   };
   return HOLD_REASONS.filter((reason) => held[reason]);
 }
@@ -192,6 +227,8 @@ export function namedEntries(matched: IndexedName[]): IndexedName[] {
 // from another github.com repo now. `updateHosts` is each other host of the update.json read, in request order, left out
 // when there is none. `updateHttp` says that a URL of that read used http. `ownerCreatedOn` is the owner's
 // account creation day, there for any reason, since it also helps to judge a name match.
+// `sites` is there for `listed-site`: each listed site that a text names, up to SITES_MAX,
+// with those texts, and empty when none does now.
 // A fact of `name-match` or `replaces-entry` that the bot could not read is left out.
 export interface HoldDetails {
   matches?: { repo: string; name?: string; createdOn?: string; stars?: number; sharedFirstCommit?: boolean; identicalPercent?: number }[];
@@ -205,6 +242,7 @@ export interface HoldDetails {
   updateHost?: string;
   updateHosts?: string[];
   updateHttp?: true;
+  sites?: { site: string; fields: SiteField[] }[];
   ownerCreatedOn?: string;
 }
 
@@ -229,7 +267,10 @@ function entryDetails(own: RepoFacts | undefined, entry: RepoFacts | undefined):
 // The details of `reasons`, within the limits of the handoff schema, or undefined for no
 // reason. A matched entry whose repo the schema refuses counts in `moreMatches`, so one odd
 // entry in the index cannot refuse a whole handoff.
-export function holdDetails(facts: Pick<HoldFacts, "repo" | "name" | "updateHost" | "updateRoute" | "ownerCreatedAt" | "indexed" | "evidence" | "replaced">, reasons: readonly HoldReason[]): HoldDetails | undefined {
+export function holdDetails(
+  facts: Pick<HoldFacts, "repo" | "name" | "description" | "repoDescription" | "sites" | "updateHost" | "updateRoute" | "ownerCreatedAt" | "indexed" | "evidence" | "replaced"> & Partial<Pick<HoldFacts, "topics">>,
+  reasons: readonly HoldReason[],
+): HoldDetails | undefined {
   if (reasons.length === 0) return undefined;
   const details: HoldDetails = {};
   if (reasons.includes("name-match")) {
@@ -269,6 +310,11 @@ export function holdDetails(facts: Pick<HoldFacts, "repo" | "name" | "updateHost
     const others = [...new Set(route.map(({ host }) => host))].filter((host) => host !== facts.updateHost.toLowerCase());
     if (others.length > 0) details.updateHosts = others.map((host) => cut(host, HOST_MAX));
     if (route.some(({ protocol }) => protocol === "http:")) details.updateHttp = true;
+  }
+  if (reasons.includes("listed-site")) {
+    details.sites = listedSites(facts)
+      .slice(0, SITES_MAX)
+      .map(({ site, fields }) => ({ site: cut(site.site, NAME_MAX), fields }));
   }
   const createdOn = dayOf(facts.ownerCreatedAt);
   if (createdOn !== undefined) details.ownerCreatedOn = createdOn;
