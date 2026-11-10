@@ -229,8 +229,8 @@ replaces the line that the sections above record. Links are in brackets.
   spam, or when its entry misleads people about what it is or who makes
   it. A plugin is also removed when someone shows evidence that it does
   something harmful its users weren't told about, or when it has a site
-  built in that courts in two countries ordered blocked for copyright
-  infringement. To ask, use the [form for removing a plugin or reporting
+  built in that courts in at least two countries ordered blocked or shut
+  down for copyright infringement. To ask, use the [form for removing a plugin or reporting
   harm], or the link on the plugin's page. A removed plugin stays off
   Zotdex until a maintainer lifts the removal, and its owner can ask to
   bring it back. For a legal notice or a private report, use GitHub's
@@ -238,7 +238,10 @@ replaces the line that the sections above record. Links are in brackets.
   line read "use (the private contact)"; the user chose GitHub's private
   report form for it at the same stop. The links go to the remove form,
   `https://github.com/jmgirard/zotdex/security/advisories/new`, and
-  `docs/requests.md#removing-a-plugin`.
+  `docs/requests.md#removing-a-plugin`. (corrected M118 review: the user
+  approved "in at least two countries ordered blocked or shut down" in
+  place of "in two countries ordered blocked" at the review stop,
+  2026-11-09, so the card matches the rule.)
 
 ## Remove form (M118)
 
@@ -253,7 +256,10 @@ Approved by the user at M118's T6 stop, 2026-11-09, in
   makes it, for harm that the evidence shows, and for a listed site built
   in. The full rules, with what each ground means, are in
   [docs/requests.md]. To report harm in private, or to send a legal notice,
-  use the contact on the About page instead."
+  use the private report form linked from the About page instead."
+  (corrected M118 review: the user approved "the private report form
+  linked from the About page" in place of "the contact on the About page"
+  at the review stop, 2026-11-09, since About shows that form.)
 - "A removed plugin stays off the index until a maintainer lifts the
   removal." in place of "A removed plugin stays off the index."
 - Reason menu: "It has a listed site built in", after the four earlier

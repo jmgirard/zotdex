@@ -956,7 +956,7 @@ describe("the About page", () => {
       "Removing a plugin",
       "A maintainer removes a plugin when its owner asks, when it's spam, or when its entry misleads people about what it is or who makes it. " +
         "A plugin is also removed when someone shows evidence that it does something harmful its users weren't told about, " +
-        "or when it has a site built in that courts in two countries ordered blocked for copyright infringement. " +
+        "or when it has a site built in that courts in at least two countries ordered blocked or shut down for copyright infringement. " +
         "To ask, use the form for removing a plugin or reporting harm, or the link on the plugin's page. " +
         "A removed plugin stays off Zotdex until a maintainer lifts the removal, and its owner can ask to bring it back. " +
         "For a legal notice or a private report, use GitHub's private report form. The full rules are on GitHub.",

@@ -49,7 +49,7 @@ precise text lives in `docs/`, and About gets one approved sentence
       ground without a report only to a plugin whose name, description,
       repository name, or topics name a listed site, reading its README
       and settings and not its code.
-- [x] AC2: The same section states what a request to bring a removed
+- [ ] AC2: The same section states what a request to bring a removed
       plugin back must show after harm (this file's Decisions, Return path:
       RR01 R5, R6) or a listed site built in (a release drops the site, and
       a second removal on that ground stays: R8), and that a plugin
@@ -57,8 +57,9 @@ precise text lives in `docs/`, and About gets one approved sentence
       or entry no longer meets that ground; that only
       the owner can undo an owner's request, that any removal is lifted
       when its evidence proves wrong or a maintainer misread the plugin
-      (R7), and that a plugin found sending data without saying so first
-      gets an issue and 14 days to disclose it (R17).
+      (R7), and that a plugin found doing harm by sending data without
+      saying so, where the sending serves what the plugin says it does,
+      first gets an issue and 14 days to disclose it (R17).
 - [x] AC3: `docs/requests.md` states that the index hosts no plugin files,
       that a complaint about a plugin's own code goes to GitHub, where
       legal notices and private harm reports go, how to ask for a
@@ -94,7 +95,7 @@ precise text lives in `docs/`, and About gets one approved sentence
 ## Coverage
 
 - AC1 → T1, T3
-- AC2 → T1, T3, T9
+- AC2 → T1, T3, T9, T10
 - AC3 → T4
 - AC4 → T6
 - AC5 → T2
@@ -136,6 +137,11 @@ precise text lives in `docs/`, and About gets one approved sentence
       and searches, DESIGN's "sites file", the private-contact wording in
       `docs/requests.md`, the scan-issues pointer and the malware-find
       line, the wrap, and the About links test's name.
+- [x] T10: Review pass 2: narrow the notice to stated-purpose data
+      sending (AC2 amendment); fix the removal-issue timing and titles, the
+      closed-PR and earlier-removal searches, the notice's body flag, the
+      record's `issue` description, DESIGN's "at least two", the wrap,
+      and the malware-find line; apply the two approved lines; write D-086.
 
 ## Work log
 
@@ -191,6 +197,10 @@ precise text lives in `docs/`, and About gets one approved sentence
 - 2026-11-09: T9 added for review return 2 (minor amendment).
 - 2026-11-09: T9 done: the notice covers data sent without saying so; removal step 1 opens or renames the issue `Removed <owner>/<repo>`, step 5 closes a removed plugin's pull request on the removal's ground, and the held-PR section covers plugins not removed; the notice issue is titled `Notice for <owner>/<repo>`, and the earlier-removal search matches `Removed` titles; `is:unmerged` on the closed-PR search; DESIGN's "name a listed site"; the private report form named in `docs/requests.md`; the scan-issues body and the malware-find line point to `docs/maintaining.md` and the second-source rule; prose rewrapped; the About links test renamed; `pnpm test` 2815 passed, `pnpm check` 0 problems.
 - 2026-11-09: status review; handed back to /milestone-review.
+- 2026-11-09: question set (review stop, pass 2): the user chose the narrower AC2 clause, approved the About line "in at least two countries ordered blocked or shut down" and the form line "use the private report form linked from the About page instead", and asked for a third reviewer pass; status back to in-progress.
+- 2026-11-09: amendment return: AC2 — "a plugin found doing harm by sending data without saying so, where the sending serves what the plugin says it does, first gets an issue and 14 days to disclose it (R17)" (no reader spawned: AC2 holds two re-audit lines, and the user chose this wording at the stop).
+- 2026-11-09: T10 added (minor amendment) and done: the pass-2 fix-now findings, the two approved lines with their test and `plain-words-copy.md` record, and D-086; `pnpm test` 2815 passed, `pnpm check` 0 problems.
+- 2026-11-09: status review; handed back to /milestone-review for pass 3.
 
 ## Decisions
 

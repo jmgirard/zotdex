@@ -525,8 +525,7 @@ the repository. Otherwise, ask the owner to say so from the repository itself.
 To remove a plugin, do these steps on a branch:
 
 1. If no issue asks for the removal, open one first, as "The removal issue"
-   says. Name the issue `Removed <owner>/<repo>`, or rename a request's issue
-   with `gh issue edit <number> --title "Removed <owner>/<repo>"`.
+   says. Name it `Removing <owner>/<repo>`.
 2. Delete the entry's directory under `plugins/`.
 3. Add a record to `delisted.json`, with the ground and the issue's number.
 4. Run `pnpm check`, then merge the change.
@@ -535,15 +534,17 @@ To remove a plugin, do these steps on a branch:
    reason, held or not.
 6. Run `Build data` by hand with `gh workflow run build.yml`. Otherwise, the
    plugin stays on the site until the next daily build.
-7. Answer the issue to the outline below, and close it with
+7. After the merge, rename the issue with
+   `gh issue edit <number> --title "Removed <owner>/<repo>"`. Then answer it
+   to the outline below, and close it with
    `gh issue close <number> --comment "<answer>"`.
 
 ### The removal issue
 
-Answer each removal in its issue. When you remove a plugin with no request, as
-for a listed site built in, open an issue with
-`gh issue create --label remove-plugin --title "Removed <owner>/<repo>" --body-file <file>`.
-Write the answer in this order:
+A removal with no request, as for a listed site built in, needs its own issue.
+Give it a one-line body that names the plugin and the ground:
+`gh issue create --label remove-plugin --title "Removing <owner>/<repo>" --body "<plugin and ground>"`.
+Write the answer at step 7 in this order:
 
 1. What the index did: it removed the plugin, and the ground.
 2. What you read: the README line or setting, quoted or linked.
@@ -559,13 +560,16 @@ a person.
 
 ### Sending the 14-day notice
 
-When a plugin sends data somewhere without saying so, do these steps before a
-removal:
+Sometimes a plugin does harm by sending data somewhere without saying so, and
+the sending serves what the plugin says it does. Then do these steps before a
+removal. An update check or install count that "Harm" in requests.md calls
+not harm gets no notice. Hidden behavior that serves no part of what the
+plugin says it does gets no notice either: remove the plugin with the steps
+above.
 
-1. Open an issue on the index with
-   `gh issue create --label remove-plugin --title "Notice for <owner>/<repo>"`.
-   Mention the owner, link the code that sends the data, and say where it
-   goes.
+1. Write a body that mentions the owner, links the code that sends the data,
+   and says where it goes. Open the issue with
+   `gh issue create --label remove-plugin --title "Notice for <owner>/<repo>" --body-file <file>`.
 2. Give the owner 14 days to say so in the README or the release notes. Say
    that the plugin then stays listed.
 3. After 14 days, read the plugin's README and newest release notes. If they
@@ -579,20 +583,21 @@ removal:
 2. On a branch, delete the plugin's record from `delisted.json`, run
    `pnpm check`, and merge the change.
 3. Read the repo's bot pull requests with
-   `gh pr list --state closed --search "<owner>/<repo> is:unmerged"`. If one
-   was closed
-   without a merge, the bot does not propose the repo again. Then run
-   `pnpm add-plugin` with the repo's URL, as "Adding a plugin" says, and merge
-   the entry in a pull request. Otherwise, the next discover run can propose
-   the repo.
+   `gh pr list --state closed --head discover/<owner>/<repo>`. If one was
+   closed without a merge, the bot does not propose the repo again. In that
+   case, run `pnpm add-plugin` with the repo's URL, as "Adding a plugin" says,
+   and merge the entry in a pull request. Otherwise, the next discover run can
+   propose the repo.
 4. Answer the request, and close it with
    `gh issue close <number> --comment "<answer>"`.
 
 The closed removal issue keeps the record that a plugin was removed once. Its
-title starts with `Removed`, so a notice or a declined request does not count.
-Before a removal for a listed site, search for it with
-`gh issue list --state all --label remove-plugin --search "Removed <owner>/<repo> in:title"`.
-A second removal on that ground stays.
+title starts with `Removed` only after the removal merged, so a notice, a
+declined request, or an unfinished removal does not count. Before a removal
+for a listed site, search for one with
+`gh issue list --state all --label remove-plugin --search '"Removed <owner>/<repo>" in:title'`.
+Read each issue it lists. If one removed the plugin for a listed site, the
+second removal on that ground stays.
 
 ### Closing a held pull request
 
@@ -726,9 +731,9 @@ To keep earlier facts, add `--previous <url>`. The daily build gives the
 address of the published `v1/plugins.json`. The command reads that data
 after the reads of the top-level names below. If a record has a
 build-level failure, it reads it once. Otherwise it does not read it. The
-limits are those of `pnpm carry-start-results`: 60 seconds and 16 MiB. If all of these hold, a
-record with a build-level failure keeps the published record's `upstream`
-block and `startTests` list, with a `kept` block:
+limits are those of `pnpm carry-start-results`: 60 seconds and 16 MiB. If
+all of these hold, a record with a build-level failure keeps the published
+record's `upstream` block and `startTests` list, with a `kept` block:
 
 - The published `plugins` list names the entry id exactly once.
 - That record has the same `repoUrl`, has an `upstream` block, and is valid
@@ -1095,10 +1100,10 @@ read or write the data, or the schema refuses the new data, it exits with
 status 1.
 
 A flagged file stays listed, and its page shows the find. Handle a find as
-a report of harm. If a second source supports a scan find, "Harm" in
-[requests.md](requests.md) counts it as evidence. So look at the signature and
-the plugin's source before you decide. A
-flag on a large JavaScript bundle can be a false alarm.
+a report of harm. A scan find counts as evidence under "Harm" in
+[requests.md](requests.md) only with a second source that supports it. Look at
+the signature and the plugin's source for that support before you decide. A flag on a large
+JavaScript bundle can be a false alarm.
 
 Each find also opens a GitHub issue, so you hear of it without reading the
 run's warnings. In the `scan-issues` job of the daily build, this command

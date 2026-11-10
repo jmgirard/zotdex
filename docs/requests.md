@@ -74,9 +74,9 @@ comments on the issue that the `Closes #<issue>` line of the pull request
 names, and closes that issue as not planned. The command acts only on a pull
 request from a `discover/` branch of the index repository. The pull request's
 body must have exactly one `Closes #<issue>` line outside code blocks. The
-issue must be open, have the label `add-plugin`, and have a bot comment with the link to
-the pull request. If the bot already commented that the pull request was
-closed without a merge, the command does nothing. One run at a time handles
+issue must be open, have the label `add-plugin`, and have a bot comment with
+the link to the pull request. If the bot already commented that the pull
+request was closed without a merge, the command does nothing. One run at a time handles
 each pull request. The workflow runs on `pull_request_target`, so it runs its
 file from the default branch and runs no code from the pull request. A pull
 request that the bot's own token closes starts no workflow run, so its issue
@@ -374,9 +374,11 @@ The evidence must be something a reader can check. One example is a link to
 the code that does it. Others are a malware scan find that a second source
 supports, and steps that make it happen again.
 
-A plugin found sending data somewhere without saying so first gets an issue on
-the index. If its README or release notes do not say so within 14 days, a
-maintainer removes it.
+A plugin can do harm by sending data somewhere without saying so, where the
+sending serves what the plugin says it does. Such a plugin first gets an issue
+on the index. If its README or release notes do not say so within 14 days, a
+maintainer removes it. Hidden behavior that serves no part of what the plugin
+says it does gets no notice.
 
 ### A listed site built in
 
@@ -444,8 +446,8 @@ A record has five fields:
 
 Write `repo` in lowercase. `ground` names the ground the removal used: `owner`,
 `spam`, `misleading`, `harm`, or `copyright`, which is the ground for a listed
-site built in. `issue` is the number of the request, and `date` is the day of
-the removal. If you judged an id unique to that repo, put it in `ids`, and
+site built in. `issue` is the number of the removal's issue, and `date` is the
+day of the removal. If you judged an id unique to that repo, put it in `ids`, and
 put no other id there. A fork can keep its source's id, and a listed id blocks
 every repo that carries it. `ids` can be empty.
 

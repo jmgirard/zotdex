@@ -294,8 +294,8 @@ button: it downloads the file and installs nothing (D-029).
 A maintainer can remove a listed plugin for its repository's owner, for spam,
 for an entry that misleads about what the plugin is or who makes it, for harm
 that a report shows with evidence a reader can check, or for a listed site
-built in: a site that courts in two countries ordered blocked or shut down for
-copyright infringement. `delisted.json` keeps it off the index until a
+built in: a site that courts in at least two countries ordered blocked or shut
+down for copyright infringement. `delisted.json` keeps it off the index until a
 maintainer lifts the removal. This does not make the index a reviewer of plugin
 code (D-051, D-062, D-085, M093, M118).
 
@@ -454,9 +454,9 @@ and settings of each plugin whose name, description, repository name, or
 topics name a listed site, without a report. `docs/requests.md` defines
 spam, harm, and "built in", and states how each removal is lifted.
 `delisted.json` names each removed repo and its ground, and its `ids` hold
-only ids judged unique to that repo. So
-`pnpm check`, discovery, and "Add a plugin" issues keep the plugin off the
-index, and a bot pull request for it does not merge. A copy under a new name
+only ids judged unique to that repo. So `pnpm check`, discovery, and "Add a
+plugin" issues keep the plugin off the index, and a bot pull request for it
+does not merge. A copy under a new name
 is covered only if it keeps a listed id. An author cannot remove
 user reports. The exception is a report that is abuse.
 

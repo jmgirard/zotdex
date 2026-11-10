@@ -1436,3 +1436,31 @@ choice is wrong if a plugin stays listed that courts in two countries have
 ordered taken down, if a maintainer reads plugins that no match or report
 names, or if a site that passes the test turns out to serve only lawful
 copies.
+
+### D-086: A scan find needs a second source, the 14-day notice covers only stated-purpose data sending, and a removal closes a held pull request, annotating D-053, D-082, D-084, and D-085
+
+2026-11-09, M118 review. D-085 left four parts of the rules that the user
+accepted from RR01 to `docs/requests.md`, and the review found that each one
+changes an earlier decision. First, a malware scan find counts as evidence of
+harm only with a second source that supports it, such as the plugin's code.
+D-082 and D-084 stand: a find shows on the page, opens an issue, and is handled
+as a report of harm, and a find alone now removes nothing. Second, "built in"
+covers a default or preset address, a menu choice, a button, a list the plugin
+loads by itself, and README or settings text that tells the user to enter the
+site's address. A renamed site counts when a ruling names it or its operator
+presents it as the same service. Harm from someone else's change returns once
+the public record shows what happened: the commit or release that added it,
+an advisory or a statement on the repository, and nothing that contradicts
+the owner's account.
+
+Third, the 14-day notice covers only a plugin that does harm by sending data
+without saying so, where the sending serves what the plugin says it does. The
+user chose this at the review stop over a notice for any data sent without
+saying so, which would have given a plugin that takes passwords 14 days
+although it stays off for good. Fourth, a removal on any ground closes the
+removed plugin's bot pull request, held or not. D-053's rule that a held pull
+request closes only for a misleading entry now covers held pull requests of
+plugins that are not removed. This choice is wrong if a confirmed malware find
+with no second source leaves a harmful plugin listed, or if a plugin removed
+after a 14-day notice proves to have been taking data that serves no stated
+purpose.
