@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- The daily build reads the listed plugins against `sites.json` each day.
+  If a plugin's name, description, GitHub description, or repository name
+  names a listed site, the build opens a GitHub issue. The issue has the
+  label `listed-site`, and it goes to the repository's owner to read. The
+  build opens one issue for each plugin and site. It does not open that
+  issue again after it is closed, and it opens at most 5 such issues a run.
 - Six plugins with Sci-Hub or Anna's Archive built in left the index under
   the fifth removal ground, each with a public issue that names what was
   read and how it can come back. A new `sites.json` lists those two sites

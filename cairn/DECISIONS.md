@@ -1514,3 +1514,31 @@ that GitHub gives, so the split applies there too. D-087 also calls
 `listed-site` a sixth hold reason. It is the seventh, after `name-match`,
 `owner-unread`, `new-account`, `update-host`, `issue-no-topic`, and
 `replaces-entry`. The rest of D-087 stands.
+
+### D-089: The daily build opens a GitHub issue for each listed plugin that names a listed site, annotating D-084, D-085, and D-087
+
+2026-11-10, M120 and RR01 (R8). D-087's hold sees only new pull requests, so
+a listed plugin that adds a listed site's name later went unseen. A new
+`site-issues` job in the daily build reads each listed plugin's manifest name
+and description, GitHub description, and repository name with D-087's match,
+as D-088 corrects it. It opens one issue labeled `listed-site` for each plugin
+and site, assigned to the repository's owner, for the maintainer to read
+under D-085.
+
+The job takes D-084's shape. A hidden marker line holds hashes of the plugin
+id and the site name, and the job matches it as a whole line in every
+`listed-site` issue, open or closed, so a closed issue is not opened again. It
+opens at most 5 issues a run and names the rest in a warning, and a later run
+opens them, since each run reads every listed plugin. It holds one
+concurrency group for every branch and only `issues: write`, and no job waits
+on it, so a GitHub failure warns and never stops the deploy. Unlike D-084, a
+create that GitHub refuses with a 422 also stops the run's other creates. The
+job reads no topics, since the deployed data holds none, and the bot's hold
+reads them at intake (M119).
+
+A closed issue's marker would also keep a plugin that came back after a
+listed-site removal, and later names the site again, from a new issue. So a
+maintainer who lifts such a removal deletes that marker line, and a second
+removal on that ground stays (D-085). This choice is wrong if a listed plugin
+with a listed site built in names it only in a text the job does not read, or
+if matches come so often that the cap of 5 leaves them waiting for days.
