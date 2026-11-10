@@ -1,14 +1,13 @@
 # elsevier-v-elbakyan-delhi-2025: the Indian order to block Sci-Hub and Sci-Net
 
 **Provenance.** Ingested 2026-11-09 by M119 from three reports, read with
-WebFetch:
+WebFetch and listed below. The session did not find the order's own text.
+Pagination: none.
+Extraction: verified 2026-11-09 against the three reports, and the case number comes from K&S Partners alone.
 
 - K&S Partners, https://ksandk.com/intellectual-property-rights/delhi-hc-orders-blocking-of-sci-hub-sci-net-for-piracy/
 - LiveLaw, 2025-08-23, https://www.livelaw.in/high-court/delhi-high-court/delhi-high-court-orders-blocking-of-sci-hub-mirror-websites-in-india-in-publishers-copyright-infringement-suit-301777
 - Digital Policy Alert, https://digitalpolicyalert.org/event/32966-delhi-high-court-issued-ruling-mandating-blocking-of-sci-hub-and-sci-net-over-copyright-infringement-elsevier-and-others-v-alexandra-elbakyan-and-others
-
-The session did not find the order's own text. Pagination: none.
-Extraction: verified 2026-11-09 against the three reports, and the case number comes from K&S Partners alone.
 
 **Citation.** Elsevier Ltd. & Ors. v. Alexandra Elbakyan & Ors., CS(COMM)
 572/2020, High Court of Delhi, Justice Manmeet Pritam Singh Arora, interim order

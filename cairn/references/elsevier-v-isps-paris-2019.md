@@ -1,13 +1,12 @@
 # elsevier-v-isps-paris-2019: the French order to block Sci-Hub
 
 **Provenance.** Ingested 2026-11-09 by M119 from two news reports, read with
-WebFetch:
+WebFetch and listed below. The session did not find the decision's own text.
+Pagination: none.
+Extraction: verified 2026-11-09 against both reports, and the date comes from Next INpact alone.
 
 - TorrentFreak, 2019-03-31, https://torrentfreak.com/court-orders-french-isps-to-block-sci-hub-and-libgen-190331/
 - Next INpact, 2019-03-30, https://next.ink/6990/107689-les-principaux-fai-francais-doivent-bloquer-sci-hub-et-libgen/
-
-The session did not find the decision's own text. Pagination: none.
-Extraction: verified 2026-11-09 against both reports, and the date comes from Next INpact alone.
 
 **Citation.** Tribunal de grande instance de Paris, order of 2019-03-07, on the
 request of Elsevier and Springer Nature against Bouygues Télécom, Free, Orange,
