@@ -127,3 +127,9 @@ and the bot's hold (M119) reads them at intake, so no row.
 - prior-review #2: a 422 stops the run, unlike scan-issues — reject, planned change, as diff-bug #6
 - prior-review #3: the repository name is read in the entry's case, not GitHub's — fix now, as diff-bug #1
 - prior-review #4: `matchesOf` can throw outside the documented exit — reject, edge, as diff-bug #8
+- fix-now lines above (diff-bug #1, #2, #3, #5, #10, #12; blame-history #1 to #3; ripple #3 to #5; prior-review #1, #3): fixed b5b076a1, wording settled e8944268
+- pass 2 (after review return 1) AC1 evidence (2026-11-10, e8944268): `vitest run test/site-issues.test.ts` green; the same AC1 cases as pass 1, plus the repository name that GitHub gives after a rename and in its case, and a record with no upstream.
+- pass 2 AC2 evidence (2026-11-10, e8944268): the list, label read, label create, and 422 create failures each give one `::warning::` line in tests; `pnpm site-issues` with one match and a refused connection printed one warning and exited 0.
+- pass 2 AC3 evidence (2026-11-10, e8944268): `build.yml:328` and `:360` as in pass 1, 5 workflow tests green; `docs/maintaining.md:701` gives the steps, `:716` says that a second removal on that ground stays.
+- pass 2 AC4 evidence (2026-11-10, e8944268's code): `pnpm test` 2895 passed, 6 skipped at 09:02; `pnpm check` 753 entries, 0 problems.
+- pass 2 gate: `cairn_validate.py` all checks passed; no principle changed; generic profile adds no toolchain checks.
