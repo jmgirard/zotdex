@@ -151,3 +151,17 @@ Pass 1, 2026-11-09, at 15d0d98e.
 Pass 2, 2026-11-09, at 21013f15. No file outside `cairn/` changed since pass 1 (`git diff --stat 15d0d98e HEAD -- . ':!cairn/'` is empty), so AC1, AC2, AC4, and AC5 stand on pass 1's evidence.
 
 - AC3 (amended): the six records name #883 to #888, ground `copyright`; each issue body opens with `@<owner>` of the plugin's repository (ethanwillis, syt2, 0xc1c4da, chen7447, dnnunn, fdossi), says "a site I run that lists Zotero 7+ plugins", says "I'm removing" the plugin "because" of its site, links the line the ledger rests its verdict on (L1 `prefs.js#L1`, L2 `README.md#L25`, L3 `addon/prefs.js#L3`, L4 `README.md#L20`, L5 `addon/prefs.js#L3`, L6 `README.md#L91`, each at the ledger's commit), and says to reply here to appeal; the six directories are gone; `pnpm check` 748 entries, 0 problems. Pass.
+- Gate: cairn_validate all checks passed; no principle changed (DESIGN has no IP or GP); the generic profile's consistency-gate slot names no toolchain check.
+- spawned: diff-bug, blame-history, prior-review, ripple
+- blame-history #1: the new removal-issue outline drops the link to "Coming back" — reject (planned change: the user chose the three-part outline, and its appeal item covers a wrong reading and a later release).
+- blame-history #2: the outline drops the no-claim-of-law-breaking line, which rests on D-085's basis — reject (planned change: the user cut it, logged as an override).
+- blame-history #3: the discover and refresh paths read the same texts — reject (false: no divergence; the reviewer found none).
+- blame-history #4: `ethanwillis/zotero-scihub` is listed by repo with no id — reject (false: by design, its id is a placeholder its forks keep).
+- prior-review #1: the outline drops points RR01 R13 asked for — reject (planned change: the user's recorded choice).
+- prior-review #2: `listed-site` holds on a name alone, while D-045 holds a name match only on copying evidence — reject (planned change: D-087 adds this hold as a tripwire on a different ground, and a hold closes nothing).
+- ripple #1: requests.md and DESIGN say "description", where the bot reads the manifest and GitHub descriptions — fix now.
+- ripple #2: maintaining.md step 7's "the answer follows the outline" for a request — fix now.
+- ripple #3: "Checking entries" does not list the `sites-file` rule — fix now.
+- ripple #4: the issues say a reply is enough to come back, and requests.md "Coming back" says to open an issue — fix now (requests.md now names a reply on the removal issue).
+- ripple #5: "Closing a held pull request" opens on plugins that are not removed, and its new paragraph covers removed ones — fix now.
+- ripple #6: "the maintainer mainly checks" names only misleading entries — fix now (adds the `listed-site` check).

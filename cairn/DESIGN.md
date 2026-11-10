@@ -452,8 +452,8 @@ removes a plugin for its repository's owner, for spam, for an entry that
 misleads about what the plugin is or who makes it, for harm that a report
 shows with evidence a reader can check, or for a listed site built in (D-062,
 D-085, M093, M118). For the last ground alone, a maintainer reads the README
-and settings of each plugin whose name, description, repository name, or
-topics name a listed site, without a report. `sites.json` lists those sites
+and settings of each plugin whose name, manifest or GitHub description,
+repository name, or topics name a listed site, without a report. `sites.json` lists those sites
 with their rulings, and the bot holds a new pull request that names one
 (M119). `docs/requests.md` defines
 spam, harm, and "built in", and states how each removal is lifted.

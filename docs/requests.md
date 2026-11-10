@@ -403,8 +403,8 @@ and names no listed site, is not covered. A plugin's name alone does not make
 the site built in.
 
 A report can ask for this ground for any plugin. Without a report, a
-maintainer applies it only to a plugin whose name, description, repository
-name, or topics name a listed site. The maintainer reads that plugin's README
+maintainer applies it only to a plugin whose name, manifest or GitHub
+description, repository name, or topics name a listed site. The maintainer reads that plugin's README
 and settings, not its code, and checks every match the same way. A plugin
 that stays listed has not been checked. The index forms no view of its own
 about whether a plugin or its users break the law. A site's terms of use, a
@@ -413,8 +413,9 @@ for removal.
 
 ### Coming back
 
-A removal lasts until a maintainer lifts it. To ask, open an issue on the
-index that names the plugin and shows what the ground needs:
+A removal lasts until a maintainer lifts it. To ask, reply on the plugin's
+removal issue, or open an issue on the index that names the plugin. Show
+what the ground needs:
 
 - The owner's request: only the owner can ask to undo it.
 - Spam or a misleading entry: the repository or entry no longer meets that

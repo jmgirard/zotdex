@@ -336,7 +336,9 @@ reasons, in this order:
 
 A held pull request also gets the label `hold`, and the maintainer merges or
 closes it. The maintainer mainly checks whether the entry misleads people about
-what the plugin is, who makes it, or who controls its updates. If the label request fails, `pnpm propose` names the pull request
+what the plugin is, who makes it, or who controls its updates. For a
+`listed-site` hold, the maintainer also checks whether a listed site is built
+in. If the label request fails, `pnpm propose` names the pull request
 as a failed entry and exits with status 1. The pull request stays open, and
 its Hold line still keeps the bot from merging it. In an issue run, the
 issue still gets the comment that names the pull request.
@@ -558,7 +560,8 @@ To remove a plugin, do these steps on a branch:
    `gh issue edit <number> --title "Removed <owner>/<repo>"`. Then close it
    with `gh issue close <number> --comment "<answer>"`. For an issue that
    you opened to the outline below, the answer names the merged pull request.
-   For a request, the answer follows the outline.
+   For a request, the answer gives what you decided and why, and how to
+   appeal, as items 2 and 3 of the outline below say.
 
 ### The removal issue
 
@@ -629,9 +632,9 @@ second removal on that ground stays.
 
 ### Closing a held pull request
 
-This section is for a held bot pull request of a plugin that is not removed.
-If its entry misleads people about what the plugin is, who makes it, or who
-controls its updates, close it (D-053). Close no such pull request for another
+This section is for a held bot pull request. Some entries mislead people
+about what the plugin is, who makes it, or who controls its updates. If you
+do not remove such a plugin, close its pull request (D-053). Close no such pull request for another
 reason. When you remove a plugin, step 5 of the removal closes its pull
 request instead.
 
@@ -702,6 +705,13 @@ the command checks (see "Removing a plugin" in
   the list, in any letter case and with or without `.git`.
 - `delisted-file`: the list must exist and match
   `schemas/delisted.schema.json`.
+
+One rule reads `sites.json` at the top of the repo, or the file that
+`ZPI_SITES` names:
+
+- `sites-file`: the file must exist and match `schemas/sites.schema.json`.
+  Each site must have rulings from at least two countries, and no two names
+  can match the same texts.
 
 The first run downloads the registry schema into `.cache/`, so that run needs
 a network connection. The command refuses a downloaded or cached schema whose
