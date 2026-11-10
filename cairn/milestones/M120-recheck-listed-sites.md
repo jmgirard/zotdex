@@ -65,7 +65,7 @@ and the bot's hold (M119) reads them at intake, so no row.
       `src/malware-scan/scan-issues.ts` (D-084); tests per AC1 and AC2.
 - [x] T2: Add the `site-issues` job to `.github/workflows/build.yml`;
       write the D-entry; update docs, DESIGN, CHANGELOG.
-- [ ] T3: Run `pnpm test` and `pnpm check`.
+- [x] T3: Run `pnpm test` and `pnpm check`.
 
 ## Work log
 
@@ -80,6 +80,8 @@ and the bot's hold (M119) reads them at intake, so no row.
 - 2026-11-10: choice: the `site-issues` job needs only the build job (default `if`), runs beside the start tests, and checks the data digest as scan-issues does; its own concurrency group `site-issues`.
 - 2026-11-10: choice: the docs close a gap that AC1's never-reopen marker leaves: a maintainer who lifts a listed-site removal deletes the closed issue's marker line, so a plugin that names the site again gets a new issue; recorded in D-089 and DESIGN Known issues.
 - 2026-11-10: T2 done: `site-issues` job, 5 workflow tests (2 shared with scan-issues by `test.each`), `docs/maintaining.md` "Listed-site issues" plus lifting and daily-build edits, D-089, DESIGN, CHANGELOG; verify green (2895 passed, 753 entries, 0 problems), cairn_validate passed.
+- 2026-11-10: T3 done: `pnpm test` (2895 passed, 6 skipped) and `pnpm check` (753 entries, 0 problems) on 4729bbf5's tree.
+- 2026-11-10: delegation: claim audit to a fresh Opus reader over `git diff main...HEAD -- . ':!cairn/'`.
 
 ## Decisions
 
