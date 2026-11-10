@@ -124,6 +124,8 @@ them, so no row.
 - 2026-11-09: claim audit: 133 claims read, 6 corrected — docs/maintaining.md, docs/requests.md, sites.json, test/holds.test.ts; the reader's one re-read found all six hold, and D-088 and the Known issues entry hold; D-088's heading leaves out "or a digit", which its body gives; left, since the pass's one re-read is spent and the heading is history.
 - 2026-11-09: status review: `pnpm test` 2864 passed, 6 skipped; `pnpm check` 0 problems; cairn_validate all checks passed.
 - 2026-11-09: amendment routed: AC3 — the issues follow the three-part outline the user chose (user override above), not M118's six-part outline that AC3 names, so AC3's outline clause is wrong as written; the deliverable is as the user asked.
+- 2026-11-09: re-audit: AC3 (full) — "Its directory" reads as the issue's; the link clause should name what the ledger names; both fixed toward the narrower wording.
+- 2026-11-09: re-audit: AC3 (full) — "the repo's owner" can read as the index repo's; "README line or settings file" admits a README line that is not the evidence; "is removed" vs issues opened before the merge; second re-audit on AC3, so the wording goes to the user (stop).
 - 2026-11-09: T5: `pnpm test` 2864 passed, 6 skipped; `pnpm check` 748 entries, 0 problems; a restored copy of two removed entries fails `pnpm check` as `delisted-repo` and `delisted-id`.
 
 ## Decisions
