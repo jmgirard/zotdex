@@ -49,7 +49,7 @@ precise text lives in `docs/`, and About gets one approved sentence
       ground without a report only to a plugin whose name, description,
       repository name, or topics name a listed site, reading its README
       and settings and not its code.
-- [ ] AC2: The same section states what a request to bring a removed
+- [x] AC2: The same section states what a request to bring a removed
       plugin back must show after harm (this file's Decisions, Return path:
       RR01 R5, R6) or a listed site built in (a release drops the site, and
       a second removal on that ground stays: R8), and that a plugin
@@ -247,23 +247,24 @@ precise text lives in `docs/`, and About gets one approved sentence
 - AC2 evidence (pass 2, `cdd870d2`): the "Harm" subsection now gives the issue and 14 days to disclose for a plugin found sending data somewhere without saying so; the "Coming back" text is as in pass 1.
 - AC6 evidence (pass 2, `cdd870d2`): the removal steps now open or rename the issue first (step 1) and close a removed plugin's pull request on the removal's ground (step 5); the held-pull-request section covers plugins not removed; the notice and removal issues carry the `Notice for` and `Removed` titles that the earlier-removal search reads; each step that changes GitHub state names its `gh` command.
 - spawned: diff-bug, blame-history, prior-review, ripple
-- diff-bug #1: the 14-day notice now reaches a plugin that takes passwords, which "Coming back" keeps off for good — amendment routed (AC2 promises the notice for any data sent without saying so)
-- diff-bug #2: the notice steps do not leave out anonymous update checks and install counts, which are not harm — fix now
-- diff-bug #3: removal step 5 closes a held pull request on any ground, and D-053 is not annotated — fix now (D-086)
-- diff-bug #4: long and ragged lines remain — fix now
-- diff-bug #5: the closed-PR search reads titles, while the bot keys on the `discover/<owner>/<repo>` branch — fix now
-- diff-bug #6: "Then run `pnpm add-plugin`" reads as unconditional — fix now
-- diff-bug #7: the earlier-removal search does not check that the removal used the listed-site ground — fix now
-- diff-bug #8: the title search is not an exact phrase — fix now
-- diff-bug #9: a no-request removal's issue carries the answer before the removal — fix now
-- diff-bug #10: step 1 sets the `Removed` title before the removal merges — fix now
-- diff-bug #11: the notice command has no body flag — fix now
+- diff-bug #1: the 14-day notice now reaches a plugin that takes passwords, which "Coming back" keeps off for good — amendment routed (AC2 promises the notice for any data sent without saying so); the user chose the narrower AC2 clause, fixed b26afecc
+- diff-bug #2: the notice steps do not leave out anonymous update checks and install counts, which are not harm — fix now, fixed b26afecc
+- diff-bug #3: removal step 5 closes a held pull request on any ground, and D-053 is not annotated — fix now (D-086), fixed b26afecc
+- diff-bug #4: long and ragged lines remain — fix now, fixed b26afecc
+- diff-bug #5: the closed-PR search reads titles, while the bot keys on the `discover/<owner>/<repo>` branch — fix now, fixed b26afecc
+- diff-bug #6: "Then run `pnpm add-plugin`" reads as unconditional — fix now, fixed b26afecc
+- diff-bug #7: the earlier-removal search does not check that the removal used the listed-site ground — fix now, fixed b26afecc
+- diff-bug #8: the title search is not an exact phrase — fix now, fixed b26afecc
+- diff-bug #9: a no-request removal's issue carries the answer before the removal — fix now, fixed b26afecc
+- diff-bug #10: step 1 sets the `Removed` title before the removal merges — fix now, fixed b26afecc
+- diff-bug #11: the notice command has no body flag — fix now, fixed b26afecc
 - diff-bug #12a: About says "its owner can ask to bring it back", while anyone can ask — reject (planned change: the user approved the line; the owner is the usual asker)
-- diff-bug #12b: `issue` is "the number of the request", wrong for a no-request removal — fix now
-- diff-bug #12c: DESIGN says "courts in two countries", the rule "at least two" — fix now
-- diff-bug #12d: "So look at the signature" does not follow from the sentence before — fix now
-- blame-history #1: the second-source condition on scan finds narrows D-082 and D-084 with no decision recording it — fix now (D-086)
-- blame-history #2: the built-in list, the renamed-site rule, and the public-record test are not in D-085 — fix now (D-086)
-- prior-review #1: ragged wrap in docs and DESIGN — fix now (same as diff-bug #4)
-- ripple #1: About says "ordered blocked", the rule "blocked or shut down" — fix now if the user approves the line at step 7 (approved wording; same as pass 1 diff-bug #9)
-- ripple #2: the form says "the contact on the About page", and About links a private report form — fix now if the user approves the line (approved wording)
+- diff-bug #12b: `issue` is "the number of the request", wrong for a no-request removal — fix now, fixed b26afecc
+- diff-bug #12c: DESIGN says "courts in two countries", the rule "at least two" — fix now, fixed b26afecc
+- diff-bug #12d: "So look at the signature" does not follow from the sentence before — fix now, fixed b26afecc
+- blame-history #1: the second-source condition on scan finds narrows D-082 and D-084 with no decision recording it — fix now (D-086), fixed b26afecc
+- blame-history #2: the built-in list, the renamed-site rule, and the public-record test are not in D-085 — fix now (D-086), fixed b26afecc
+- prior-review #1: ragged wrap in docs and DESIGN — fix now (same as diff-bug #4), fixed b26afecc
+- ripple #1: About says "ordered blocked", the rule "blocked or shut down" — fix now, approved at the review stop and fixed b26afecc; it read: fix now if the user approves the line at step 7 (approved wording; same as pass 1 diff-bug #9)
+- ripple #2: the form says "the contact on the About page", and About links a private report form — fix now, approved at the review stop and fixed b26afecc; it read: fix now if the user approves the line (approved wording)
+- AC2 evidence (pass 3, `b26afecc`): the "Harm" subsection gives the issue and 14 days to disclose for a plugin that does harm by sending data without saying so where the sending serves what the plugin says it does, and says hidden behavior that serves no stated purpose gets no notice; the "Coming back" text is as in pass 1.
