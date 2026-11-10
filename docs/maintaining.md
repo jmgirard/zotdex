@@ -324,14 +324,15 @@ reasons, in this order:
   description, its name, or one of its topics names a site in `sites.json`.
   The file lists sites that courts in at least two countries ordered blocked
   or shut down for copyright infringement, with those rulings. If some runs
-  of letters and digits in a row join to a site's name, the text names that
-  site. The marks between runs do not count. Letter case does not count
+  of the letters a to z and digits in a row join to a site's name, the text
+  names that site. Every other character ends a run, and it does not count. Letter case does not count
   either, except that a capital letter after a small letter or a digit
   starts a new run. So `Sci-Hub`, `sci hub`, `SciHub`, and `zotero-scihub`
   all name Sci-Hub, and `scihubble`, `sci-hubs`, and `Scihubfetcher` do not. The name alone removes
   nothing. Read the README and settings as "A listed site built in" in
   [requests.md](requests.md) says. If the site is built in, remove the
-  plugin as "Removing a plugin" below says. Otherwise merge the pull request.
+  plugin and close the pull request as "Closing a held pull request" below
+  says. Otherwise merge the pull request.
   A plugin that names a site to warn against it is held, read, and merged.
 
 A held pull request also gets the label `hold`, and the maintainer merges or

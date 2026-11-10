@@ -185,7 +185,7 @@ describe("pnpm refresh-holds", () => {
   describe("a listed-site hold", () => {
     const held = (n: number) => pull(n, { body: source(n, ["listed-site"]) });
 
-    test("gives the same reason, from the manifest description and the GitHub description and topics read again", async () => {
+    test("writes the listed-site line from the manifest description and the GitHub description and topics read again", async () => {
       const { result } = await run(
         {
           [LIST]: { json: [held(1)] },
