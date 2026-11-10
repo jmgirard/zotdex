@@ -5,7 +5,7 @@
 - The daily build reads the listed plugins against `sites.json` each day.
   If a plugin's name, description, GitHub description, or repository name
   names a listed site, the build opens a GitHub issue. The issue has the
-  label `listed-site`, and it goes to the repository's owner to read. The
+  label `listed-site`, and it goes to the index's owner to read. The
   build opens one issue for each plugin and site, and at most 5 such issues
   a run. While a `listed-site` issue holds a match's hidden marker line,
   open or closed, the build opens no new issue for that match.

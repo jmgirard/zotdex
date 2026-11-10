@@ -33,12 +33,17 @@ export interface Match {
   fields: { field: MatchField; text: string }[];
 }
 
-// The repository name in the URL that GitHub gave the build (`upstream.repoUrl`), which follows a
-// rename and keeps GitHub's letter case, as the `listed-site` hold reads it. A record with no
-// upstream falls back to the entry's own repoUrl. The name is the URL's second path segment.
+// The URL that GitHub gave the build (`upstream.repoUrl`), which follows a rename and keeps
+// GitHub's letter case, as the `listed-site` hold reads it. A kept record holds the URL of the
+// earlier read. A record with no upstream falls back to the entry's own repoUrl.
+function repoUrlOf(record: PluginRecord): string {
+  return record.upstream?.repoUrl ?? record.repoUrl;
+}
+
+// The repository name: the URL's second path segment, without a `.git` ending.
 function repoNameOf(record: PluginRecord): string {
-  const url = record.upstream?.repoUrl ?? record.repoUrl;
-  return url.replace(/^[a-z]+:\/\/[^/]+\//i, "").split("/")[1] ?? "";
+  const name = repoUrlOf(record).replace(/^[a-z]+:\/\/[^/]+\//i, "").split("/")[1] ?? "";
+  return name.replace(/\.git$/i, "");
 }
 
 function textsOf(record: PluginRecord): { field: MatchField; text: string }[] {
@@ -86,7 +91,7 @@ export function bodyOf(match: Match): string {
     "The daily build found the name of a site in sites.json in this plugin's texts.",
     "",
     `- Plugin: ${codeSpan(record.id)} <${page}>`,
-    `- Repository: ${codeSpan(record.repoUrl)}`,
+    `- Repository: ${codeSpan(repoUrlOf(record))}`,
     `- Version: ${codeSpan(record.upstream?.version?.trim() || "unknown")}`,
     `- Site: ${codeSpan(site.site)}`,
     ...match.fields.map(({ field, text }) => `- ${FIELD_LABELS[field]}: ${codeSpan(text)}`),

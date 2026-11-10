@@ -94,9 +94,14 @@ describe("matchesOf", () => {
     ]);
   });
 
-  test("reads the repository name of a record with no upstream from the entry's URL, past any further path", () => {
+  test("reads the repository name of a record with no upstream from the entry's URL, past any further path or .git", () => {
     const { upstream: _upstream, ...bare } = record("a", {}, "libgen-links/tree/main");
-    expect(pairs([bare])).toEqual([["a", "Library Genesis", ["repoName"]]]);
+    const { upstream: _git, ...gitUrl } = record("b", {}, "zotero-scihub.git");
+    expect(pairs([bare, gitUrl])).toEqual([
+      ["a", "Library Genesis", ["repoName"]],
+      ["b", "Sci-Hub", ["repoName"]],
+    ]);
+    expect(bodyOf(matchesOf(data([gitUrl]), SITES)[0]).split("\n")).toContain("- Repository name: ` zotero-scihub `");
   });
 });
 
@@ -110,6 +115,11 @@ describe("the issue text", () => {
     expect(lines).toContain("- Manifest name: ` Sci-Hub Fetcher `");
     expect(lines).toContain("- Repository name: ` zotero-scihub `");
     expect(lines.at(-1)).toBe(`<!-- listed-site ${sha("a")} ${sha("Sci-Hub")} -->`);
+  });
+
+  test("shows the URL that GitHub gives after a rename", () => {
+    const lines = bodyOf(matchesOf(data([record("a", {}, "pdf-helper", "zotero-scihub")]), SITES)[0]).split("\n");
+    expect(lines).toContain("- Repository: ` https://github.com/example/zotero-scihub `");
   });
 
   test("keeps the body's lines fixed when a matched text holds line breaks, -->, and @name", () => {
@@ -193,6 +203,18 @@ describe("reportMatches", () => {
     expect(posts).toHaveLength(1);
     expect(outcome.opened).toEqual([]);
     expect(outcome.lines).toEqual([expect.stringMatching(/^::warning::stopped opening listed-site issues at a \(Sci-Hub\): .*HTTP 422/)]);
+  });
+
+  test("finds a marker on the second page of the issue list", async () => {
+    const item = match("a");
+    const second = `${LIST}&page=2`;
+    const { posts } = await run([item], {
+      [LIST]: { json: [{ body: "other" }], headers: { link: `<${second}>; rel="next"` } },
+      [second]: { json: [{ body: markerOf(item) }] },
+      [LABEL]: { json: {} },
+      [`POST ${API}/issues`]: { json: created(1) },
+    });
+    expect(posts).toEqual([]);
   });
 
   test("stops when GitHub drops the label from a created issue", async () => {

@@ -1309,6 +1309,9 @@ reused._
   A closed issue's marker also keeps a plugin that came back after a
   listed-site removal from a new issue, unless the maintainer who lifted the
   removal deleted that marker line, as `docs/maintaining.md` says (D-089).
+  If GitHub opens a `listed-site` issue without its label, the next run opens
+  another one each day, as for `malware-scan` issues (M120, D-089).
+  Accepted at the M120 gate
 
 - Plugin metadata is inconsistent. Some plugins lack an `update.json` or have
   a wrong one, use version strings that are not semver, declare ranges that
@@ -1502,5 +1505,4 @@ reused._
 - If GitHub opens a `malware-scan` issue without its label, `pnpm scan-issues`
   warns and stops that run, but the next run lists issues by label, finds no
   marker, and opens another issue each day until a maintainer fixes the label
-  (M117, D-084). Accepted at the M117 gate. `pnpm site-issues` does the same
-  with a `listed-site` issue (M120, D-089)
+  (M117, D-084). Accepted at the M117 gate

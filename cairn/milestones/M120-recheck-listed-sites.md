@@ -133,3 +133,33 @@ and the bot's hold (M119) reads them at intake, so no row.
 - pass 2 AC3 evidence (2026-11-10, e8944268): `build.yml:328` and `:360` as in pass 1, 5 workflow tests green; `docs/maintaining.md:701` gives the steps, `:716` says that a second removal on that ground stays.
 - pass 2 AC4 evidence (2026-11-10, e8944268's code): `pnpm test` 2895 passed, 6 skipped at 09:02; `pnpm check` 753 entries, 0 problems.
 - pass 2 gate: `cairn_validate.py` all checks passed; no principle changed; generic profile adds no toolchain checks.
+- spawned: diff-bug, blame-history, prior-review, ripple
+- diff-bug #1: the earlier-removal search counts a removal that a maintainer lifted for a wrong reading, so a plugin could stay off after one valid removal — fix now
+- diff-bug #2: a plugin has one `listed-site` issue per site, and the lift step names one issue's marker — fix now (each closed issue, with a command to find them)
+- diff-bug #3: the search matches the current owner/repo, so a renamed repo's earlier removal is missed — fix now (search earlier names too)
+- diff-bug #4: CHANGELOG "the repository's owner" reads as the plugin's owner — fix now ("the index's owner")
+- diff-bug #5: a no-upstream entry URL ending in `.git` shows `x.git` as the repository name — fix now
+- diff-bug #6: a kept record's `upstream.repoUrl` is the earlier read's, so a rename shows late — fix now (the comment says so; the issue is late, not lost)
+- diff-bug #7: the body's Repository line shows the entry's URL, not GitHub's — fix now
+- diff-bug #8: changing a site's `site` name in `sites.json` reopens every match, and the docs list leaves it out — fix now
+- diff-bug #9: a hand run of `pnpm site-issues` beside the job is outside the concurrency group — reject, planned change: the plan takes D-084's shape, whose group covers workflow runs, as for scan-issues
+- diff-bug #10: the open and closed marker cases and the 5 and 6 cases share code paths — reject, false: AC1 names each case
+- diff-bug #11: the workflow test checks `timeout-minutes` at most 10, not exactly 10 — reject, false: the docs and DESIGN promise at most 10 minutes
+- diff-bug #12: the CLI no-match test asserts stdout, not that no request goes out — reject, false: "sends no request with no match" asserts the empty request list on `reportMatches`, and the CLI test runs with no token
+- diff-bug #13: the no-upstream `/tree/main` test guards a URL the entry schema may refuse — reject, false: it is pass 1's regression test for the second-segment fix
+- blame-history #1: the lift step's "can come back" names no release that drops the site — fix now
+- blame-history #2: the search paragraph says it runs before a removal and still counts the lifted removal — fix now
+- blame-history #3: "offer an appeal for a wrong reading only" and the second-removal rule leave unclear how a wrong reading lifts — reject, false: `docs/requests.md` "Coming back" lifts any removal whose reading was wrong, and the appeal is how the request comes
+- blame-history #4: no command finds the closed `listed-site` issue — fix now (command added); the claim that the step covers removals on other grounds is false, since it sits under "For a listed site"
+- blame-history #5: "uses the match of the bot's hold" while the hold also reads topics — fix now ("the match rule")
+- blame-history #6: the M117 Known issue gained an M120 sentence that its gate did not see — fix now (moved to M120's own entry, which ends "Accepted at the M120 gate"); the "corrected M120" mark on the M119 entry is the correction rule's form
+- blame-history #7: the site-issues concurrency comment lacks scan-issues' note on a replaced waiting run — reject, style
+- blame-history #8: a docs line of 97 characters — reject, style (the line is rewritten)
+- prior-review #1: no second-page test of the issue list, which M117 added for scan-issues — fix now
+- prior-review #2: a 422 stops the run, against M117 — reject, planned change, as pass 1 diff-bug #6
+- prior-review #3: the lift step drops the release condition — fix now, as blame-history #1
+- prior-review #4: a branch dispatch opens real issues — reject, planned change, as pass 1 diff-bug #11
+- ripple #1: `docs/requests.md:424` has no wrong-reading exception for a second removal — reject, false: the same section's last paragraph lifts any removal whose reading was wrong
+- ripple #2: the search paragraph says it runs before a removal only — fix now, as blame-history #2
+- ripple #3: `docs/requests.md` "has not been checked" next to a closed `listed-site` issue — reject, false: the job reads texts, not README or settings, so the sentence holds
+- ripple #4: DESIGN's maintainer-reads sentence does not name the issues — reject, false: the next sentence names them

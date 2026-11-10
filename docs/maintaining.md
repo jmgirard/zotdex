@@ -613,13 +613,13 @@ above.
 1. Read the request against "Coming back" in requests.md. For harm, check only
    that the reported evidence no longer holds. To undo an owner's request,
    make sure that the person asking owns the repository. For a listed site,
-   run the earlier-removal search below. If it finds a listed-site removal
-   other than the one that you lift, the plugin stays off. The one exception
-   is a request that shows a wrong reading. If the search finds no other
-   listed-site removal, the plugin can come back. If the plugin has a closed `listed-site` issue,
-   delete that issue's marker line. Then the daily build opens a new issue
-   when the plugin's name, description, GitHub description, or repository
-   name names the site, as "Listed-site issues" says.
+   a release must drop the site, and the earlier-removal search below must
+   find no removal that counts. A request that shows a wrong reading lifts
+   the removal without either. Then delete the marker line of each closed
+   `listed-site` issue of the plugin. Find them with
+   `gh issue list --state closed --label listed-site --search '"<id>" in:title'`.
+   If the plugin names a listed site again, the daily build then opens a
+   new issue, as "Listed-site issues" says.
 2. On a branch, delete the plugin's record from `delisted.json`, run
    `pnpm check`, and merge the change.
 3. Read the repo's bot pull requests with
@@ -634,11 +634,14 @@ above.
 
 The closed removal issue keeps the record that a plugin was removed once. Its
 title starts with `Removed` only after the removal merged, so a notice, a
-declined request, or an unfinished removal does not count. Before a removal
-for a listed site, search for one with
+declined request, or an unfinished removal does not count. Run the
+earlier-removal search at two times: before a removal for a listed site, and
+at the lift of one. Use this command:
 `gh issue list --state all --label remove-plugin --search '"Removed <owner>/<repo>" in:title'`.
-Read each issue it lists. If one removed the plugin for a listed site, the
-second removal on that ground stays.
+If the repository was renamed, search for its earlier names too. Read each
+issue it lists. A listed-site removal counts, except the one that you lift
+and one that a maintainer lifted for a wrong reading. If one counts, the
+plugin was removed on that ground before, and the second removal stays.
 
 ### Closing a held pull request
 
@@ -669,7 +672,7 @@ pnpm site-issues --data <file> --sites <file> [--assignee <login>]
 
 A match is a record in `--data` whose manifest name, manifest description,
 GitHub description, or repository name names a site in `--sites`. The
-command uses the match of the bot's `listed-site` hold. It does not read
+command uses the match rule of the bot's `listed-site` hold. It does not read
 topics, since the data holds none. For each match, it opens one issue with
 the label `listed-site`, assigned to the `--assignee` login. The
 `site-issues` job sets that login to the repository's owner. A hidden marker
@@ -682,6 +685,7 @@ issue again:
 - Delete the issue, or take the label off it.
 - Give the `listed-site` label another name, or delete the label.
 - Change the text of the marker line.
+- Change the site's `site` name in `sites.json`.
 
 A run opens at most 5 issues. When more than 5 matches have no issue yet, it
 prints one warning line that names each match past the limit. A run that
