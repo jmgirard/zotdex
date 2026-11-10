@@ -325,11 +325,13 @@ reasons, in this order:
   The file lists sites that courts in at least two countries ordered blocked
   or shut down for copyright infringement, with those rulings. If some runs
   of the letters a to z and digits in a row join to a site's name, the text
-  names that site. Every other character ends a run, and it does not count. Letter case does not count
-  either, except that a capital letter after a small letter or a digit
-  starts a new run. So `Sci-Hub`, `sci hub`, `SciHub`, and `zotero-scihub`
-  all name Sci-Hub, and `scihubble`, `sci-hubs`, and `Scihubfetcher` do not. The name alone removes
-  nothing. Read the README and settings as "A listed site built in" in
+  names that site. Full-width and other compatibility forms count as their
+  plain letters and digits. Every other character ends a run, and it does
+  not count. Letter case does not count either, except that a capital
+  letter after a small letter or a digit starts a new run. So `Sci-Hub`,
+  `sci hub`, `SciHub`, and `zotero-scihub` all name Sci-Hub, and
+  `scihubble`, `sci-hubs`, and `Scihubfetcher` do not. The name alone
+  removes nothing. Read the README and settings as "A listed site built in" in
   [requests.md](requests.md) says. If the site is built in, remove the
   plugin and close the pull request as "Closing a held pull request" below
   says. Otherwise merge the pull request.
