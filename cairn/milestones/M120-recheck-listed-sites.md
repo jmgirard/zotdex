@@ -33,7 +33,7 @@ and the bot's hold (M119) reads them at intake, so no row.
 
 ## Acceptance criteria
 
-- [ ] AC1: `pnpm site-issues --data <file> --sites <file> [--assignee
+- [x] AC1: `pnpm site-issues --data <file> --sites <file> [--assignee
       <login>]` takes as its matches each record whose name, description,
       or repository name in the data matches a name in the sites file, and
       opens one issue for each match whose marker line (plugin id and site)
@@ -42,15 +42,15 @@ and the bot's hold (M119) reads them at intake, so no row.
       Tests cover no match (no request), a match in each of the three
       fields, a match already reported in an open and in a closed issue,
       exactly 5 and 6 new matches, and the label found and created.
-- [ ] AC2: A failed issue list or label read opens no issue; a failed label
+- [x] AC2: A failed issue list or label read opens no issue; a failed label
       create or a failed issue create stops the run's other creates; each
       prints one warning line and exits 0. Tests cover each failure.
-- [ ] AC3: A `site-issues` job in `build.yml` runs the command on the
+- [x] AC3: A `site-issues` job in `build.yml` runs the command on the
       daily build's data with the checked-out sites file, and
       `docs/maintaining.md` says what a maintainer does with such an issue
       under M118's rules, including that a second removal on the fifth
       ground stays.
-- [ ] AC4: `pnpm test` and `pnpm check` pass.
+- [x] AC4: `pnpm test` and `pnpm check` pass.
 
 ## Coverage
 
@@ -88,3 +88,9 @@ and the bot's hold (M119) reads them at intake, so no row.
 ## Decisions
 
 ## Review
+
+- AC1 evidence (2026-11-10, 1cf0c777): `vitest run test/site-issues.test.ts` green; named tests cover no match ("sends no request with no match", "finds no match in texts that name no site"), a match in the name, description, repoDescription, and repoName fields, a marker in an open and in a closed issue (0 creates), exactly 5 (5 creates, no warning) and 6 new matches (5 creates, one warning naming `p5 (Sci-Hub)`), the label found (no label POST) and created on a 404.
+- AC2 evidence (2026-11-10, 1cf0c777): tests "opens no issue and warns once when" the issue list fails, the label read answers 500, and the label create fails (only the label POST), and "stops at a create that answers 422/500 and opens no other issue" (1 POST of 2), each asserting exactly one `::warning::` line; `pnpm site-issues` run with one match and a refused connection (`NODE_USE_ENV_PROXY=1 HTTPS_PROXY=http://127.0.0.1:9`) printed one `::warning::opened no listed-site issue: cannot list …` line and exited 0.
+- AC3 evidence (2026-11-10, 1cf0c777): `build.yml:328` defines the `site-issues` job, `:360` runs `pnpm site-issues --data dist/v1/plugins.json --sites sites.json --assignee "$ASSIGNEE"` after the data-digest check; 5 `test/workflows.test.ts` tests on the job green; `docs/maintaining.md:657` "Listed-site issues" gives the four steps under M118's rules (`:692`–`:705`) and says that a second removal on that ground stays (`:707`).
+- AC4 evidence (2026-11-10, 1cf0c777): `pnpm test` 2895 passed, 6 skipped, 43 files; `pnpm check` 753 entries, 0 problems.
+- gate: `cairn_validate.py` all checks passed; no principle changed, so no `cairn_impact`; generic profile adds no toolchain checks.
