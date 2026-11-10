@@ -271,21 +271,21 @@ precise text lives in `docs/`, and About gets one approved sentence
 - ripple #2: the form says "the contact on the About page", and About links a private report form — fix now, approved at the review stop and fixed b26afecc; it read: fix now if the user approves the line (approved wording)
 - AC2 evidence (pass 3, `b26afecc`): the "Harm" subsection gives the issue and 14 days to disclose for a plugin that does harm by sending data without saying so where the sending serves what the plugin says it does, and says hidden behavior that serves no stated purpose gets no notice; the "Coming back" text is as in pass 1.
 - spawned: diff-bug, blame-history, prior-review, ripple
-- diff-bug #1: "applies only to a plugin whose name ... names a listed site" limits the fifth ground even on a report — fix now
-- diff-bug #2: the `--head` search lost pass 1's unmerged filter — fix now
-- diff-bug #3: the notice keeps a plugin listed only on README or release-notes text, not on a release that stops the sending or text shown before it acts — fix now
-- diff-bug #4: the CHANGELOG entry still states the wide notice — fix now (same as ripple #1)
-- diff-bug #5: lifting has no owner check for undoing an owner's request — fix now
-- diff-bug #6: no step runs the earlier-removal search when a lift is asked — fix now
-- diff-bug #7: the issue outline's items 2 to 4 fit only a listed site — fix now
-- diff-bug #8: "The index acts only on the five grounds" conflicts with screenshot takedowns — fix now
-- diff-bug #9: a removal after a notice would open a second issue — fix now
+- diff-bug #1: "applies only to a plugin whose name ... names a listed site" limits the fifth ground even on a report — fix now, fixed f707c791
+- diff-bug #2: the `--head` search lost pass 1's unmerged filter — fix now, fixed f707c791
+- diff-bug #3: the notice keeps a plugin listed only on README or release-notes text, not on a release that stops the sending or text shown before it acts — fix now, fixed f707c791
+- diff-bug #4: the CHANGELOG entry still states the wide notice — fix now (same as ripple #1), fixed f707c791
+- diff-bug #5: lifting has no owner check for undoing an owner's request — fix now, fixed f707c791
+- diff-bug #6: no step runs the earlier-removal search when a lift is asked — fix now, fixed f707c791
+- diff-bug #7: the issue outline's items 2 to 4 fit only a listed site — fix now, fixed f707c791
+- diff-bug #8: "The index acts only on the five grounds" conflicts with screenshot takedowns — fix now, fixed f707c791
+- diff-bug #9: a removal after a notice would open a second issue — fix now, fixed f707c791
 - diff-bug #10: the title phrase search also matches longer repo names — reject (edge: a repo whose name extends another listed repo's name, and the prose says to read each issue)
-- diff-bug #11: the scan-issues body names no second-source rule, which the T9 work-log line claims — fix now (record: the body names the pointer only; a work-log line corrects the claim)
+- diff-bug #11: the scan-issues body names no second-source rule, which the T9 work-log line claims — fix now (record: the body names the pointer only; a work-log line corrects the claim), fixed f707c791
 - diff-bug #12: About says "is also removed" and leaves out the 14-day notice — reject (planned change: the user approved the short form, which links the full rules)
-- diff-bug #13: lines past the wrap width — fix now
+- diff-bug #13: lines past the wrap width — fix now, fixed f707c791
 - diff-bug #14: the per-ground tests use an unrelated repo — reject (style: the blocking tests carry `ground: "owner"`)
 - blame-history: no candidate findings
-- prior-review #1: three lines past the wrap width — fix now (same as diff-bug #13)
-- ripple #1: the CHANGELOG entry states the wide notice — fix now
-- ripple #2: `docs/data.md` does not state the second-source rule for a scan find — fix now
+- prior-review #1: three lines past the wrap width — fix now (same as diff-bug #13), fixed f707c791
+- ripple #1: the CHANGELOG entry states the wide notice — fix now, fixed f707c791
+- ripple #2: `docs/data.md` does not state the second-source rule for a scan find — fix now, fixed f707c791
