@@ -219,3 +219,4 @@ Pass 3, 2026-11-09, at de7e8f9d, after return 1.
 - diff-bug #10: repeated inputs on one path — fix now in part (dropped `Anna’s Archive`, `AnnasArchive`, and `sci-hubs`); the three schema cases test three constraints, and AC4 asks for the per-name cases.
 - diff-bug #11: two test titles say "a sixth reason" — fix now (the same fix as ripple #3).
 - diff-bug #12: "every other character ends a run" ignores lower-casing such as `İ` — fix now (the docs say the text is folded by NFKC and lower-cased first).
+- Fix-now findings of pass 3 landed in 06e54483 (ripple #1 to #4, blame-history #2) and f326f3ea (diff-bug #3 to #5, #8, #10, #12); `pnpm test` 2860 passed, 6 skipped; `pnpm check` 0 problems; cairn_validate all checks passed. No snapshot file changed. No open PR of the operator's; the feature cap is not reached.
