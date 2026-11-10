@@ -1,0 +1,8 @@
+{
+  "id": "moonlit-reader@dsh.local",
+  "name": "Zotero AI Chinese Reader (moonlit)",
+  "description": "中文阅读 Zotero 里的英文论文：全文按段对照翻译、结构化总结、AI 重点标注，全部在阅读器右栏完成。",
+  "homepage": "https://github.com/captainedV/zotero-ai-chinese-reader",
+  "repoUrl": "https://github.com/captainedV/zotero-ai-chinese-reader",
+  "updateUrl": "https://raw.githubusercontent.com/captainedV/zotero-ai-chinese-reader/main/docs/updates.json"
+}
