@@ -39,7 +39,7 @@ precise text lives in `docs/`, and About gets one approved sentence
 
 ## Acceptance criteria
 
-- [ ] AC1: The "Removing a plugin" section of `docs/requests.md` states
+- [x] AC1: The "Removing a plugin" section of `docs/requests.md` states
       five grounds: the owner's request, spam, a misleading entry, harm,
       and a listed site built in. It defines spam, harm, and "built in",
       and states the fifth ground, in the words of this file's Decisions
@@ -49,7 +49,7 @@ precise text lives in `docs/`, and About gets one approved sentence
       ground without a report only to a plugin whose name, description,
       repository name, or topics name a listed site, reading its README
       and settings and not its code.
-- [ ] AC2: The same section states what a request to bring a removed
+- [x] AC2: The same section states what a request to bring a removed
       plugin back must show after harm (this file's Decisions, Return path:
       RR01 R5, R6) or a listed site built in (a release drops the site, and
       a second removal on that ground stays: R8), and that a plugin
@@ -59,14 +59,14 @@ precise text lives in `docs/`, and About gets one approved sentence
       when its evidence proves wrong or a maintainer misread the plugin
       (R7), and that a plugin found sending data without saying so first
       gets an issue and 14 days to disclose it (R17).
-- [ ] AC3: `docs/requests.md` states that the index hosts no plugin files,
+- [x] AC3: `docs/requests.md` states that the index hosts no plugin files,
       that a complaint about a plugin's own code goes to GitHub, where
       legal notices and private harm reports go, how to ask for a
       screenshot to be taken down, that no response time is promised and
       malware reports come first, that the rules can change and where
       their dated history is, and that a request with no new evidence is
       closed.
-- [ ] AC4: About's `#removing` card states the five grounds in short form,
+- [x] AC4: About's `#removing` card states the five grounds in short form,
       that a removed plugin can ask to come back, and the private contact;
       the form names the five grounds and its reason menu has a choice that
       names the narrow fact (a listed site built in), not "copyright"; and
@@ -74,13 +74,13 @@ precise text lives in `docs/`, and About gets one approved sentence
       at T6, which `cairn/references/plain-words-copy.md` records, with the
       form in its own section, under that approval's date (CLAUDE.md,
       Approved page wording).
-- [ ] AC5: Each `delisted.json` record carries a `ground`, one of `owner`,
+- [x] AC5: Each `delisted.json` record carries a `ground`, one of `owner`,
       `spam`, `misleading`, `harm`, or `copyright`. `pnpm check` fails on a list
       with a record that has no `ground` or a `ground` outside those five,
       shown by a test of each failure and a test that each of the five
       values passes. The record description in `docs/requests.md` names
       `ground` and its values.
-- [ ] AC6: `docs/maintaining.md` states the steps to remove a plugin, to
+- [x] AC6: `docs/maintaining.md` states the steps to remove a plugin, to
       send the 14-day notice, to lift a removal, including the step that
       lets a lifted plugin be listed again although the bot does not
       propose a repo whose pull request was closed, and to close a held
@@ -89,7 +89,7 @@ precise text lives in `docs/`, and About gets one approved sentence
       where the record that a plugin was removed once lives after a lift;
       and `docs/requests.md` links to these steps rather than repeating
       them.
-- [ ] AC7: `pnpm test` and `pnpm check` pass.
+- [x] AC7: `pnpm test` and `pnpm check` pass.
 
 ## Coverage
 
@@ -191,3 +191,12 @@ precise text lives in `docs/`, and About gets one approved sentence
 - 2026-11-09 (RR01): D-entry notes (R4, R10): the read-without-report exception covers only plugins that match a sites-file name, reads README and settings only, checks every match the same way, and is wrong if a maintainer reads plugins no match or report names; a new legal ground needs an outside fact a reader can look up, as court orders are.
 
 ## Review
+
+- AC1 evidence (2026-11-09, `1f029309`): `docs/requests.md` "Removing a plugin" lists the five grounds and has "Spam", "Harm", and "A listed site built in" subsections holding the spam, harm, built-in, and fifth-ground texts of this file's Decisions. The terms and conditions are the same; some sentences are split or reordered for the repo's plain-English lint, with no condition added or dropped. It says the fifth ground applies without a report only to a plugin whose name, description, repository name, or topics name a listed site, reading README and settings, not code.
+- AC2 evidence: its "Coming back" subsection gives the harm return (permanent for hidden behavior serving no stated purpose; other harm on a release that stops or discloses it; someone else's change with the public record; evidence-only check, no finding of safety), the listed-site return (a release drops the site; a second removal stays), spam and misleading entries returning once they no longer meet the ground, owner-only undo, and the lift on wrong evidence or a misread; the "Harm" subsection gives the issue and 14 days to disclose.
+- AC3 evidence: `docs/requests.md` "Legal notices and private reports" says the index hosts no plugin files, that a complaint about a plugin's code goes to GitHub, that legal notices and private reports use the private contact on About, how a screenshot is taken down (owner: blank Screenshot field; others: the private contact), no promised response time with malware first, that rules can change with dated history in the file's git history, and that a request with no new evidence is closed.
+- AC4 evidence: the built site's About card (checked in the browser pane on a `pnpm site` build of the deployed data) reads the five grounds in short form, the way back, and the private contact, with links to the remove form, `security/advisories/new`, and the full rules; the form's description and grounds sentence name the five grounds and its menu adds "It has a listed site built in"; each changed line is one the user said yes to at T6, recorded in `plain-words-copy.md` under "Removal rules (M118)" and "Remove form (M118)", dated 2026-11-09; `test/site.test.ts` and `test/delisted.test.ts` assert the card text, its three links, and the five reasons.
+- AC5 evidence: `schemas/delisted.schema.json` requires `ground` with the five values; `test/delisted.test.ts` passes for a missing ground and an unknown ground (`delisted-file`, with Ajv's message) and for each of the five values (7 tests); with `ground` taken out of `required`, the missing-ground test fails; `docs/requests.md`'s record description names `ground` and its values.
+- AC6 evidence (`1f029309`): `docs/maintaining.md` "Removing a plugin" gives the removal steps (`plugins/`, `delisted.json`, `pnpm check`, `gh pr close`, `gh workflow run build.yml`, `gh issue close`), "The removal issue" outline (RR01 R13) with `gh issue create --label remove-plugin`, "Sending the 14-day notice" (`gh issue create`, `gh issue close`), "Lifting a removal" (`delisted.json`, `pnpm check`, `gh pr list --state closed`, and `pnpm add-plugin` when a closed bot pull request blocks the repo), the record of an earlier removal in the closed issue (`gh issue list --label remove-plugin`), and "Closing a held pull request" for a misleading entry (D-053, `gh pr close`); `docs/requests.md` links to these steps and no longer repeats them.
+- AC7 evidence (`1f029309`): `pnpm test` 2815 passed, 6 skipped; `pnpm check` 754 entries, 0 problems.
+- Consistency gate: `cairn_validate.py` all checks passed; profile `generic` names no toolchain checks; no DESIGN principle changed, so no impact report.
