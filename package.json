@@ -30,6 +30,7 @@
     "scan-issues": "node src/malware-scan/scan-issues-cli.ts",
     "screenshot-request": "node src/screenshot-request/cli.ts",
     "site": "node src/site/cli.ts",
+    "site-issues": "node src/site-issues/cli.ts",
     "text-request": "node src/text-request/cli.ts",
     "start-test": "node src/start-test/cli.ts",
     "start-tests": "node src/start-test/start-tests-cli.ts",

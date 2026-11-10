@@ -4,14 +4,14 @@
      cairn_validate's <150 over the plan-owned body. -->
 # M120: Re-check listed plugins for listed sites
 
-- **Status:** planned
+- **Status:** in-progress
 - **Priority:** high
 - **Depends on:** M119
 - **Driving RR:** —
 - **Principles touched:** —
 - **Resolves:** —
 - **Surface tier:** user-facing — the build opens issues in the public repository
-- **Branch/PR:** —
+- **Branch/PR:** m120-recheck-listed-sites
 
 ## Goal
 
@@ -61,7 +61,7 @@ and the bot's hold (M119) reads them at intake, so no row.
 
 ## Tasks
 
-- [ ] T1: Write `src/site-issues/` and its CLI on the shape of
+- [x] T1: Write `src/site-issues/` and its CLI on the shape of
       `src/malware-scan/scan-issues.ts` (D-084); tests per AC1 and AC2.
 - [ ] T2: Add the `site-issues` job to `.github/workflows/build.yml`;
       write the D-entry; update docs, DESIGN, CHANGELOG.
@@ -73,6 +73,10 @@ and the bot's hold (M119) reads them at intake, so no row.
 - 2026-11-09: tier check: milestone — a new build job that writes to the public repository; planned from RR01 ingestion, which `/milestone-brief` routed.
 - 2026-11-09: idea vet: gap — topics are not in the deployed data; taken as out, since M119's hold reads them at intake. flaw — none.
 - 2026-11-09: lessons used: 2026-11-07 (M116) a `Build data` run dispatched on a branch runs every job but the deploy.
+- 2026-11-10: in-progress; branch m120-recheck-listed-sites cut from main at 40ef504b; `.claude/` left untracked and unstaged.
+- 2026-11-10: choice: "description" reads both the manifest description and the GitHub description, and "name" the manifest name; override values are not read, since a maintainer writes them; the repository name comes from `repoUrl` in its own case, so a record with no upstream still matches on it.
+- 2026-11-10: choice: the marker is `<!-- listed-site <sha256 id> <sha256 site> -->`, and `codeSpan`, `holdsMarker`, and `oneLine` are reused from the malware scan; per AC2 a 422 on create stops the run too, unlike scan-issues, which skips it; the body lists each matched text in a code span.
+- 2026-11-10: T1 done: `src/site-issues/site-issues.ts`, `cli.ts`, `pnpm site-issues`, 30 tests; a planted defect that ignored earlier issues failed the open and closed marker tests; deployed data of 2026-11-09T16:32Z gives 4 matches, all plugins M119 removed, so the first run on current `plugins/` should match none; verify green (2890 passed, 753 entries, 0 problems).
 
 ## Decisions
 
