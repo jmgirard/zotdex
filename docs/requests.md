@@ -330,28 +330,110 @@ filled in, and the About page links to it too. The form adds the label
 `remove-plugin` and opens a public issue. No bot answers it. A maintainer
 reads each request.
 
-A maintainer removes a plugin for any of four reasons:
+A maintainer removes a plugin on any of five grounds:
 
 - Its repository's owner asks.
 - It is spam.
 - Its entry misleads people about what the plugin is or who makes it.
-- A report shows harm with evidence that a reader can check.
+- It does harm, and a report shows the harm with evidence that a reader can
+  check.
+- It has a listed site built in.
 
 A claim with no evidence removes nothing. The index still cannot vet plugins,
-it does not endorse them, and it does not review their code.
+it does not endorse them, and it does not review their code. The steps for
+each removal are in "Removing a plugin" in [maintaining.md](maintaining.md).
 
-Before you act on an owner's request, make sure that the issue's author owns
-the repository. Otherwise, ask the owner to say so from the repository itself.
+### Spam
 
-To remove a plugin, do these steps on a branch:
+Spam is a repository that is not a working Zotero plugin. One example is an
+unchanged template or sample under a new name. Others are a repository made to
+carry ads or links, and many near-identical copies from one account.
 
-1. Delete the entry's directory under `plugins/`.
-2. Add a record to `delisted.json` at the top of the repo.
-3. Run `pnpm check`, then merge the change.
-4. Close any open bot pull request for the repo or the id.
-5. Run `Build data` by hand. Otherwise, the plugin stays on the site until the
-   next daily build.
-6. Answer the issue, then close it.
+### Harm
+
+Harm means that a release of the plugin does something to its users, or
+through their computer or accounts, that they were not told about. Examples are malware, taking passwords or files, and sending library
+contents or account details somewhere without saying so. Deleting or
+corrupting a Zotero library on purpose is harm. So is disabling or changing
+other plugins or settings to the user's cost, and using the computer to
+attack, spam, or mine for someone else. A plugin built to break into, flood,
+or infect other people's computers also does harm.
+
+When the README, the release notes, or text that the plugin shows before it
+acts says so, the users were told. When the behavior is plainly what the
+plugin is for, the users were told too.
+
+A bug is not harm. A plugin that damages a library by mistake stays listed,
+and a Broken report on its page warns others. When a check for updates or a
+count of installs carries no library contents and does not identify the
+person, it is not harm. Code that a plugin loads at run time is not harm by
+itself.
+
+The evidence must be something a reader can check. One example is a link to
+the code that does it. Others are a malware scan find that a second source
+supports, and steps that make it happen again.
+
+A plugin that sends library contents or account details somewhere without
+saying so first gets an issue on the index. If its README or release notes do
+not say so within 14 days, a maintainer removes it.
+
+### A listed site built in
+
+A maintainer can remove a plugin that has a built-in way to get papers or
+books from a listed site. A listed site is one that courts in at least two
+countries ordered blocked or shut down for copyright infringement. A default judgment counts, and so
+does a court's order to internet providers to block the site. A block by a
+regulator or an industry body does not count, and neither does a ruling that
+was later overturned. A site means the service under any address or mirror. If a
+ruling names a site's new name, or its operator presents it as the same
+service, the new name counts too.
+
+"Built in" means that the plugin's latest release ships the site: a default or
+preset address, a menu choice, a button, or a list that the plugin loads by
+itself. It also means that the plugin's README or settings text tells the user
+to enter the site's address. A plugin that takes any address the user types,
+and names no listed site, is not covered. A plugin's name alone does not make
+the site built in.
+
+A maintainer applies this ground without a report. It applies only to a
+plugin whose name, description, repository name, or topics match a name in the
+sites file.
+The maintainer reads that plugin's README and settings, not its code, and
+checks every match the same way. A plugin that stays listed has not been
+checked. The index forms no view of its own about whether a plugin or its
+users break the law. A site's terms of use, a licence dispute between authors,
+and other legal questions are not grounds for removal.
+
+### Coming back
+
+A removal lasts until a maintainer lifts it. To ask, open an issue on the
+index that names the plugin and shows what the ground needs:
+
+- The owner's request: only the owner can ask to undo it.
+- Spam or a misleading entry: the repository or entry no longer meets that
+  ground.
+- A listed site built in: a release drops the site. A plugin removed a second
+  time on this ground stays off.
+- Harm: if the author built the hidden behavior in, and that behavior serves
+  no part of what the plugin says it does, the plugin stays off for good. Examples
+  are spreading malware, taking passwords, and attacking other computers. Other
+  harm can come back once a release stops the behavior or tells users about
+  it.
+- Harm from someone else's change, such as a taken-over account or a poisoned
+  dependency: the plugin comes back once a release removes it and the public
+  record shows what happened. That record is the commit or release that added
+  it, an advisory or a statement on the repository, and nothing that
+  contradicts the owner's account.
+
+For harm, a maintainer checks only that the reported evidence no longer holds:
+the linked code is gone, or the steps no longer make it happen. This is not a
+finding that the plugin is safe. A removal covers the repository and its ids,
+not a person.
+
+If the evidence for a removal proves wrong, or a maintainer misread the
+plugin, a maintainer lifts the removal. The issue says why.
+
+### The list of removed plugins
 
 A record has five fields:
 

@@ -153,6 +153,12 @@ precise text lives in `docs/`, and About gets one approved sentence
 - 2026-11-09: substantive amendment: AC1, AC2, AC4, AC6 reworded per the re-audit, each narrower; the deliverable the user sees is unchanged.
 - 2026-11-09: T2 done: `ground` required in the schema and `DelistedRecord`; tests for a missing ground, an unknown ground, and each of the five values; existing fixtures carry `ground: "owner"`; the docs record description names the field; `pnpm test` 2815 passed, `pnpm check` 0 problems.
 - 2026-11-09: plain-English lint (simple-english hook) fixed four older sentences in `docs/requests.md` near the edit.
+- 2026-11-09: re-audit: AC1 (full) — the Decisions condense R1 and R2, so "the words of this file's Decisions" names two texts that differ; also asked for a D-entry clause.
+- 2026-11-09: re-audit: AC2 (full) — the listed-site return condition is in RR01 R8, not in the cited Decisions entry.
+- 2026-11-09: re-audit: AC4 (full) — a line in `plain-words-copy.md` can exist without the user's yes, and the file has no section for the form.
+- 2026-11-09: re-audit: AC6 (full) — lift steps can pass without bringing the plugin back, since the bot does not propose a repo whose pull request was closed (`src/discover/issue.ts:212`).
+- 2026-11-09: stop: second re-audit on AC1, AC2, AC4, AC6 goes to the user (repeated review-failure stop).
+- 2026-11-09: T1 written (D-085, DESIGN removal paragraphs); T3 drafted in `docs/requests.md`, plain-English lint fixed in the new text.
 
 ## Decisions
 

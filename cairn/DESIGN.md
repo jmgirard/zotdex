@@ -292,10 +292,12 @@ author's own `.xpi` file (the data's `xpiUrl`, M052) is not an install
 button: it downloads the file and installs nothing (D-029).
 
 A maintainer can remove a listed plugin for its repository's owner, for spam,
-for an entry that misleads about what the plugin is or who makes it, or for
-harm that a report shows with evidence a reader can check. `delisted.json`
-keeps it off the index. This does not make the index a reviewer of plugin code
-(D-051, D-062, M093).
+for an entry that misleads about what the plugin is or who makes it, for harm
+that a report shows with evidence a reader can check, or for a listed site
+built in: a site that courts in two countries ordered blocked or shut down for
+copyright infringement. `delisted.json` keeps it off the index until a
+maintainer lifts the removal. This does not make the index a reviewer of plugin
+code (D-051, D-062, D-085, M093, M118).
 
 ## Data sources and contribution
 
@@ -445,9 +447,14 @@ An author can open an issue to correct a fact, and the index honors that
 request. Anyone can ask to remove a plugin through the public
 `remove-plugin.yml` form, linked from each plugin page and About. A maintainer
 removes a plugin for its repository's owner, for spam, for an entry that
-misleads about what the plugin is or who makes it, or for harm that a report
-shows with evidence a reader can check (D-062, M093). `delisted.json` names
-each removed repo, and its `ids` hold only ids judged unique to that repo. So
+misleads about what the plugin is or who makes it, for harm that a report
+shows with evidence a reader can check, or for a listed site built in (D-062,
+D-085, M093, M118). For the last ground alone, a maintainer reads the README
+and settings of each plugin whose name, description, repository name, or
+topics match the sites file, without a report. `docs/requests.md` defines
+spam, harm, and "built in", and states how each removal is lifted.
+`delisted.json` names each removed repo and its ground, and its `ids` hold
+only ids judged unique to that repo. So
 `pnpm check`, discovery, and "Add a plugin" issues keep the plugin off the
 index, and a bot pull request for it does not merge. A copy under a new name
 is covered only if it keeps a listed id. An author cannot remove

@@ -1373,3 +1373,66 @@ The user expects finds to be rare: "if we start getting a lot of false
 positives, will need to adjust the plan". This choice is wrong if
 false-positive issues come often, or if the cap of 5 leaves real finds
 waiting for days.
+
+### D-085: A fifth removal ground covers a court-blocked site built in, and the rules define spam and harm and the way back, annotating D-006, D-051, and D-062
+
+2026-11-09, M118 plan and RR01. Before the index is advertised, a readiness
+check found a plugin that gets papers from Sci-Hub tenth on the home page,
+and D-062's four grounds did not cover it. D-062 also left spam and harm
+undefined, and a removal lasted forever. The user chose the rules below, and
+an independent review (`cairn/reviews/archive/RR01-removal-rules.md`)
+reworded them. `docs/requests.md` holds the full text of each definition.
+
+The fifth ground: a maintainer can remove a plugin that has a built-in way to
+get papers or books from a site that courts in at least two countries have
+ordered blocked or shut down for copyright infringement. A default judgment
+counts, and so does a court's order to internet providers to block the site.
+A block by a regulator or an industry body does not count, and neither does
+a ruling that was later overturned. Two countries guard against one outlier
+or captured court. A court order is a fact that a reader can look up, so the
+index forms no view of its own about the law. "Built in" means that the
+plugin's latest release ships the site, or that its README or settings tell
+the user to enter the site's address. The user chose "built in" over "main
+use", so a plugin that also offers lawful sources is covered. A
+`delisted.json` record names this ground as `copyright`.
+
+Spam is a repository that is not a working Zotero plugin, such as an
+unchanged template under a new name, a repository made to carry ads or
+links, or many near-identical copies from one account. Harm is a release
+that does something its users were not told about, to them or through their
+computer or accounts, or a plugin built to attack other people's computers.
+A bug is not harm.
+
+D-062 said that a plugin with no report stays listed. That now has one
+exception. A maintainer reads the README and settings of each plugin whose
+name, description, repository name, or topics match a name in the sites
+file, and removes it if a listed site is built in. The maintainer reads no
+other plugin for this ground and no plugin's code, and checks every match
+the same way. A plugin that stays listed has not been checked, and D-051
+stands. The user chose this over acting only on reports, since a ground
+that applies only when someone reports it would apply unevenly to the
+plugins already found. A site's terms of use, a licence dispute between
+authors, and other legal questions give no ground for removal. A new legal
+ground would need an outside fact as checkable as a court order.
+
+A removal lasts until a maintainer lifts it. Only the owner can undo a
+removal at the owner's request. A plugin removed as spam or for a misleading
+entry returns once it no longer meets that ground. A plugin removed for a
+listed site returns once a release drops the site, and a second removal on
+that ground stays. A plugin removed for harm stays off for good when its
+author built in hidden behavior that serves no part of what the plugin says
+it does. Other harm returns once a release stops the behavior or tells users
+about it. Harm from someone else's change, such as a taken-over account or a
+poisoned dependency, returns once a release removes it and the public record
+shows what happened. A maintainer checks only that the reported evidence no
+longer holds, which is no finding that the plugin is safe (D-051, D-082).
+Any removal is lifted when its evidence proves wrong or a maintainer misread
+the plugin. A plugin found sending data without saying so first gets an
+issue and 14 days to disclose it.
+
+D-006 stands: a listing is no judgment of quality, and the fifth ground
+rests on court orders about a site, not on the plugin's quality. This
+choice is wrong if a plugin stays listed that courts in two countries have
+ordered taken down, if a maintainer reads plugins that no match or report
+names, or if a site that passes the test turns out to serve only lawful
+copies.
