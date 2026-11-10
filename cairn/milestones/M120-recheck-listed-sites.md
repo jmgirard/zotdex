@@ -163,3 +163,4 @@ and the bot's hold (M119) reads them at intake, so no row.
 - ripple #2: the search paragraph says it runs before a removal only — fix now, as blame-history #2
 - ripple #3: `docs/requests.md` "has not been checked" next to a closed `listed-site` issue — reject, false: the job reads texts, not README or settings, so the sentence holds
 - ripple #4: DESIGN's maintainer-reads sentence does not name the issues — reject, false: the next sentence names them
+- pass 2 fix-now lines above: fixed 93829284; verify green (2897 passed, 753 entries, 0 problems), `cairn_validate.py` passed, no snapshot file changed, no open PR of mine (feature cap 1)
