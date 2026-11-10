@@ -514,6 +514,79 @@ checkout's `plugins/` folder. If one of them fails, the command prints
 A merge made with the workflow's `GITHUB_TOKEN` starts no workflow run, so
 the merged plugin appears on the site after the next daily build.
 
+## Removing a plugin
+
+"Removing a plugin" in [requests.md](requests.md) states the five grounds and
+what each one needs. This section gives the steps.
+
+Before you act on an owner's request, make sure that the issue's author owns
+the repository. Otherwise, ask the owner to say so from the repository itself.
+
+To remove a plugin, do these steps on a branch:
+
+1. Delete the entry's directory under `plugins/`.
+2. Add a record to `delisted.json`, with the ground and the issue's number.
+3. Run `pnpm check`, then merge the change.
+4. Close any open bot pull request for the repo or the id.
+5. Run `Build data` by hand. Otherwise, the plugin stays on the site until the
+   next daily build.
+6. Answer the issue to the outline below, then close it.
+
+### The removal issue
+
+Answer each removal in its issue. When you remove a plugin with no request, as
+for a listed site built in, open an issue labeled `remove-plugin`. Write the
+answer in this order:
+
+1. What the index did: it removed the plugin, and the ground.
+2. What you read: the README line or setting, quoted or linked.
+3. The rule, and for a listed site, the rulings.
+4. That the index makes no claim that the plugin or its users break the law,
+   and that the plugin stays on GitHub.
+5. That a reply saying the reading is wrong is enough to reopen the issue.
+6. How the plugin comes back, with a link to "Coming back" in requests.md.
+
+Mention the repository's owner by their account name. Answer the owner. When
+other people bring new evidence, answer them too. Hide a comment that attacks
+a person.
+
+### Sending the 14-day notice
+
+When a plugin sends library contents or account details somewhere without
+saying so, do these steps before a removal:
+
+1. Open an issue on the index labeled `remove-plugin`. Mention the owner, link
+   the code that sends the data, and say where it goes.
+2. Give the owner 14 days to say so in the README or the release notes. Say
+   that the plugin then stays listed.
+3. After 14 days, read the plugin's README and newest release notes. If they
+   say so, close the issue. If not, remove the plugin on the harm ground with
+   the steps above.
+
+### Lifting a removal
+
+1. Read the request against "Coming back" in requests.md. For harm, check only
+   that the reported evidence no longer holds.
+2. On a branch, delete the plugin's record from `delisted.json`, run `pnpm
+   check`, and merge the change.
+3. Read the repo's bot pull requests. If one was closed without a merge, the
+   bot does not propose the repo again. Then run `pnpm add-plugin` with the
+   repo's URL, as "Adding a plugin" says, and merge the entry in a pull
+   request. Otherwise, the next discover run can propose the repo.
+4. Answer the request and close it.
+
+The closed removal issue keeps the record that a plugin was removed once.
+Before a removal for a listed site, search the closed issues labeled
+`remove-plugin` for the repo. A second removal on that ground stays.
+
+### Closing a held pull request
+
+If a held bot pull request's entry misleads people about what the plugin is,
+who makes it, or who controls its updates, close it (D-053). Close no held
+pull request for another reason. On GitHub, close it with a comment that names
+the reason. The bot then does not
+propose that repo again.
+
 ## Checking entries
 
 To check every entry under `plugins/`, run:
@@ -606,7 +679,7 @@ GitHub response for the repository says whether it is archived, the
 the repository's top-level names, the block has a `sourceInRepo` field, `true`
 or `false`. A failed read leaves the field out, prints a warning, and does not
 fail the build. If the entry's `index.json` has a `paidService` field, the
-record has the same field, whether or not the read succeeds. If you validate
+record has the same field, whether or not the read succeeds. If you check data
 against a saved copy of the schema, fetch the schema again. The `upstream`
 block also has a `prerelease` field, `true` or `false`. It says whether
 GitHub marks the release that the reader read as a prerelease. It also has
@@ -634,8 +707,8 @@ failure name is `facts-invalid`. The command still writes the file.
 
 To keep earlier facts, add `--previous <url>`. The daily build gives the
 address of the published `v1/plugins.json`. The command reads that data
-after the reads of the top-level names below. It reads it once, and only
-if a record has a build-level failure. The limits are those of
+after the reads of the top-level names below. If a record has a
+build-level failure, it reads it once. Otherwise it does not read it. The limits are those of
 `pnpm carry-start-results`: 60 seconds and 16 MiB. If all of these hold, a
 record with a build-level failure keeps the published record's `upstream`
 block and `startTests` list, with a `kept` block:
@@ -665,12 +738,12 @@ and names the cause. The line does not change the exit status. Without
 `--previous`, the command reads no published data and keeps nothing.
 
 The command reads up to 4 plugins at once. It starts each GitHub API request
-of these reads at least 80 ms after the one before it, and a request to
-another host does not wait. A redirect that fetch follows inside a request
+of these reads at least 80 ms after the one before it. A request to another
+host does not wait. A redirect that fetch follows inside a request
 does not wait either. The command gives each plugin read 3 minutes. If
 a read takes longer, the command stops it, and the record fails with
 `request-failed`. The command starts no plugin read after 18 minutes from
-its start, and a read that is open at that time runs on to its end. Each
+its start. A read that is open at that time runs on to its end. Each
 entry whose read it did not start gets a record that fails with `not-read`.
 If the number of whole days from 1970-01-01T00:00Z to `generatedAt` is even,
 the command starts the reads in id order. Id order sorts the entry directory
@@ -1121,8 +1194,8 @@ hand. It has six jobs:
    It gives `pnpm build` the published data's address as `--previous`, so a
    plugin that it fails to read can keep earlier facts. Then it runs
    `pnpm carry-start-results` on the plan with the published data, as
-   "Starting plugins in Zotero" says, and `pnpm carry-scan-results` on the
-   data, as "Scanning plugins with ClamAV" says. It gives the SHA-256 of
+   "Starting plugins in Zotero" says. It also runs `pnpm carry-scan-results`
+   on the data, as "Scanning plugins with ClamAV" says. It gives the SHA-256 of
    the plan and the `pnpm data-digest` value of `dist/` as job outputs. It keeps `dist/` as a workflow artifact named `plugins-data`, and the plan
    as an artifact named `start-plan`. No artifact holds an XPI.
 2. The start-test job runs once for each tested Zotero release for Linux.
@@ -1141,17 +1214,17 @@ hand. It has six jobs:
    credentials, and uses no cache, since ClamAV reads plugin files in it.
 4. The scan-issues job checks the downloaded data the same way and runs
    `pnpm scan-issues` with the scan results, as "Scanning plugins with
-   ClamAV" says. It holds only the `issues: write` permission. It runs when
-   the build job succeeded, whatever the malware-scan job's result, and no
-   job waits on it.
+   ClamAV" says. It holds only the `issues: write` permission. When the build
+   job succeeded, it runs, whatever the malware-scan job's result. No job
+   waits on it.
 5. The site job checks the downloaded data with
    `pnpm data-digest --dir dist --expect`, and the start plan against its
    SHA-256, each against the value that the build job gives as a job
    output. Plugin code in a start-test job can upload artifacts. If that
    code reaches the run's artifact token, it can also delete
    `plugins-data` and upload another under that name. Then the site job runs
-   `pnpm add-start-results`, `pnpm add-scan-results`, and `pnpm site`. It
-   runs when the build job succeeded, whatever the start-test and
+   `pnpm add-start-results`, `pnpm add-scan-results`, and `pnpm site`. When
+   the build job succeeded, it runs, whatever the start-test and
    malware-scan jobs' results.
 6. If the site job succeeded, the deploy job deploys `dist/` to GitHub
    Pages, whatever the start-test, malware-scan, and scan-issues jobs'

@@ -43,15 +43,16 @@ precise text lives in `docs/`, and About gets one approved sentence
       five grounds: the owner's request, spam, a misleading entry, harm,
       and a listed site built in. It defines spam, harm, and "built in",
       and states the fifth ground, in the words of this file's Decisions
-      (spam from RR01 §8 item 3, harm R3, built in R2, fifth ground R1).
-      It says that
-      a maintainer applies the fifth ground without a report only to a
+      entries for spam, harm, and the fifth ground, which govern where they
+      differ from RR01 (spam from RR01 §8 item 3, harm R3, built in R2,
+      fifth ground R1). It says that a maintainer applies the fifth ground without a report only to a
       plugin whose name, description, repository name, or topics match a
       name in the sites file, reading its README and settings and not its
       code.
 - [ ] AC2: The same section states what a request to bring a removed
-      plugin back must show after harm or a listed site built in (this
-      file's Decisions, Return path: RR01 R5, R6, R8), and that a plugin
+      plugin back must show after harm (this file's Decisions, Return path:
+      RR01 R5, R6) or a listed site built in (a release drops the site, and
+      a second removal on that ground stays: R8), and that a plugin
       removed as spam or for a misleading entry returns once its repository
       or entry no longer meets that ground; that only
       the owner can undo an owner's request, that any removal is lifted
@@ -69,8 +70,9 @@ precise text lives in `docs/`, and About gets one approved sentence
       that a removed plugin can ask to come back, and the private contact;
       the form names the five grounds and its reason menu has a choice that
       names the narrow fact (a listed site built in), not "copyright"; and
-      every changed line of About and the form matches a line that
-      `cairn/references/plain-words-copy.md` records as approved (CLAUDE.md,
+      every changed line of About and the form is one the user said yes to
+      at T6, which `cairn/references/plain-words-copy.md` records, with the
+      form in its own section, under that approval's date (CLAUDE.md,
       Approved page wording).
 - [ ] AC5: Each `delisted.json` record carries a `ground`, one of `owner`,
       `spam`, `misleading`, `harm`, or `copyright`. `pnpm check` fails on a list
@@ -79,9 +81,11 @@ precise text lives in `docs/`, and About gets one approved sentence
       values passes. The record description in `docs/requests.md` names
       `ground` and its values.
 - [ ] AC6: `docs/maintaining.md` states the steps to remove a plugin, to
-      send the 14-day notice, to lift a removal, and to close a held pull
-      request for a misleading entry (D-053), naming each file or command each step changes
-      or runs; it gives the removal issue's outline (RR01 R13); it says
+      send the 14-day notice, to lift a removal, including the step that
+      lets a lifted plugin be listed again although the bot does not
+      propose a repo whose pull request was closed, and to close a held
+      pull request for a misleading entry (D-053), naming each file or
+      command each step changes or runs; it gives the removal issue's outline (RR01 R13); it says
       where the record that a plugin was removed once lives after a lift;
       and `docs/requests.md` links to these steps rather than repeating
       them.
@@ -99,7 +103,7 @@ precise text lives in `docs/`, and About gets one approved sentence
 
 ## Tasks
 
-- [ ] T1: Write the D-entry from this file's Decisions: the five grounds,
+- [x] T1: Write the D-entry from this file's Decisions: the five grounds,
       the definitions, the read-without-report exception and its limit
       (RR01 R4), the limit on new legal grounds (R10), the return path,
       and the notice period. Update DESIGN.md's removal paragraphs
@@ -108,11 +112,11 @@ precise text lives in `docs/`, and About gets one approved sentence
       and `DelistedRecord` (`src/check/delisted.ts:9`); tests in
       `test/delisted.test.ts`; update the record description and example
       in `docs/requests.md`.
-- [ ] T3: Rewrite the "Removing a plugin" section of `docs/requests.md`
+- [x] T3: Rewrite the "Removing a plugin" section of `docs/requests.md`
       (line 326 on) per AC1 and AC2.
-- [ ] T4: Write the section on legal notices, private reports, screenshot
+- [x] T4: Write the section on legal notices, private reports, screenshot
       takedowns, and the three promises in `docs/requests.md`.
-- [ ] T5: Write the steps and the removal issue's outline in
+- [x] T5: Write the steps and the removal issue's outline in
       `docs/maintaining.md`. Read how discovery and "Add a plugin" issues
       treat a repo whose bot pull request was closed (`src/discover/`), and
       name the step that lets a lifted plugin return.
@@ -159,6 +163,7 @@ precise text lives in `docs/`, and About gets one approved sentence
 - 2026-11-09: re-audit: AC6 (full) — lift steps can pass without bringing the plugin back, since the bot does not propose a repo whose pull request was closed (`src/discover/issue.ts:212`).
 - 2026-11-09: stop: second re-audit on AC1, AC2, AC4, AC6 goes to the user (repeated review-failure stop).
 - 2026-11-09: T1 written (D-085, DESIGN removal paragraphs); T3 drafted in `docs/requests.md`, plain-English lint fixed in the new text.
+- 2026-11-09: substantive amendment: at the stop the user chose the four narrower rewordings of AC1, AC2, AC4, AC6; AC1's D-entry clause left out, as a record clause binds an instrument and D-085 is written.
 
 ## Decisions
 

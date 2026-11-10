@@ -467,6 +467,28 @@ The list names a repo and the ids in its record, and nothing else. If a repo
 moves to a new name, the bot can propose it again unless its id is listed. The
 same is true of a fork.
 
-To list a plugin again, remove its record. The bot can then propose it, unless
-a bot pull request for that repo was closed without a merge. In that case, add
-the entry by hand.
+To lift a removal, follow "Lifting a removal" in [maintaining.md](maintaining.md).
+
+## Legal notices and private reports
+
+The index hosts no plugin files. It links to each plugin's repository and
+releases on GitHub. It hosts only its own data, the icons it redraws, and the
+screenshots that owners send. A complaint about a plugin's own code, such as
+a claim that one plugin copied another, goes to GitHub, where the code is. The
+index acts only on the five grounds in "Removing a plugin".
+
+To send a legal notice, or to report harm in private, use the private contact
+on the About page. Name the plugin and give the evidence.
+
+To take a screenshot down, the plugin's owner sends the screenshot form with a
+blank Screenshot field, as "Adding a screenshot" says. Anyone else writes to
+the private contact and names the plugin and the reason.
+
+One person reads requests, so the index promises no response time. Reports of
+malware come first.
+
+The rules can change. A change applies to plugins that are already listed. The
+git history of this file holds each change with its date.
+
+If a request brings no new evidence after an earlier answer, a maintainer
+closes it.
