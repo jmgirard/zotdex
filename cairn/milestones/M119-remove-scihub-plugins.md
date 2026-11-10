@@ -75,7 +75,7 @@ them, so no row.
 - AC1 → T1
 - AC2 → T2
 - AC3 → T4
-- AC4 → T3
+- AC4 → T3, T6
 - AC5 → T5
 
 ## Tasks
@@ -99,6 +99,9 @@ them, so no row.
       `delisted.json` record; delete its `plugins/` directory; update docs,
       DESIGN.md, CHANGELOG.
 - [x] T5: Run `pnpm test` and `pnpm check`.
+- [x] T6: Match the repo name in the case that GitHub gives, so the
+      capital split applies to it (review return 1), with a test through
+      the handoff run's read step.
 
 ## Work log
 
@@ -132,6 +135,7 @@ them, so no row.
 - 2026-11-09: amendment return: AC3 — "That issue mentions the owner of the plugin's repository, and its body says what Zotdex is, that Zotdex removes the plugin and why, with a link to the README line or settings line on which the ledger rests its verdict, and how to appeal. The plugin's directory under `plugins/` is gone, and `pnpm check` passes." (the user chose this wording at the stop; it replaces "written to M118's outline and mentioning the repo's owner. Its directory under `plugins/` is gone, and `pnpm check` passes.")
 - 2026-11-09: review return 1: AC4 — the repo-name text was matched in lowercase, so a repo such as `zotero-SciHubDownloader`, which names Sci-Hub by the capital split that D-088 states, was not held (diff-bug #1); fixed on the branch in review pass 2 with the other fix-now findings, `pnpm test` 2857 passed, 6 skipped.
 - 2026-11-09: D-088 edited before its merge to batch the milestone's corrections in one entry: "or a digit" in its heading, the repo-name case note, and D-087's hold count (diff-bug #7).
+- 2026-11-09: T6 added for review return 1 (minor amendment; Coverage AC4 → T3, T6); its fix landed in 94e2057c (`repoNameAsGiven` in `holds.ts`, `repoPartAsGiven` in `discover.ts`, used by discover and `refresh-holds`; test "passes the listed sites through the read step of a handoff run"), `pnpm test` 2857 passed.
 - 2026-11-09: T5: `pnpm test` 2864 passed, 6 skipped; `pnpm check` 748 entries, 0 problems; a restored copy of two removed entries fails `pnpm check` as `delisted-repo` and `delisted-id`.
 
 ## Decisions
