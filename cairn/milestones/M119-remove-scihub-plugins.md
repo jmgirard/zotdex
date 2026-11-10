@@ -24,46 +24,47 @@ name such a site for the maintainer.
 **In:** a checked-in sites file read by the bot, with its schema and a
 check; `cairn/references/` source notes for the court rulings and a
 ledger of the sweep; one public issue per removed plugin on the index
-repo, mentioning the repo's owner; `delisted.json` records with ground
-`copyright` and the removed entries' deletion; a new hold reason in
-`src/discover/holds.ts`, `discover.ts`, `handoff.ts`, and
-`refresh-holds.ts`, with tests; a D-entry annotating D-033 and D-053
-that states the hold's question; docs, DESIGN.md, CHANGELOG.
+repo, written to M118's outline and mentioning the repo's owner;
+`delisted.json` records with ground `copyright` and the removed entries'
+deletion; a new hold reason in `src/discover/holds.ts`, `discover.ts`,
+`handoff.ts`, and `refresh-holds.ts`, with tests; a D-entry annotating
+D-033 and D-053 (RR01 R9); docs, DESIGN.md, CHANGELOG.
 
-**Out:** the rules themselves → M118. A plugin that gets papers from such
-a site but names none in its manifest, GitHub description, or repo name:
-the sweep cannot find it, and the remove form covers it on a report, so
-no row. Plugins on hosts other than GitHub: the bot computes holds only
-for GitHub repos (`src/discover/discover.ts:388`), and the remove form
-covers them, so no row.
+**Out:** the rules → M118. The daily re-check of listed plugins → M120.
+A plugin that gets papers from such a site but names none in the fields
+the sweep reads: the remove form covers it on a report, so no row.
+Plugins on hosts other than GitHub: the bot computes holds only for
+GitHub repos (`src/discover/discover.ts:388`), and the remove form covers
+them, so no row.
 
 ## Acceptance criteria
 
-- [ ] AC1: The sites file names Sci-Hub and each other site that a plugin
-      marked yes in AC2's ledger gets papers from, if courts in at least
-      two countries have found that site, in copyright cases, infringes
-      copyright. For each site it gives the name spellings the bot
-      matches and the rulings, each ruling with a source note in
-      `cairn/references/`. A site with rulings from fewer than two
-      countries is left out of the file, and the ledger names it.
+- [ ] AC1: The sites file lists Sci-Hub and each other site that a plugin
+      marked yes in AC2's ledger gets papers from, when it meets M118's
+      fifth ground by the counting rule M118's D-entry records. Each ruling
+      gives country, court, date, case name or number, kind (contested
+      judgment, default judgment, or blocking order), and a link, and has
+      a source note in `cairn/references/`. Each site gives the names the
+      bot matches, none of which is also a common other word (such as
+      "zlib"). A site that fails the count is left out, and the ledger
+      names it.
 - [ ] AC2: A ledger in `cairn/references/` records, for each plugin in the
-      deployed data of the sweep day whose manifest name, manifest
-      description, GitHub description, or repo name matches the pattern
-      that the ledger states, whether the plugin has a built-in way to get
-      papers from a site in the sites file, and the README line or
-      settings file where that was read.
+      deployed data of the sweep day whose name, description, or repository
+      name matches the pattern that the ledger states, whether the plugin
+      has a listed site built in by M118's definition, and the README line
+      or settings file where that was read.
 - [ ] AC3: Each plugin that the ledger marks yes has a `delisted.json`
       record with ground `copyright` and the number of its own public
-      issue on the index repo, which mentions the repo's owner, names the
-      rulings, and links how a plugin comes back. Its directory under
-      `plugins/` is gone, and `pnpm check` passes.
+      issue on the index repo, written to M118's outline and mentioning
+      the repo's owner. Its directory under `plugins/` is gone, and `pnpm
+      check` passes.
 - [ ] AC4: The bot holds a new pull request for a GitHub repo whose
-      manifest name, manifest description, GitHub description, or repo
-      name matches a name spelling in the sites file, under a new hold
-      reason, and `refresh-holds` gives the same reason. Tests show a held
-      case for each of the four fields and for each site in the file, a
-      case and punctuation variant of a name, and an unheld plugin with a
-      near-miss name.
+      manifest name, manifest description, GitHub description, repo name,
+      or topics match a name in the sites file, under a new hold reason,
+      and `refresh-holds` gives the same reason. Tests show a held case for
+      each of the five fields and for each site in the file, a case and
+      punctuation variant of a name, and an unheld plugin with a near-miss
+      name.
 - [ ] AC5: `pnpm test` and `pnpm check` pass.
 
 ## Coverage
@@ -76,22 +77,24 @@ covers them, so no row.
 
 ## Tasks
 
-- [ ] T1: Find and read court rulings in copyright cases for Sci-Hub and
-      for each site the matched plugins use; write a source note for each
-      ruling; write the sites file, its schema, and a check that refuses
-      a site with rulings from fewer than two countries.
+- [ ] T1: Find and read the court rulings for Sci-Hub and each site the
+      matched plugins use (RR01 named cases from memory; confirm each);
+      write a source note per ruling; write the sites file, its schema,
+      and a check that refuses a site with rulings from fewer than two
+      countries.
 - [ ] T2: Sweep the deployed data with the ledger's pattern; read each
-      matched plugin's README and settings (no code review, per M118's
-      D-entry); record each verdict and where it was read.
-- [ ] T3: Write the D-entry for the hold. Add the hold reason: description
-      fields in `HoldFacts` (`src/discover/holds.ts:97`), the match
-      against the sites file, the pull request body's text, the handoff
-      schema, and `refresh-holds`; tests per AC4.
+      matched plugin's README and settings (no code, per M118's D-entry);
+      record each verdict and where it was read.
+- [ ] T3: Write the D-entry for the hold and for closing a held pull
+      request under a ground (RR01 R9). Add the hold reason: description
+      and topic fields in `HoldFacts` (`src/discover/holds.ts:97`), the
+      match against the sites file, the pull request body's text, the
+      handoff schema, and `refresh-holds`; tests per AC4.
 - [ ] T4: For each plugin marked yes, open one public issue on the index
-      repo that mentions the owner, names the rulings, and links the
-      return steps (text written with the writing-for-people skill and
-      shown in chat when posted); add its `delisted.json` record; delete
-      its `plugins/` directory; update docs, DESIGN.md, CHANGELOG.
+      repo to M118's outline, mentioning the owner (text written with the
+      writing-for-people skill and shown in chat when posted); add its
+      `delisted.json` record; delete its `plugins/` directory; update docs,
+      DESIGN.md, CHANGELOG.
 - [ ] T5: Run `pnpm test` and `pnpm check`.
 
 ## Work log
@@ -105,7 +108,10 @@ covers them, so no row.
 - 2026-11-09: collision: the parked row "Close gaps in the delisted list reads" stays parked; these are the first removals, and its condition is a return.
 - 2026-11-09: roadmap cap: the M115 terminal row was pruned and one parked row shortened to fit the two new rows.
 - 2026-11-09: word search of the 2026-11-09 data found six candidates: ethanwillis/zotero-scihub, syt2/zotero-scipdf, 0xc1c4da/zotero7-scidb, chen7447/sci-download-for-zotero, dnnunn/zotero-scihub-fetcher, fdossi/zotfetch.
+- 2026-11-09: RR01 ingested: AC1 takes the ruling fields and the name rule (R12); AC2 follows M118's built-in definition; AC3 follows M118's issue outline (R13); AC4 adds topics (R12); T3 takes R9; RR01's cases are from memory, so T1 confirms each.
 
 ## Decisions
+
+- 2026-11-09 (RR01): Whether Anna's Archive (used by 0xc1c4da/zotero7-scidb) qualifies turns on blocking orders, which M118's counting rule now counts; T1 applies the fixed rule and does not revisit it.
 
 ## Review
