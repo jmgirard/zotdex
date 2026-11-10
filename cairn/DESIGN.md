@@ -1271,6 +1271,21 @@ reused._
   2026-11-09 for LibGen, Library Genesis, and Z-Library found no listed
   plugin that names them (observed 2026-11-09). Adding a site takes its
   rulings, source notes, and names in the file (M119 review).
+- The listed-site match misses a name glued to a digit or to an all-caps
+  word, since a digit stays in the run before it and a split comes only where
+  a small letter or digit meets a capital: `SciHub2Zotero` gives `sci`,
+  `hub2`, `zotero`, and `SciHUBFetcher` gives `sci`, `hubfetcher`. It also
+  misses a name with an accented letter or a look-alike letter from another
+  script, such as `Scí-Hub` or a Cyrillic `Ѕ`. The hold is a tripwire, and
+  the remove form covers these on a report (D-087). Accepted at the M119
+  gate.
+- The `listed-site` hold is decided when the bot drafts a pull request, as
+  the other holds are, so a site added to `sites.json` later does not hold a
+  bot pull request that is already open with `Hold: none`, and `pnpm check`
+  does not match entries against the file. Of the 16 open bot pull requests
+  on 2026-11-09, none names a listed site (observed 2026-11-09). A plugin
+  that merges this way is listed, and the daily re-check of listed plugins
+  (M120) is where it is found. Accepted at the M119 gate.
 
 - Plugin metadata is inconsistent. Some plugins lack an `update.json` or have
   a wrong one, use version strings that are not semver, declare ranges that
