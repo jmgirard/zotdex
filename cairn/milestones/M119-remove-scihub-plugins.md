@@ -4,7 +4,7 @@
      cairn_validate's <150 over the plan-owned body. -->
 # M119: Remove plugins with Sci-Hub built in
 
-- **Status:** review
+- **Status:** in-progress
 - **Priority:** high
 - **Depends on:** M118
 - **Driving RR:** —
@@ -39,7 +39,7 @@ them, so no row.
 
 ## Acceptance criteria
 
-- [ ] AC1: The sites file lists Sci-Hub and each other site that a plugin
+- [x] AC1: The sites file lists Sci-Hub and each other site that a plugin
       marked yes in AC2's ledger gets papers from, when it meets M118's
       fifth ground by the counting rule M118's D-entry records. Each ruling
       gives country, court, date, case name or number, kind (contested
@@ -48,7 +48,7 @@ them, so no row.
       bot matches, none of which is also a common other word (such as
       "zlib"). A site that fails the count is left out, and the ledger
       names it.
-- [ ] AC2: A ledger in `cairn/references/` records, for each plugin in the
+- [x] AC2: A ledger in `cairn/references/` records, for each plugin in the
       deployed data of the sweep day whose name, description, or repository
       name matches the pattern that the ledger states, whether the plugin
       has a listed site built in by M118's definition, and the README line
@@ -58,14 +58,14 @@ them, so no row.
       issue on the index repo, written to M118's outline and mentioning
       the repo's owner. Its directory under `plugins/` is gone, and `pnpm
       check` passes.
-- [ ] AC4: The bot holds a new pull request for a GitHub repo whose
+- [x] AC4: The bot holds a new pull request for a GitHub repo whose
       manifest name, manifest description, GitHub description, repo name,
       or topics match a name in the sites file, under a new hold reason,
       and `refresh-holds` gives the same reason. Tests show a held case for
       each of the five fields and for each site in the file, a case and
       punctuation variant of a name, and an unheld plugin with a near-miss
       name.
-- [ ] AC5: `pnpm test` and `pnpm check` pass.
+- [x] AC5: `pnpm test` and `pnpm check` pass.
 
 ## Coverage
 
@@ -123,6 +123,7 @@ them, so no row.
 - 2026-11-09: claim audit in progress (checkpoint): the fresh Opus reader's six findings fixed (the match's case rule in docs and D-088, what `sites.json` lists in both docs, the Paris and Rotterdam ruling links, the per-name held cases read from the file); Library Genesis, which meets the count but is out of AC1, recorded as a DESIGN Known issue since the ROADMAP is at its line cap; the reader's one re-read is pending.
 - 2026-11-09: claim audit: 133 claims read, 6 corrected — docs/maintaining.md, docs/requests.md, sites.json, test/holds.test.ts; the reader's one re-read found all six hold, and D-088 and the Known issues entry hold; D-088's heading leaves out "or a digit", which its body gives; left, since the pass's one re-read is spent and the heading is history.
 - 2026-11-09: status review: `pnpm test` 2864 passed, 6 skipped; `pnpm check` 0 problems; cairn_validate all checks passed.
+- 2026-11-09: amendment routed: AC3 — the issues follow the three-part outline the user chose (user override above), not M118's six-part outline that AC3 names, so AC3's outline clause is wrong as written; the deliverable is as the user asked.
 - 2026-11-09: T5: `pnpm test` 2864 passed, 6 skipped; `pnpm check` 748 entries, 0 problems; a restored copy of two removed entries fails `pnpm check` as `delisted-repo` and `delisted-id`.
 
 ## Decisions
@@ -132,3 +133,11 @@ them, so no row.
 - 2026-11-09 (RR01): Whether Anna's Archive (used by 0xc1c4da/zotero7-scidb) qualifies turns on blocking orders, which M118's counting rule now counts; T1 applies the fixed rule and does not revisit it.
 
 ## Review
+
+Pass 1, 2026-11-09, at 15d0d98e.
+
+- AC1: `sites.json` lists Sci-Hub (US 2017 default judgment, FR 2019 blocking order, IN 2025 blocking order; 3 countries) and Anna's Archive (NL 2024 blocking order, US 2026 default judgment; 2 countries), the one other site a yes plugin uses (L3); each ruling has country, court, date, case, kind, and url, read by node from the file; each has a source note (five files present in `cairn/references/`); names `Sci-Hub` and `Anna's Archive`, neither a common other word; Sci-Net, used by L1, fails the count and the ledger names it (S3, "1 country: left out"). Pass.
+- AC2: `cairn/references/listed-site-sweep-2026-11-09.md` states its pattern (the sites file's names under `sitesNamedIn`, over name, both descriptions, repo name, and description overrides) and gives each match's verdict and the README line or settings file read (L1 to L6); re-running that match over the shelf copy of the data (`generatedAt` 2026-11-09T16:32:17.108Z, 754 records) gives the same six records. Pass.
+- AC3: each of the six yes plugins has a `delisted.json` record with ground `copyright` and its own issue (#883 to #888, open, label `remove-plugin`, each body opening with `@<owner>`); the six `plugins/` directories are gone; `pnpm check` exits 0 (748 entries). Fails as written: the bodies follow the three-part outline that the user chose (what Zotdex is, the removal and reason with the line read, how to appeal), and they leave out two items of M118's outline (the rule's rulings, the no-claim-of-law-breaking line). Routed as an amendment return; box left unticked.
+- AC4: tests pass for a held case in each of the five fields (`test/holds.test.ts` "the listed-site hold", 5 cases), for each name of each site in the committed file (2 cases, built from `sites.json`), case and punctuation variants (4 cases), and unheld near misses in name, description, and topic (3 cases); `refresh-holds` gives the same reason (`test/refresh-holds.test.ts` "a listed-site hold", 3 cases). Pass.
+- AC5: `pnpm test` 2864 passed, 6 skipped, 0 failed; `pnpm check` 748 entries, 0 problems, exit 0. Pass.
