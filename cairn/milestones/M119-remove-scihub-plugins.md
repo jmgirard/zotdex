@@ -4,7 +4,7 @@
      cairn_validate's <150 over the plan-owned body. -->
 # M119: Remove plugins with Sci-Hub built in
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** high
 - **Depends on:** M118
 - **Driving RR:** —
@@ -121,6 +121,8 @@ them, so no row.
 - 2026-11-09: user override: the user asked for the issues to be written for people, then much shorter: what Zotdex is, the removal and its reason, and how to appeal; the rulings list, the no-claim-of-law-breaking line, and the second-removal note were cut; the user kept the @mention; docs/maintaining.md's outline now matches (three items), so AC3's "M118's outline" reads against that shortened outline.
 - 2026-11-09: T4: issues #883 to #888 opened with the `remove-plugin` label, each @-mentioning the owner and linking the line read, posted bodies checked against the drafts; six `delisted.json` records, ground `copyright`, date 2026-11-09; `ids` left empty for `ethanwillis/zotero-scihub`, since `scihub@example.com` is a placeholder id its forks keep; after the merge each issue is renamed `Removed …` and closed with a comment naming the merged pull request (docs/maintaining.md step 7).
 - 2026-11-09: claim audit in progress (checkpoint): the fresh Opus reader's six findings fixed (the match's case rule in docs and D-088, what `sites.json` lists in both docs, the Paris and Rotterdam ruling links, the per-name held cases read from the file); Library Genesis, which meets the count but is out of AC1, recorded as a DESIGN Known issue since the ROADMAP is at its line cap; the reader's one re-read is pending.
+- 2026-11-09: claim audit: 133 claims read, 6 corrected — docs/maintaining.md, docs/requests.md, sites.json, test/holds.test.ts; the reader's one re-read found all six hold, and D-088 and the Known issues entry hold; D-088's heading leaves out "or a digit", which its body gives; left, since the pass's one re-read is spent and the heading is history.
+- 2026-11-09: status review: `pnpm test` 2864 passed, 6 skipped; `pnpm check` 0 problems; cairn_validate all checks passed.
 - 2026-11-09: T5: `pnpm test` 2864 passed, 6 skipped; `pnpm check` 748 entries, 0 problems; a restored copy of two removed entries fails `pnpm check` as `delisted-repo` and `delisted-id`.
 
 ## Decisions
