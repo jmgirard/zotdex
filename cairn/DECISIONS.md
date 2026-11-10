@@ -1500,3 +1500,11 @@ opened for it, as for a listed plugin. So it can ask to come back in the same
 way. This choice is wrong if the hold misses a plugin whose texts name a
 listed site, or if it holds so many plugins with no site built in that the
 maintainer stops reading them.
+
+### D-088: In the listed-site match, a capital letter after a small letter starts a new run, correcting D-087
+
+2026-11-09, M119 claim audit. D-087 says that case and a change from lower to
+upper case do not count in the match. That is wrong in part. Letter case does
+not count within a run, but a capital letter after a small letter or a digit
+starts a new run. So `ScihubFetcher` names Sci-Hub, and `Scihubfetcher` does
+not. The rest of D-087 stands.

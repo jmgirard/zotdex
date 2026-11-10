@@ -391,8 +391,9 @@ the site. A block by a regulator or an industry body does not count, and
 neither does a ruling that was later overturned. A site means the service
 under any address or mirror. If a ruling names a site's new name, or its
 operator presents it as the same service, the new name counts too. The file
-[`sites.json`](../sites.json) lists each listed site with its rulings: the
-country, court, date, case, kind, and a link for each one.
+[`sites.json`](../sites.json) lists the listed sites that the bot looks for,
+with their rulings: the country, court, date, case, kind, and a link for each
+one.
 
 "Built in" means that the plugin's latest release ships the site: a default or
 preset address, a menu choice, a button, or a list that the plugin loads by

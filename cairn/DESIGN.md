@@ -1258,6 +1258,16 @@ reused._
 
 ## Known issues
 
+- `sites.json` lists only Sci-Hub and Anna's Archive, the two sites that the
+  plugins removed in M119 use (M119 AC1). Other sites can meet the
+  two-country count. Library Genesis is one: the 2017 United States judgment,
+  the 2019 Paris order, and the 2024 Rotterdam order in the file's own source
+  notes all name it. The bot does not hold a plugin that names only such a
+  site, and the sweep did not read one. A word search of the data of
+  2026-11-09 for LibGen, Library Genesis, and Z-Library found no listed
+  plugin that names them (observed 2026-11-09). Adding a site takes its
+  rulings, source notes, and names in the file (M119 review).
+
 - Plugin metadata is inconsistent. Some plugins lack an `update.json` or have
   a wrong one, use version strings that are not semver, declare ranges that
   are too loose or too strict, or have no releases. One bad plugin must not

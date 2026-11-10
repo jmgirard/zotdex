@@ -2,6 +2,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
+import committedSites from "../sites.json" with { type: "json" };
 import { readSites, type Site } from "../src/check/sites.ts";
 import { draftEntry, indexed } from "../src/discover/discover.ts";
 import { holdDetails, holdReasons, identicalPercent, type IndexedName, matchEvidence, type RepoFacts } from "../src/discover/holds.ts";
@@ -175,7 +176,8 @@ describe("the hold reasons", () => {
 });
 
 describe("the listed-site hold", () => {
-  // The committed file, so each site that it lists gets a held case.
+  // The committed file, read and checked as the bot reads it. The per-name cases below take
+  // its names from the same file, so a site added to it gets a held case.
   let sites: Site[];
   beforeAll(async () => {
     sites = await readSites(join(resolve(import.meta.dirname, ".."), "sites.json"));
@@ -200,8 +202,8 @@ describe("the listed-site hold", () => {
     expect(result.holdDetails?.sites).toEqual([{ site: "Sci-Hub", fields: [field] }]);
   });
 
-  test.each(["Sci-Hub", "Anna's Archive"])("holds a repo that names %s, each site in the file", async (site) => {
-    const result = await drafted("bob/pdf-getter", { name: "PDF Getter", description: `Downloads PDFs from ${site}` });
+  test.each(committedSites.flatMap(({ site, names }) => names.map((name) => [site, name])))("holds a repo that names %s as %j, for each name in the file", async (site, name) => {
+    const result = await drafted("bob/pdf-getter", { name: "PDF Getter", description: `Downloads PDFs from ${name}` });
     expect(result.holds).toEqual(["listed-site"]);
     expect(result.holdDetails?.sites).toEqual([{ site, fields: ["description"] }]);
   });

@@ -322,12 +322,13 @@ reasons, in this order:
   a newer release stays. Otherwise the maintainer merges the pull request.
 - `listed-site`: the manifest's name or description, the repository's GitHub
   description, its name, or one of its topics names a site in `sites.json`.
-  The file lists each site that courts in at least two countries ordered
-  blocked or shut down for copyright infringement, with those rulings. If
-  some runs of letters and digits in a row join to a site's name, the text
-  names that site. Letter case and the marks between runs do not count. So
-  `Sci-Hub`, `sci hub`, `SciHub`, and `zotero-scihub` all name Sci-Hub, and
-  `scihubble` and `sci-hubs` do not. The name alone removes
+  The file lists sites that courts in at least two countries ordered blocked
+  or shut down for copyright infringement, with those rulings. If some runs
+  of letters and digits in a row join to a site's name, the text names that
+  site. The marks between runs do not count. Letter case does not count
+  either, except that a capital letter after a small letter or a digit
+  starts a new run. So `Sci-Hub`, `sci hub`, `SciHub`, and `zotero-scihub`
+  all name Sci-Hub, and `scihubble`, `sci-hubs`, and `Scihubfetcher` do not. The name alone removes
   nothing. Read the README and settings as "A listed site built in" in
   [requests.md](requests.md) says. If the site is built in, remove the
   plugin as "Removing a plugin" below says. Otherwise merge the pull request.
