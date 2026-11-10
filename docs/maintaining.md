@@ -632,19 +632,17 @@ second removal on that ground stays.
 
 ### Closing a held pull request
 
-This section is for a held bot pull request. Some entries mislead people
-about what the plugin is, who makes it, or who controls its updates. If you
-do not remove such a plugin, close its pull request (D-053). Close no such pull request for another
-reason. When you remove a plugin, step 5 of the removal closes its pull
-request instead.
-
-A plugin that was never listed can still meet a ground that you apply without
-a report, such as a listed site built in. Then remove it with the steps of
-"Removing a plugin", but skip step 2, since it has no directory. Its removal
-issue is the `issue` of its `delisted.json` record, so it can ask to come back
-like any other removed plugin. Step 5 closes its pull request. Close it with
+This section is for a held bot pull request. Close one with
 `gh pr close <number> --comment "<reason>"`. The bot then does not propose
-that repo again.
+that repo again. Close a held pull request for one of two reasons only:
+
+- Its entry misleads people about what the plugin is, who makes it, or who
+  controls its updates (D-053).
+- Its plugin meets a removal ground, such as a listed site built in. Then
+  remove the plugin with the steps of "Removing a plugin", but skip step 2,
+  since a plugin that was never listed has no directory. Its removal issue is
+  the `issue` of its `delisted.json` record, so it can ask to come back like
+  any other removed plugin. Step 5 of the removal closes the pull request.
 
 ## Checking entries
 
@@ -710,8 +708,8 @@ One rule reads `sites.json` at the top of the repo, or the file that
 `ZPI_SITES` names:
 
 - `sites-file`: the file must exist and match `schemas/sites.schema.json`.
-  Each site must have rulings from at least two countries, and no two names
-  can match the same texts.
+  Each site must appear once and have rulings from at least two countries,
+  and no two names can match the same texts.
 
 The first run downloads the registry schema into `.cache/`, so that run needs
 a network connection. The command refuses a downloaded or cached schema whose

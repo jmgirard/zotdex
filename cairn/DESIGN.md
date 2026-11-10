@@ -480,8 +480,9 @@ user reports. The exception is a report that is abuse.
   GitHub repo, and a list that `schemas/delisted.schema.json` refuses (M093).
   It reads the package root's `sites.json` (`src/check/sites.ts`, or the file
   that `ZPI_SITES` names) and refuses, as `sites-file`, a file that
-  `schemas/sites.schema.json` refuses, a site with rulings from fewer than two
-  countries, and a name that matches what another name matches (M119).
+  `schemas/sites.schema.json` refuses, a site that an earlier record gives, a
+  site with rulings from fewer than two countries, and a name that matches what
+  another name matches (M119).
   Its rule `screenshot-file` refuses a named screenshot with no
   `screenshot.webp`, a file that `index.json` does not name, and a file that
   is not WebP or passes 1600 px wide, 2400 px tall, or 1 MiB, with sharp

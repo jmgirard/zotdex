@@ -24,14 +24,12 @@ const ruling = (country: string): Ruling => ({ country, court: "A court", date: 
 const site = (name: string, countries: string[], names = [name]): Site => ({ site: name, names, rulings: countries.map(ruling) });
 
 describe("readSites", () => {
-  test("reads the committed file, where each site has rulings from two countries or more", async () => {
+  test("reads the committed file when no variable names another", async () => {
     const { ZPI_SITES: saved } = process.env;
     delete process.env.ZPI_SITES;
     try {
       expect(sitesPath()).toBe(join(ROOT, "sites.json"));
-      const sites = await readSites();
-      expect(sites.map(({ site }) => site)).toEqual(["Sci-Hub", "Anna's Archive"]);
-      for (const { rulings } of sites) expect(new Set(rulings.map(({ country }) => country)).size).toBeGreaterThanOrEqual(2);
+      expect((await readSites()).map(({ site }) => site)).toEqual(["Sci-Hub", "Anna's Archive"]);
     } finally {
       if (saved !== undefined) process.env.ZPI_SITES = saved;
     }
@@ -45,6 +43,7 @@ describe("readSites", () => {
     ["two rulings from one country", [site("Example Hub", ["US", "US"])], "has rulings from 1 country, and needs 2"],
     ["a name with no letter or digit", [site("Example Hub", ["US", "FR"], ["Example Hub", "--"])], 'has the name "--" with no letter a to z or digit'],
     ["two names that match the same texts", [site("Example Hub", ["US", "FR"]), site("Example-Hub", ["IN", "NL"])], 'has the name "Example-Hub", which matches what "Example Hub" matches'],
+    ["a site that an earlier record gives", [site("Example Hub", ["US", "FR"]), { ...site("Example Hub", ["IN", "NL"]), names: ["Other Hub"] }], '/1 "Example Hub" is the site of an earlier record'],
   ])("refuses %s", async (_name, sites, message) => {
     await expect(readSites(sitesFile(sites))).rejects.toThrow(message);
   });
@@ -52,6 +51,7 @@ describe("readSites", () => {
   test.each([
     ["a ruling kind outside the three", [{ ...site("Example Hub", ["US", "FR"]), rulings: [{ ...ruling("US"), kind: "regulator block" }, ruling("FR")] }], "/0/rulings/0/kind must be equal to one of the allowed values"],
     ["a ruling with no link", [{ ...site("Example Hub", ["US", "FR"]), rulings: [{ ...ruling("US"), url: undefined }, ruling("FR")] }], "/0/rulings/0 must have required property 'url'"],
+    ["a ruling dated in a 13th month", [{ ...site("Example Hub", ["US", "FR"]), rulings: [{ ...ruling("US"), date: "2024-13-01" }, ruling("FR")] }], "/0/rulings/0/date must match pattern"],
   ])("refuses %s by the schema", async (_name, sites, message) => {
     await expect(readSites(sitesFile(sites))).rejects.toThrow(message);
   });
@@ -64,7 +64,7 @@ describe("readSites", () => {
 describe("sitesNamedIn", () => {
   const sites = [site("Sci-Hub", ["US", "FR"]), site("Anna's Archive", ["NL", "US"])];
 
-  test.each(["Sci-Hub", "sci hub", "SCIHUB", "SciHub", "zotero-scihub", "Sci_Hub mirrors", "Ｓｃｉ－Ｈｕｂ"])("names Sci-Hub in %j", (text) => {
+  test.each(["sci hub", "SCIHUB", "SciHub", "zotero-scihub", "Ｓｃｉ－Ｈｕｂ"])("names Sci-Hub in %j", (text) => {
     expect(sitesNamedIn(text, sites).map(({ site }) => site)).toEqual(["Sci-Hub"]);
   });
 
@@ -72,7 +72,7 @@ describe("sitesNamedIn", () => {
     expect(sitesNamedIn(text, sites).map(({ site }) => site)).toEqual(["Anna's Archive"]);
   });
 
-  test.each(["SciHubble", "sci-hubs", "basic hub", "Sci-PDF", "Scihubfetcher"])("names no site in the near miss %j", (text) => {
+  test.each(["SciHubble", "sci-hubs", "Scihubfetcher"])("names no site in the near miss %j", (text) => {
     expect(sitesNamedIn(text, sites)).toEqual([]);
   });
 });

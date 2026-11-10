@@ -66,13 +66,16 @@ export function sitesNamedIn(text: string, sites: readonly Site[]): Site[] {
   return sites.filter((site) => site.names.some((name) => textNames(text, siteKey(name))));
 }
 
-// The file's problems that its schema does not see: a site with rulings from fewer than
-// COUNTRIES_MIN countries, a name with no letter or digit, and a name that matches the same
-// texts as another name.
+// The file's problems that its schema does not see: a site that an earlier record already
+// gives, a site with rulings from fewer than COUNTRIES_MIN countries, a name with no letter
+// or digit, and a name that matches the same texts as another name.
 export function sitesProblems(sites: readonly Site[]): string[] {
   const problems: string[] = [];
   const keys = new Map<string, string>();
+  const seen = new Set<string>();
   for (const [index, site] of sites.entries()) {
+    if (seen.has(site.site)) problems.push(`/${index} ${JSON.stringify(site.site)} is the site of an earlier record`);
+    seen.add(site.site);
     const countries = new Set(site.rulings.map(({ country }) => country));
     if (countries.size < COUNTRIES_MIN) problems.push(`/${index} ${JSON.stringify(site.site)} has rulings from ${countries.size} country, and needs ${COUNTRIES_MIN}`);
     for (const name of site.names) {

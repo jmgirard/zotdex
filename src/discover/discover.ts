@@ -393,6 +393,7 @@ export async function draftEntry(repoUrl: string, options: DraftOptions): Promis
   }
   const holdFacts = repo && {
     repo,
+    repoNameAsGiven: repoPartAsGiven(read.facts.repoUrl),
     name: read.facts.name,
     description: read.facts.description,
     repoDescription: read.facts.repoDescription,
@@ -742,4 +743,11 @@ export function repoName(url: unknown): string | undefined {
   if (typeof url !== "string" || !URL.canParse(url)) return undefined;
   const [owner, repo] = new URL(url).pathname.split("/").filter(Boolean);
   return owner && repo ? `${owner}/${repo.replace(/\.git$/, "")}`.toLowerCase() : undefined;
+}
+
+// The repo part of a URL as `repoName` reads it, in the letter case that the URL gives.
+export function repoPartAsGiven(url: unknown): string | undefined {
+  if (typeof url !== "string" || !URL.canParse(url)) return undefined;
+  const [owner, repo] = new URL(url).pathname.split("/").filter(Boolean);
+  return owner && repo ? repo.replace(/\.git$/, "") : undefined;
 }

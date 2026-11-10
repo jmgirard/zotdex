@@ -104,6 +104,9 @@ export interface ReplacedEntry {
 export interface HoldFacts {
   // The new repo as lowercase owner/repo.
   repo: string;
+  // The repo's name in the letter case that GitHub gives, which the `listed-site` match
+  // splits at a capital letter. Without it, the match reads the lowercase name in `repo`.
+  repoNameAsGiven?: string;
   // The manifest name and description, when the manifest has them, and the GitHub description.
   name?: string;
   description?: string;
@@ -130,17 +133,18 @@ export interface HoldFacts {
 // manifest name and description, the GitHub description, the repo's name, and its topics.
 export function listedSites({
   repo,
+  repoNameAsGiven,
   name,
   description,
   repoDescription,
   topics = [],
   sites = [],
-}: Pick<HoldFacts, "repo" | "name" | "description" | "repoDescription" | "sites"> & Partial<Pick<HoldFacts, "topics">>): { site: Site; fields: SiteField[] }[] {
+}: Pick<HoldFacts, "repo" | "repoNameAsGiven" | "name" | "description" | "repoDescription" | "sites"> & Partial<Pick<HoldFacts, "topics">>): { site: Site; fields: SiteField[] }[] {
   const texts: Record<SiteField, string[]> = {
     name: name === undefined ? [] : [name],
     description: description === undefined ? [] : [description],
     repoDescription: repoDescription === undefined ? [] : [repoDescription],
-    repoName: [repo.split("/")[1] ?? ""],
+    repoName: [repoNameAsGiven ?? repo.split("/")[1] ?? ""],
     topics,
   };
   return sites.flatMap((site) => {
@@ -268,7 +272,7 @@ function entryDetails(own: RepoFacts | undefined, entry: RepoFacts | undefined):
 // reason. A matched entry whose repo the schema refuses counts in `moreMatches`, so one odd
 // entry in the index cannot refuse a whole handoff.
 export function holdDetails(
-  facts: Pick<HoldFacts, "repo" | "name" | "description" | "repoDescription" | "sites" | "updateHost" | "updateRoute" | "ownerCreatedAt" | "indexed" | "evidence" | "replaced"> & Partial<Pick<HoldFacts, "topics">>,
+  facts: Pick<HoldFacts, "repo" | "repoNameAsGiven" | "name" | "description" | "repoDescription" | "sites" | "updateHost" | "updateRoute" | "ownerCreatedAt" | "indexed" | "evidence" | "replaced"> & Partial<Pick<HoldFacts, "topics">>,
   reasons: readonly HoldReason[],
 ): HoldDetails | undefined {
   if (reasons.length === 0) return undefined;

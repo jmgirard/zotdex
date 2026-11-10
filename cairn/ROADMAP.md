@@ -8,7 +8,7 @@ _Last hygiene check: 2026-11-09 (M118 review: removal rules with five grounds, t
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
 | M118 | Define the removal rules before launch | done | — | high | milestones/archive/M118-removal-rules.md |
-| M119 | Remove plugins with Sci-Hub built in | review | M118 | high | milestones/M119-remove-scihub-plugins.md |
+| M119 | Remove plugins with Sci-Hub built in | in-progress | M118 | high | milestones/M119-remove-scihub-plugins.md |
 | M120 | Re-check listed plugins for listed sites | planned | M119 | high | milestones/M120-recheck-listed-sites.md |
 <!-- rows grouped by status, not by ID; keep the 3 most recent done/dropped rows; older ones: milestones/archive/ + git -->
 

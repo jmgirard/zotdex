@@ -5,6 +5,7 @@ import { join, resolve } from "node:path";
 import process from "node:process";
 import { promisify } from "node:util";
 import type { Delisted } from "../check/delisted.ts";
+import type { Site } from "../check/sites.ts";
 import { SCREENSHOT_FILE } from "../screenshot-request/rules.ts";
 import type { Lookup } from "../upstream/host-guard.ts";
 import { type Fetch, githubClient, ReadFailure } from "../upstream/reader.ts";
@@ -94,6 +95,8 @@ export interface DiscoverReadOptions {
   lookup?: Lookup;
   state: DiscoveryState;
   delisted?: Delisted;
+  // The listed sites of `sites.json`, for the `listed-site` hold, as for discover.
+  sites?: readonly Site[];
   limit: number;
   budget: number;
   now?: Date;
@@ -521,7 +524,7 @@ export const HOLD_TEXT: Record<HoldReason, string> = {
   "replaces-entry":
     "The index lists this plugin's add-on id from another repo. This repo is older, has at least 20 stars, and has at least 10 times that repo's stars, so this pull request points the entry at this repo. It changes only the entry's `meta.json`, and the entry keeps its `index.json`. These numbers cannot show which repo is the original. If the listed repo credits this repo and has a newer release, close this pull request, and otherwise merge it.",
   "listed-site":
-    "The plugin's manifest name or description, its GitHub description, its repo name, or a topic names a site in `sites.json`, which courts in at least two countries ordered blocked or shut down for copyright infringement. The name alone removes nothing. Read the README and settings as \"A listed site built in\" in `docs/requests.md` says. If the site is built in, remove the plugin as \"Removing a plugin\" in `docs/maintaining.md` says, and otherwise merge this pull request.",
+    "The plugin's manifest name or description, its GitHub description, its repo name, or a topic names a site in `sites.json`, which courts in at least two countries ordered blocked or shut down for copyright infringement. The name alone removes nothing. Read the README and settings as \"A listed site built in\" in `docs/requests.md` says. If the site is built in, remove the plugin and close this pull request as \"Closing a held pull request\" in `docs/maintaining.md` says, and otherwise merge this pull request.",
 };
 
 // The line above a held body's facts, and the start of the sentence that ends a bot body.

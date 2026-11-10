@@ -1,7 +1,7 @@
 import type { Site } from "../check/sites.ts";
 import type { Lookup } from "../upstream/host-guard.ts";
 import { type Fetch, githubClient, readUpdateRoute } from "../upstream/reader.ts";
-import { indexed, repoName } from "./discover.ts";
+import { indexed, repoName, repoPartAsGiven } from "./discover.ts";
 import { HOLD_REASONS, type HoldReason, holdDetails, matchEvidence, ownerCreatedAt, replacedEntry } from "./holds.ts";
 import { botPullProblem, changedMeta, contents, type FileJson, newEntry, type PullJson } from "./merge.ts";
 import { CLOSING_START, DETAILS_HEADING, HOLD_LABEL, holdDetailLines, keptLines, unfencedLines } from "./propose.ts";
@@ -123,7 +123,7 @@ export async function refreshHolds({ fetch, lookup, updateReadMs = UPDATE_READ_L
       // The repo's GitHub description and topics are not in its entry, so a listed-site hold reads them again.
       const texts = held.reasons.includes("listed-site") ? await repoTexts(fetch, repo) : { topics: [] };
       const details = holdDetails(
-        { repo, name, description, ...texts, sites, updateHost: updateHost ?? "", updateRoute, ownerCreatedAt: createdAt, indexed: names, evidence, replaced },
+        { repo, repoNameAsGiven: repoPartAsGiven(meta.repoUrl), name, description, ...texts, sites, updateHost: updateHost ?? "", updateRoute, ownerCreatedAt: createdAt, indexed: names, evidence, replaced },
         held.reasons,
       );
       const kept = replacing ? keptLines(JSON.parse(await contents(github, `${API}/repos/${indexRepo}/contents/plugins/${encodeURIComponent(id)}/index.json?ref=${sha}`))) : [];

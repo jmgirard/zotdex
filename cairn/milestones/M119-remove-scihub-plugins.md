@@ -4,7 +4,7 @@
      cairn_validate's <150 over the plan-owned body. -->
 # M119: Remove plugins with Sci-Hub built in
 
-- **Status:** review
+- **Status:** in-progress
 - **Priority:** high
 - **Depends on:** M118
 - **Driving RR:** —
@@ -130,6 +130,8 @@ them, so no row.
 - 2026-11-09: re-audit: AC3 (full) — "Its directory" reads as the issue's; the link clause should name what the ledger names; both fixed toward the narrower wording.
 - 2026-11-09: re-audit: AC3 (full) — "the repo's owner" can read as the index repo's; "README line or settings file" admits a README line that is not the evidence; "is removed" vs issues opened before the merge; second re-audit on AC3, so the wording goes to the user (stop).
 - 2026-11-09: amendment return: AC3 — "That issue mentions the owner of the plugin's repository, and its body says what Zotdex is, that Zotdex removes the plugin and why, with a link to the README line or settings line on which the ledger rests its verdict, and how to appeal. The plugin's directory under `plugins/` is gone, and `pnpm check` passes." (the user chose this wording at the stop; it replaces "written to M118's outline and mentioning the repo's owner. Its directory under `plugins/` is gone, and `pnpm check` passes.")
+- 2026-11-09: review return 1: AC4 — the repo-name text was matched in lowercase, so a repo such as `zotero-SciHubDownloader`, which names Sci-Hub by the capital split that D-088 states, was not held (diff-bug #1); fixed on the branch in review pass 2 with the other fix-now findings, `pnpm test` 2857 passed, 6 skipped.
+- 2026-11-09: D-088 edited before its merge to batch the milestone's corrections in one entry: "or a digit" in its heading, the repo-name case note, and D-087's hold count (diff-bug #7).
 - 2026-11-09: T5: `pnpm test` 2864 passed, 6 skipped; `pnpm check` 748 entries, 0 problems; a restored copy of two removed entries fails `pnpm check` as `delisted-repo` and `delisted-id`.
 
 ## Decisions
@@ -165,3 +167,14 @@ Pass 2, 2026-11-09, at 21013f15. No file outside `cairn/` changed since pass 1 (
 - ripple #4: the issues say a reply is enough to come back, and requests.md "Coming back" says to open an issue — fix now (requests.md now names a reply on the removal issue).
 - ripple #5: "Closing a held pull request" opens on plugins that are not removed, and its new paragraph covers removed ones — fix now.
 - ripple #6: "the maintainer mainly checks" names only misleading entries — fix now (adds the `listed-site` check).
+- diff-bug #1: the repo-name text is matched lowercased, so `bob/zotero-SciHubDownloader` loses the capital split and is not held — fix now (`repoNameAsGiven`, read from the URL's case in discover and refresh; a handoff-run test holds that repo).
+- diff-bug #2: `sites` reaches `discoverRead` only through an untyped spread — fix now (`DiscoverReadOptions.sites`; the same test runs `discoverRead` with sites).
+- diff-bug #3: a name glued to a digit or an all-caps word, an accented letter, or a look-alike letter escapes the match — known issue: The listed-site match misses a name glued to a digit or to an all-caps word, since a digit stays in the run before it and a split comes only where a small letter or digit meets a capital: `SciHub2Zotero` gives `sci`, `hub2`, `zotero`, and `SciHUBFetcher` gives `sci`, `hubfetcher`. It also misses a name with an accented letter or a look-alike letter from another script, such as `Scí-Hub` or a Cyrillic `Ѕ`. The hold is a tripwire, and the remove form covers these on a report (D-087). Accepted at the M119 gate
+- diff-bug #4: the hold text sends a never-listed plugin to "Removing a plugin", whose step 2 assumes a directory — fix now (points to "Closing a held pull request").
+- diff-bug #5: "Closing a held pull request" puts the close command in the never-listed paragraph and says to close for no other reason — fix now (the section gives the command once and two reasons).
+- diff-bug #6: `src/site/categories.ts` keeps two removed ids in an `exclude` list — fix now (removed).
+- diff-bug #7: D-087 calls the hold a sixth reason; it is the seventh — fix now (in D-088, the milestone's one correcting entry, unmerged, which also gains "or a digit" in its heading and the case note for the repo name).
+- diff-bug #8: `sitesProblems` takes two records with the same `site` — fix now (refused, with a test).
+- diff-bug #9: the schema's date pattern takes `2024-13-45` — fix now (month 01 to 12, day 01 to 31, with a test).
+- diff-bug #10: tests that repeat a path or pass on main — fix now (dropped the repeated variants, near misses, the no-sites case, and two implied expectations; kept one case-and-punctuation variant and one near miss through `draftEntry`, as AC4 asks).
+- diff-bug #11: no race found in the awaits — reject (false: nothing to fix; noted).
