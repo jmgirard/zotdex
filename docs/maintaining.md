@@ -524,8 +524,8 @@ the repository. Otherwise, ask the owner to say so from the repository itself.
 
 To remove a plugin, do these steps on a branch:
 
-1. If no issue asks for the removal, open one first, as "The removal issue"
-   says. Name it `Removing <owner>/<repo>`.
+1. If no issue asks for the removal or gave the 14-day notice, open one
+   first, as "The removal issue" says. Name it `Removing <owner>/<repo>`.
 2. Delete the entry's directory under `plugins/`.
 3. Add a record to `delisted.json`, with the ground and the issue's number.
 4. Run `pnpm check`, then merge the change.
@@ -544,7 +544,8 @@ To remove a plugin, do these steps on a branch:
 A removal with no request, as for a listed site built in, needs its own issue.
 Give it a one-line body that names the plugin and the ground:
 `gh issue create --label remove-plugin --title "Removing <owner>/<repo>" --body "<plugin and ground>"`.
-Write the answer at step 7 in this order:
+Write the answer at step 7 in this order. Items 2 to 4 are for a listed site
+built in. For another ground, give the evidence the ground needs instead.
 
 1. What the index did: it removed the plugin, and the ground.
 2. What you read: the README line or setting, quoted or linked.
@@ -570,20 +571,26 @@ above.
 1. Write a body that mentions the owner, links the code that sends the data,
    and says where it goes. Open the issue with
    `gh issue create --label remove-plugin --title "Notice for <owner>/<repo>" --body-file <file>`.
-2. Give the owner 14 days to say so in the README or the release notes. Say
-   that the plugin then stays listed.
-3. After 14 days, read the plugin's README and newest release notes. If they
-   say so, close the issue with `gh issue close <number>`. If not, remove the
-   plugin on the harm ground with the steps above.
+2. Give the owner 14 days to say so in the README, the release notes, or
+   text that the plugin shows before it acts, or to stop the sending in a
+   release. Say that the plugin then stays listed.
+3. After 14 days, read the plugin's README, newest release notes, and newest
+   release. If one of these holds, close the issue with
+   `gh issue close <number>`. If not, remove the plugin on the harm ground
+   with the steps above, in this issue.
 
 ### Lifting a removal
 
 1. Read the request against "Coming back" in requests.md. For harm, check only
-   that the reported evidence no longer holds.
+   that the reported evidence no longer holds. To undo an owner's request,
+   make sure that the person asking owns the repository. For a listed site,
+   run the earlier-removal search below. If it finds an earlier removal for a
+   listed site, the plugin stays off.
 2. On a branch, delete the plugin's record from `delisted.json`, run
    `pnpm check`, and merge the change.
 3. Read the repo's bot pull requests with
-   `gh pr list --state closed --head discover/<owner>/<repo>`. If one was
+   `gh pr list --state closed --head discover/<owner>/<repo> --search is:unmerged`.
+   If one was
    closed without a merge, the bot does not propose the repo again. In that
    case, run `pnpm add-plugin` with the repo's URL, as "Adding a plugin" says,
    and merge the entry in a pull request. Otherwise, the next discover run can
@@ -1102,8 +1109,8 @@ status 1.
 A flagged file stays listed, and its page shows the find. Handle a find as
 a report of harm. A scan find counts as evidence under "Harm" in
 [requests.md](requests.md) only with a second source that supports it. Look at
-the signature and the plugin's source for that support before you decide. A flag on a large
-JavaScript bundle can be a false alarm.
+the signature and the plugin's source for that support before you decide. A
+flag on a large JavaScript bundle can be a false alarm.
 
 Each find also opens a GitHub issue, so you hear of it without reading the
 run's warnings. In the `scan-issues` job of the daily build, this command

@@ -76,9 +76,10 @@ request from a `discover/` branch of the index repository. The pull request's
 body must have exactly one `Closes #<issue>` line outside code blocks. The
 issue must be open, have the label `add-plugin`, and have a bot comment with
 the link to the pull request. If the bot already commented that the pull
-request was closed without a merge, the command does nothing. One run at a time handles
-each pull request. The workflow runs on `pull_request_target`, so it runs its
-file from the default branch and runs no code from the pull request. A pull
+request was closed without a merge, the command does nothing. One run at a
+time handles each pull request. The workflow runs on `pull_request_target`,
+so it runs its file from the default branch and runs no code from the pull
+request. A pull
 request that the bot's own token closes starts no workflow run, so its issue
 stays open.
 
@@ -398,14 +399,14 @@ to enter the site's address. A plugin that takes any address the user types,
 and names no listed site, is not covered. A plugin's name alone does not make
 the site built in.
 
-A maintainer applies this ground without a report. It applies only to a
-plugin whose name, description, repository name, or topics name a listed
-site.
-The maintainer reads that plugin's README and settings, not its code, and
-checks every match the same way. A plugin that stays listed has not been
-checked. The index forms no view of its own about whether a plugin or its
-users break the law. A site's terms of use, a licence dispute between authors,
-and other legal questions are not grounds for removal.
+A report can ask for this ground for any plugin. Without a report, a
+maintainer applies it only to a plugin whose name, description, repository
+name, or topics name a listed site. The maintainer reads that plugin's README
+and settings, not its code, and checks every match the same way. A plugin
+that stays listed has not been checked. The index forms no view of its own
+about whether a plugin or its users break the law. A site's terms of use, a
+licence dispute between authors, and other legal questions are not grounds
+for removal.
 
 ### Coming back
 
@@ -447,9 +448,9 @@ A record has five fields:
 Write `repo` in lowercase. `ground` names the ground the removal used: `owner`,
 `spam`, `misleading`, `harm`, or `copyright`, which is the ground for a listed
 site built in. `issue` is the number of the removal's issue, and `date` is the
-day of the removal. If you judged an id unique to that repo, put it in `ids`, and
-put no other id there. A fork can keep its source's id, and a listed id blocks
-every repo that carries it. `ids` can be empty.
+day of the removal. If you judged an id unique to that repo, put it in `ids`,
+and put no other id there. A fork can keep its source's id, and a listed id
+blocks every repo that carries it. `ids` can be empty.
 
 The list keeps a removed plugin off the index in three places:
 
@@ -479,7 +480,7 @@ The index hosts no plugin files. It links to each plugin's repository and
 releases on GitHub. It hosts only its own data, the icons it redraws, and the
 screenshots that owners send. A complaint about a plugin's own code, such as
 a claim that one plugin copied another, goes to GitHub, where the code is. The
-index acts only on the five grounds in "Removing a plugin".
+index removes a plugin only on the five grounds in "Removing a plugin".
 
 To send a legal notice, or to report harm in private, use GitHub's private
 report form, linked from the About page. Name the plugin and give the

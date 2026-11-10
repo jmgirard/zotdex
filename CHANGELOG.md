@@ -6,8 +6,10 @@
   that has a site built in that courts in at least two countries ordered
   blocked or shut down for copyright infringement. `docs/requests.md` now
   defines spam, harm, and "built in". It also says how a removed plugin
-  comes back on each ground. A plugin found sending data without saying so
-  first gets 14 days to disclose it. The docs say where legal notices
+  comes back on each ground. A plugin that sends data without saying so, for
+  a purpose it states, first gets 14 days to disclose it. A malware scan find
+  needs a second source before it counts as evidence of harm. The docs say
+  where legal notices
   and private reports go, and that no response time is promised. About's
   "Removing a plugin" card and the remove form state the new ground and
   the way back. The form gains the reason "It has a listed site built in".
