@@ -16,6 +16,9 @@ export function pluginRepo(
     updateHost = "raw.githubusercontent.com",
     stars = undefined as number | undefined,
     updateRoute = undefined as string[] | undefined,
+    // The manifest description and the GitHub description, left out when unset.
+    description = undefined as string | undefined,
+    repoDescription = undefined as string | undefined,
   } = {},
 ): Responses {
   const repoUrl = `https://github.com/${fullName}`;
@@ -25,7 +28,7 @@ export function pluginRepo(
   const namedUrl = updateRoute?.[0] ?? updateUrl;
   const responses: Responses = {
     [`https://api.github.com/repos/${fullName}`]: {
-      json: { full_name: fullName, html_url: repoUrl, fork: false, created_at: "2025-01-10T09:00:00Z", open_issues_count: 0, topics, ...(stars !== undefined && { stargazers_count: stars }) },
+      json: { full_name: fullName, html_url: repoUrl, fork: false, created_at: "2025-01-10T09:00:00Z", open_issues_count: 0, topics, ...(stars !== undefined && { stargazers_count: stars }), ...(repoDescription !== undefined && { description: repoDescription }) },
     },
     [`https://api.github.com/users/${fullName.split("/")[0].toLowerCase()}`]: { json: { created_at: ownerCreatedAt } },
     [`https://api.github.com/repos/${fullName}/releases?per_page=100`]: {
@@ -48,6 +51,7 @@ export function pluginRepo(
       "manifest.json": {
         manifest_version: 2,
         name,
+        ...(description !== undefined && { description }),
         version: "1.0.0",
         applications: { zotero: { id, update_url: namedUrl, strict_min_version: "7.0", strict_max_version: "8.*" } },
       },

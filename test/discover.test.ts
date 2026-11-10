@@ -139,6 +139,21 @@ describe("discover and the delisted list", () => {
     expect(result.report.skipped).toEqual([{ repo: "example/removed", reason: "delisted" }]);
   });
 
+  test("passes the listed sites through the read step of a handoff run, which holds a repo whose GitHub name has a listed site in mixed case", async () => {
+    const INDEX = "https://api.github.com/repos/example/index";
+    const responses = {
+      ...searched([["example/zotero-SciHubDownloader", PUSHED]]),
+      ...pluginRepo("example/zotero-SciHubDownloader", "getter@example.org", { name: "PDF Getter" }),
+      [INDEX]: { json: { full_name: "example/index", default_branch: "main" } },
+      [`${INDEX}/pulls?state=all&per_page=100`]: { json: [] },
+    };
+    const sites = [{ site: "Sci-Hub", names: ["Sci-Hub"], rulings: [] }];
+    const { fetch } = fixtureFetch(responses);
+    const result = await discoverRead({ root: tempDir(), outDir: tempDir(), fetch, lookup: publicLookup, state: {}, sites, limit: 5, budget: 100, now: NOW, indexRepo: "example/index" });
+    if (!result.ok) throw new Error(result.message);
+    expect(result.report.read).toEqual([expect.objectContaining({ outcome: "written", holds: ["listed-site"], holdDetails: expect.objectContaining({ sites: [{ site: "Sci-Hub", fields: ["repoName"] }] }) })]);
+  });
+
   test("records no refusal by the list, so a repo can be proposed once its record goes", async () => {
     const responses = { ...searched([["example/fork", PUSHED]]), ...pluginRepo("example/fork", "removed-id@example.org") };
     const first = await run(responses, { delisted: removed, outDir: tempDir() });
@@ -1254,6 +1269,19 @@ describe("pnpm discover", () => {
     } finally {
       if (saved === undefined) delete process.env.ZPI_DELISTED;
       else process.env.ZPI_DELISTED = saved;
+    }
+  });
+
+  test("stops on a sites file it cannot read, and writes no entry", () => {
+    const saved = process.env.ZPI_SITES;
+    process.env.ZPI_SITES = join(tempDir(), "missing.json");
+    try {
+      const stopped = pnpmDiscover(["--out", "out", "--state", "state.json"], recorded(), tempDir());
+      expect(stopped.status).toBe(1);
+      expect(stopped.stderr).toMatch(/^sites\.json: cannot read the sites file: .*\nwrote no entry\n$/);
+    } finally {
+      if (saved === undefined) delete process.env.ZPI_SITES;
+      else process.env.ZPI_SITES = saved;
     }
   });
 

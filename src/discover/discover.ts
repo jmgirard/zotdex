@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { type WriteResult, writeEntry } from "../add-plugin/add-plugin.ts";
 import { listEntries } from "../check/check.ts";
 import { type Delisted, delistedMessage, NOTHING_DELISTED } from "../check/delisted.ts";
+import type { Site } from "../check/sites.ts";
 import type { Lookup } from "../upstream/host-guard.ts";
 import { type Failure, type Fetch, githubClient, type RateLimit, ReadFailure, readUpstream } from "../upstream/reader.ts";
 import { duration, READ_LIMIT_MS, withinLimit } from "../upstream/time-limit.ts";
@@ -129,6 +130,8 @@ export interface DiscoverOptions {
   skip: Set<string>;
   // The plugins that a maintainer removed, which `delisted.json` names.
   delisted?: Delisted;
+  // The listed sites of `sites.json`, for the `listed-site` hold.
+  sites?: readonly Site[];
   // Lowercase plugin ids that an open pull request adds. A repo with one is refused,
   // and the refusal is not recorded, since it says nothing about the repo.
   pendingIds?: Set<string>;
@@ -270,6 +273,7 @@ export async function discover(options: DiscoverOptions): Promise<DiscoverResult
       names: index.names,
       pendingIds,
       delisted,
+      sites: options.sites,
       readMs,
       refCheckMs,
       now,
@@ -323,6 +327,8 @@ export interface DraftOptions {
   // The plugins that a maintainer removed. A read can show that a search name or an old
   // name is a listed repo, or that an unlisted repo carries a listed id.
   delisted?: Delisted;
+  // The listed sites of `sites.json`, for the `listed-site` hold.
+  sites?: readonly Site[];
   // The index's entries by owner, repo part, and name, for the `name-match` hold.
   names: IndexedName[];
   // The longest the read of the repo, and the branch-name check of its entry, may take.
@@ -387,7 +393,11 @@ export async function draftEntry(repoUrl: string, options: DraftOptions): Promis
   }
   const holdFacts = repo && {
     repo,
+    repoNameAsGiven: repoPartAsGiven(read.facts.repoUrl),
     name: read.facts.name,
+    description: read.facts.description,
+    repoDescription: read.facts.repoDescription,
+    sites: options.sites,
     updateHost: read.facts.updateHost,
     updateRoute: read.updateRoute,
     topics: read.topics,
@@ -733,4 +743,11 @@ export function repoName(url: unknown): string | undefined {
   if (typeof url !== "string" || !URL.canParse(url)) return undefined;
   const [owner, repo] = new URL(url).pathname.split("/").filter(Boolean);
   return owner && repo ? `${owner}/${repo.replace(/\.git$/, "")}`.toLowerCase() : undefined;
+}
+
+// The repo part of a URL as `repoName` reads it, in the letter case that the URL gives.
+export function repoPartAsGiven(url: unknown): string | undefined {
+  if (typeof url !== "string" || !URL.canParse(url)) return undefined;
+  const [owner, repo] = new URL(url).pathname.split("/").filter(Boolean);
+  return owner && repo ? repo.replace(/\.git$/, "") : undefined;
 }

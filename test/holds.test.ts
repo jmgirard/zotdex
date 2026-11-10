@@ -1,7 +1,9 @@
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { afterAll, describe, expect, test } from "vitest";
+import { afterAll, beforeAll, describe, expect, test } from "vitest";
+import committedSites from "../sites.json" with { type: "json" };
+import { readSites, type Site } from "../src/check/sites.ts";
 import { draftEntry, indexed } from "../src/discover/discover.ts";
 import { holdDetails, holdReasons, identicalPercent, type IndexedName, matchEvidence, type RepoFacts } from "../src/discover/holds.ts";
 import { fixtureFetch, type Responses } from "./support/fixture-fetch.ts";
@@ -170,6 +172,56 @@ describe("the hold reasons", () => {
       "update-host",
       "issue-no-topic",
     ]);
+  });
+});
+
+describe("the listed-site hold", () => {
+  // The committed file, read and checked as the bot reads it. The per-name cases below take
+  // its names from the same file, so a site added to it gets a held case.
+  let sites: Site[];
+  beforeAll(async () => {
+    sites = await readSites(join(resolve(import.meta.dirname, ".."), "sites.json"));
+  });
+
+  async function drafted(repo: string, options: Parameters<typeof pluginRepo>[2]) {
+    const { fetch } = fixtureFetch(pluginRepo(repo, "x@example.org", options));
+    const result = await draftEntry(`https://github.com/${repo}`, { fetch, lookup: publicLookup, outDir: tempDir(), ids: new Set(), names: INDEXED, now: NOW, sites });
+    if (!result.ok) throw new Error(`draftEntry refused: ${result.message}`);
+    return result;
+  }
+
+  test.each<[string, string, Parameters<typeof pluginRepo>[2], string]>([
+    ["the manifest name", "bob/pdf-getter", { name: "Sci-Hub Getter" }, "name"],
+    ["the manifest description", "bob/pdf-getter", { name: "PDF Getter", description: "Downloads PDFs from Sci-Hub" }, "description"],
+    ["the GitHub description", "bob/pdf-getter", { name: "PDF Getter", repoDescription: "A Sci-Hub client for Zotero" }, "repoDescription"],
+    ["the repo name", "bob/zotero-scihub-getter", { name: "PDF Getter" }, "repoName"],
+    ["a topic", "bob/pdf-getter", { name: "PDF Getter", topics: ["zotero-plugin", "sci-hub"] }, "topics"],
+  ])("holds a repo whose %s names a listed site, and names that text", async (_name, repo, options, field) => {
+    const result = await drafted(repo, options);
+    expect(result.holds).toEqual(["listed-site"]);
+    expect(result.holdDetails?.sites).toEqual([{ site: "Sci-Hub", fields: [field] }]);
+  });
+
+  test.each(committedSites.flatMap(({ site, names }) => names.map((name) => [site, name])))("holds a repo that names %s as %j, for each name in the file", async (site, name) => {
+    const result = await drafted("bob/pdf-getter", { name: "PDF Getter", description: `Downloads PDFs from ${name}` });
+    expect(result.holds).toEqual(["listed-site"]);
+    expect(result.holdDetails?.sites).toEqual([{ site, fields: ["description"] }]);
+  });
+
+  test("holds a case and punctuation variant of a name", async () => {
+    expect((await drafted("bob/pdf-getter", { name: "PDF Getter for SCI_HUB" })).holds).toEqual(["listed-site"]);
+  });
+
+  test("names every text that names a site, and each site once", async () => {
+    const result = await drafted("bob/zotero-scihub", { name: "Sci-Hub PDF", description: "From Sci-Hub or Anna's Archive", topics: ["zotero-plugin", "scihub"] });
+    expect(result.holdDetails?.sites).toEqual([
+      { site: "Sci-Hub", fields: ["name", "description", "repoName", "topics"] },
+      { site: "Anna's Archive", fields: ["description"] },
+    ]);
+  });
+
+  test("does not hold a plugin with a near-miss name", async () => {
+    expect((await drafted("bob/pdf-getter", { name: "SciHubble Notes" })).holds).toEqual([]);
   });
 });
 

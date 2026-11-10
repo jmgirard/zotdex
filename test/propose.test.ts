@@ -435,6 +435,12 @@ describe("the Hold line and the hold label", () => {
     ],
     ["only an entry whose repo cannot show", { matches: [], moreMatches: 1, ownerCreatedOn: "2026-10-01" }, ["- This repo: created not read, stars not read", "- Other matching entries: 1", "- Owner's GitHub account created: 2026-10-01"]],
     ["no match left", { matches: [], ownerCreatedOn: "2026-10-01" }, ["- Matching entries: none now", "- Owner's GitHub account created: 2026-10-01"]],
+    [
+      "two listed sites",
+      { sites: [{ site: "Sci-Hub", fields: ["name" as const, "repoName" as const] }, { site: "Anna's Archive", fields: ["topics" as const] }], ownerCreatedOn: "2026-10-01" },
+      ["- Listed site: ` Sci-Hub `, named in the manifest name, the repo name", "- Listed site: ` Anna's Archive `, named in a topic", "- Owner's GitHub account created: 2026-10-01"],
+    ],
+    ["no listed site left", { sites: [], ownerCreatedOn: "2026-10-01" }, ["- Listed sites: none now", "- Owner's GitHub account created: 2026-10-01"]],
     ["an owner the bot could not read", {}, ["- Owner's GitHub account created: the bot could not read the date"]],
   ])("the detail lines for %s", (_name, details, lines) => {
     expect(holdDetailLines(details)).toEqual(lines);

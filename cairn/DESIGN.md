@@ -348,7 +348,9 @@ shows each one separately. A combined verdict is out of scope.
    topic gets no hold (D-042). It also holds when an entry lists the plugin's
    add-on id from another GitHub repo and the new repo is older with at least
    20 stars and at least 10 times that repo's stars. That pull request changes
-   only the entry's `meta.json` (M085, D-056). A held pull request gets the `hold` label, and
+   only the entry's `meta.json` (M085, D-056). It also holds when the
+   manifest name or description, the GitHub description, the repo name, or a
+   topic names a site in `sites.json` (M119, D-087). A held pull request gets the `hold` label, and
    D-053 states how the maintainer decides it. A
    daily job merges a pull request that says `Hold: none` and has no `hold`
    label at its first daily run at least 48 hours after it opens, once its
@@ -450,8 +452,10 @@ removes a plugin for its repository's owner, for spam, for an entry that
 misleads about what the plugin is or who makes it, for harm that a report
 shows with evidence a reader can check, or for a listed site built in (D-062,
 D-085, M093, M118). For the last ground alone, a maintainer reads the README
-and settings of each plugin whose name, description, repository name, or
-topics name a listed site, without a report. `docs/requests.md` defines
+and settings of each plugin whose name, manifest or GitHub description,
+repository name, or topics name a listed site, without a report. `sites.json` lists those sites
+with their rulings, and the bot holds a new pull request that names one
+(M119). `docs/requests.md` defines
 spam, harm, and "built in", and states how each removal is lifted.
 `delisted.json` names each removed repo and its ground, and its `ids` hold
 only ids judged unique to that repo. So `pnpm check`, discovery, and "Add a
@@ -474,6 +478,12 @@ user reports. The exception is a report that is abuse.
   package root's `delisted.json` (`src/check/delisted.ts`, or the file that
   `ZPI_DELISTED` names) for any `dir`, and refuses a listed id, a listed
   GitHub repo, and a list that `schemas/delisted.schema.json` refuses (M093).
+  It reads the package root's `sites.json` (`src/check/sites.ts`, or the file
+  that `ZPI_SITES` names) and refuses, as `sites-file`, a file that
+  `schemas/sites.schema.json` refuses (it also refuses the codes `UK`, `EL`,
+  and `EU`), a site that an earlier record gives, a ruling dated on a day its
+  month does not have, a site with rulings from fewer than two countries, and a name that matches what
+  another name matches (M119).
   Its rule `screenshot-file` refuses a named screenshot with no
   `screenshot.webp`, a file that `index.json` does not name, and a file that
   is not WebP or passes 1600 px wide, 2400 px tall, or 1 MiB, with sharp
@@ -814,7 +824,9 @@ reused._
   `schemas/index.v1.schema.json` is the `index.json` schema.
 - `src/check/` holds the checker. It reads the registry schema from
   zotero-plugin-registry at a pinned commit, checks the file against a pinned
-  SHA-256, and caches it in the gitignored `.cache/`.
+  SHA-256, and caches it in the gitignored `.cache/`. `src/check/sites.ts`
+  reads and checks `sites.json` and holds the listed-site match that the
+  discovery bot uses (M119).
 - `src/upstream/` reads the GitHub API with plain fetch (its client's `post`
   also creates the bot's pull requests, M009, and comments on issues, and its
   `patch` closes issues, M010), unzips the release
@@ -1070,7 +1082,11 @@ reused._
   `replacedEntry` (M085) reads the two repos of a `replaces-entry` hold, and
   `propose` then writes only that entry's `meta.json` and checks and reports
   the `index.json` at the fetched commit. `pnpm refresh-holds` takes such a
-  pull request when its one file is a modified `meta.json`.
+  pull request when its one file is a modified `meta.json`. For a
+  `listed-site` hold (M119), `listedSites` matches the texts against the
+  sites that the discover, issue, and refresh commands read from `sites.json`,
+  and `pnpm refresh-holds` reads the repo's GitHub description and topics
+  again.
   `pnpm merge-discover` (`src/discover/merge.ts`) reads
   every page of open pull requests, skips each that fails a condition (the
   Hold line read outside fences with `unfencedLines`, the label in any case,
@@ -1245,6 +1261,16 @@ reused._
   writes and the classic script adds at load (M060).
 
 ## Known issues
+
+- `sites.json` lists only Sci-Hub and Anna's Archive, the two sites that the
+  plugins removed in M119 use (M119 AC1). Other sites can meet the
+  two-country count. Library Genesis is one: the 2017 United States judgment,
+  the 2019 Paris order, and the 2024 Rotterdam order in the file's own source
+  notes all name it. The bot does not hold a plugin that names only such a
+  site, and the sweep did not read one. A word search of the data of
+  2026-11-09 for LibGen, Library Genesis, and Z-Library found no listed
+  plugin that names them (observed 2026-11-09). Adding a site takes its
+  rulings, source notes, and names in the file (M119 review).
 
 - Plugin metadata is inconsistent. Some plugins lack an `update.json` or have
   a wrong one, use version strings that are not semver, declare ranges that

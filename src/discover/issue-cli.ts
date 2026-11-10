@@ -1,6 +1,7 @@
 import { resolve } from "node:path";
 import process, { argv } from "node:process";
 import { readDelisted } from "../check/delisted.ts";
+import { readSites } from "../check/sites.ts";
 import { entriesDir, type IssueOutcome, MESSAGE_MAX, writePlan } from "./handoff.ts";
 import { issueRead } from "./issue.ts";
 
@@ -30,19 +31,23 @@ async function main(): Promise<number> {
     return 1;
   }
   const handoff = resolve(process.env.INIT_CWD ?? process.cwd(), args[1]);
-  // A list that cannot be read leaves the issue open for a maintainer, like any failed read.
+  // A list or sites file that cannot be read leaves the issue open for a maintainer, like any failed read.
   const delisted = await readDelisted().catch((error: Error) => error);
+  const sites = await readSites().catch((error: Error) => error);
   const outcome: IssueOutcome =
     delisted instanceof Error
       ? { outcome: "failed", message: `delisted.json: ${delisted.message}`.slice(0, MESSAGE_MAX + 1) }
-      : await issueRead({
-          root: resolve(PACKAGE_ROOT, "plugins"),
-          outDir: entriesDir(handoff),
-          fetch: (url: string, init?: RequestInit) => fetch(url, init),
-          indexRepo,
-          issue: Number(issue),
-          delisted,
-        });
+      : sites instanceof Error
+        ? { outcome: "failed", message: `sites.json: ${sites.message}`.slice(0, MESSAGE_MAX + 1) }
+        : await issueRead({
+            root: resolve(PACKAGE_ROOT, "plugins"),
+            outDir: entriesDir(handoff),
+            fetch: (url: string, init?: RequestInit) => fetch(url, init),
+            indexRepo,
+            issue: Number(issue),
+            delisted,
+            sites,
+          });
   try {
     await writePlan(handoff, { kind: "issue", ...outcome });
   } catch (error) {

@@ -1,1 +1,8 @@
-[]
+[
+  { "repo": "ethanwillis/zotero-scihub", "ids": [], "ground": "copyright", "issue": 883, "date": "2026-11-09" },
+  { "repo": "syt2/zotero-scipdf", "ids": ["scipdf@ytshen.com"], "ground": "copyright", "issue": 884, "date": "2026-11-09" },
+  { "repo": "0xc1c4da/zotero7-scidb", "ids": ["zotero7-scidb@dev.null"], "ground": "copyright", "issue": 885, "date": "2026-11-09" },
+  { "repo": "chen7447/sci-download-for-zotero", "ids": ["scidownload@chen"], "ground": "copyright", "issue": 886, "date": "2026-11-09" },
+  { "repo": "dnnunn/zotero-scihub-fetcher", "ids": ["scihub-fetcher@dnnunn.github.io"], "ground": "copyright", "issue": 887, "date": "2026-11-09" },
+  { "repo": "fdossi/zotfetch", "ids": ["zotfetch@edslab.research"], "ground": "copyright", "issue": 888, "date": "2026-11-09" }
+]

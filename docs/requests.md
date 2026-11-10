@@ -390,7 +390,10 @@ judgment counts, and so does a court's order to internet providers to block
 the site. A block by a regulator or an industry body does not count, and
 neither does a ruling that was later overturned. A site means the service
 under any address or mirror. If a ruling names a site's new name, or its
-operator presents it as the same service, the new name counts too.
+operator presents it as the same service, the new name counts too. The file
+[`sites.json`](../sites.json) lists the listed sites that the bot looks for,
+with their rulings: the country, court, date, case, kind, and a link for each
+one.
 
 "Built in" means that the plugin's latest release ships the site: a default or
 preset address, a menu choice, a button, or a list that the plugin loads by
@@ -400,8 +403,8 @@ and names no listed site, is not covered. A plugin's name alone does not make
 the site built in.
 
 A report can ask for this ground for any plugin. Without a report, a
-maintainer applies it only to a plugin whose name, description, repository
-name, or topics name a listed site. The maintainer reads that plugin's README
+maintainer applies it only to a plugin whose name, manifest or GitHub
+description, repository name, or topics name a listed site. The maintainer reads that plugin's README
 and settings, not its code, and checks every match the same way. A plugin
 that stays listed has not been checked. The index forms no view of its own
 about whether a plugin or its users break the law. A site's terms of use, a
@@ -410,8 +413,9 @@ for removal.
 
 ### Coming back
 
-A removal lasts until a maintainer lifts it. To ask, open an issue on the
-index that names the plugin and shows what the ground needs:
+A removal lasts until a maintainer lifts it. To ask, reply on the plugin's
+removal issue, or open an issue on the index that names the plugin. Show
+what the ground needs:
 
 - The owner's request: only the owner can ask to undo it.
 - Spam or a misleading entry: the repository or entry no longer meets that

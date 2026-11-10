@@ -320,10 +320,28 @@ reasons, in this order:
   `index.json`. The numbers cannot show which repository is the original, so
   the maintainer decides. A listed repository that credits the new one and has
   a newer release stays. Otherwise the maintainer merges the pull request.
+- `listed-site`: the manifest's name or description, the repository's GitHub
+  description, its name, or one of its topics names a site in `sites.json`.
+  The file lists sites that courts in at least two countries ordered blocked
+  or shut down for copyright infringement, with those rulings. If some runs
+  of the letters a to z and digits in a row join to a site's name, the text
+  names that site. The text is first folded by NFKC and put in lower case,
+  so a full-width letter counts as its plain letter. After that, every other
+  character ends a run, and it does not count. Letter case does not count either, except that a capital
+  letter after a small letter or a digit starts a new run. So `Sci-Hub`,
+  `sci hub`, `SciHub`, and `zotero-scihub` all name Sci-Hub, and
+  `scihubble`, `sci-hubs`, and `Scihubfetcher` do not. The name alone
+  removes nothing. Read the README and settings as "A listed site built in" in
+  [requests.md](requests.md) says. If the site is built in, remove the
+  plugin and close the pull request as "Closing a held pull request" below
+  says. Otherwise merge the pull request.
+  A plugin that names a site to warn against it is held, read, and merged.
 
 A held pull request also gets the label `hold`, and the maintainer merges or
 closes it. The maintainer mainly checks whether the entry misleads people about
-what the plugin is, who makes it, or who controls its updates. If the label request fails, `pnpm propose` names the pull request
+what the plugin is, who makes it, or who controls its updates. For a
+`listed-site` hold, the maintainer also checks whether a listed site is built
+in. If the label request fails, `pnpm propose` names the pull request
 as a failed entry and exits with status 1. The pull request stays open, and
 its Hold line still keeps the bot from merging it. In an issue run, the
 issue still gets the comment that names the pull request.
@@ -351,6 +369,9 @@ the maintainer". They give the facts behind the hold:
   paid-service mark, and the screenshot. If it holds none, one line says so. The
   listed repository's owner asked for that screenshot, so decide whether it
   stays.
+- For `listed-site`, one line for each site that a text names, at most 10.
+  It names the texts: the manifest name, the manifest description, the GitHub
+  description, the repo name, or a topic.
 - For every hold, the day that the owner's GitHub account was made, or a
   note that the bot did not get that day.
 
@@ -367,7 +388,11 @@ pull request and leaves its body as it is. An HTTP error, a refused host, a
 failed request, and a read past 60 seconds are each a failed read. For a
 `replaces-entry`, it also reads the two repositories and the kept `index.json`.
 A failed read of a repository says "not read" in the line. A failed read of
-`index.json` fails the pull request and leaves its body as it is. First
+`index.json` fails the pull request and leaves its body as it is. For a
+`listed-site`, it reads the name and description in the pull request's
+`meta.json`. It also reads the repository's GitHub description and topics
+again. A failed read of the repository fails the pull request and leaves its
+body as it is. If no text names a listed site now, the line says so. First
 update your
 checkout to the default branch, or the match
 lines can be wrong. The command acts on an open pull request that meets all
@@ -535,29 +560,33 @@ To remove a plugin, do these steps on a branch:
 6. Run `Build data` by hand with `gh workflow run build.yml`. Otherwise, the
    plugin stays on the site until the next daily build.
 7. After the merge, rename the issue with
-   `gh issue edit <number> --title "Removed <owner>/<repo>"`. Then answer it
-   to the outline below, and close it with
-   `gh issue close <number> --comment "<answer>"`.
+   `gh issue edit <number> --title "Removed <owner>/<repo>"`. Then close it
+   with `gh issue close <number> --comment "<answer>"`. For an issue that
+   you opened to the outline below, the answer names the merged pull request.
+   For a request, the answer gives what you decided and why, and how to
+   appeal, as items 2 and 3 of the outline below say.
 
 ### The removal issue
 
 A removal with no request, as for a listed site built in, needs its own issue.
-Give it a one-line body that names the plugin and the ground:
-`gh issue create --label remove-plugin --title "Removing <owner>/<repo>" --body "<plugin and ground>"`.
-Write the answer at step 7 in this order. Items 2 to 4 are for a listed site
-built in. For another ground, give the evidence the ground needs instead.
+Write its body to the outline below, so that the owner can answer before the
+removal merges. Open it with
+`gh issue create --label remove-plugin --title "Removing <owner>/<repo>" --body-file <file>`.
+Keep it short, in the first person, in this order:
 
-1. What the index did: it removed the plugin, and the ground.
-2. What you read: the README line or setting, quoted or linked.
-3. The rule, and for a listed site, the rulings.
-4. That the index makes no claim that the plugin or its users break the law,
-   and that the plugin stays on GitHub.
-5. That a reply saying the reading is wrong is enough to reopen the issue.
-6. How the plugin comes back, with a link to "Coming back" in requests.md.
+1. What Zotdex is, in one sentence.
+2. That you remove the plugin, and why in plain words, with a link to the
+   README line or setting that you read. For a ground other than a listed
+   site, link the evidence instead. Then give the rule in one sentence, with
+   a link to it in requests.md.
+3. How to appeal: if the reading is wrong, or a later release no longer meets
+   the ground, a reply on the issue is enough.
 
 Mention the repository's owner by their account name. Answer the owner. When
 other people bring new evidence, answer them too. Hide a comment that attacks
-a person.
+a person. A reply on the issue after step 7 closes it still notifies you, since
+you opened it. Read such a reply as a request to come back, as "Lifting a
+removal" says.
 
 ### Sending the 14-day notice
 
@@ -608,13 +637,19 @@ second removal on that ground stays.
 
 ### Closing a held pull request
 
-This section is for a held bot pull request of a plugin that is not removed.
-If its entry misleads people about what the plugin is, who makes it, or who
-controls its updates, close it (D-053). Close no such pull request for another
-reason. When you remove a plugin, step 5 of the removal closes its pull
-request instead. Close it with
+This section is for a held bot pull request. Close one with
 `gh pr close <number> --comment "<reason>"`. The bot then does not propose
-that repo again.
+that repo again. Close a held pull request for one of these reasons only:
+
+- Its entry misleads people about what the plugin is, who makes it, or who
+  controls its updates (D-053).
+- It has a `replaces-entry` hold, and the listed repo credits this repo and
+  has a newer release, as the hold's reason says (D-056).
+- Its plugin meets a removal ground, such as a listed site built in. Then
+  remove the plugin with the steps of "Removing a plugin", but skip step 2,
+  since a plugin that was never listed has no directory. Its removal issue is
+  the `issue` of its `delisted.json` record, so it can ask to come back like
+  any other removed plugin. Step 5 of the removal closes the pull request.
 
 ## Checking entries
 
@@ -675,6 +710,14 @@ the command checks (see "Removing a plugin" in
   the list, in any letter case and with or without `.git`.
 - `delisted-file`: the list must exist and match
   `schemas/delisted.schema.json`.
+
+One rule reads `sites.json` at the top of the repo, or the file that
+`ZPI_SITES` names:
+
+- `sites-file`: the file must exist and match `schemas/sites.schema.json`.
+  Each site must appear once and have rulings from at least two countries.
+  A country is its ISO 3166-1 code (`GB`, not `UK`), and each ruling's date
+  must be a real day. No two names can match the same texts.
 
 The first run downloads the registry schema into `.cache/`, so that run needs
 a network connection. The command refuses a downloaded or cached schema whose

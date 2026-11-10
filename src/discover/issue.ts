@@ -1,5 +1,6 @@
 import { rm } from "node:fs/promises";
 import { type Delisted, delistedMessage, githubRepoOf } from "../check/delisted.ts";
+import type { Site } from "../check/sites.ts";
 import type { Lookup } from "../upstream/host-guard.ts";
 import { type Fetch, githubClient } from "../upstream/reader.ts";
 import { draftEntry, indexed, repoName } from "./discover.ts";
@@ -46,6 +47,8 @@ export interface IssueReadOptions {
   now?: Date;
   // The plugins that a maintainer removed, which `delisted.json` names.
   delisted?: Delisted;
+  // The listed sites of `sites.json`, for the `listed-site` hold.
+  sites?: readonly Site[];
 }
 
 // The read step of an issue run, which makes no GitHub write. It reads the issue's body
