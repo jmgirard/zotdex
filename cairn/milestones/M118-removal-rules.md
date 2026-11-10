@@ -4,7 +4,7 @@
      cairn_validate's <150 over the plan-owned body. -->
 # M118: Define the removal rules before launch
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
@@ -130,7 +130,7 @@ precise text lives in `docs/`, and About gets one approved sentence
 - [x] T8: Review return 1: name the `gh` command for each removal, notice,
       and held-pull-request step that changes GitHub state in
       `docs/maintaining.md`; rewrap the long line in `docs/requests.md`.
-- [ ] T9: Review return 2: widen the 14-day notice to data sent without
+- [x] T9: Review return 2: widen the 14-day notice to data sent without
       saying so; fix removal step 4 against the held-PR rule, the order
       for a removal with no request, the removal and notice issue titles
       and searches, DESIGN's "sites file", the private-contact wording in
@@ -189,6 +189,8 @@ precise text lives in `docs/`, and About gets one approved sentence
 - 2026-11-09: status review; handed back to /milestone-review.
 - 2026-11-09: review return 2: AC2 — the 14-day notice in `docs/requests.md` covers only "library contents or account details", narrower than AC2's "sending data" (diff-bug #7); AC2 unticked; the other fix-now findings ride the same return as T9.
 - 2026-11-09: T9 added for review return 2 (minor amendment).
+- 2026-11-09: T9 done: the notice covers data sent without saying so; removal step 1 opens or renames the issue `Removed <owner>/<repo>`, step 5 closes a removed plugin's pull request on the removal's ground, and the held-PR section covers plugins not removed; the notice issue is titled `Notice for <owner>/<repo>`, and the earlier-removal search matches `Removed` titles; `is:unmerged` on the closed-PR search; DESIGN's "name a listed site"; the private report form named in `docs/requests.md`; the scan-issues body and the malware-find line point to `docs/maintaining.md` and the second-source rule; prose rewrapped; the About links test renamed; `pnpm test` 2815 passed, `pnpm check` 0 problems.
+- 2026-11-09: status review; handed back to /milestone-review.
 
 ## Decisions
 

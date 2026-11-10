@@ -1026,7 +1026,7 @@ describe("the About page", () => {
     ]);
   });
 
-  test("links the removal form and the license page from their phrases, and nothing else from those sections", () => {
+  test("links the removal form, the private report form, the full rules, and the license page from their phrases, and nothing else from those sections", () => {
     const links = (id: string) => [...sectionOf(id).matchAll(/<a href="([^"]*)"[^>]*>([^<]*)<\/a>/g)].map(([, href, text]) => [unescaped(href!), text]);
     expect(links("removing")).toEqual([
       [REMOVE_PLUGIN_HREF, "form for removing a plugin or reporting harm"],

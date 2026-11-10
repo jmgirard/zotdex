@@ -73,8 +73,8 @@ A maintainer can close a bot pull request without a merge. Then the
 comments on the issue that the `Closes #<issue>` line of the pull request
 names, and closes that issue as not planned. The command acts only on a pull
 request from a `discover/` branch of the index repository. The pull request's
-body must have exactly one `Closes #<issue>` line outside code blocks. The issue must be
-open, have the label `add-plugin`, and have a bot comment with the link to
+body must have exactly one `Closes #<issue>` line outside code blocks. The
+issue must be open, have the label `add-plugin`, and have a bot comment with the link to
 the pull request. If the bot already commented that the pull request was
 closed without a merge, the command does nothing. One run at a time handles
 each pull request. The workflow runs on `pull_request_target`, so it runs its
@@ -352,8 +352,9 @@ carry ads or links, and many near-identical copies from one account.
 ### Harm
 
 Harm means that a release of the plugin does something to its users, or
-through their computer or accounts, that they were not told about. Examples are malware, taking passwords or files, and sending library
-contents or account details somewhere without saying so. Deleting or
+through their computer or accounts, that they were not told about. Examples
+are malware, taking passwords or files, and sending library contents or
+account details somewhere without saying so. Deleting or
 corrupting a Zotero library on purpose is harm. So is disabling or changing
 other plugins or settings to the user's cost, and using the computer to
 attack, spam, or mine for someone else. A plugin built to break into, flood,
@@ -373,9 +374,9 @@ The evidence must be something a reader can check. One example is a link to
 the code that does it. Others are a malware scan find that a second source
 supports, and steps that make it happen again.
 
-A plugin that sends library contents or account details somewhere without
-saying so first gets an issue on the index. If its README or release notes do
-not say so within 14 days, a maintainer removes it.
+A plugin found sending data somewhere without saying so first gets an issue on
+the index. If its README or release notes do not say so within 14 days, a
+maintainer removes it.
 
 ### A listed site built in
 
@@ -385,8 +386,8 @@ countries ordered blocked or shut down for copyright infringement. A default
 judgment counts, and so does a court's order to internet providers to block
 the site. A block by a regulator or an industry body does not count, and
 neither does a ruling that was later overturned. A site means the service
-under any address or mirror. If a ruling names a site's new name, or its operator presents it as the same
-service, the new name counts too.
+under any address or mirror. If a ruling names a site's new name, or its
+operator presents it as the same service, the new name counts too.
 
 "Built in" means that the plugin's latest release ships the site: a default or
 preset address, a menu choice, a button, or a list that the plugin loads by
@@ -478,12 +479,13 @@ screenshots that owners send. A complaint about a plugin's own code, such as
 a claim that one plugin copied another, goes to GitHub, where the code is. The
 index acts only on the five grounds in "Removing a plugin".
 
-To send a legal notice, or to report harm in private, use the private contact
-on the About page. Name the plugin and give the evidence.
+To send a legal notice, or to report harm in private, use GitHub's private
+report form, linked from the About page. Name the plugin and give the
+evidence.
 
 To take a screenshot down, the plugin's owner sends the screenshot form with a
-blank Screenshot field, as "Adding a screenshot" says. Anyone else writes to
-the private contact and names the plugin and the reason.
+blank Screenshot field, as "Adding a screenshot" says. Anyone else uses the
+private report form and names the plugin and the reason.
 
 One person reads requests, so the index promises no response time. Reports of
 malware come first.

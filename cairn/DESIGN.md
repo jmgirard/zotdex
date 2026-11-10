@@ -451,7 +451,7 @@ misleads about what the plugin is or who makes it, for harm that a report
 shows with evidence a reader can check, or for a listed site built in (D-062,
 D-085, M093, M118). For the last ground alone, a maintainer reads the README
 and settings of each plugin whose name, description, repository name, or
-topics match the sites file, without a report. `docs/requests.md` defines
+topics name a listed site, without a report. `docs/requests.md` defines
 spam, harm, and "built in", and states how each removal is lifted.
 `delisted.json` names each removed repo and its ground, and its `ids` hold
 only ids judged unique to that repo. So

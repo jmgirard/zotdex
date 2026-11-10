@@ -7,7 +7,7 @@ _Last hygiene check: 2026-11-07 (M117 review: the daily build opens an issue for
 
 | ID | Title | Status | Depends on | Priority | File/Archive |
 |---|---|---|---|---|---|
-| M118 | Define the removal rules before launch | in-progress | — | high | milestones/M118-removal-rules.md |
+| M118 | Define the removal rules before launch | review | — | high | milestones/M118-removal-rules.md |
 | M119 | Remove plugins with Sci-Hub built in | planned | M118 | high | milestones/M119-remove-scihub-plugins.md |
 | M120 | Re-check listed plugins for listed sites | planned | M119 | high | milestones/M120-recheck-listed-sites.md |
 <!-- rows grouped by status, not by ID; keep the 3 most recent done/dropped rows; older ones: milestones/archive/ + git -->
