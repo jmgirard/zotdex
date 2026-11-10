@@ -1,0 +1,8 @@
+{
+  "id": "zotero-community@zoterocn.org",
+  "name": "Zotero中文社区",
+  "description": "在 Zotero 里浏览、搜索、安装与更新 Zotero 中文社区(zoterocn.org)收录的插件。",
+  "homepage": "https://zoterocn.org",
+  "repoUrl": "https://github.com/cnzotero/zotero-community",
+  "updateUrl": "https://github.com/cnzotero/zotero-community/releases/download/release/update.json"
+}
