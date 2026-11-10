@@ -185,3 +185,10 @@ Pass 2, 2026-11-09, at 21013f15. No file outside `cairn/` changed since pass 1 (
 - diff-bug #9: the schema's date pattern takes `2024-13-45` — fix now (month 01 to 12, day 01 to 31, with a test).
 - diff-bug #10: tests that repeat a path or pass on main — fix now (dropped the repeated variants, near misses, the no-sites case, and two implied expectations; kept one case-and-punctuation variant and one near miss through `draftEntry`, as AC4 asks).
 - diff-bug #11: no race found in the awaits — reject (false: nothing to fix; noted).
+- Fix-now findings of pass 2 landed in 94e2057c (diff-bug #1, #2, #4 to #10) and d9db146f (ripple #1 to #6).
+
+Pass 3, 2026-11-09, at de7e8f9d, after return 1.
+
+- AC1, AC2, AC3: `sites.json`, `delisted.json`, `plugins/`, and `cairn/references/` are unchanged since pass 2 (`git diff --stat b371f54c HEAD` on them is empty); `sites.json` still gives Sci-Hub 3 countries and Anna's Archive 2; the sweep's match over the shelf data still gives the six ledger repos; `pnpm check` 748 entries, 0 problems. Pass.
+- AC4: the listed-site tests pass at this head: five fields (5 cases), each name in the file (2, built from `sites.json`), one case-and-punctuation variant (`SCI_HUB`), one unheld near-miss name (`SciHubble Notes`), a mixed-case repo name held through the handoff read step, and `refresh-holds` writing the reason's line (3 cases). Pass.
+- AC5: `pnpm test` 2857 passed, 6 skipped, 0 failed; `pnpm check` 0 problems (status-review run at this code). Pass.
