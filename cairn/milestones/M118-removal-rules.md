@@ -4,7 +4,7 @@
      cairn_validate's <150 over the plan-owned body. -->
 # M118: Define the removal rules before launch
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** high
 - **Depends on:** —
 - **Driving RR:** —
@@ -169,6 +169,8 @@ precise text lives in `docs/`, and About gets one approved sentence
 - 2026-11-09: T6 done: About card and form applied as approved, recorded in `plain-words-copy.md` (About under "Removal rules (M118)", the form in its own section); new link constants `REMOVAL_RULES_HREF` and `PRIVATE_REPORT_HREF` in `site/src/data.ts`; site and form tests updated; built site checked in the browser pane (card text and three links).
 - 2026-11-09: plain-English lint: older hits left in `plain-words-copy.md` (it quotes approved wording, which changes only on the user's yes) and in older CHANGELOG entries (outside this milestone); older hits fixed in `docs/maintaining.md`.
 - 2026-11-09: T7 done: CHANGELOG entry; `pnpm test` 2815 passed.
+- 2026-11-09: claim audit: 32 claims read, 1 corrected — `docs/requests.md` (the fifth ground's match now says "name a listed site", since no sites file exists until M119; AC1's "sites file" wording is met by M119's file). Not corrected: the private report link opens no form while private vulnerability reporting is off on the repo; turning it on is the user's, and review's merge question names it.
+- 2026-11-09: status review; handed to /milestone-review.
 
 ## Decisions
 

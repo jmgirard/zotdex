@@ -396,8 +396,8 @@ and names no listed site, is not covered. A plugin's name alone does not make
 the site built in.
 
 A maintainer applies this ground without a report. It applies only to a
-plugin whose name, description, repository name, or topics match a name in the
-sites file.
+plugin whose name, description, repository name, or topics name a listed
+site.
 The maintainer reads that plugin's README and settings, not its code, and
 checks every match the same way. A plugin that stays listed has not been
 checked. The index forms no view of its own about whether a plugin or its
