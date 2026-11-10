@@ -9,8 +9,8 @@ const USAGE = "usage: pnpm site-issues --data <file> --sites <file> [--assignee 
 
 // Opens a GitHub issue for each listed plugin and site that no issue names yet (see
 // reportMatches), in the repository that GITHUB_REPOSITORY names, with GITHUB_TOKEN. It exits 0
-// whatever GitHub answers, and 1 only for a usage error, a missing GITHUB_REPOSITORY, or data or
-// a sites file it cannot read.
+// whatever GitHub answers, and 1 only for a usage error, an unset or empty GITHUB_REPOSITORY,
+// data it cannot read or that has no plugins list, or a sites file that readSites refuses.
 async function main(): Promise<number> {
   let values: { data?: string; sites?: string; assignee?: string };
   try {

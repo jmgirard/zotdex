@@ -614,9 +614,9 @@ above.
    that the reported evidence no longer holds. To undo an owner's request,
    make sure that the person asking owns the repository. For a listed site,
    run the earlier-removal search below. If it finds an earlier removal for a
-   listed site, the plugin stays off. Otherwise, find the plugin's closed
-   `listed-site` issue and delete its marker line. If the plugin names the
-   site again, the daily build then opens a new issue, as "Listed-site
+   listed site, the plugin stays off. If it finds none and the plugin has a
+   closed `listed-site` issue, delete that issue's marker line. If the plugin's texts still
+   name the site, the daily build then opens a new issue, as "Listed-site
    issues" says.
 2. On a branch, delete the plugin's record from `delisted.json`, run
    `pnpm check`, and merge the change.
@@ -683,9 +683,10 @@ With no match, the command sends no request to GitHub. If the issue list or
 the label read fails, it opens no issue. If the label create or an issue
 create fails, or GitHub opens an issue without the label, it opens no more
 issues that run. Each failure prints one warning line, and the command exits
-0. It exits with status 1 for a usage error, an unset or empty
-`GITHUB_REPOSITORY`, a data file that it cannot read, or a sites file that
-the `sites-file` rule of `pnpm check` refuses. It opens issues in the
+0. It exits with status 1 for a usage error or an unset or empty
+`GITHUB_REPOSITORY`. It also exits with status 1 for a data file that it
+cannot read or that has no plugins list. A sites file that the `sites-file`
+rule of `pnpm check` refuses does the same. It opens issues in the
 repository that `GITHUB_REPOSITORY` names, with `GITHUB_TOKEN`.
 
 To handle a `listed-site` issue, do these steps:

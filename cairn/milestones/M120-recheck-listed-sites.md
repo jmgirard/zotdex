@@ -4,7 +4,7 @@
      cairn_validate's <150 over the plan-owned body. -->
 # M120: Re-check listed plugins for listed sites
 
-- **Status:** in-progress
+- **Status:** review
 - **Priority:** high
 - **Depends on:** M119
 - **Driving RR:** —
@@ -82,6 +82,8 @@ and the bot's hold (M119) reads them at intake, so no row.
 - 2026-11-10: T2 done: `site-issues` job, 5 workflow tests (2 shared with scan-issues by `test.each`), `docs/maintaining.md` "Listed-site issues" plus lifting and daily-build edits, D-089, DESIGN, CHANGELOG; verify green (2895 passed, 753 entries, 0 problems), cairn_validate passed.
 - 2026-11-10: T3 done: `pnpm test` (2895 passed, 6 skipped) and `pnpm check` (753 entries, 0 problems) on 4729bbf5's tree.
 - 2026-11-10: delegation: claim audit to a fresh Opus reader over `git diff main...HEAD -- . ':!cairn/'`.
+- 2026-11-10: claim audit: 78 claims read, 2 corrected — docs/maintaining.md, src/site-issues/cli.ts (the lift step assumed every listed-site removal has a `listed-site` issue; the exit-1 list left out data with no plugins list and a refused sites file); the re-read found both hold, and its wording note on the lift step was taken.
+- 2026-11-10: status review; verify green (2895 passed, 753 entries, 0 problems).
 
 ## Decisions
 
