@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Six plugins with Sci-Hub or Anna's Archive built in left the index under
+  the fifth removal ground, each with a public issue that names what was
+  read and how it can come back. A new `sites.json` lists those two sites
+  with the court rulings against them, and `pnpm check` refuses a site with
+  rulings from fewer than two countries. The discovery bot reads five texts
+  of a new plugin: its name and description, its GitHub description, its
+  repository name, and its topics. If one names a site in that file, the bot
+  holds the pull request with the reason `listed-site`. `pnpm refresh-holds` gives that reason its
+  details too.
 - The removal rules have a fifth ground: a maintainer can remove a plugin
   that has a site built in that courts in at least two countries ordered
   blocked or shut down for copyright infringement. `docs/requests.md` now

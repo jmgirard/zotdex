@@ -116,6 +116,10 @@ them, so no row.
 - 2026-11-09: T2: `cairn/references/listed-site-sweep-2026-11-09.md`; the pattern is the sites file's names under the bot's own match, over name, both descriptions, repo name, and description overrides (the data holds no topics); six matches, all yes (five Sci-Hub, one Anna's Archive); zotfetch's README contradicts itself, so its issue names the conflict; one commit with T1, since INDEX.md lists both.
 - 2026-11-09: T3: D-087 (the hold, the match rule, a tripwire not a guard, and a held pull request closed under a ground with its own `delisted.json` record and removal issue); `listed-site` is the seventh hold reason, last in order so earlier lists keep their order; `HoldFacts` takes both descriptions and the sites; the details name each site and its texts (at most 10); `refresh-holds` reads the GitHub description and topics again and fails the pull request on a failed read; the discover, issue, and refresh CLIs read `sites.json` and stop on a bad file; docs/maintaining.md lists the hold, its details, and closing a never-listed plugin's pull request.
 - 2026-11-09: T3 choice: `sites` is optional in the draft options, like `delisted`, and required in `refreshHolds`; each CLI passes it.
+- 2026-11-09: T4 part 1 (not done): the six `plugins/` directories deleted; docs/maintaining.md now puts the outline in the removal issue's body, so the owner can answer before the merge, and the step-7 close names the merged pull request; docs/requests.md links `sites.json`; DESIGN and CHANGELOG updated; no open bot pull request or earlier issue names the six repos.
+- 2026-11-09: T4: six issue bodies drafted by a fresh Opus drafter from a brief (writing-for-people), checked against the reads and links, one judgment ("That is fine") removed; posting waits for the user's yes on the text, since the text is drafted, not the user's, and names people's plugins next to court rulings; `delisted.json` records wait for the issue numbers.
+
+## Decisions
 
 ## Decisions
 

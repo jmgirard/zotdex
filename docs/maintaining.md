@@ -554,19 +554,21 @@ To remove a plugin, do these steps on a branch:
 6. Run `Build data` by hand with `gh workflow run build.yml`. Otherwise, the
    plugin stays on the site until the next daily build.
 7. After the merge, rename the issue with
-   `gh issue edit <number> --title "Removed <owner>/<repo>"`. Then answer it
-   to the outline below, and close it with
-   `gh issue close <number> --comment "<answer>"`.
+   `gh issue edit <number> --title "Removed <owner>/<repo>"`. Then close it
+   with `gh issue close <number> --comment "<answer>"`. For an issue that
+   you opened to the outline below, the answer names the merged pull request.
+   For a request, the answer follows the outline.
 
 ### The removal issue
 
 A removal with no request, as for a listed site built in, needs its own issue.
-Give it a one-line body that names the plugin and the ground:
-`gh issue create --label remove-plugin --title "Removing <owner>/<repo>" --body "<plugin and ground>"`.
-Write the answer at step 7 in this order. Items 2 to 4 are for a listed site
-built in. For another ground, give the evidence the ground needs instead.
+Write its body to the outline below, so that the owner can answer before the
+removal merges. Open it with
+`gh issue create --label remove-plugin --title "Removing <owner>/<repo>" --body-file <file>`.
+Items 2 to 4 are for a listed site built in. For another ground, give the
+evidence the ground needs instead.
 
-1. What the index did: it removed the plugin, and the ground.
+1. What the index does: it removes the plugin, and the ground.
 2. What you read: the README line or setting, quoted or linked.
 3. The rule, and for a listed site, the rulings.
 4. That the index makes no claim that the plugin or its users break the law,

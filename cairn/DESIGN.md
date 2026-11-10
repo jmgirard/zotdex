@@ -348,7 +348,9 @@ shows each one separately. A combined verdict is out of scope.
    topic gets no hold (D-042). It also holds when an entry lists the plugin's
    add-on id from another GitHub repo and the new repo is older with at least
    20 stars and at least 10 times that repo's stars. That pull request changes
-   only the entry's `meta.json` (M085, D-056). A held pull request gets the `hold` label, and
+   only the entry's `meta.json` (M085, D-056). It also holds when the
+   manifest name or description, the GitHub description, the repo name, or a
+   topic names a site in `sites.json` (M119, D-087). A held pull request gets the `hold` label, and
    D-053 states how the maintainer decides it. A
    daily job merges a pull request that says `Hold: none` and has no `hold`
    label at its first daily run at least 48 hours after it opens, once its
@@ -451,7 +453,9 @@ misleads about what the plugin is or who makes it, for harm that a report
 shows with evidence a reader can check, or for a listed site built in (D-062,
 D-085, M093, M118). For the last ground alone, a maintainer reads the README
 and settings of each plugin whose name, description, repository name, or
-topics name a listed site, without a report. `docs/requests.md` defines
+topics name a listed site, without a report. `sites.json` lists those sites
+with their rulings, and the bot holds a new pull request that names one
+(M119). `docs/requests.md` defines
 spam, harm, and "built in", and states how each removal is lifted.
 `delisted.json` names each removed repo and its ground, and its `ids` hold
 only ids judged unique to that repo. So `pnpm check`, discovery, and "Add a
@@ -474,6 +478,10 @@ user reports. The exception is a report that is abuse.
   package root's `delisted.json` (`src/check/delisted.ts`, or the file that
   `ZPI_DELISTED` names) for any `dir`, and refuses a listed id, a listed
   GitHub repo, and a list that `schemas/delisted.schema.json` refuses (M093).
+  It reads the package root's `sites.json` (`src/check/sites.ts`, or the file
+  that `ZPI_SITES` names) and refuses, as `sites-file`, a file that
+  `schemas/sites.schema.json` refuses, a site with rulings from fewer than two
+  countries, and a name that matches what another name matches (M119).
   Its rule `screenshot-file` refuses a named screenshot with no
   `screenshot.webp`, a file that `index.json` does not name, and a file that
   is not WebP or passes 1600 px wide, 2400 px tall, or 1 MiB, with sharp
@@ -1070,7 +1078,11 @@ reused._
   `replacedEntry` (M085) reads the two repos of a `replaces-entry` hold, and
   `propose` then writes only that entry's `meta.json` and checks and reports
   the `index.json` at the fetched commit. `pnpm refresh-holds` takes such a
-  pull request when its one file is a modified `meta.json`.
+  pull request when its one file is a modified `meta.json`. For a
+  `listed-site` hold (M119), `listedSites` matches the texts against the
+  sites that the discover, issue, and refresh commands read from `sites.json`,
+  and `pnpm refresh-holds` reads the repo's GitHub description and topics
+  again.
   `pnpm merge-discover` (`src/discover/merge.ts`) reads
   every page of open pull requests, skips each that fails a condition (the
   Hold line read outside fences with `unfencedLines`, the label in any case,
