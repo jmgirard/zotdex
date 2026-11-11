@@ -1312,6 +1312,11 @@ reused._
   If GitHub opens a `listed-site` issue without its label, the next run opens
   another one each day, as for `malware-scan` issues (M120, D-089).
   Accepted at the M120 gate
+- A `listed-site` issue cuts each matched text to 200 characters, as
+  `codeSpan` does, so a description that names a site past character 200
+  shows without the name; the issue's Site line and field label still name
+  the match, and its page link leads to the full text (M120 review, D-089).
+  Accepted at the M120 gate
 
 - Plugin metadata is inconsistent. Some plugins lack an `update.json` or have
   a wrong one, use version strings that are not semver, declare ranges that

@@ -1,7 +1,7 @@
 # Roadmap
 
 _The only authority on milestone status. Grouped by status, not ID._
-_Last hygiene check: 2026-11-10 (M119 review: six Sci-Hub plugins removed, sites file and listed-site hold; 5 lessons marked used, none captured; 3 Known issues; caps and validate green)_
+_Last hygiene check: 2026-11-11 (M120 review: daily listed-site issues; 3 lessons marked used, 1 captured, 1 evicted; 2 Known issues; caps and validate green)_
 
 ## Milestones
 
@@ -9,7 +9,7 @@ _Last hygiene check: 2026-11-10 (M119 review: six Sci-Hub plugins removed, sites
 |---|---|---|---|---|---|
 | M118 | Define the removal rules before launch | done | — | high | milestones/archive/M118-removal-rules.md |
 | M119 | Remove plugins with Sci-Hub built in | done | M118 | high | milestones/archive/M119-remove-scihub-plugins.md |
-| M120 | Re-check listed plugins for listed sites | review | M119 | high | milestones/M120-recheck-listed-sites.md |
+| M120 | Re-check listed plugins for listed sites | done | M119 | high | milestones/archive/M120-recheck-listed-sites.md |
 <!-- rows grouped by status, not by ID; keep the 3 most recent done/dropped rows; older ones: milestones/archive/ + git -->
 
 ## Candidates
