@@ -613,8 +613,13 @@ above.
 1. Read the request against "Coming back" in requests.md. For harm, check only
    that the reported evidence no longer holds. To undo an owner's request,
    make sure that the person asking owns the repository. For a listed site,
-   run the earlier-removal search below. If it finds an earlier removal for a
-   listed site, the plugin stays off.
+   a release must drop the site, and the earlier-removal search below must
+   find no removal that counts. A request that shows a wrong reading lifts
+   the removal without either. Then delete the marker line of each closed
+   `listed-site` issue of the plugin. Find them with
+   `gh issue list --state closed --label listed-site --search '"<id>" in:title'`.
+   If the plugin names a listed site again, the daily build then opens a
+   new issue, as "Listed-site issues" says.
 2. On a branch, delete the plugin's record from `delisted.json`, run
    `pnpm check`, and merge the change.
 3. Read the repo's bot pull requests with
@@ -629,11 +634,14 @@ above.
 
 The closed removal issue keeps the record that a plugin was removed once. Its
 title starts with `Removed` only after the removal merged, so a notice, a
-declined request, or an unfinished removal does not count. Before a removal
-for a listed site, search for one with
+declined request, or an unfinished removal does not count. Run the
+earlier-removal search at two times: before a removal for a listed site, and
+at the lift of one. Use this command:
 `gh issue list --state all --label remove-plugin --search '"Removed <owner>/<repo>" in:title'`.
-Read each issue it lists. If one removed the plugin for a listed site, the
-second removal on that ground stays.
+If the repository was renamed, search for its earlier names too. Read each
+issue it lists. A listed-site removal counts, except the one that you lift
+and one that a maintainer lifted for a wrong reading. If one counts, the
+plugin was removed on that ground before, and the second removal stays.
 
 ### Closing a held pull request
 
@@ -650,6 +658,69 @@ that repo again. Close a held pull request for one of these reasons only:
   since a plugin that was never listed has no directory. Its removal issue is
   the `issue` of its `delisted.json` record, so it can ask to come back like
   any other removed plugin. Step 5 of the removal closes the pull request.
+
+### Listed-site issues
+
+The bot holds a new pull request that names a listed site. But a listed
+plugin can add a site's name after it joins the index. So the daily build
+reads the listed plugins again. In the `site-issues` job, this command opens
+an issue for each new match:
+
+```bash
+pnpm site-issues --data <file> --sites <file> [--assignee <login>]
+```
+
+A match is a record in `--data` whose manifest name, manifest description,
+GitHub description, or repository name names a site in `--sites`. The
+command uses the match rule of the bot's `listed-site` hold. It does not read
+topics, since the data holds none. For each match, it opens one issue with
+the label `listed-site`, assigned to the `--assignee` login. The
+`site-issues` job sets that login to the repository's owner. A hidden marker
+line at the end of the issue holds the SHA-256 of the plugin id and of the
+site. A match whose marker line an issue with that label holds, open or
+closed, gets no new issue. So a closed issue stays closed while the plugin
+and the site stay the same. Each of these changes makes the next run open the
+issue again:
+
+- Delete the issue, or take the label off it.
+- Give the `listed-site` label another name, or delete the label.
+- Change the text of the marker line.
+- Change the site's `site` name in `sites.json`.
+
+A run opens at most 5 issues. When more than 5 matches have no issue yet, it
+prints one warning line that names each match past the limit. A run that
+stops at a failure names none of them. A later run opens
+those, since each run reads every listed plugin.
+
+With no match, the command sends no request to GitHub. If the issue list or
+the label read fails, it opens no issue. If the label create or an issue
+create fails, or GitHub opens an issue without the label, it opens no more
+issues that run. Each failure prints one warning line, and the command exits
+0. It exits with status 1 for a usage error or an unset or empty
+`GITHUB_REPOSITORY`. It also exits with status 1 for a data file that it
+cannot read or that has no plugins list. A sites file that the `sites-file`
+rule of `pnpm check` refuses does the same. It opens issues in the
+repository that `GITHUB_REPOSITORY` names, with `GITHUB_TOKEN`.
+
+To handle a `listed-site` issue, do these steps:
+
+1. Read the plugin's README and settings, as "A listed site built in" in
+   [requests.md](requests.md) says. A name in a text does not show that the
+   site is built in. For example, a plugin can name a site to warn against
+   it.
+2. If no listed site is built in, close the issue with
+   `gh issue close <number> --comment "<what you read>"`. The plugin stays
+   listed.
+3. If a listed site is built in, run the earlier-removal search of "Lifting a
+   removal". Then remove the plugin with the steps of "Removing a plugin".
+4. Comment on the `listed-site` issue with a link to the removal issue, and
+   close it after the removal merges.
+
+If the search finds an earlier removal for a listed site, the plugin came
+back once already. The second removal on that ground stays, as "Coming back"
+in requests.md says. A later release does not bring the plugin back. So for
+that second removal, write item 3 of the outline without the later release.
+Offer an appeal for a wrong reading only.
 
 ## Checking entries
 
@@ -1261,7 +1332,7 @@ of descriptions.
 ## The daily build
 
 The `Build data` workflow runs once a day, and you can also start it by
-hand. It has six jobs:
+hand. It has seven jobs:
 
 1. The build job runs `pnpm check` and `pnpm build --plan start-plan.json`.
    It gives `pnpm build` the published data's address as `--previous`, so a
@@ -1290,7 +1361,11 @@ hand. It has six jobs:
    ClamAV" says. It holds only the `issues: write` permission. When the build
    job succeeded, it runs, whatever the malware-scan job's result. No job
    waits on it.
-5. The site job checks the downloaded data with
+5. The site-issues job checks the downloaded data the same way and runs
+   `pnpm site-issues` with the checked-out `sites.json`, as "Listed-site
+   issues" says. It holds only the `issues: write` permission. When the
+   build job succeeded, it runs. No job waits on it.
+6. The site job checks the downloaded data with
    `pnpm data-digest --dir dist --expect`, and the start plan against its
    SHA-256, each against the value that the build job gives as a job
    output. Plugin code in a start-test job can upload artifacts. If that
@@ -1299,9 +1374,9 @@ hand. It has six jobs:
    `pnpm add-start-results`, `pnpm add-scan-results`, and `pnpm site`. When
    the build job succeeded, it runs, whatever the start-test and
    malware-scan jobs' results.
-6. If the site job succeeded, the deploy job deploys `dist/` to GitHub
-   Pages, whatever the start-test, malware-scan, and scan-issues jobs'
-   results.
+7. If the site job succeeded, the deploy job deploys `dist/` to GitHub
+   Pages, whatever the start-test, malware-scan, scan-issues, and
+   site-issues jobs' results.
 
 If `pnpm build`, `pnpm add-start-results`, `pnpm add-scan-results`, or
 `pnpm site` exits with status 1, the workflow deploys nothing. If the

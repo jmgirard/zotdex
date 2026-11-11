@@ -455,7 +455,8 @@ D-085, M093, M118). For the last ground alone, a maintainer reads the README
 and settings of each plugin whose name, manifest or GitHub description,
 repository name, or topics name a listed site, without a report. `sites.json` lists those sites
 with their rulings, and the bot holds a new pull request that names one
-(M119). `docs/requests.md` defines
+(M119). Since M120 the daily build opens a `listed-site` issue for each
+listed plugin whose texts, other than topics, name one (D-089). `docs/requests.md` defines
 spam, harm, and "built in", and states how each removal is lifted.
 `delisted.json` names each removed repo and its ground, and its `ids` hold
 only ids judged unique to that repo. So `pnpm check`, discovery, and "Add a
@@ -780,6 +781,19 @@ user reports. The exception is a report that is abuse.
   label, and exits 0 on any GitHub failure. A deleted issue, a removed
   label, or an edited marker lets a later run open the issue again. The
   `scan-issues` job holds one concurrency group for every branch.
+- Listed-site issues (`src/site-issues/`, M120, D-089): `pnpm site-issues
+  --data --sites [--assignee]` (`matchesOf`, `reportMatches` in
+  `site-issues.ts`) matches each record's manifest name and description,
+  GitHub description, and the repository name of `upstream.repoUrl` (GitHub's
+  `html_url`, which follows a rename), else of the entry's `repoUrl`, against the
+  sites file with `sitesNamedIn`, and opens a GitHub issue labeled
+  `listed-site` for each record and site whose marker line (hashes of the id
+  and the site) no such issue holds, at most `SITE_ISSUES_MAX` (5) a run,
+  with every data value in a code span. It reuses `codeSpan` and
+  `holdsMarker` of `scan-issues.ts`. It sends no request with no match,
+  stops at any failed create (a 422 included) or a created issue that lacks
+  the label, and exits 0 on any GitHub failure. The `site-issues` job needs
+  only the build job and holds its own concurrency group for every branch.
 
 ## Conventions
 
@@ -826,7 +840,7 @@ reused._
   zotero-plugin-registry at a pinned commit, checks the file against a pinned
   SHA-256, and caches it in the gitignored `.cache/`. `src/check/sites.ts`
   reads and checks `sites.json` and holds the listed-site match that the
-  discovery bot uses (M119).
+  discovery bot (M119) and `pnpm site-issues` (M120) use.
 - `src/upstream/` reads the GitHub API with plain fetch (its client's `post`
   also creates the bot's pull requests, M009, and comments on issues, and its
   `patch` closes issues, M010), unzips the release
@@ -1144,7 +1158,9 @@ reused._
   (D-011); since M100 a kept record holds its failure in `kept` (D-066). Since M047 the workflow has had four jobs, since M115
   five, with the `malware-scan` job, and since M117 six, with the
   `scan-issues` job, which holds only `issues: write`, runs whatever the
-  scan job's result, and is in no job's `needs`. The build job runs
+  scan job's result, and is in no job's `needs`, and since M120 seven, with
+  the `site-issues` job, which needs only the build job, holds only
+  `issues: write`, and is in no job's `needs` either. The build job runs
   `pnpm build --plan start-plan.json`, with `--previous` since M100, then since M059 `pnpm
   carry-start-results` on the plan, then since M115 `pnpm carry-scan-results`
   on the data, gives the plan's SHA-256 as the job
@@ -1181,14 +1197,14 @@ reused._
   with a failed earlier job is skipped by default, so a failed start test
   or scan still deploys. A failed build deploys nothing, and the
   `github-pages` environment takes deploys from `main` only (M006).
-  The build, start-test, malware-scan, scan-issues, and site jobs of
-  `build.yml` restore no Actions cache (M047, M115, M117). The build job's rule came first: the job sets
+  The build, start-test, malware-scan, scan-issues, site-issues, and site
+  jobs of `build.yml` restore no Actions cache (M047, M115, M117, M120). The build job's rule came first: the job sets
   `cache-mode: none`, which GitHub enforces with the job's cache token, and no
   step sets a `cache` input (D-010). Scheduled and dispatched runs of the
   discover read job can save caches in the default branch's scope, while
   `issues` runs get read-only cache access. `test/workflows.test.ts` fails on a
   `cache` key or an `actions/cache` step in `build.yml`, or on a build,
-  start-test, malware-scan, scan-issues, or site job without
+  start-test, malware-scan, scan-issues, site-issues, or site job without
   `cache-mode: none` (M047); `ci.yml` keeps
   `cache: pnpm` (M016). It also checks `report-issue.yml`: its triggers,
   job condition, permissions,
@@ -1285,7 +1301,17 @@ reused._
   does not match entries against the file. Of the 16 open bot pull requests
   on 2026-11-09, none names a listed site (observed 2026-11-09). A plugin
   that merges this way is listed, and the daily re-check of listed plugins
-  (M120) is where it is found. Accepted at the M119 gate.
+  (M120) finds it, unless only its topics name the site (corrected M120).
+  Accepted at the M119 gate.
+- `pnpm site-issues` reads no topics, since the deployed data holds none, so
+  a listed plugin that names a listed site only in its topics opens no
+  `listed-site` issue and is found only on a report (M120 Out, D-089).
+  A closed issue's marker also keeps a plugin that came back after a
+  listed-site removal from a new issue, unless the maintainer who lifted the
+  removal deleted that marker line, as `docs/maintaining.md` says (D-089).
+  If GitHub opens a `listed-site` issue without its label, the next run opens
+  another one each day, as for `malware-scan` issues (M120, D-089).
+  Accepted at the M120 gate
 
 - Plugin metadata is inconsistent. Some plugins lack an `update.json` or have
   a wrong one, use version strings that are not semver, declare ranges that

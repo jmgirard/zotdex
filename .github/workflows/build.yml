@@ -319,6 +319,46 @@ jobs:
           pnpm scan-issues --data dist/v1/plugins.json --results "$RUNNER_TEMP/scan/scan-results.json"
           --expect "$SCAN_SHA256" --assignee "$ASSIGNEE"
 
+  # Opens a GitHub issue, assigned to the repository's owner, for each listed plugin whose manifest
+  # name or description, GitHub description, or repository name names a site in sites.json, when
+  # no issue labeled listed-site names that plugin and site yet, at most 5 a run (M120, D-089). It
+  # runs no plugin code, and no job waits on it, so it never holds back a deploy. Plugin code in a
+  # start-test job can replace the data artifact, so it checks the data against the build job's
+  # digest.
+  site-issues:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # One group for every branch, so two runs never list the issues at the same time and both open
+    # one for the same match, as for the scan-issues job.
+    concurrency:
+      group: site-issues
+      cancel-in-progress: false
+    permissions:
+      issues: write
+    cache-mode: none
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@v8
+        with:
+          name: plugins-data
+          path: dist
+      - env:
+          DATA_SHA256: ${{ needs.build.outputs.data-sha256 }}
+        run: pnpm --silent data-digest --dir dist --expect "$DATA_SHA256"
+      # GitHub sets GITHUB_REPOSITORY in every step, and pnpm site-issues opens the issues there.
+      - env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ASSIGNEE: ${{ github.repository_owner }}
+        run: pnpm site-issues --data dist/v1/plugins.json --sites sites.json --assignee "$ASSIGNEE"
+
   # Adds the start and scan results to the data and builds the site. It runs once the build job
   # succeeded, whatever the start-test and malware-scan jobs' results, so a failed start test or
   # scan still deploys.

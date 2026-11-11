@@ -61,7 +61,7 @@ describe("build.yml", () => {
     expect(jobText(build, "build")).toMatch(/^ {4}permissions:\n {6}contents: read\n {6}issues: read\n {4}\S/m);
   });
 
-  test.each(["build", "start-test", "malware-scan", "scan-issues", "site"])("sets cache-mode none on the %s job", (job) => {
+  test.each(["build", "start-test", "malware-scan", "scan-issues", "site-issues", "site"])("sets cache-mode none on the %s job", (job) => {
     expect(jobText(build, job)).toMatch(/^ {4}cache-mode: none$/m);
   });
 
@@ -282,15 +282,41 @@ describe("build.yml", () => {
     expect(job.match(/^ {10}pnpm scan-issues /gm)).toHaveLength(1);
   });
 
-  // GitHub sets GITHUB_REPOSITORY in every step, and a value under env would not replace it.
-  test("sets no GITHUB_REPOSITORY in the scan-issues job", () => {
-    expect(jobText(build, "scan-issues")).not.toMatch(/^ +GITHUB_REPOSITORY:/m);
+  test("gives the site-issues job issues write only, no stored git credentials, and at most 10 minutes, after the build job alone", () => {
+    const job = jobText(build, "site-issues");
+    expect(job).toMatch(/^ {4}needs: build$/m);
+    expect(job).not.toMatch(/^ {4}if:/m);
+    expect(job).toMatch(/^ {4}permissions:\n {6}issues: write\n {4}\S/m);
+    expect(job).toMatch(/^ {4}concurrency:\n {6}group: site-issues\n {6}cancel-in-progress: false\n/m);
+    expect(job).toMatch(/- uses: actions\/checkout@v7\n {8}with:\n {10}persist-credentials: false\n/);
+    const [, minutes] = job.match(/^ {4}timeout-minutes: (\d+)$/m) ?? [];
+    expect(Number(minutes)).toBeGreaterThan(0);
+    expect(Number(minutes)).toBeLessThanOrEqual(10);
   });
 
-  test("names the scan-issues job in no other job's needs", () => {
-    const jobs = [...build.matchAll(/^ {2}([\w-]+):\n/gm)].map(([, id]) => id).filter((id) => id !== "scan-issues");
+  test("checks the site-issues job's data, then runs pnpm site-issues on it with the checked-out sites file and the owner", () => {
+    const job = jobText(build, "site-issues");
+    const check = job.indexOf(
+      "      - env:\n          DATA_SHA256: ${{ needs.build.outputs.data-sha256 }}\n" +
+        '        run: pnpm --silent data-digest --dir dist --expect "$DATA_SHA256"\n',
+    );
+    expect(check).toBeGreaterThan(job.search(/^ {10}name: plugins-data$/m));
+    const step =
+      "      - env:\n          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}\n          ASSIGNEE: ${{ github.repository_owner }}\n" +
+      '        run: pnpm site-issues --data dist/v1/plugins.json --sites sites.json --assignee "$ASSIGNEE"\n';
+    expect(job.indexOf(step)).toBeGreaterThan(check);
+    expect(job.match(/^ +run: pnpm site-issues /gm)).toHaveLength(1);
+  });
+
+  // GitHub sets GITHUB_REPOSITORY in every step, and a value under env would not replace it.
+  test.each(["scan-issues", "site-issues"])("sets no GITHUB_REPOSITORY in the %s job", (id) => {
+    expect(jobText(build, id)).not.toMatch(/^ +GITHUB_REPOSITORY:/m);
+  });
+
+  test.each(["scan-issues", "site-issues"])("names the %s job in no other job's needs", (issuesJob) => {
+    const jobs = [...build.matchAll(/^ {2}([\w-]+):\n/gm)].map(([, id]) => id).filter((id) => id !== issuesJob);
     // A flow list on the needs line, or a block list below it, an item quoted or with a comment.
-    const needsIt = /^ {4}needs:(.*\bscan-issues\b|\n(?: {4,}- .*\n)*? {4,}- ["']?scan-issues["']?\s*(?:#.*)?$)/m;
+    const needsIt = new RegExp(`^ {4}needs:(.*\\b${issuesJob}\\b|\\n(?: {4,}- .*\\n)*? {4,}- ["']?${issuesJob}["']?\\s*(?:#.*)?$)`, "m");
     expect(jobs.filter((id) => needsIt.test(jobText(build, id)))).toEqual([]);
     expect(jobs).toContain("site");
   });
