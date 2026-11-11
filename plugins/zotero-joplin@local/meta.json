@@ -1,0 +1,7 @@
+{
+  "id": "zotero-joplin@local",
+  "name": "Zotero to Joplin",
+  "description": "Sync Zotero child notes and PDF annotations to Joplin",
+  "repoUrl": "https://github.com/Jellyjujube/jujube-zotero-joplin",
+  "updateUrl": "https://github.com/Jellyjujube/jujube-zotero-joplin/releases/download/release/update.json"
+}
