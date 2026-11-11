@@ -1,0 +1,8 @@
+{
+  "id": "sentence-translate@zrqworkmail-cloud.github.io",
+  "name": "Sentence Translate",
+  "description": "Click a sentence in a PDF to highlight it and show its Chinese translation directly underneath.",
+  "homepage": "https://github.com/zrqworkmail-cloud/sentence-translate",
+  "repoUrl": "https://github.com/zrqworkmail-cloud/sentence-translate",
+  "updateUrl": "https://cdn.jsdelivr.net/gh/zrqworkmail-cloud/sentence-translate@main/updates.json"
+}
