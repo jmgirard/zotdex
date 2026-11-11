@@ -1,0 +1,8 @@
+{
+  "id": "econ-rankings@andy-jiang-483.github.io",
+  "name": "Econ Rankings",
+  "description": "Econ journal tiers (Top 5 / general / field), RePEc rank, ABDC rating and citation counts as Zotero columns.",
+  "homepage": "https://github.com/Andy-Jiang-483/zotero-econ-rankings",
+  "repoUrl": "https://github.com/Andy-Jiang-483/zotero-econ-rankings",
+  "updateUrl": "https://raw.githubusercontent.com/Andy-Jiang-483/zotero-econ-rankings/main/updates.json"
+}
