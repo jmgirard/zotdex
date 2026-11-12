@@ -1,0 +1,7 @@
+{
+  "id": "zotero-ask-gpt@zkforge",
+  "name": "Zotero Ask GPT",
+  "description": "Zotero 的 PDF 问答插件，通过本机 Codex CLI 使用 ChatGPT 账号提问。",
+  "repoUrl": "https://github.com/zkforge/zotero-ask-gpt",
+  "updateUrl": "https://github.com/zkforge/zotero-ask-gpt/releases/latest/download/updates.json"
+}
