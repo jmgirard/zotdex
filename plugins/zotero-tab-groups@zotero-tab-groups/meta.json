@@ -1,0 +1,7 @@
+{
+  "id": "zotero-tab-groups@zotero-tab-groups",
+  "name": "Tab Groups",
+  "description": "Chrome-style tab groups for Zotero: color-coded, collapsible, drag-and-drop tab groups that survive restarts.",
+  "repoUrl": "https://github.com/CalyrexThePal/zotero-tab-groups",
+  "updateUrl": "https://raw.githubusercontent.com/CalyrexThePal/zotero-tab-groups/main/updates.json"
+}
