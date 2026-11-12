@@ -1,7 +1,7 @@
 # Roadmap
 
 _The only authority on milestone status. Grouped by status, not ID._
-_Last hygiene check: 2026-11-11 (M120 review: daily listed-site issues; 3 lessons marked used, 1 captured, 1 evicted; 2 Known issues; caps and validate green)_
+_Last hygiene check: 2026-11-11 (status audit: validate green; no open issues; 16 bot PRs open; 5 bot merges since M120, entries only; Build data start tests failed on a runner DNS outage, deploy fine)_
 
 ## Milestones
 
