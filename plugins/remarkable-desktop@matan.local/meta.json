@@ -1,0 +1,8 @@
+{
+  "id": "remarkable-desktop@matan.local",
+  "name": "Send to reMarkable",
+  "description": "Send a PDF from Zotero to My files using the installed reMarkable Windows desktop app.",
+  "homepage": "https://github.com/MatanEcon/zotero-remarkable-desktop",
+  "repoUrl": "https://github.com/MatanEcon/zotero-remarkable-desktop",
+  "updateUrl": "https://github.com/MatanEcon/zotero-remarkable-desktop/releases/latest/download/updates.json"
+}
