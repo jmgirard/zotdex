@@ -1,0 +1,8 @@
+{
+  "id": "bilingual-metadata@damao",
+  "name": "中文文献双语元数据",
+  "description": "解决中文期刊投稿双语引用的要求",
+  "homepage": "https://github.com/kmaog15-damao/bilingual-metadata",
+  "repoUrl": "https://github.com/kmaog15-damao/bilingual-metadata",
+  "updateUrl": "https://raw.githubusercontent.com/kmaog15-damao/bilingual-metadata/main/updates.json"
+}
