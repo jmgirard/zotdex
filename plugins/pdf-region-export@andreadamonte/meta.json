@@ -1,0 +1,8 @@
+{
+  "id": "pdf-region-export@andreadamonte",
+  "name": "PDF Region Export",
+  "description": "Export a selected region of a PDF as a high-resolution image, and copy text selections as LaTeX citations.",
+  "homepage": "https://github.com/Nicrael/zotero-pdf-region-export",
+  "repoUrl": "https://github.com/Nicrael/zotero-pdf-region-export",
+  "updateUrl": "https://raw.githubusercontent.com/Nicrael/zotero-pdf-region-export/main/update.json"
+}
