@@ -1,0 +1,8 @@
+{
+  "id": "hover-focus@local",
+  "name": "Hover Focus",
+  "description": "Hover to focus on sentences or lines, with adjustable dimming, optional double-click annotations, and Chinese/English controls.",
+  "homepage": "https://github.com/lllumos-luo/zotero-hover-focus",
+  "repoUrl": "https://github.com/lllumos-luo/zotero-hover-focus",
+  "updateUrl": "https://raw.githubusercontent.com/lllumos-luo/zotero-hover-focus/main/updates.json"
+}
