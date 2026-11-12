@@ -1,10 +1,12 @@
 # Zotdex <img src="https://zotdex.jmgirard.com/logo.svg" align="right" height="139" alt="Zotdex logo" />
 
-Zotdex is a community index of plugins for Zotero 7 and later. The index
-lists plugins and links to the releases of each author. It does not host
-plugin files, and it does not review or endorse plugins. The index is
-unofficial, is not affiliated with or endorsed by Zotero, and cannot vet the
-plugins it lists.
+Your field guide to Zotero plugins.
+
+Zotdex is a community index of Zotero plugins. Each entry tells you what a
+plugin does, who makes it, and which Zotero versions it supports. The index
+links to the releases of each author and does not host plugin files. Zotdex
+is an independent project, not part of Zotero, and it doesn't test the safety
+or features of the plugins it lists, beyond a malware scan by ClamAV.
 
 ## The site
 
