@@ -1,0 +1,8 @@
+{
+  "id": "local-translation@zotero.plugin",
+  "name": "Local Translation",
+  "description": "Offline PDF selection translation with named GGUF model configurations and Vulkan GPU acceleration. No external services.",
+  "homepage": "https://github.com/SunsetKnights/Zotero-Local-Translation-Plugin",
+  "repoUrl": "https://github.com/SunsetKnights/Zotero-Local-Translation-Plugin",
+  "updateUrl": "https://raw.githubusercontent.com/SunsetKnights/Zotero-Local-Translation-Plugin/main/updates.json"
+}
