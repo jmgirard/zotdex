@@ -1,0 +1,8 @@
+{
+  "id": "zotero-codex-listener@fade-r.github.io",
+  "name": "Zotero Codex Listener",
+  "description": "Send annotation changes to a chosen Codex desktop conversation.",
+  "homepage": "https://github.com/Fade-r/zotero-codex-listener",
+  "repoUrl": "https://github.com/Fade-r/zotero-codex-listener",
+  "updateUrl": "https://raw.githubusercontent.com/Fade-r/zotero-codex-listener/codex/initial-release/updates.json"
+}
