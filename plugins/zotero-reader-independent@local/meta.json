@@ -1,0 +1,7 @@
+{
+  "id": "zotero-reader-independent@local",
+  "name": "Zotero Reader 独立版",
+  "description": "文献精读、后台检查与自动修正，只保留一篇清晰的研究笔记。",
+  "repoUrl": "https://github.com/sword-raining/zotero-reader-independent",
+  "updateUrl": "https://raw.githubusercontent.com/sword-raining/zotero-reader-independent/main/updates.json"
+}
