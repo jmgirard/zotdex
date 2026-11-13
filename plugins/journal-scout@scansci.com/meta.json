@@ -1,0 +1,7 @@
+{
+  "id": "journal-scout@scansci.com",
+  "name": "Journal Scout for Zotero",
+  "description": "在 Zotero 条目面板中查看 Journal Scout 期刊指标。",
+  "repoUrl": "https://github.com/Rimagination/journal-scout-zotero",
+  "updateUrl": "https://journal.scansci.com/updates/zotero.json"
+}
