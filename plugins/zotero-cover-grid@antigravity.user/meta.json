@@ -1,0 +1,8 @@
+{
+  "id": "zotero-cover-grid@antigravity.user",
+  "name": "Zotero Cover Grid",
+  "description": "Visual APA 7 Cover Grid view with smart PDF caching for Zotero",
+  "homepage": "https://github.com/JuKang80/zotero-cover-grid",
+  "repoUrl": "https://github.com/JuKang80/zotero-cover-grid",
+  "updateUrl": "https://raw.githubusercontent.com/JuKang80/zotero-cover-grid/main/addon/updates.json"
+}
