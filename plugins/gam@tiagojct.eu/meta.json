@@ -1,0 +1,7 @@
+{
+  "id": "gam@tiagojct.eu",
+  "name": "gam",
+  "description": "Shows the Obsidian vault notes of Zotero items and creates literature notes.",
+  "repoUrl": "https://github.com/tiagojct/zotero-gam",
+  "updateUrl": "https://raw.githubusercontent.com/tiagojct/zotero-gam/main/updates.json"
+}
