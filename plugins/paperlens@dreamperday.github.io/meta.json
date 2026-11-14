@@ -1,0 +1,8 @@
+{
+  "id": "paperlens@dreamperday.github.io",
+  "name": "PaperLens",
+  "description": "在 Zotero 中理解论文、逐段精读与核对证据。",
+  "homepage": "https://github.com/DreamPerday/PaperLens-Zotero",
+  "repoUrl": "https://github.com/DreamPerday/PaperLens-Zotero",
+  "updateUrl": "https://raw.githubusercontent.com/DreamPerday/PaperLens-Zotero/main/updates.json"
+}
