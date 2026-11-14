@@ -28,5 +28,6 @@ bullet lines.
 - elsevier-v-elbakyan-delhi-2025.md: the Indian order of 2025 to block Sci-Hub and Sci-Net (M119)
 - brein-v-m7-rotterdam-2024.md: the Dutch order of 2024 to block Anna's Archive (M119)
 - atlantic-v-annas-archive-2026.md: the United States default judgment of 2026 that shut Anna's Archive's domains (M119)
+- zoteroplugins-org-comparison-2026-11-14.md: Zotero Plugins Atlas (zoteroplugins.org) compared with Zotdex, its coverage gap against ours by discovery source, and why we missed it
 - listed-site-sweep-2026-11-09.md: which listed plugins have a listed site built in, on the data of 2026-11-09, and which sites they use (M119)
 - plain-words-copy.md: the page wording drafted for plugin pages, About, and the 404 page in the home page's tone (M110, M111 plan), approved by the user; icon and screenshot lines added (M113, M114 plan); malware scan lines added (M115 plan)
