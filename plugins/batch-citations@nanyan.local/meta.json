@@ -1,0 +1,8 @@
+{
+  "id": "batch-citations@nanyan.local",
+  "name": "编号批量引用 · Batch Citations",
+  "description": "配合 Windows Word 加载项，把手写编号批量转换为可编辑、可刷新的 Zotero 引用。",
+  "homepage": "https://github.com/NysaMisty/Batch-Citations",
+  "repoUrl": "https://github.com/NysaMisty/Batch-Citations",
+  "updateUrl": "https://raw.githubusercontent.com/NysaMisty/Batch-Citations/main/updates.json"
+}
