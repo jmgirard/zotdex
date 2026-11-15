@@ -1,0 +1,8 @@
+{
+  "id": "konnash@local",
+  "name": "Konnash",
+  "description": "AI for Scholars. A reading companion for Zotero: every answer points back to the sentences it comes from, shown in the PDF beside you.",
+  "homepage": "https://github.com/Yrooma/konnash#readme",
+  "repoUrl": "https://github.com/Yrooma/konnash",
+  "updateUrl": "https://github.com/Yrooma/konnash/releases/download/release/update.json"
+}
