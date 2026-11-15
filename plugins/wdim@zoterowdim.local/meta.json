@@ -1,0 +1,8 @@
+{
+  "id": "wdim@zoterowdim.local",
+  "name": "和意为",
+  "description": "论文读不懂，先留一个问号。支持鼠标旁七连问号动画、快捷键与原生批注去重。",
+  "homepage": "https://github.com/AlexGrandbell/zotero-wdim",
+  "repoUrl": "https://github.com/AlexGrandbell/zotero-wdim",
+  "updateUrl": "https://github.com/AlexGrandbell/zotero-wdim/releases/latest/download/updates.json"
+}
