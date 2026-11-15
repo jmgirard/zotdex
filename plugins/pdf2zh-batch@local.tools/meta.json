@@ -1,0 +1,8 @@
+{
+  "id": "pdf2zh-batch@local.tools",
+  "name": "Zotero 双语 PDF 自动补齐",
+  "description": "配合 Zotero PDF2zh 使用，扫描个人文库、补齐缺失双语 PDF，支持永久排除、停止续跑与去重。",
+  "homepage": "https://github.com/xiuxiuki/zotero-pdf2zh-batch",
+  "repoUrl": "https://github.com/xiuxiuki/zotero-pdf2zh-batch",
+  "updateUrl": "https://raw.githubusercontent.com/xiuxiuki/zotero-pdf2zh-batch/main/updates-beta.json"
+}
