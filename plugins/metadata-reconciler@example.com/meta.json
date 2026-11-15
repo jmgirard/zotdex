@@ -1,0 +1,8 @@
+{
+  "id": "metadata-reconciler@example.com",
+  "name": "Metadata Reconciler for Zotero 10",
+  "description": "Find versions of a paper, verify publication type and metadata, and preview changes in Zotero.",
+  "homepage": "https://github.com/Alioth5670/zotero-metadata-reconciler",
+  "repoUrl": "https://github.com/Alioth5670/zotero-metadata-reconciler",
+  "updateUrl": "https://raw.githubusercontent.com/Alioth5670/zotero-metadata-reconciler/main/updates.json"
+}
