@@ -1,0 +1,7 @@
+{
+  "id": "passage-search@local",
+  "name": "Preview Search Results",
+  "description": "Search the selected collection; each match appears as a text preview under the book.",
+  "repoUrl": "https://github.com/abdullahmushtaq19/zotero-preview-search-results",
+  "updateUrl": "https://raw.githubusercontent.com/abdullahmushtaq19/zotero-preview-search-results/main/updates.json"
+}
