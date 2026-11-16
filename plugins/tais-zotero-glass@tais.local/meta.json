@@ -1,0 +1,8 @@
+{
+  "id": "tais-zotero-glass@tais.local",
+  "name": "TAIS Appearance",
+  "description": "TAIS Appearance by Theatre AI Studio. A multilingual Glass appearance and reading environment for Zotero.",
+  "homepage": "https://github.com/LIPO1024/tais-appearance",
+  "repoUrl": "https://github.com/LIPO1024/tais-appearance",
+  "updateUrl": "https://raw.githubusercontent.com/LIPO1024/tais-appearance/main/updates.json"
+}
