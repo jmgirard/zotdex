@@ -1,0 +1,8 @@
+{
+  "id": "refwright@noahweidig",
+  "name": "RefWright",
+  "description": "Find PDFs, check retractions and citations, tag, and file papers: one Zotero-native plugin.",
+  "homepage": "https://github.com/noahweidig/refwright#readme",
+  "repoUrl": "https://github.com/noahweidig/refwright",
+  "updateUrl": "https://github.com/noahweidig/refwright/releases/download/release/update.json"
+}
