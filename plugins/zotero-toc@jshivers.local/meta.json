@@ -1,0 +1,7 @@
+{
+  "id": "zotero-toc@jshivers.local",
+  "name": "Zotero Table of Contents",
+  "description": "Build and edit a PDF's table of contents, with nested entries, from the reader's contents sidebar.",
+  "repoUrl": "https://github.com/jordanshivers/zotero-table-of-contents",
+  "updateUrl": "https://raw.githubusercontent.com/jordanshivers/zotero-table-of-contents/main/updates.json"
+}
