@@ -1,0 +1,8 @@
+{
+  "id": "zoteconf@shinmohuang.github.io",
+  "name": "ZoteConf",
+  "description": "Finds the published conference/journal version of arXiv preprints and updates the item in place",
+  "homepage": "https://github.com/shinmohuang/ZoteConf",
+  "repoUrl": "https://github.com/shinmohuang/ZoteConf",
+  "updateUrl": "https://raw.githubusercontent.com/shinmohuang/ZoteConf/main/update.json"
+}
