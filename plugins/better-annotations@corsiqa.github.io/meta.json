@@ -1,0 +1,8 @@
+{
+  "id": "better-annotations@corsiqa.github.io",
+  "name": "Better Annotations",
+  "description": "Name and extend annotation colors, switch color profiles and export annotations.",
+  "homepage": "https://github.com/CorsiQa/zotero-better-annotations",
+  "repoUrl": "https://github.com/CorsiQa/zotero-better-annotations",
+  "updateUrl": "https://github.com/CorsiQa/zotero-better-annotations/releases/latest/download/updates.json"
+}
