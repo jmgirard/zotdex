@@ -1,0 +1,7 @@
+{
+  "id": "glide@zotero-glide.local",
+  "name": "Zotero Glide",
+  "description": "Open PDF attachments in a lightweight, process-isolated MuPDF reader alongside Zotero's built-in reader.",
+  "repoUrl": "https://github.com/Royshare/zotero-glide",
+  "updateUrl": "https://github.com/Royshare/zotero-glide/releases/latest/download/update.json"
+}
