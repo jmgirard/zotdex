@@ -1,0 +1,8 @@
+{
+  "id": "term-ai@local.research",
+  "name": "论文术语 AI 解释",
+  "description": "API 配置一次保存，选中术语即可将 AI 解释直接追加到高亮评论。",
+  "homepage": "https://github.com/daewaf/zotero-term-ai",
+  "repoUrl": "https://github.com/daewaf/zotero-term-ai",
+  "updateUrl": "https://github.com/daewaf/zotero-term-ai/releases/latest/download/updates.json"
+}
