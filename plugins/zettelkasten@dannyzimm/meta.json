@@ -1,0 +1,7 @@
+{
+  "id": "zettelkasten@dannyzimm",
+  "name": "Zotero Zettelkasten",
+  "description": "Export Zotero bibliography entries with annotations as Obsidian/Zettelkasten notes",
+  "repoUrl": "https://github.com/Dannyzimmer/zottelkasten",
+  "updateUrl": "https://github.com/Dannyzimmer/zottelkasten/releases/download/release/update.json"
+}
