@@ -1,0 +1,8 @@
+{
+  "id": "pulsewright@luo.dev",
+  "name": "Pulsewright",
+  "description": "Six questions that turn a paper you saved into a paper you understood. Fully local, zero network, read-only.",
+  "homepage": "https://gitee.com/yhjes2019/pulsewright",
+  "repoUrl": "https://github.com/yhjes2019/pulsewright",
+  "updateUrl": "https://gitee.com/yhjes2019/pulsewright/raw/main/zotero/updates.json"
+}
