@@ -1,0 +1,8 @@
+{
+  "id": "paperflow-zotero@threeyang",
+  "name": "PaperFlow for Zotero",
+  "description": "PaperFlow 的 Zotero 9+ 集成：通过公开 API 连接本地 loopback Core。",
+  "homepage": "https://github.com/threeyang3/PaperRead",
+  "repoUrl": "https://github.com/threeyang3/PaperRead",
+  "updateUrl": "https://github.com/threeyang3/PaperRead/releases/latest/download/zotero-update.json"
+}
