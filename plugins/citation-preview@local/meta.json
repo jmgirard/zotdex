@@ -1,0 +1,7 @@
+{
+  "id": "citation-preview@local",
+  "name": "Citation Preview",
+  "description": "Verified metadata and abstracts inside Zotero native citation popovers",
+  "repoUrl": "https://github.com/yulong-ge/zotero-citation-preview",
+  "updateUrl": "https://github.com/yulong-ge/zotero-citation-preview/releases/latest/download/updates.json"
+}
