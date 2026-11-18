@@ -1,0 +1,8 @@
+{
+  "id": "zotero-topk@topk.io",
+  "name": "TopK Semantic Search",
+  "description": "Semantic (visual) search over the pages of your PDFs and web snapshots, powered by TopK's semantic index.",
+  "homepage": "https://www.topk.io/",
+  "repoUrl": "https://github.com/matospiso/zotero-topk",
+  "updateUrl": "https://raw.githubusercontent.com/matospiso/zotero-topk/main/update.json"
+}
