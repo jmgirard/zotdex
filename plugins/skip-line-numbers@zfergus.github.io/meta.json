@@ -1,0 +1,8 @@
+{
+  "id": "skip-line-numbers@zfergus.github.io",
+  "name": "Better Read Aloud",
+  "description": "Makes Zotero's Read Aloud skip manuscript line numbers, rejoin hyphenated words, speak math in words, and expand abbreviations like Fig. and Eq.",
+  "homepage": "https://github.com/zfergus/zotero-better-read-aloud",
+  "repoUrl": "https://github.com/zfergus/zotero-better-read-aloud",
+  "updateUrl": "https://github.com/zfergus/zotero-better-read-aloud/releases/latest/download/updates.json"
+}
