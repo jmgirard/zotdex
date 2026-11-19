@@ -1,0 +1,8 @@
+{
+  "id": "zotero-eleven@gulubao.github.io",
+  "name": "Zotero → ElevenReader",
+  "description": "Import a PDF from your Zotero library into the ElevenReader web app in your own Google Chrome once, then have ElevenReader read aloud from any sentence you select in the Zotero PDF reader.",
+  "homepage": "https://github.com/gulubao/zotero-eleven",
+  "repoUrl": "https://github.com/gulubao/zotero-eleven",
+  "updateUrl": "https://github.com/gulubao/zotero-eleven/releases/latest/download/update.json"
+}
