@@ -1,0 +1,8 @@
+{
+  "id": "annotate-pdf@local",
+  "name": "Annotate PDF",
+  "description": "Write Zotero's annotations into the PDF file itself — save an annotated copy, overwrite the original (with automatic backup), or save as, from the item context menu or the PDF reader toolbar.",
+  "homepage": "https://github.com/murphyhoucn/zotero-plugin",
+  "repoUrl": "https://github.com/murphyhoucn/zotero-plugin",
+  "updateUrl": "https://raw.githubusercontent.com/murphyhoucn/zotero-plugin/main/plugins/annotate-pdf/update.json"
+}
