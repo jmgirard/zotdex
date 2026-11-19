@@ -1,0 +1,8 @@
+{
+  "id": "zotero-autoscroll@zackmezera.github.io",
+  "name": "Auto-Scroll",
+  "description": "Hands-free scrolling in the Zotero reader (PDF, EPUB, snapshots), with a floating control pill.",
+  "homepage": "https://github.com/zackmezera/zotero-autoscroll",
+  "repoUrl": "https://github.com/zackmezera/zotero-autoscroll",
+  "updateUrl": "https://github.com/zackmezera/zotero-autoscroll/releases/latest/download/updates.json"
+}
