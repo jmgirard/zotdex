@@ -1,0 +1,8 @@
+{
+  "id": "dsh-in-zotero@dsh.local",
+  "name": "dsh-in-zotero",
+  "description": "Integrate DeepSeek Harness (dsh) into Zotero: native dsh session window, reader assistant per article, streaming selection translation, and AI metadata refetch — all library writes go through Zotero's own APIs.",
+  "homepage": "https://github.com/deepseek-harness/dsh-in-zotero",
+  "repoUrl": "https://github.com/Masterchiefm/dsh-in-zotero",
+  "updateUrl": "https://raw.githubusercontent.com/Masterchiefm/dsh-in-zotero/main/update.json"
+}
