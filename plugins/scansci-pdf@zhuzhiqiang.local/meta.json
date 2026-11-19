@@ -1,0 +1,8 @@
+{
+  "id": "scansci-pdf@zhuzhiqiang.local",
+  "name": "scansci-pdf Zotero Helper",
+  "description": "Download PDFs with scansci-pdf and attach them to selected Zotero items.",
+  "homepage": "https://github.com/qiangqianglab/scansci-zotero",
+  "repoUrl": "https://github.com/qiangqianglab/scansci-zotero",
+  "updateUrl": "https://raw.githubusercontent.com/qiangqianglab/scansci-zotero/main/update.json"
+}
