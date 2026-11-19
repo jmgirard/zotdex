@@ -1,0 +1,8 @@
+{
+  "id": "zotero-vectorize@yckbz.org",
+  "name": "Zotero Vectorize",
+  "description": "Local-first semantic search, cross-lingual recall, full-text passage navigation, and automatic background vectorization for Zotero.",
+  "homepage": "https://github.com/yckbz/zotero-vectorize",
+  "repoUrl": "https://github.com/yckbz/zotero-vectorize",
+  "updateUrl": "https://github.com/yckbz/zotero-vectorize/releases/latest/download/updates.json"
+}
