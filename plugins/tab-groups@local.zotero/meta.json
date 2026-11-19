@@ -1,0 +1,7 @@
+{
+  "id": "tab-groups@local.zotero",
+  "name": "Tab Manager",
+  "description": "Your tabs, in order.",
+  "repoUrl": "https://github.com/Ueky2000/zotero-tab-manager",
+  "updateUrl": "https://raw.githubusercontent.com/Ueky2000/zotero-tab-manager/main/updates.json"
+}
