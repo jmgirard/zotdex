@@ -1,0 +1,8 @@
+{
+  "id": "sysdict-lookup@mingpei.local",
+  "name": "System Dictionary Lookup",
+  "description": "Look up words in macOS's built-in dictionaries from Zotero's PDF reader selection popup: IPA plus two or three concise English senses, offline and instant. 在 Zotero 划词弹窗里直接显示 macOS 系统词典的音标与简明英英释义。",
+  "homepage": "https://github.com/PeberWang",
+  "repoUrl": "https://github.com/PeberWang/zotero-sysdict-lookup",
+  "updateUrl": "https://raw.githubusercontent.com/PeberWang/zotero-sysdict-lookup/master/updates.json"
+}
