@@ -1,0 +1,7 @@
+{
+  "id": "paperdesk@local.zotero",
+  "name": "LLM Paper Chat",
+  "description": "Paper Q&A, PDF Translation, and Literature Reviews",
+  "repoUrl": "https://github.com/Daaaaxianer/llm-paper-chat",
+  "updateUrl": "https://github.com/Daaaaxianer/llm-paper-chat/releases/latest/download/updates.json"
+}
