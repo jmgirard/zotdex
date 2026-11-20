@@ -1,0 +1,8 @@
+{
+  "id": "yidu@readin.cc",
+  "name": "ReadIN 译读",
+  "description": "Read your papers in ReadIN, then send highlights and notes back. 在 ReadIN 里读论文，高亮和笔记送回文献库。",
+  "homepage": "https://readin.cc",
+  "repoUrl": "https://github.com/phoenix8701-ctrl/readin-yidu",
+  "updateUrl": "https://readin.cc/yidu/update.json"
+}
