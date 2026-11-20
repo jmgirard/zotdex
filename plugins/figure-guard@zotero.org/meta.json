@@ -1,0 +1,7 @@
+{
+  "id": "figure-guard@zotero.org",
+  "name": "Zotero Figure Guard",
+  "description": "Keeps detected figure regions in their original PDF colours inside the dark Zotero reader.",
+  "repoUrl": "https://github.com/williamslay/Zotero-FigureGuard",
+  "updateUrl": "https://williamslay.github.io/Zotero-FigureGuard/updates.json"
+}
