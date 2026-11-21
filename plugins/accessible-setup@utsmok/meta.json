@@ -1,0 +1,8 @@
+{
+  "id": "accessible-setup@utsmok",
+  "name": "Zotero Accessible Setup",
+  "description": "One-step accessible setup: larger text, high contrast, three columns, Inbox collection for every save, status tags.",
+  "homepage": "https://github.com/utsmok/zotero-accessible",
+  "repoUrl": "https://github.com/utsmok/zotero-accessible",
+  "updateUrl": "https://raw.githubusercontent.com/utsmok/zotero-accessible/main/plugin/updates.json"
+}
