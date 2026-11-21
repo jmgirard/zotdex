@@ -1,0 +1,7 @@
+{
+  "id": "ndlocr-index@zotero-plugin.local",
+  "name": "NDLOCR-Lite for Zotero",
+  "description": "NDLOCR-Lite で PDF を OCR し、Zotero の全文インデックスに登録します（PDF は変更しません）",
+  "repoUrl": "https://github.com/ryoryoryo3838/ndlocr-lite_for_zotero",
+  "updateUrl": "https://github.com/ryoryoryo3838/ndlocr-lite_for_zotero/releases/latest/download/updates.json"
+}
