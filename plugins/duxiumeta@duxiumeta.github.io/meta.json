@@ -1,0 +1,8 @@
+{
+  "id": "duxiumeta@duxiumeta.github.io",
+  "name": "Duxiu Meta (读秀元数据)",
+  "description": "为 PDF 自动匹配图书元数据：读秀、豆瓣、Google Books、Open Library。",
+  "homepage": "https://github.com/wzs2004/zotero-duxiu-meta#readme",
+  "repoUrl": "https://github.com/wzs2004/zotero-duxiu-meta",
+  "updateUrl": "https://github.com/wzs2004/zotero-duxiu-meta/releases/latest/download/update.json"
+}
