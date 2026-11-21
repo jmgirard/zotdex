@@ -1,0 +1,8 @@
+{
+  "id": "claude-bridge@zotero-claude-bridge",
+  "name": "Claude Bridge for Zotero",
+  "description": "Keyless local MCP server inside Zotero, so Claude Code can search your library and add papers directly.",
+  "homepage": "https://github.com/ChanglinWu/zotero-claude-bridge",
+  "repoUrl": "https://github.com/ChanglinWu/zotero-claude-bridge",
+  "updateUrl": "https://github.com/ChanglinWu/zotero-claude-bridge/releases/latest/download/updates.json"
+}
