@@ -1,0 +1,8 @@
+{
+  "id": "sync-translate-companion@local.zotero",
+  "name": "Sync Translate",
+  "description": "Select translated text to highlight its source in the PDF. Works with Translate for Zotero.",
+  "homepage": "https://github.com/liuguanlin80-cell/zotero-sync-translate",
+  "repoUrl": "https://github.com/liuguanlin80-cell/zotero-sync-translate",
+  "updateUrl": "https://raw.githubusercontent.com/liuguanlin80-cell/zotero-sync-translate/main/update.json"
+}
