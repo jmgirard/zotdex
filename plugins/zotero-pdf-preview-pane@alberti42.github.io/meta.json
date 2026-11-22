@@ -1,0 +1,8 @@
+{
+  "id": "zotero-pdf-preview-pane@alberti42.github.io",
+  "name": "PDF Preview Pane",
+  "description": "Shows the selected item's PDF in a pane below the item list, with continuous scrolling.",
+  "homepage": "https://github.com/alberti42/zotero-pdf-preview-pane",
+  "repoUrl": "https://github.com/alberti42/zotero-pdf-preview-pane",
+  "updateUrl": "https://raw.githubusercontent.com/alberti42/zotero-pdf-preview-pane/main/updates.json"
+}
