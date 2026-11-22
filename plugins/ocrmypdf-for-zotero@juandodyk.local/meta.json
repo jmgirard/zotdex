@@ -1,0 +1,8 @@
+{
+  "id": "ocrmypdf-for-zotero@juandodyk.local",
+  "name": "Lossless OCR for Zotero",
+  "description": "Replace stale OCR and conservatively remove detected watermarks from Zotero PDFs.",
+  "homepage": "https://github.com/juandodyk/my-zotero-ocr",
+  "repoUrl": "https://github.com/juandodyk/my-zotero-ocr",
+  "updateUrl": "https://raw.githubusercontent.com/juandodyk/my-zotero-ocr/main/updates.json"
+}
