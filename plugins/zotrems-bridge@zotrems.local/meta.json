@@ -1,0 +1,7 @@
+{
+  "id": "zotrems-bridge@zotrems.local",
+  "name": "Zotrems Bridge",
+  "description": "Lets the Zotrems RemNote plugin open Zotero's citation picker and fetch APA-formatted references.",
+  "repoUrl": "https://github.com/pklaschka/zotrems",
+  "updateUrl": "https://github.com/pklaschka/zotrems/releases/latest/download/updates.json"
+}
