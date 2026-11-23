@@ -1,0 +1,7 @@
+{
+  "id": "reference-relationships@zotero-plugins.local",
+  "name": "Reference Relationships",
+  "description": "Development scaffold for typed Zotero reference relationships.",
+  "repoUrl": "https://github.com/JulianKimmig/zotero-reference-relationships",
+  "updateUrl": "https://github.com/JulianKimmig/zotero-reference-relationships/releases/latest/download/updates.json"
+}
