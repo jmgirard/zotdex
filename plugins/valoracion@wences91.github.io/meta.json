@@ -1,0 +1,8 @@
+{
+  "id": "valoracion@wences91.github.io",
+  "name": "Item Rating",
+  "description": "Rate each item from 1 to 10 with a color-coded score, shown in the item pane and in a sortable column.",
+  "homepage": "https://github.com/Wences91/zotero-valoracion",
+  "repoUrl": "https://github.com/Wences91/zotero-valoracion",
+  "updateUrl": "https://raw.githubusercontent.com/Wences91/zotero-valoracion/main/updates.json"
+}
