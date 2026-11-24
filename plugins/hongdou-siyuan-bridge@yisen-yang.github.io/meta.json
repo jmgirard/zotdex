@@ -1,0 +1,8 @@
+{
+  "id": "hongdou-siyuan-bridge@yisen-yang.github.io",
+  "name": "Hongdou SiYuan Bridge",
+  "description": "把红豆（Zotero 内核）里的文献一键推送到思源笔记：条目上右键「发送到思源」，经 6 位配对码鉴权，本地推送完整元数据与 PDF 路径，思源端自动落笔。仅走 127.0.0.1，不联网。",
+  "homepage": "https://github.com/Yisen-Yang/hongdou-siyuan-bridge",
+  "repoUrl": "https://github.com/Yisen-Yang/hongdou-siyuan-bridge",
+  "updateUrl": "https://github.com/Yisen-Yang/hongdou-siyuan-bridge/releases/latest/download/update.json"
+}
