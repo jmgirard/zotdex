@@ -1,0 +1,8 @@
+{
+  "id": "scanfixer@poimaino.github.io",
+  "name": "ScanFixer",
+  "description": "Fix scanned PDFs: split double-page spreads, crop, rotate, straighten and match page sizes with a visual editor that finds the spine, page edges and tilt for you, keeping your comments in place and a copy of the original.",
+  "homepage": "https://github.com/poimaino/ScanFixer",
+  "repoUrl": "https://github.com/poimaino/ScanFixer",
+  "updateUrl": "https://raw.githubusercontent.com/poimaino/ScanFixer/main/updates.json"
+}
