@@ -1,0 +1,7 @@
+{
+  "id": "pdf-translate@crl.local",
+  "name": "PDF Translate",
+  "description": "Translate PDF attachments with the pdf-translate CLI and open the result in Zotero.",
+  "repoUrl": "https://github.com/crlcrl1/pdf-translate",
+  "updateUrl": "https://github.com/crlcrl1/pdf-translate/releases/latest/download/update.json"
+}
