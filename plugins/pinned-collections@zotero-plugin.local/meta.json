@@ -1,0 +1,7 @@
+{
+  "id": "pinned-collections@zotero-plugin.local",
+  "name": "Pinned Collections",
+  "description": "Pin collections, saved searches and libraries to a sticky shortcut bar at the top of the collections pane.",
+  "repoUrl": "https://github.com/jacob-rosenthal/zotero-pin",
+  "updateUrl": "https://github.com/jacob-rosenthal/zotero-pin/releases/latest/download/update.json"
+}
