@@ -1,0 +1,8 @@
+{
+  "id": "zotero-s2@dingzy53.github.io",
+  "name": "Zotero S2",
+  "description": "Semantic Scholar for Zotero 10, served to AI agents over MCP",
+  "homepage": "https://github.com/dingzy53/zotero-S2#readme",
+  "repoUrl": "https://github.com/dingzy53/zotero-S2",
+  "updateUrl": "https://github.com/dingzy53/zotero-S2/releases/download/release/update.json"
+}
