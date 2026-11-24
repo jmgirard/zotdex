@@ -1,0 +1,8 @@
+{
+  "id": "zotero-knowledge-mcp@local.dev",
+  "name": "Zotero Knowledge MCP",
+  "description": "Vector-based Zotero knowledge base with structured literature access through MCP",
+  "homepage": "https://github.com/lianghx123/zoteroknowledgemcp",
+  "repoUrl": "https://github.com/lianghx123/zoteroknowledgemcp",
+  "updateUrl": "https://raw.githubusercontent.com/lianghx123/zoteroknowledgemcp/main/updates.json"
+}
