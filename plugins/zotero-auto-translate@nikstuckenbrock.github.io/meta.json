@@ -1,0 +1,8 @@
+{
+  "id": "zotero-auto-translate@nikstuckenbrock.github.io",
+  "name": "Zotero Auto Translate",
+  "description": "Automatically translates highlighted text of a chosen color and stores the translation in the annotation comment.",
+  "homepage": "https://github.com/nikstuckenbrock/zotero-auto-translate",
+  "repoUrl": "https://github.com/nikstuckenbrock/zotero-auto-translate",
+  "updateUrl": "https://github.com/nikstuckenbrock/zotero-auto-translate/releases/latest/download/updates.json"
+}
