@@ -1,0 +1,8 @@
+{
+  "id": "sidebrowser@00sapo.dev",
+  "name": "Side Browser",
+  "description": "A web browser in Zotero's right sidebar, with paper context for AI assistants.",
+  "homepage": "https://github.com/00sapo/zotero-sidebrowser",
+  "repoUrl": "https://github.com/00sapo/zotero-sidebrowser",
+  "updateUrl": "https://github.com/00sapo/zotero-sidebrowser/releases/download/release/update.json"
+}
