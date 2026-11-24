@@ -1,0 +1,7 @@
+{
+  "id": "note-template-vars@danieleder.at",
+  "name": "Note Template Variables",
+  "description": "Adds citationKey, pageLabel, pdfLink, and other item/annotation variables to Zotero's annotation note templates.",
+  "repoUrl": "https://github.com/daniel-eder/zotero-note-template-variables",
+  "updateUrl": "https://github.com/daniel-eder/zotero-note-template-variables/releases/download/release/update.json"
+}
