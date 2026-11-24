@@ -1,0 +1,8 @@
+{
+  "id": "zotglance@artkuo.dev",
+  "name": "ZotGlance",
+  "description": "Quick Look card and better type-to-select for the Zotero items list",
+  "homepage": "https://github.com/artkuo/ZotGlance#readme",
+  "repoUrl": "https://github.com/artkuo/ZotGlance",
+  "updateUrl": "https://github.com/artkuo/ZotGlance/releases/download/release/update.json"
+}
