@@ -1,0 +1,8 @@
+{
+  "id": "zotero-canvas-chat@forsakendelusion.github.io",
+  "name": "Canvas Chat",
+  "description": "Reading canvases in the LLM for Zotero side panel.",
+  "homepage": "https://github.com/ForsakenDelusion/zotero-canvas-chat",
+  "repoUrl": "https://github.com/ForsakenDelusion/zotero-canvas-chat",
+  "updateUrl": "https://github.com/ForsakenDelusion/zotero-canvas-chat/releases/latest/download/updates.json"
+}
