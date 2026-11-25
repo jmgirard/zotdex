@@ -1,0 +1,8 @@
+{
+  "id": "aiops-zotero-mcp@sachajw.github.io",
+  "name": "aiops Zotero MCP",
+  "description": "MCP server inside Zotero for AI agents, plus an in-Zotero assistant (Claude, Z.ai or any local Anthropic-format proxy)",
+  "homepage": "https://github.com/sachajw/aiops-zotero-mcp",
+  "repoUrl": "https://github.com/sachajw/aiops-zotero-mcp",
+  "updateUrl": "https://raw.githubusercontent.com/sachajw/aiops-zotero-mcp/main/updates.json"
+}
