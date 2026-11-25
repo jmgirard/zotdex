@@ -1,0 +1,7 @@
+{
+  "id": "zotero-quickswitcher@local",
+  "name": "Quick Switcher for Zotero",
+  "description": "文献快切、检索高亮、文件夹位置与保存搜索组织",
+  "repoUrl": "https://github.com/pasiooooo/zotero-quickSwitcher",
+  "updateUrl": "https://raw.githubusercontent.com/pasiooooo/zotero-quickSwitcher/main/updates.json"
+}
