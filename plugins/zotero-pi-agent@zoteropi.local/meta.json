@@ -1,0 +1,8 @@
+{
+  "id": "zotero-pi-agent@zoteropi.local",
+  "name": "CoRead AI",
+  "description": "AI 伴读：与 AI 协同精读论文——引导注意力的文章脉络、划词 / 框图提问、自动批注，可接入 DeepSeek、Claude Code、Codex 与 Antigravity",
+  "homepage": "https://coread.doosam.uk",
+  "repoUrl": "https://github.com/sdyzjx/zotero-coread-ai",
+  "updateUrl": "https://coread.doosam.uk/updates.json"
+}
