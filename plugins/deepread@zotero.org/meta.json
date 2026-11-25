@@ -1,0 +1,8 @@
+{
+  "id": "deepread@zotero.org",
+  "name": "DeepRead",
+  "description": "Zotero 7 AI 读研神器。支持 PDF/Word 格式解析与 Gemini 3.1 长上下文深度对话。",
+  "homepage": "https://github.com/shalom-lab/deepread#readme",
+  "repoUrl": "https://github.com/shalom-lab/deepread",
+  "updateUrl": "https://github.com/shalom-lab/deepread/releases/latest/download/updates.json"
+}
