@@ -1,0 +1,7 @@
+{
+  "id": "reading-status@pit.local",
+  "name": "Reading Status",
+  "description": "Track reading status (To Read, Pass 1-3, Completed) with a color-coded column.",
+  "repoUrl": "https://github.com/PitButtchereit/zotero-reading-status",
+  "updateUrl": "https://github.com/PitButtchereit/zotero-reading-status/releases/latest/download/updates.json"
+}
