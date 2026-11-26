@@ -1,0 +1,8 @@
+{
+  "id": "dux-theme@arqueon.org",
+  "name": "Dux Theme Sync",
+  "description": "Synchronizes Dux Shell (Matugen / Material 3) colors and typography live into Zotero and its reader.",
+  "homepage": "https://github.com/arqueon/zotero-dux-theme",
+  "repoUrl": "https://github.com/arqueon/zotero-dux-theme",
+  "updateUrl": "https://github.com/arqueon/zotero-dux-theme/releases/latest/download/update.json"
+}
