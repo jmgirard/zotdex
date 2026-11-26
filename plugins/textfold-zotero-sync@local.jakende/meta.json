@@ -1,0 +1,8 @@
+{
+  "id": "textfold-zotero-sync@local.jakende",
+  "name": "TextFold → Zotero",
+  "description": "Bring TextFold highlights, comments, and questions into Zotero as PDF annotations or child notes.",
+  "homepage": "https://github.com/Jakende/textfold-zotero-sync",
+  "repoUrl": "https://github.com/Jakende/textfold-zotero-sync",
+  "updateUrl": "https://raw.githubusercontent.com/Jakende/textfold-zotero-sync/main/updates.json"
+}
