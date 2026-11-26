@@ -1,0 +1,8 @@
+{
+  "id": "eixos-organizer@danielbarreto.local",
+  "name": "Organizer",
+  "description": "Non-destructive Zotero plugin that automatically organizes collections by thematic axes and topics using a hybrid AI + keyword engine, single-screen batch plan review with live DB verification, and bilingual (EN / PT-BR) support.",
+  "homepage": "https://github.com/Fjalarr/Zotero-Organizer",
+  "repoUrl": "https://github.com/Fjalarr/Zotero-Organizer",
+  "updateUrl": "https://raw.githubusercontent.com/Fjalarr/Zotero-Organizer/main/updates.json"
+}
