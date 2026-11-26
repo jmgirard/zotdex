@@ -1,0 +1,7 @@
+{
+  "id": "researchannotator@pino",
+  "name": "ResearchAnnotator",
+  "description": "Research workflow tools for organizing Zotero PDF annotations, research metadata, and synchronized paper notes.",
+  "repoUrl": "https://github.com/Pinokuo/ResearchAnnotator",
+  "updateUrl": "https://raw.githubusercontent.com/Pinokuo/ResearchAnnotator/refs/heads/branding/researchannotator/updates-beta.json"
+}
