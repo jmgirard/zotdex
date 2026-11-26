@@ -1,0 +1,8 @@
+{
+  "id": "word-zotero-scan@wordscan.local",
+  "name": "Auto Citation Insertion for Zotero",
+  "description": "Convert Scannable Cite markers from Word with ODF/DOCX Scan and file the cited items in a Zotero collection.",
+  "homepage": "https://github.com/W-aPoint/zotero-auto-citation-insertion",
+  "repoUrl": "https://github.com/W-aPoint/zotero-auto-citation-insertion",
+  "updateUrl": "https://raw.githubusercontent.com/W-aPoint/zotero-auto-citation-insertion/main/updates.json"
+}
