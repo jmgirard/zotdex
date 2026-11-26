@@ -1,0 +1,8 @@
+{
+  "id": "zotero-sapientia@terenceliu98.github.io",
+  "name": "Sapientia",
+  "description": "Chat with your own ACP agent beside your Zotero library.",
+  "homepage": "https://github.com/TerenceLiu98/zotero-sapientia#readme",
+  "repoUrl": "https://github.com/TerenceLiu98/zotero-sapientia",
+  "updateUrl": "https://github.com/TerenceLiu98/zotero-sapientia/releases/download/release/update.json"
+}
