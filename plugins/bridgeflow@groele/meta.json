@@ -1,0 +1,8 @@
+{
+  "id": "bridgeflow@groele",
+  "name": "Zotero BridgeFlow",
+  "description": "Unified reading tab workspace, live citation preview & reverse lookup, and Word citation tracking for Zotero.",
+  "homepage": "https://github.com/groele/Zotero-BridgeFlow",
+  "repoUrl": "https://github.com/groele/Zotero-BridgeFlow",
+  "updateUrl": "https://raw.githubusercontent.com/groele/Zotero-BridgeFlow/main/update.json"
+}
