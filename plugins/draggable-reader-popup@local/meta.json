@@ -1,0 +1,7 @@
+{
+  "id": "draggable-reader-popup@local",
+  "name": "Draggable Reader Popup",
+  "description": "让 Zotero 阅读器里选中文字/悬停预览弹出的浮窗可以拖拽移动，并记住位置，不再遮挡正文。",
+  "repoUrl": "https://github.com/xrl-tjrxgq/zotero-draggable-reader-popup",
+  "updateUrl": "https://raw.githubusercontent.com/xrl-tjrxgq/zotero-draggable-reader-popup/main/update.json"
+}
