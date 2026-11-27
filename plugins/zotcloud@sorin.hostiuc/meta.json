@@ -1,0 +1,8 @@
+{
+  "id": "zotcloud@sorin.hostiuc",
+  "name": "ZotCloud",
+  "description": "Sync your Zotero library to cloud storage providers",
+  "homepage": "https://github.com/sorinhostiuc/zotero-zotcloud",
+  "repoUrl": "https://github.com/sorinhostiuc/zotero-zotcloud",
+  "updateUrl": "https://github.com/sorinhostiuc/zotero-zotcloud/releases/latest/download/update.json"
+}
