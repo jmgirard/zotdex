@@ -1,0 +1,8 @@
+{
+  "id": "git4zotero@paper-version.local",
+  "name": "git4zotero",
+  "description": "为 Zotero 论文附件提供基于 Git 的本地版本管理。",
+  "homepage": "https://github.com/LiKa-shing/git4zotero",
+  "repoUrl": "https://github.com/LiKa-shing/git4zotero",
+  "updateUrl": "https://github.com/LiKa-shing/git4zotero/releases/latest/download/updates.json"
+}
