@@ -1,0 +1,8 @@
+{
+  "id": "cocotranslate@cocotranslate.com",
+  "name": "CocoTranslate",
+  "description": "Translates PDFs in Zotero into layout-preserving bilingual or translation-only PDFs, saved under the original item.",
+  "homepage": "https://cocotranslate.com",
+  "repoUrl": "https://github.com/iftechio/zotero-cocotranslate",
+  "updateUrl": "https://coco-download.cocotranslate.com/zotero-release/updates.json"
+}
