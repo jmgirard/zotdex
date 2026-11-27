@@ -1,0 +1,7 @@
+{
+  "id": "reading-priority@local.example",
+  "name": "Reading Priority for Zotero",
+  "description": "Read-only, sortable reading columns derived from existing Zotero tags.",
+  "repoUrl": "https://github.com/physedu/zotero-reading-priority",
+  "updateUrl": "https://raw.githubusercontent.com/physedu/zotero-reading-priority/main/updates.json"
+}
