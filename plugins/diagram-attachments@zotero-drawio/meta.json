@@ -1,0 +1,7 @@
+{
+  "id": "diagram-attachments@zotero-drawio",
+  "name": "zotero-drawio-integration",
+  "description": "Create and edit .drawio attachments offline in Zotero.",
+  "repoUrl": "https://github.com/wwtwwwt/zotero-drawio-integration",
+  "updateUrl": "https://github.com/wwtwwwt/zotero-drawio-integration/releases/latest/download/updates.json"
+}
